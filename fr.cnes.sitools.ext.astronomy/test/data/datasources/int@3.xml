@@ -1,0 +1,14 @@
+<jdbcdatasource>
+  <id>15169aba-3567-413e-88a8-087a6b91656c</id>
+  <name>Test DB</name>
+  <description></description>
+  <status>ACTIVE</status>
+  <url>jdbc:postgresql://localhost:5432/cnes_test</url>
+  <userLogin>sitools</userLogin>
+  <userPassword>sitools</userPassword>
+  <sitoolsAttachementForUsers>/dbtest</sitoolsAttachementForUsers>
+  <maxActive>10</maxActive>
+  <driverClass>org.postgresql.Driver</driverClass>
+  <initialSize>5</initialSize>
+  <schemaOnConnection>public</schemaOnConnection>
+</jdbcdatasource>

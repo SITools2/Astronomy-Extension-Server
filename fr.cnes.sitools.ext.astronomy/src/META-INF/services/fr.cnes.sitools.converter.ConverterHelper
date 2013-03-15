@@ -1,0 +1,7 @@
+fr.cnes.sitools.extensions.astro.converter.DmsConversion
+fr.cnes.sitools.extensions.astro.converter.HmsConversion
+fr.cnes.sitools.extensions.astro.converter.CoordinatesTransformationConverter
+fr.cnes.sitools.extensions.astro.converter.PolygonConverter
+fr.cnes.sitools.extensions.astro.converter.CenterPositionConverter
+fr.cnes.sitools.extensions.astro.converter.ConcatConverter
+fr.cnes.sitools.extensions.astro.converter.ConcatColConverter

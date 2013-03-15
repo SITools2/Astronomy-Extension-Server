@@ -1,0 +1,9 @@
+fr.cnes.sitools.extensions.astro.resource.NameResolverResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.ExportVOResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.ConeSearchResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.SimpleImageAccessResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.ReverseNameResolverResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.CutOffResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.GlobWebResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.SkyCoverageResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResourcePlugin

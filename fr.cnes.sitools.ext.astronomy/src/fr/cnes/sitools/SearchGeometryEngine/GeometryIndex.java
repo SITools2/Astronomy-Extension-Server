@@ -1,0 +1,107 @@
+/*******************************************************************************
+* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+*
+* This file is part of SITools2.
+*
+* SITools2 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* SITools2 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+package fr.cnes.sitools.SearchGeometryEngine;
+
+import healpix.core.HealpixIndex;
+import healpix.essentials.RangeSet;
+import healpix.essentials.Scheme;
+
+/**
+ * Factory to create an geometry index based on a shape and a Healpix Scheme.
+ * 
+ * <p>
+ * The geometry index depends on the shape and the Scheme. Here is an example
+ * showing how to create a GeometryIndex.<br/>
+ * <pre>
+ * <code>
+ * Index index = GeometryIndex.createIndex(shape, Scheme.RING);
+ * Long pixelNumber = (Long) index.getIndex(); // for point
+ * 
+ * Index index = GeometryIndex.createIndex(shape, Scheme.RING);
+ * RangeSet pixels = (RangeSet) index.getIndex(); // for polygon
+ * </code>
+ * </pre>
+ * </p>
+ * @author Jean-Christophe Malapert
+ */
+public abstract class GeometryIndex {
+
+    /**
+     * Library version.
+     */
+    public static final String VERSION_LIBRARY = "1.0";
+
+    /**
+     * Private constructor.
+     */
+    private GeometryIndex() {
+    }
+
+    /**
+     * Creates the index with a shape and a Healpix Scheme.
+     * @param shape shape
+     * @param scheme Healpix Scheme
+     * @return the index
+     * @throws Exception Healpix Exception
+     */
+    public static Index createIndex(final Shape shape, final Scheme scheme) throws Exception {
+        Index index = null;
+        switch (scheme) {
+
+            case NESTED:
+                index = new NestedIndex(shape);
+                break;
+
+            case RING:
+                index = new RingIndex(shape);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Cannot manage this index");
+
+        }
+        return index;
+    }
+
+    /**
+     * Returns the pixel resolution at a given order.
+     * @param order Healpix order
+     * @return the pixel resolution in arcsec
+     */
+    public static double getPixelResolution(final int order) {
+        return HealpixIndex.getPixRes((long) Math.pow(2, order));
+    }
+
+    /**
+     * Transforms a RangetSet in an array of long.
+     * @param rangeSet rangeSet
+     * @return an array of pixels at a given order
+     */
+    public static long[] decodeRangeSet(final RangeSet rangeSet) {
+        assert rangeSet != null;
+        long[] pixels = new long[(int) rangeSet.nval()];
+        RangeSet.ValueIterator valueIter = rangeSet.valueIterator();
+        int i = 0;
+        while (valueIter.hasNext()) {
+            pixels[i] = valueIter.next();
+            i++;
+        }
+        return pixels;
+    }
+}
