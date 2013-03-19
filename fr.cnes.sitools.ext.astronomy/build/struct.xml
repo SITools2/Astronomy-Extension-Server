@@ -19,8 +19,8 @@
 ==================================== -->
 	
 
-	<property file="../fr.cnes.sitools.core/build.properties" />
-	<property file="../fr.cnes.sitools.core/conf/build/properties/build-${HOST}.properties" />
+	<property file="build.properties" />
+	<property file="${ROOT_DIRECTORY}/workspace/fr.cnes.sitools.core/conf/build/properties/build-${HOST}.properties" />
 	
 	<import	file="${ROOT_DIRECTORY}/workspace/fr.cnes.sitools.core/conf/build/userlibrairies/sitools.userlibraries.ant.xml"
 		optional="false" />	

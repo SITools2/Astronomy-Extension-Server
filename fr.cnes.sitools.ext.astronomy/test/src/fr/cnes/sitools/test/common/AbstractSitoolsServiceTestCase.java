@@ -64,7 +64,7 @@ public abstract class AbstractSitoolsServiceTestCase extends AbstractTaskResourc
 	    settings = SitoolsSettings.getInstance("sitools", Starter.class.getClassLoader(), Locale.FRANCE, true);
 
 	    //String source = settings.getRootDirectory() + "/workspace/fr.cnes.sitools.ext.astronomy/test/data";
-            String source = "/home/malapert/NetBeansProjects/AstronomyExtensionReleaseV2.0/test/data";
+            String source = "/extensions/astronomy/fr.cnes.sitools.ext.astronomy/test/data";
 	    String cible = settings.getRootDirectory() + TEST_FILES_REPOSITORY;
 
 	    LOGGER.info("COPY SOURCE:" + source + " CIBLE:" + cible);
