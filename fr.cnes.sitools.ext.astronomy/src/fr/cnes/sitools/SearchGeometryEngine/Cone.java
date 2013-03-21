@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 *
 * This file is part of SITools2.
 *
@@ -53,13 +53,11 @@ import java.util.logging.Logger;
  * </code>
  * </pre> 
  * </p>
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class Cone implements Shape {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(Cone.class.getName());
-    /** Geometry type sets to CONE. */
-    private static final String TYPE = "CONE";
     /** Center of the disk on the sphere. */
     private Point center;
     /** Radius of the disk in radians. */
@@ -103,7 +101,7 @@ public class Cone implements Shape {
     }
 
     /**
-     * Returns true because a cone a surface delimited by its disk.
+     * Returns <code>true</code> because a cone is a surface delimited by its disk.
      *
      * @return true
      */
@@ -113,7 +111,7 @@ public class Cone implements Shape {
     }
 
     /**
-     * Set the disk center.
+     * Sets the disk center.
      *
      * @param val the center
      */
@@ -123,7 +121,7 @@ public class Cone implements Shape {
     }
 
     /**
-     * Set the disk radius in radians.
+     * Sets the disk radius in radians.
      *
      * @param val the disk radius in radians
      */
@@ -136,8 +134,8 @@ public class Cone implements Shape {
      * @return the geometry type
      */
     @Override
-    public final String getType() {
-        return TYPE;
+    public final Type getType() {
+        return Shape.Type.CONE;
     }
 
     @Override
@@ -165,6 +163,6 @@ public class Cone implements Shape {
         //now a proper field-by-field evaluation can be made
         return that.getCenter().equals(this.center)
                 && that.getRadius() == this.radius
-                && that.getType().equals(Cone.TYPE);
+                && that.getType() == Shape.Type.CONE;
     }
 }

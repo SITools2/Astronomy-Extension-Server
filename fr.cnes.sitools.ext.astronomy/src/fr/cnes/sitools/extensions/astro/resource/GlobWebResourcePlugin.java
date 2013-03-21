@@ -1,5 +1,5 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.common.validator.ConstraintViolation;
@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Publishes the GlobWeb configuration file.
+ * Provides the GlobWeb configuration file.
  * 
  * <p>This service answers to the following scenario:<br/> 
  * As administrator, I want to change the GlobWeb configuration file by the administration pannel

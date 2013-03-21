@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 *
 * This file is part of SITools2.
 *
@@ -20,7 +20,7 @@ package fr.cnes.sitools.SearchGeometryEngine;
 
 
 /**
- * This object contains an enumeration of different coordinate systems.
+ * Contains an enumeration of different coordinate systems.
  *
  * <p>
  * Two coordinate systems are supported:
@@ -32,7 +32,7 @@ package fr.cnes.sitools.SearchGeometryEngine;
  * Earth observation <--> astronomy
  * </p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public enum CoordSystem {
 
@@ -51,17 +51,17 @@ public enum CoordSystem {
     EQUATORIAL; // right ascension, declination
 
     /**
-     * Angle that determines the circumference of the circle.
+     * Angle that defines the circumference of the circle.
      */
     protected static final double ANGLE_CIRCLE_CIRCUMFERENCE = 360.;
 
     /**
-     * Angle that determines the semi circumference of the circle.
+     * Angle that defines the semi circumference of the circle.
      */
     protected static final double ANGLE_SEMI_CIRCLE_CIRCUMFERENCE = 180.;
 
     /**
-     * Angle that determines the 1.5xcircumference of the circle.
+     * Angle that defines the 1.5xcircumference of the circle.
      */
     protected static final double ANGLE_CIRCLE_CIRCUMFERENCE_MORE_SEMI = 540.;
 
@@ -144,5 +144,3 @@ public enum CoordSystem {
         return ANGLE_DIFFERENCE_POLAR_VS_EQUATOR - theta;
     }
 }
-
-

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -16,17 +16,19 @@
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
-import fr.cnes.sitools.astro.resolver.AbstractNameResolver.CoordinateSystem;
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,10 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
    * User parameters.
    */
   private UserParameters userParameters;
+  /**
+   * Dictionary.
+   */
+  private Map<String, VoDictionary> dico;
 
   @Override
   public final void doInit() {
@@ -76,6 +82,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       this.query = new ConeSearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
         this.userParameters = new UserParameters(getRequest().getResourceRef().getQueryAsForm());
+        this.dico = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getDico();
       }
     } catch (Exception ex) {
       LOG.log(Level.WARNING, null, ex);
@@ -91,46 +98,46 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     /**
      * Right Ascension.
      */
-    POS_EQ_RA_MAIN("POS_EQ_RA_MAIN"),
+    POS_EQ_RA_MAIN(Arrays.asList("POS_EQ_RA_MAIN", "pos.eq.ra;meta.main")),
     /**
      * Declination.
      */
-    POS_EQ_DEC_MAIN("POS_EQ_DEC_MAIN"),
+    POS_EQ_DEC_MAIN(Arrays.asList("POS_EQ_DEC_MAIN", "pos.eq.dec;meta.main")),
     /**
      * ID.
      */
-    ID_MAIN("ID_MAIN"),
+    ID_MAIN(Arrays.asList("ID_MAIN", "meta.id;meta.main")),
     /**
      * None.
      */
-    NONE("");
+    NONE(Arrays.asList(""));
     /**
-     * name.
+     * List of keywords for an item.
      */
-    private final String name;
+    private final List<String> names;
 
     /**
      * Constructor.
      *
-     * @param nameVal name
+     * @param nameVals List of keywords
      */
-    ReservedWords(final String nameVal) {
-      this.name = nameVal;
+    ReservedWords(final List<String> nameVals) {
+      this.names = nameVals;
     }
 
     /**
-     * Returns name.
+     * Returns a list of keywords related to an item.
      *
-     * @return name
+     * @return list of keywords
      */
-    public String getName() {
-      return this.name;
+    public List<String> getName() {
+      return this.names;
     }
 
     /**
-     * Finds the enum from its keyword.
+     * Finds the enum from one of its keywords.
      *
-     * @param keyword keyword
+     * @param keyword keyword to match
      * @return the enum
      */
     public static OpenSearchVOConeSearch.ReservedWords find(final String keyword) {
@@ -138,8 +145,8 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       OpenSearchVOConeSearch.ReservedWords[] words = OpenSearchVOConeSearch.ReservedWords.values();
       for (int i = 0; i < words.length; i++) {
         OpenSearchVOConeSearch.ReservedWords word = words[i];
-        String reservedName = word.getName();
-        if (keyword.equals(reservedName)) {
+        List<String> reservedName = word.getName();
+        if (reservedName.contains(keyword)) {
           response = word;
           break;
         }
@@ -149,25 +156,25 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
   }
 
   /**
-   * Returns the JSON representation.
+   * Returns the JSON representation. getOr
    *
    * @return the JSON representation
    */
   @Get
   public final Representation getJsonResponse() {
     try {
+      Map dataModel = new HashMap();
+      List features = new ArrayList();
       double ra = userParameters.getRa();
       double dec = userParameters.getDec();
       double sr = userParameters.getSr();
       List<Map<Field, String>> response = this.query.getResponseAt(ra, dec, sr);
-      Map dataModel = new HashMap();
-      List features = new ArrayList();
-      dataModel.put("totalResults", response.size());
+      Set<Field> fields = getFields(response);
+      fillDictionary(fields);
       for (Map<Field, String> iterDoc : response) {
         Map geometry = new HashMap();
         Map properties = new HashMap();
         Map feature = new HashMap();
-        Set<Field> fields = iterDoc.keySet();
         Iterator<Field> fieldIter = fields.iterator();
         double raValue = Double.NaN;
         double decValue = Double.NaN;
@@ -182,10 +189,10 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
             OpenSearchVOConeSearch.ReservedWords ucdWord = OpenSearchVOConeSearch.ReservedWords.find(ucd);
             switch (ucdWord) {
               case POS_EQ_RA_MAIN:
-                raValue = Utility.parseRa(iterDoc, field);
+                raValue = Utility.parseRaVO(iterDoc, field);
                 break;
               case POS_EQ_DEC_MAIN:
-                decValue = Utility.parseDec(iterDoc, field);
+                decValue = Utility.parseDecVO(iterDoc, field);
                 break;
               case ID_MAIN:
                 properties.put("identifier", iterDoc.get(field));
@@ -201,14 +208,105 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
         geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
         feature.put("geometry", geometry);
         feature.put("properties", properties);
-        features.add(feature);
+        spatialFilter(feature, ra, dec);
+        if (!feature.isEmpty()) {
+          features.add(feature);
+        }
       }
       dataModel.put("features", features);
-      return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+      dataModel.put("totalResults", features.size());
+      return new GeoJsonRepresentation(dataModel);
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
     }
+  }
+
+  /**
+   * Filters the response.
+   *
+   * <p>
+   * the <code>feature</code> is cleared :
+   * <ul>
+   * <li>when the query mode is Healpix and the record is not in the queried Healpix pixel</li>
+   * <li>when is not valid</li>
+   * </ul>
+   * </p>
+   *
+   * @param feature record
+   * @param ra right asciension
+   * @param dec declination
+   * @see #isValid(java.util.Map) 
+   */
+  private void spatialFilter(final Map feature, final double ra, final double dec) {
+    if (isValid(feature)) {
+      if (this.userParameters.isHealpixMode() && !isPointIsInsidePixel(ra, dec)) {
+        LOG.log(Level.FINE, "This record {0} is ignored.", feature.toString());
+        feature.clear();
+      }
+    } else {
+        LOG.log(Level.WARNING, "The record record {0} is not valid : No identifier found in the response.", feature.toString());
+        feature.clear();      
+    }
+  }
+
+  /**
+   * Returns the list of distinct fields from the response. <p> if response is empty, then returns an empty list. </p>
+   *
+   * @param response respone
+   * @return the list of distinct fields from the response
+   */
+  private Set<Field> getFields(final List<Map<Field, String>> response) {
+    Set<Field> fields = new HashSet<Field>();
+    if (!response.isEmpty()) {
+      Map<Field, String> map = response.get(0);
+      fields = map.keySet();
+    }
+    return fields;
+  }
+
+  /**
+   * Parses the description TAG of each field and sets it to
+   * <code>dico</code>.
+   *
+   * @param fields keywords of the response
+   */
+  private void fillDictionary(final Set<Field> fields) {
+    Iterator<Field> fieldIter = fields.iterator();
+    while (fieldIter.hasNext()) {
+      Field field = fieldIter.next();
+      String description = (field.getDESCRIPTION() == null)?null:field.getDESCRIPTION().getContent().get(0).toString();
+      this.dico.put(field.getName(), new VoDictionary(description, field.getUnit()));
+    }
+  }
+
+  /**
+   * Returns true when identifier is set.
+   *
+   * @param feature data model
+   * @return true when identifier os set
+   */
+  private boolean isValid(final Map feature) {
+    return ((Map) feature.get("properties")).containsKey("identifier");
+  }
+
+  /**
+   * Returns true when the point (ra,dec) is inside the pixel otherwise false.
+   *
+   * @param ra right ascension in degree
+   * @param dec declination in degree
+   * @return true when the point (ra,dec) is inside the pixel otherwise false
+   */
+  private boolean isPointIsInsidePixel(final double ra, final double dec) {
+    boolean result;
+    try {
+      long healpixFromService = this.userParameters.getHealpixIndex().ang2pix_nest(Math.PI / 2 - Math.toRadians(dec), Math.toRadians(ra));
+      result = (healpixFromService == this.userParameters.getHealpix()) ? true : false;
+    } catch (Exception ex) {
+      result = false;
+      LOG.log(Level.WARNING, null, ex);
+    }
+    return result;
   }
 
   /**
@@ -217,10 +315,17 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
   public class UserParameters {
 
     /**
+     * Value when Healpix is not defined.
+     */
+    public static final int NOT_DEFINED = -1;
+    /**
+     * Multiplation factor to embed the entire Healpix pixel in the ROI.
+     */
+    private static final double MULT_FACT = 1.5;
+    /**
      * Max value in degree of declination axis.
      */
     private static final double MAX_DEC = 90.;
-    
     /**
      * One degree.
      */
@@ -232,8 +337,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     /**
      * Arcsec to degree conversion.
      */
-    private static final double ARCSEC2DEG = ONE_DEG / ONE_DEG_IN_ARSEC;    
-    
+    private static final double ARCSEC2DEG = ONE_DEG / ONE_DEG_IN_ARSEC;
     /**
      * right ascension.
      */
@@ -246,6 +350,22 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
      * radius.
      */
     private double sr;
+    /**
+     * Healpix order.
+     */
+    private int order;
+    /**
+     * Healpix pixel.
+     */
+    private long healpix;
+    /**
+     * Healpix index.
+     */
+    private HealpixIndex healpixIndex;
+    /**
+     * Healpix is used.
+     */
+    private boolean isHealpixMode;
 
     /**
      * Constructor.
@@ -273,19 +393,60 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
         this.ra = Double.valueOf(raInput);
         this.dec = Double.valueOf(decInput);
         this.sr = Double.valueOf(srInput);
+        this.isHealpixMode = false;
+        this.order = NOT_DEFINED;
+        this.healpix = NOT_DEFINED;
+        this.healpixIndex = null;
       } else if (healpixInput != null && orderInput != null) {
-        long healpix = Long.valueOf(healpixInput);
-        int order = Integer.valueOf(orderInput);
+        this.healpix = Long.valueOf(healpixInput);
+        this.order = Integer.valueOf(orderInput);
         int nside = (int) Math.pow(2, order);
         double pixRes = HealpixIndex.getPixRes(nside) * ARCSEC2DEG;
-        HealpixIndex healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
+        this.healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
+        this.isHealpixMode = true;
         Pointing pointing = healpixIndex.pix2ang(healpix);
         this.ra = Math.toDegrees(pointing.phi);
         this.dec = MAX_DEC - Math.toDegrees(pointing.theta);
-        this.sr = pixRes;
+        this.sr = pixRes * MULT_FACT;
       } else {
         throw new Exception("wrong input parameters");
       }
+    }
+
+    /**
+     * Returns the Healpix index.
+     *
+     * @return the Healpix index
+     */
+    public final HealpixIndex getHealpixIndex() {
+      return this.healpixIndex;
+    }
+
+    /**
+     * Returns true when Healpix mode is used otherwise false.
+     *
+     * @return true when Healpix mode is used otherwise false
+     */
+    public final boolean isHealpixMode() {
+      return this.isHealpixMode;
+    }
+
+    /**
+     * Returns the Healpix order.
+     *
+     * @return the Healpix order
+     */
+    public final int getOrder() {
+      return this.order;
+    }
+
+    /**
+     * Returns the Healpix pixel.
+     *
+     * @return the Healpix pixel
+     */
+    public final long getHealpix() {
+      return this.healpix;
     }
 
     /**
@@ -315,14 +476,12 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       return this.sr;
     }
   }
-  
+
   @Override
   public final void sitoolsDescribe() {
     setName("Cone Search service.");
     setDescription("Retrieves and transforms a response from a Cone Search service.");
   }
-  
-  
 
   /**
    * Describes GET method in the WADL.
@@ -330,7 +489,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
    * @param info information
    */
   @Override
-  protected final void describeGet(final MethodInfo info) {  
+  protected final void describeGet(final MethodInfo info) {
     this.addInfo(info);
     info.setIdentifier("ConeSearchProtocolJSON");
     info.setDocumentation("Interoperability service to distribute images through a converted format of the Cone Search Protocol");
@@ -345,9 +504,9 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     parametersInfo.add(json);
 
     info.getRequest().setParameters(parametersInfo);
-    
+
     // represensation when the response is fine
-    ResponseInfo responseOK = new ResponseInfo();    
+    ResponseInfo responseOK = new ResponseInfo();
 
     DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("GeoJSON");
@@ -365,14 +524,14 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
             + "    properties: {\n"
             + "      name: \"EQUATORIAL.ICRS\"\n"
             + "    }\n"
-            + "  },\n"          
+            + "  },\n"
             + "  identifier: \"CDS0\"\n"
             + "}\n"
             + "}]}</pre>");
 
     List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
-    representationInfo.setDocumentation(documentation);    
+    representationInfo.setDocumentation(documentation);
     representationsInfo.add(representationInfo);
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);

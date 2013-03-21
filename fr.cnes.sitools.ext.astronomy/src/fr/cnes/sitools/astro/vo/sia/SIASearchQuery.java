@@ -94,7 +94,7 @@ public class SIASearchQuery {
      */
     private List<Map<Field, String>> process(final double ra, final double dec, final double size) throws JAXBException, IOException {
         String queryService = String.format("%sPOS=%s,%s&SIZE=%s", url, ra, dec, size);
-        Logger.getLogger(SIASearchQuery.class.getName()).log(Level.INFO, queryService);
+        LOG.log(Level.INFO, queryService);
         ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
         ClientResource client = proxy.getClientResource();
         JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
@@ -118,7 +118,7 @@ public class SIASearchQuery {
      * @return records
      */
     private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
-        List<Map<Field, String>> responses = null;
+        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
         for (Object objectIter : objects) {
             if (objectIter instanceof Table) {

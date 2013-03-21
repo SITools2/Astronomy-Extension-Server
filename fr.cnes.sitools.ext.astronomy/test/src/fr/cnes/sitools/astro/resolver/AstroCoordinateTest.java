@@ -18,6 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -31,29 +32,7 @@ import static org.junit.Assert.*;
  */
 public class AstroCoordinateTest {
 
-    /**
-     * Test of getType method, of class AstroCoordinate.
-     */
-    @Test
-    public void testGetType() {
-        System.out.println("getType");
-        AstroCoordinate instance = new AstroCoordinate(20, 30);
-        instance.setType("IMCCE");
-        String expResult = "IMCCE";
-        String result = instance.getType();
-        assertEquals(expResult, result);
-    }
 
-    /**
-     * Test of setType method, of class AstroCoordinate.
-     */
-    @Test
-    public void testSetType() {
-        System.out.println("setType");
-        String type = "IMCCE";
-        AstroCoordinate instance = new AstroCoordinate(20, 30);
-        instance.setType(type);
-    }
 
     /**
      * Test of getRaAsDecimal method, of class AstroCoordinate.

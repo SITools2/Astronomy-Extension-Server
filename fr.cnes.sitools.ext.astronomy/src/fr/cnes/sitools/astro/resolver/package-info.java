@@ -19,7 +19,8 @@ Three name resolvers are currently implemented:
 Here is an example how to use the CDS name resolver:<br/><br/>
 <code>
 AbstractNameResolver nameResolverInterface = new CDSNameResolver("m31", CDSNameResolver.NameResolverService.all);<br/>
-AstroCoordinate astro = nameResolverInterface.getCoordinates(NameResolverInterface.CoordinateSystem.EQUATORIAL);<br/>
+StatusService status = nameResolverInterface.getCoordinates(NameResolverInterface.CoordinateSystem.EQUATORIAL);<br/>
+List<AstroCoordinate> result = status.getAstroCoordinates(); 
 </code><br/>  
  
 <h2>Reverse Name Resolver</h2>
@@ -56,7 +57,7 @@ features=[{<br/>
 }]<br/>
 }<br/>
 </pre>
-@copyright 2011, 2012 CNES
-@author Jean-Christophe Malapert
+@copyright 2011-2013 CNES
+@author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
 */
 package fr.cnes.sitools.astro.resolver;                        

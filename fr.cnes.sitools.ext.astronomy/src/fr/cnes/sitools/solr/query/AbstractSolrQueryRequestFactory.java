@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -35,17 +35,17 @@ import java.util.Set;
  * The choice of the implementation is based on the geometry (BBOX, Cone, ...)
  * </p>
  * 
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class AbstractSolrQueryRequestFactory {
     
     /**
-     * Maximal order of the Healpix index
-     */
-    /**
-     *
+     * Maximal order of the Healpix index.
      */
     protected static final int MAX_ORDER = 13;
+    /**
+     * SOLR query.
+     */
     private String query;
 
     /**
@@ -101,44 +101,44 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Returns the Solr Server URL
+     * Returns the Solr Server URL.
      * @return the URL of the SOLR server
      */
     protected abstract String getSolrServer();
 
     /**
-     * Returns the user parameters to process
+     * Returns the user parameters to process.
      * @return the updated parameters list to process
      */
     protected abstract Map<String, Object> getUserParametersToProcess();
 
     /**
-     * Returns the Shape that has been created based on user query parameters
+     * Returns the Shape that has been created based on user query parameters.
      * @param queryParametersToProcess Query parameters
      * @return a shape representing the geometry at a positional search
      */
     protected abstract Shape createGeometry(Map<String, Object> queryParametersToProcess);
 
     /**
-     * Transforms the shape into a Healpix object
+     * Transforms the shape into a Healpix object.
      * @param shape shape representing the geometry of the positional search
      */
     protected abstract void computeHealpix(Shape shape);
 
     /**
-     * Updates the list of query parameters by removing the geometry parameters
+     * Updates the list of query parameters by removing the geometry parameters.
      * @param queryParameters query parameters
      */
     protected abstract void removeUserGeometryParameters(Map<String, Object> queryParameters);
 
     /**
-     * Returns the SOLR contraint part for the geometry
+     * Returns the SOLR contraint part for the geometry.
      * @return the SOLR constrain for the geometry
      */
     protected abstract String geometryConstraint();
 
     /**
-     * Returns the Solr request String
+     * Returns the Solr request String.
      * @return the Solr request
      */
     public String getSolrQueryRequest() {
@@ -146,7 +146,7 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Returns the Solr request String
+     * Returns the Solr request String.
      * @param queryParametersToProcess User query parameters
      * @return the solr request
      */
@@ -226,7 +226,7 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Returns the first item number of the request
+     * Returns the first item number of the request.
      * @param queryParametersToProcess User query parameters
      * @return the start
      */
@@ -241,7 +241,7 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Parse shape based on comma
+     * Parse shape based on comma.
      * @param shape shape
      * @return an array of parameters
      */
@@ -250,13 +250,13 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Escape a String according to SOLR syntax
+     * Escape a String according to SOLR syntax.
      * @param s String to espace if needed
      * @return  Returns an escaped SOLR query
      * @see http://lucene.apache.org/java/docs/queryparsersyntax.html#Escaping%20Special%20Characters
 
      */
-    public static String escapeQueryChars(String s) {
+    public static String escapeQueryChars(final String s) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);

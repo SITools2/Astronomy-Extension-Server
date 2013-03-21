@@ -31,7 +31,7 @@ import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation
 import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
 import fr.cnes.sitools.astro.graph.ImageBackGroundDecorator;
 import fr.cnes.sitools.astro.graph.Utility;
-import fr.cnes.sitools.astro.resolver.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.astro.resolver.CDSFactory;
 import fr.cnes.sitools.astro.resolver.CDSNameResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverException;
@@ -57,6 +57,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import javax.swing.JFrame;
+import jsky.coords.DMS;
 import jsky.coords.HMS;
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
@@ -72,9 +73,8 @@ public class Invoker {
   public final static String SITOOLS_MAIN_CLASS = "fr.cnes.sitools.server.Starter";
 
   public static void main(String[] args) throws NameResolverException, JSONException, IOException, FitsException, Exception {
-            
+
     //02:57:3.9130
-//    HMS hms = new HMS(2,57,3.9130);
 //    System.out.println(hms.getVal());
  //   System.exit(0);
 //        ClientResource client = new ClientResource("http://localhost:8182/sitools/solr/fuse/select/?q=*:*&rows=0&facet=true&facet.field=order13&facet.limit=-1&facet.mincount=1&wt=json&indent=true");

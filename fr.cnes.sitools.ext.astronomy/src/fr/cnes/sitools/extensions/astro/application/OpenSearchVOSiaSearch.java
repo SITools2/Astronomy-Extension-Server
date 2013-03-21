@@ -1,5 +1,5 @@
-/**
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2
  *
@@ -10,22 +10,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
-import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
 import fr.cnes.sitools.astro.vo.sia.SIASearchQuery;
 import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
+import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +107,12 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * Origin in FITS along Y.
    */
   private static final double ORIGIN_Y = 0.5;
+  
+  /**
+   * Healpix Nside where the processing for the intersection is done.
+   */
+  private static final int HEALPIX_RESOLUTION = 128;
+  
   /**
    * Query.
    */
@@ -242,6 +251,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       return response;
     }
   }
+  
+  /**
+   * VO dictionary.
+   */
+  private Map<String, VoDictionary> dico;  
 
   @Override
   public final void doInit() {
@@ -251,17 +265,16 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       this.query = new SIASearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
         this.userParameters = new OpenSearchVOSiaSearch.UserParameters(getRequest().getResourceRef().getQueryAsForm());
+        this.dico = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getDico();
       }
-    } catch (Exception ex) {
-      if (!getRequest().getMethod().equals(Method.OPTIONS)) {
+    } catch (Exception ex) {      
         LOG.log(Level.WARNING, null, ex);
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
-      }
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());     
     }
   }
 
   /**
-   * Parses a row and adds it in the features.
+   * Parses a row and adds it in the <code>features</code>.
    *
    * @param features data
    * @param row row to be parsed
@@ -279,7 +292,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     double decValue = Double.NaN;
 
     while (fieldIter.hasNext()) {
-      Field field = fieldIter.next();
+      Field field = fieldIter.next();      
       String ucd = field.getUcd();
       net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
       String value = row.get(field);
@@ -289,10 +302,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
         ReservedWords ucdWord = ReservedWords.find(ucd);
         switch (ucdWord) {
           case POS_EQ_RA_MAIN:
-            raValue = Utility.parseRa(row, field);
+            raValue = Utility.parseRaVO(row, field);
             break;
           case POS_EQ_DEC_MAIN:
-            decValue = Utility.parseDec(row, field);
+            decValue = Utility.parseDecVO(row, field);
             break;
           case IMAGE_TITLE:
             response = Utility.getDataType(dataType, value);
@@ -345,12 +358,12 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       LOG.log(Level.FINEST, "Geometry: {0}", output);
       geometry.put("coordinates", output);
       geometry.put("type", "Polygon");
-      geometry.put("crs", AbstractNameResolver.CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+      geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
     } else {
       // No WCS, then we have only the central position of the FOV
       geometry.put("coordinates", String.format("[%s,%s]", raValue, decValue));
       geometry.put("type", "Point");
-      geometry.put("crs", AbstractNameResolver.CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+      geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
     }
     feature.put("geometry", geometry);
     feature.put("properties", properties);
@@ -362,15 +375,123 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       services.put("download", downloadMap);
       feature.put("services", services);
     }
-    if (isValid(feature)) {
+    spatialFilter(feature, geometry);
+    if (!feature.isEmpty()) {
       features.add(feature);
+    }
+  }
+  
+  /**
+   * Filters the response.
+   *
+   * <p>
+   * the <code>feature</code> is cleared :
+   * <ul>
+   * <li>when the query mode is Healpix and the record is not in the queried Healpix pixel</li>
+   * <li>when is not valid</li>
+   * </ul>
+   * </p>
+   *
+   * @param feature record
+   * @param geometry geometry
+   * @see #isValid(java.util.Map) 
+   */
+  private void spatialFilter(final Map feature, final Map geometry) {
+    if (isValid(feature)) {
+      if (this.userParameters.isHealpixMode() && !isGeometryIsInsidePixel(geometry)) {
+        LOG.log(Level.FINE, "This record {0} is ignored.", feature.toString());
+        feature.clear();
+      }
     } else {
-      LOG.log(Level.WARNING, "{0} does not have an identifier. Also, this record is ignored.", feature.toString());
+        LOG.log(Level.WARNING, "The record record {0} is not valid : No identifier found in the response.", feature.toString());
+        feature.clear();      
     }
   }
 
   /**
-   * Returns true when identifier is set.
+   * Returns the list of distinct fields from the response.
+   * <p>
+   * if response is empty, then returns an empty list.
+   * </p>
+   * @param response respone
+   * @return the list of distinct fields from the response
+   */
+  private Set<Field> getFields(final List<Map<Field, String>> response) {
+    Set<Field> fields = new HashSet<Field>();
+    if (!response.isEmpty()) {
+      Map<Field, String> mapResponse = response.get(0);
+      fields = mapResponse.keySet();
+    }
+    return fields;
+  }
+
+  /**
+   * Parses the description TAG of each field and sets it to <code>dico</code>.
+   * @param fields keywords of the response
+   */
+  private void fillDictionary(final Set<Field> fields) {
+    Iterator<Field> fieldIter = fields.iterator();
+    while (fieldIter.hasNext()) {
+      Field field = fieldIter.next();
+      String description = (field.getDESCRIPTION() == null)?null:field.getDESCRIPTION().getContent().get(0).toString();
+      this.dico.put(field.getName(), new VoDictionary(description, field.getUnit()));
+    }
+  }
+
+  /**
+   * Returns true when the geometry intersects with the pixel otherwise false.
+   * @param geometry image geometry (point or polygon)
+   * @return true when the geometry intersects with the pixel otherwise false.
+   */
+  private boolean isGeometryIsInsidePixel(final Map geometry) {
+    boolean result;
+    String type = String.valueOf(geometry.get("type"));
+    if (type.equals("Point")) {
+      String coordinates = String.valueOf(geometry.get("coordinates"));
+      coordinates = coordinates.replace("[", "");
+      coordinates = coordinates.replace("]", "");
+      String[] coordinateArray = coordinates.split(",");
+      double ra = Double.valueOf(coordinateArray[0]);
+      double dec = Double.valueOf(coordinateArray[1]);
+      try {
+        long healpixFromService = this.userParameters.getHealpixIndex().ang2pix_nest(Math.PI / 2 - Math.toRadians(dec),
+                Math.toRadians(ra));
+        if (healpixFromService == this.userParameters.getHealpix()) {
+          result = true;
+        } else {
+          result = false;
+        }
+      } catch (Exception ex) {
+        result = false;
+      }
+
+    } else if (type.equals("Polygon")) {
+      String coordinates = String.valueOf(geometry.get("coordinates"));
+      String[] coordinateArray = coordinates.split("\\],\\[");
+      Pointing[] pointings = new Pointing[coordinateArray.length - 1];
+      for (int i = 0; i < coordinateArray.length - 1; i++) {
+        coordinateArray[i] = coordinateArray[i].replace("]", "");
+        coordinateArray[i] = coordinateArray[i].replace("[", "");
+        String[] skyCoordinate = coordinateArray[i].split(",");
+        double ra = Double.valueOf(skyCoordinate[0]);
+        double dec = Double.valueOf(skyCoordinate[1]);
+        Pointing pointing = new Pointing(Math.PI / 2 - Math.toRadians(dec), Math.toRadians(ra));
+        pointings[i] = pointing;
+      }
+      try {
+        RangeSet range = this.userParameters.getHealpixIndex().queryPolygonInclusive(pointings, HEALPIX_RESOLUTION);
+        result = range.contains(this.userParameters.getHealpix());
+      } catch (Exception ex) {
+        result = false;
+      }
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
+  /**
+   * Returns true when the identifier is set.
    *
    * @param feature data model
    * @return true when identifier os set
@@ -423,16 +544,18 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       double ra = userParameters.getRa();
       double dec = userParameters.getDec();
       double size = userParameters.getSize();
-      List<Map<Field, String>> response = this.query.getResponseAt(ra, dec, size);
       Map dataModel = new HashMap();
       List features = new ArrayList();
-      dataModel.put("totalResults", response.size());
+      List<Map<Field, String>> response = this.query.getResponseAt(ra, dec, size);
+      Set<Field> fields = getFields(response);
+      fillDictionary(fields);
       for (Map<Field, String> iterDoc : response) {
         this.doc = iterDoc;
         parseRow(features, doc);
       }
+      dataModel.put("totalResults", features.size());
       dataModel.put("features", features);
-      return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+      return new GeoJsonRepresentation(dataModel);
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -544,6 +667,26 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
      */
     private double size;
     /**
+     * Healpix is not defined.
+     */
+    public static final int NOT_DEFINED = -1;
+    /**
+     * Healpix order.
+     */
+    private int order;
+    /**
+     * Healpix pixel.
+     */
+    private long healpix;
+    /**
+     * Healpix index.
+     */
+    private HealpixIndex healpixIndex;
+    /**
+     * Healpix is used.
+     */
+    private boolean isHealpixMode;
+    /**
      * One degree.
      */
     private static final double ONE_DEG = 1.0;
@@ -600,12 +743,17 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
         this.ra = Double.valueOf(raInput);
         this.dec = Double.valueOf(decInput);
         this.size = Double.valueOf(sizeInput);
+        this.order = NOT_DEFINED;
+        this.healpix = NOT_DEFINED;
+        this.healpixIndex = null;
+        this.isHealpixMode = false;
       } else if (healpixInput != null && orderInput != null) {
-        long healpix = Long.valueOf(healpixInput);
-        int order = Integer.valueOf(orderInput);
+        this.healpix = Long.valueOf(healpixInput);
+        this.order = Integer.valueOf(orderInput);
         int nside = (int) Math.pow(2, order);
         double pixRes = HealpixIndex.getPixRes(nside) * ARCSEC2DEG;
-        HealpixIndex healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
+        this.healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
+        this.isHealpixMode = true;
         Pointing pointing = healpixIndex.pix2ang(healpix);
         this.ra = Math.toDegrees(pointing.phi);
         this.dec = MAX_DEC - Math.toDegrees(pointing.theta);
@@ -613,6 +761,38 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       } else {
         throw new Exception("wrong input parameters");
       }
+    }
+
+    /**
+     * Returns the Healpix index.
+     * @return the Healpix index
+     */
+    public final HealpixIndex getHealpixIndex() {
+      return this.healpixIndex;
+    }
+
+    /**
+     * Returns true when Healpix mode is used otherwise false.
+     * @return true when Healpix mode is used otherwise false
+     */
+    public final boolean isHealpixMode() {
+      return this.isHealpixMode;
+    }
+
+    /**
+     * Returns the Healpix order.
+     * @return Healpix order
+     */
+    public final int getOrder() {
+      return this.order;
+    }
+
+    /**
+     * Returns the Healpix pixel.
+     * @return the Healpix pixel
+     */
+    public final long getHealpix() {
+      return this.healpix;
     }
 
     /**
@@ -648,8 +828,6 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     setName("Simple Image Access service.");
     setDescription("Retrieves and transforms a response from a Simple Image Access service.");
   }
-  
-  
 
   /**
    * Describes GET method in the WADL.
@@ -657,7 +835,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @param info information
    */
   @Override
-  protected final void describeGet(final MethodInfo info) {  
+  protected final void describeGet(final MethodInfo info) {
     this.addInfo(info);
     info.setIdentifier("SimpleImageAccessProtocolJSON");
     info.setDocumentation("Interoperability service to distribute images through a converted format of the Simple Image Access Protocol");
@@ -672,9 +850,9 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     parametersInfo.add(json);
 
     info.getRequest().setParameters(parametersInfo);
-    
+
     // represensation when the response is fine
-    ResponseInfo responseOK = new ResponseInfo();    
+    ResponseInfo responseOK = new ResponseInfo();
 
     DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("GeoJSON");
@@ -683,7 +861,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             + "type: \"FeatureCollection\",\n"
             + "features: [\n"
             + "  geometry: {\n"
-            + "    coordinates: [[[39.0887493969889,8.624773926387784],[39.072082730322215,8.624773926387784],[39.072082730322215,8.608107259721104],[39.0887493969889,8.608107259721104],[39.0887493969889,8.624773926387784]]],\n"
+            + "    coordinates: [[[39.0887493969889,8.624773926387784],"
+            + "                   [39.072082730322215,8.624773926387784],"
+            + "                   [39.072082730322215,8.608107259721104],"
+            + "                   [39.0887493969889,8.608107259721104],"
+            + "                   [39.0887493969889,8.624773926387784]]],\n"
             + "    type: \"Polygon\"\n"
             + "  },\n"
             + "properties: {\n"
@@ -692,27 +874,26 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             + "    properties: {\n"
             + "      name: \"EQUATORIAL.ICRS\"\n"
             + "    }\n"
-            + "  },\n"           
+            + "  },\n"
             + "  identifier: \"HST0\"\n"
             + "}\n"
-            + "}]}</pre>");   
+            + "}]}</pre>");
     List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
-    representationInfo.setDocumentation(documentation);    
+    representationInfo.setDocumentation(documentation);
     representationsInfo.add(representationInfo);
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);
-    
+
     // represensation when the response is not fine
     ResponseInfo responseNOK = new ResponseInfo();
-    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML); 
+    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
     representationInfoError.setReference("error");
 
     responseNOK.getRepresentations().add(representationInfoError);
     responseNOK.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
     responseNOK.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);
 
-    info.setResponses(Arrays.asList(responseOK, responseNOK));                
-   
+    info.setResponses(Arrays.asList(responseOK, responseNOK));
   }
 }

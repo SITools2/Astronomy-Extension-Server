@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -27,7 +27,7 @@ import javax.swing.JApplet;
 /**
  * Graph component of a decorator pattern.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class Graph extends JApplet {
 

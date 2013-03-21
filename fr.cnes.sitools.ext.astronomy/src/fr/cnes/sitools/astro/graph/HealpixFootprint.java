@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -29,8 +29,7 @@ import java.util.logging.Logger;
 /**
  * This object contains methods to decorate a graph by footprints.
  * 
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
@@ -52,10 +51,9 @@ import java.util.logging.Logger;
  * ((CircleDecorator)graph).setColor(Color.yellow); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
+ * </pre></p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class HealpixFootprint extends HealpixDensityMapDecorator {
 
@@ -71,7 +69,7 @@ public class HealpixFootprint extends HealpixDensityMapDecorator {
    * @param scheme Healpix scheme
    * @param order Healpix order
    * @param alpha transparency
-   * @throws Exception Healpix Exception
+   * @throws Exception if Healpix Exception happens
    */
   public HealpixFootprint(final Graph graph, final Scheme scheme, final int order, final float alpha) throws Exception {
     super(graph, scheme, order, alpha);
@@ -84,7 +82,7 @@ public class HealpixFootprint extends HealpixDensityMapDecorator {
    * @param nside Healpix nside
    * @param scheme Healpix scheme
    * @param alpha transparency
-   * @throws Exception Healpix Exception
+   * @throws Exception if Healpix Exception happens
    */
   public HealpixFootprint(final Graph graph, final int nside, final Scheme scheme, final float alpha) throws Exception {
     super(graph, nside, scheme, alpha);
@@ -119,7 +117,7 @@ public class HealpixFootprint extends HealpixDensityMapDecorator {
   }
 
   /**
-   * Draw pixels having its density=1.0d.
+   * Draws pixels having its density=1.0d.
    *
    * @param g2 graph to decorate
    * @param color color of pixels

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -22,17 +22,23 @@ import fr.cnes.sitools.SearchGeometryEngine.Shape;
 import java.util.Map;
 
 /**
- * Creates a SOLR request based on no geometry parameters
+ * Creates a SOLR request based on no geometry parameters.
  * 
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryNoGeometrySolrRequest extends AbstractSolrQueryRequestFactory {
     
+    /**
+     * Solr base URL.
+     */
     private final String solrBaseUrl;
+    /**
+     * Query parameters to process.
+     */
     private Map<String, Object> queryParametersToProcess;
 
     /**
-     * Constructs a new SOLR string based on no geometry parameters
+     * Constructs a new SOLR string based on no geometry parameters.
      * @param solrBaseUrl URL of the SOLR server
      * @param queryParametersToProcess User query parameters
      */
@@ -42,7 +48,7 @@ public class QueryNoGeometrySolrRequest extends AbstractSolrQueryRequestFactory 
     }    
 
     @Override
-    protected String getSolrServer() {
+    protected final String getSolrServer() {
         return this.solrBaseUrl;
     }
 
@@ -52,12 +58,12 @@ public class QueryNoGeometrySolrRequest extends AbstractSolrQueryRequestFactory 
     }
 
     @Override
-    protected Shape createGeometry(Map<String, Object> queryParametersToProcess) {
+    protected final Shape createGeometry(Map<String, Object> queryParametersToProcess) {
         return null;
     }
 
     @Override
-    protected void computeHealpix(Shape shape) {        
+    protected void computeHealpix(final Shape shape) {        
     }
 
     @Override
@@ -65,8 +71,7 @@ public class QueryNoGeometrySolrRequest extends AbstractSolrQueryRequestFactory 
     }
 
     @Override
-    protected String geometryConstraint() {
+    protected final String geometryConstraint() {
         return null;
     }
-        
 }

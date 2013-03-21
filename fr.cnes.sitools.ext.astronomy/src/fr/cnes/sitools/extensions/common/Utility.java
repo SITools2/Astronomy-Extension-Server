@@ -1,5 +1,5 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ *************************************************************************/
 package fr.cnes.sitools.extensions.common;
 
 import java.text.SimpleDateFormat;
@@ -25,8 +25,6 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jsky.coords.DMS;
-import jsky.coords.HMS;
 import net.ivoa.xml.votable.v1.Field;
 
 /**
@@ -108,13 +106,11 @@ public abstract class Utility {
    * @param field field to retrieve from the iterdoc
    * @return the right ascension in degree.
    */
-  public static double parseRa(final Map<Field, String> iterDoc, final Field field) {
+  public static double parseRaVO(final Map<Field, String> iterDoc, final Field field) {
     String valRa = iterDoc.get(field);
     double raValue;
     if (Utility.isSet(field.getUnit()) && field.getUnit().contains("h:m:s")) {
-      valRa = valRa.replace(" ", ":");
-      HMS hms = new HMS(valRa);
-      raValue = hms.getVal() * HOURSTODEG;
+      raValue = AstroCoordinate.parseRa(valRa);
     } else {
       raValue = Double.valueOf(valRa);
     }
@@ -129,13 +125,11 @@ public abstract class Utility {
    * @param field field to retrieve from the iterdoc
    * @return the right ascension in degree.
    */
-  public static double parseDec(final Map<Field, String> iterDoc, final Field field) {
+  public static double parseDecVO(final Map<Field, String> iterDoc, final Field field) {
     String valDec = iterDoc.get(field);
     double decValue;
     if (Utility.isSet(field.getUnit()) && field.getUnit().contains("d:m:s")) {
-      valDec = valDec.replace(" ", ":");
-      DMS dms = new DMS(valDec);
-      decValue = dms.getVal();
+      decValue = AstroCoordinate.parseDec(valDec);
     } else {
       decValue = Double.valueOf(valDec);
     }

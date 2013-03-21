@@ -1,18 +1,16 @@
-/**
- * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
-* This file is part of SITools2.
+ * This file is part of SITools2.
  * 
-* SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+ * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * 
-* SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
-* You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
-*****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import java.util.Arrays;
@@ -34,9 +32,10 @@ public class Index {
    */
   private static final Logger LOG = Logger.getLogger(Index.class.getName());
   /**
-   * Max TOP terms that is returned in the response.
+   * This constant defines the maximal number of disctinct values in a category.
+   * When a parameter is a category, then distinct values are computed for this parameter.
    */
-  public static final int MAX_TOP_TERMS = 10;
+  public static final int MAX_TOP_TERMS = 30;
   /**
    * Index name.
    */
@@ -50,27 +49,27 @@ public class Index {
    */
   private DataType datatype;
   /**
-   * top terms.
+   * dictinct values for a parameter considered as a parameter.
    */
   private Map<String, Long> topTerms;
   /**
-   * Can be a category.
+   * defines if a parameter is a category. The definition of a category depends on MAX_TOP_TERMS.
    */
   private boolean canBeCategorized;
 
   /**
-   * Returns Solr index name.
+   * Returns the Solr index name.
    *
-   * @return the name
+   * @return the Solr index name
    */
   public final String getName() {
     return name;
   }
 
   /**
-   * Shows if Solr index name is stored.
+   * Returns <code>true</code> if the index name is stored otherwise <code>false</code>.
    *
-   * @return the stored
+   * @return <code>true</code> if the index name is stored otherwise <code>false</code>
    */
   public final boolean isStored() {
     return stored;

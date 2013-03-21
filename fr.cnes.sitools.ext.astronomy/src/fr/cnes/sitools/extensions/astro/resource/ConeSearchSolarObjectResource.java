@@ -108,7 +108,7 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
         throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
       }
     }
-  }
+  }   
 
   /**
    * Returns the SkyBot response in GeoJSON.
@@ -126,7 +126,7 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
       }
       return rep;
     } catch (Exception ex) {
-      Logger.getLogger(ConeSearchSolarObjectResource.class.getName()).log(Level.SEVERE, null, ex);
+      LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
     }
   }

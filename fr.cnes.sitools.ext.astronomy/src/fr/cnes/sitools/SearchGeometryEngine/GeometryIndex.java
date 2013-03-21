@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 *
 * This file is part of SITools2.
 *
@@ -55,15 +55,16 @@ public abstract class GeometryIndex {
 
     /**
      * Creates the index with a shape and a Healpix Scheme.
+     * 
+     * <p>A Runtime Exception is raised when a problem happens</p>
+     * 
      * @param shape shape
      * @param scheme Healpix Scheme
-     * @return the index
-     * @throws Exception Healpix Exception
+     * @return the index    
      */
-    public static Index createIndex(final Shape shape, final Scheme scheme) throws Exception {
+    public static Index createIndex(final Shape shape, final Scheme scheme) {
         Index index = null;
         switch (scheme) {
-
             case NESTED:
                 index = new NestedIndex(shape);
                 break;
@@ -73,8 +74,7 @@ public abstract class GeometryIndex {
                 break;
 
             default:
-                throw new IllegalArgumentException("Cannot manage this index");
-
+                throw new RuntimeException("Cannot manage this scheme");
         }
         return index;
     }

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -11,16 +11,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
+ * ****************************************************************************
  */
 package fr.cnes.sitools.SearchGeometryEngine;
 
 import healpix.core.AngularPosition;
+import healpix.essentials.Vec3;
+import healpix.tools.SpatialVector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This object contains methods to create a point on the sphere in EQUATORIAL or GEOCENTRIC frame.
+ * Contains methods to create a point on the sphere in EQUATORIAL or GEOCENTRIC frame.
  *
  * <p> To create a point in the Geocentric frame:<br/>
  * <pre>
@@ -36,27 +38,19 @@ import java.util.logging.Logger;
  * </code>
  * </pre> </p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @see CoordSystem
  */
 public class Point extends AngularPosition implements Shape {
 
   /**
-   * Geometry type.
-   */
-  private static final String TYPE = "POINT";
-  /**
-   * Default value.
-   */
-  private static final double DEFAULT_VALUE = 500;
-  /**
    * longitude = DEFAULT_VALUE.
    */
-  private double longitude = DEFAULT_VALUE;
+  private double longitude = Double.NaN;
   /**
    * latitude = DEFAULT_VALUE.
    */
-  private double latitude = DEFAULT_VALUE;
+  private double latitude = Double.NaN;
   /**
    * Coord system.
    */
@@ -77,7 +71,7 @@ public class Point extends AngularPosition implements Shape {
    * Minimum value in declination.
    */
   private static final double MIN_LAT = -90.;
-    /**
+  /**
    * Maximum value in right ascension.
    */
   private static final double MAX_RA = 360.;
@@ -120,6 +114,14 @@ public class Point extends AngularPosition implements Shape {
   protected Point() {
     super();
   }
+  
+  /**
+   * Constructor with point.
+   * @param p point
+   */
+  public Point(final Point p) {
+    this(p.getLongitude(), p.getLatitude(), p.getCoordSystem());
+  }
 
   /**
    * Get the latitude or the declination.
@@ -161,6 +163,8 @@ public class Point extends AngularPosition implements Shape {
   /**
    * Inputs validation.
    *
+   * <p>IllegalArgumentException if longitude and latitude are not in a valid range.</p>
+   *
    * @param longitudeVal longitude
    * @param latitudeVal latitude
    */
@@ -171,7 +175,7 @@ public class Point extends AngularPosition implements Shape {
       errorMessage = errorMessage.append(message);
     }
     if (latitudeVal > MAX_LAT || latitudeVal < MIN_LAT) {
-      String message = String.format("lat=%s - latitude must be included in the following range [-90 90]\n", latitudeVal);      
+      String message = String.format("lat=%s - latitude must be included in the following range [-90 90]\n", latitudeVal);
       errorMessage = errorMessage.append(message);
     }
     if (!errorMessage.toString().isEmpty()) {
@@ -181,6 +185,8 @@ public class Point extends AngularPosition implements Shape {
 
   /**
    * Inputs validation.
+   *
+   * <p>IllegalArgumentException if longitude and latitude are not in a valide range.</p>
    *
    * @param longitudeVal right ascension in decimal degrees
    * @param latitudeVal declination in decimal degrees
@@ -203,25 +209,37 @@ public class Point extends AngularPosition implements Shape {
   /**
    * Sets the point in a specific reference frame.
    *
+   * <p>IllegalArgumentException if
+   * <code>coordSystemVal</code> is
+   * <code>null</code></p> <p>RuntimeException if the reference system is not supported</p>
+   *
    * @param longitudeVal longitude or right ascension in decimal degrees
    * @param latitudeVal latitude or declination in decimal degrees
    * @param coordSystemVal the reference frame
    */
-  protected final void setPoint(final double longitudeVal, final double latitudeVal, final CoordSystem coordSystemVal) {
+  protected final void setPoint(double longitudeVal, double latitudeVal, final CoordSystem coordSystemVal) {
     if (coordSystemVal == null) {
       throw new IllegalArgumentException("Reference frame cannot be null");
     }
 
-    if (coordSystemVal.equals(CoordSystem.EQUATORIAL)) {
-      checkCoordinatesInEquatorial(longitudeVal, latitudeVal);
-      setTheta(Math.toRadians(CoordSystem.convertDecToTheta(latitudeVal)));
-      setPhi(Math.toRadians(CoordSystem.convertRaToPhi(longitudeVal)));
-    } else if (coordSystemVal.equals(CoordSystem.GEOCENTRIC)) {
-      checkCoordinatesInGeocentric(longitudeVal, latitudeVal);
-      setTheta(Math.toRadians(CoordSystem.convertLatitudeGeoToTheta(latitudeVal)));
-      setPhi(Math.toRadians(CoordSystem.convertLongitudeGeoToPhi(longitudeVal)));
-    } else {
-      throw new IllegalArgumentException("Referential is unknown");
+    switch (coordSystemVal) {
+      case EQUATORIAL:
+        checkCoordinatesInEquatorial(longitudeVal, latitudeVal);
+        setTheta(Math.toRadians(CoordSystem.convertDecToTheta(latitudeVal)));
+        setPhi(Math.toRadians(CoordSystem.convertRaToPhi(longitudeVal)));
+        break;
+      case GEOCENTRIC:
+        if (longitudeVal == MAX_LONG) {
+          longitudeVal = MAX_LONG - 1e-5;
+        } else if (longitudeVal == MAX_LONG * -1) {
+          longitudeVal = MAX_LONG * -1 + 1e-5;
+        }
+        checkCoordinatesInGeocentric(longitudeVal, latitudeVal);
+        setTheta(Math.toRadians(CoordSystem.convertLatitudeGeoToTheta(latitudeVal)));
+        setPhi(Math.toRadians(CoordSystem.convertLongitudeGeoToPhi(longitudeVal)));
+        break;
+      default:
+        throw new RuntimeException("Reference frame is not supported.");
     }
     setLongitude(longitudeVal);
     setLatitude(latitudeVal);
@@ -261,8 +279,8 @@ public class Point extends AngularPosition implements Shape {
    * @return the type
    */
   @Override
-  public final String getType() {
-    return TYPE;
+  public final Type getType() {
+    return Shape.Type.POINT;
   }
 
   @Override
@@ -292,5 +310,22 @@ public class Point extends AngularPosition implements Shape {
     hash = 73 * hash + (int) (Double.doubleToLongBits(this.latitude) ^ (Double.doubleToLongBits(this.latitude) >>> 32));
     hash = 73 * hash + (this.coordSystem != null ? this.coordSystem.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public final String toString() {
+    String output;
+    switch (this.coordSystem) {
+      case EQUATORIAL:
+        output = String.format("EQUATORIAL(%s,%s)", this.longitude, this.latitude);
+        break;
+      case GEOCENTRIC:
+        output = String.format("GEO(%s,%s)", this.longitude, this.latitude);
+        break;
+      default:
+        throw new RuntimeException("coord system cannot be null");
+
+    }
+    return output;
   }
 }

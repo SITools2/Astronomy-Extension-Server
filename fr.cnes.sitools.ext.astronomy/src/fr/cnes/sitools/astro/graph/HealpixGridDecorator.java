@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -35,8 +35,7 @@ import java.util.logging.Logger;
 /**
  * This object provides methods for decorate a graph by a grid.
  *
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
@@ -47,24 +46,40 @@ import java.util.logging.Logger;
  * ((CircleDecorator)graph).setColor(Color.yellow); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
- * @author Jean-Christophe Malapert
+ * </pre></p>
+ * 
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class HealpixGridDecorator extends AbstractGraphDecorator {
 
   /**
+   * Logger.
+   */
+  private static final Logger LOG = Logger.getLogger(HealpixGridDecorator.class.getName());
+  /**
+   * Angle = 180.
+   */
+  private static final double ANGLE_HALF_CIRCLE = 180.;
+  /**
+   * Angle = 360.
+   */
+  private static final double ANGLE_CIRCLE = 360.;  
+  /**
+   * Max latitude in decimal degree.
+   */
+  private static final double MAX_LAT = 90.;
+  /**
    * Initialize a half space.
    */
-  private static final Vec3 HALF_SPACE = new Vec3(Math.cos(Graph.LONG_MAX * Math.PI / 180),
-          Math.sin(Graph.LONG_MAX * Math.PI / 180),
-          0);
+  private static final Vec3 HALF_SPACE = new Vec3(Math.cos(Graph.LONG_MAX * Math.PI / ANGLE_HALF_CIRCLE),
+                                                  Math.sin(Graph.LONG_MAX * Math.PI / ANGLE_HALF_CIRCLE),
+                                                  0);
   /**
    * Initialize a normal to the previous half space.
    */
-  private static final Vec3 NORMAL_HALF_SPACE = new Vec3(Math.cos(Graph.LONG_MAX / 2 * Math.PI / 180),
-          Math.sin(Graph.LONG_MAX / 2 * Math.PI / 180),
-          0);
+  private static final Vec3 NORMAL_HALF_SPACE = new Vec3(Math.cos(Graph.LONG_MAX / 2 * Math.PI / ANGLE_HALF_CIRCLE),
+                                                         Math.sin(Graph.LONG_MAX / 2 * Math.PI / ANGLE_HALF_CIRCLE),
+                                                         0);
   /**
    * Define an error on the equality of a double.
    */
@@ -100,7 +115,7 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
   /**
    * Debug mode.
    */
-  protected boolean isDebug = false;
+  private boolean isDebug = false;
 
   /**
    * PixelSide.
@@ -262,8 +277,6 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
         } else if (val > 0) {
           this.pixelSide = PixelSide.LEFT;
           break;
-        } else {
-          // need other vectors
         }
       }
     } else {
@@ -281,8 +294,6 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
           } else if (val > 0) {
             this.pixelSide = PixelSide.LEFT;
             break;
-          } else {
-            // Do not know, need the following vector
           }
         }
       } else if (val < 0) {
@@ -294,38 +305,38 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
   }
 
   /**
-   * Split Healpix pixel in two parts
+   * Split Healpix pixel in two parts and return them.
    *
    * @param vectors List of vectors from a pixel
    * @return the two new shapes
    */
-  protected Coordinates[] splitHealpixPixelForDetectedBorder(final Vec3[] vectors) {
+  protected final Coordinates[] splitHealpixPixelForDetectedBorder(final Vec3[] vectors) {
     Coordinates[] healpixShape = new Coordinates[2];
     healpixShape[0] = new Coordinates();
     healpixShape[1] = new Coordinates();
    
     this.pixelSide = PixelSide.LEFT;
     boolean collision = false;
-    int[] vectorIndexCollision = new int[2];
+    //int[] vectorIndexCollision = new int[2];
 
     int frontLeft = 0;
     int frontRight = 0;
     for (int i = 0; i < vectors.length; i++) {
       Vec3 secondPoint = vectors[i];
       Pointing ptg = new Pointing(secondPoint);
-      double spra = ptg.phi * 180. / Math.PI,
-              spdec = 90. - (ptg.theta * 180. / Math.PI);
+      double spra = ptg.phi * ANGLE_HALF_CIRCLE / Math.PI,
+             spdec = MAX_LAT - (ptg.theta * ANGLE_HALF_CIRCLE / Math.PI);
       if (spra < 0) {
-        spra += 360.;
+        spra += ANGLE_CIRCLE;
       }
       PixelSide originalPixelSide = this.pixelSide;
       setPixelSide(vectors, i);
       if (!originalPixelSide.equals(pixelSide) && i != 0) {
         // we change the pixel Side
-        vectorIndexCollision[originalPixelSide.getCode()] = i;
+        //vectorIndexCollision[originalPixelSide.getCode()] = i;
         collision = true;
       }
-      if (Math.abs(spra - 180.0) < EPSILON_GRAPH) {
+      if (Math.abs(spra - ANGLE_HALF_CIRCLE) < EPSILON_GRAPH) {
         // border, we add an entry at each shape
         frontLeft++;
         frontRight++;
@@ -335,10 +346,10 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
       } else {
         healpixShape[pixelSide.getCode()].addCoordinate(spra, spdec);
         if (collision && pixelSide.equals(PixelSide.RIGHT)) {
-          healpixShape[PixelSide.LEFT.getCode()].addCoordinate(180.0 - EPSILON_GRAPH, spdec);
+          healpixShape[PixelSide.LEFT.getCode()].addCoordinate(ANGLE_HALF_CIRCLE - EPSILON_GRAPH, spdec);
           frontLeft++;
         } else if (collision && pixelSide.equals(PixelSide.LEFT)) {
-          healpixShape[PixelSide.RIGHT.getCode()].addCoordinate(180.0 + EPSILON_GRAPH, spdec);
+          healpixShape[PixelSide.RIGHT.getCode()].addCoordinate(ANGLE_HALF_CIRCLE + EPSILON_GRAPH, spdec);
           frontRight++;
         }
       }
@@ -356,24 +367,24 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
   }
 
   /**
-   *
-   * @param isDebug
+   * Sets the debug.
+   * @param isDebugVal debug
    */
-  public void setDebug(boolean isDebug) {
-    this.isDebug = isDebug;
+  public final void setDebug(final boolean isDebugVal) {
+    this.isDebug = isDebugVal;
   }
 
   /**
-   * Draw pixels
+   * Draws pixels.
    *
-   * @param g2 graph
+   * @param g2 graph to decorate
    * @param color color of pixels
    */
   protected void drawPixels(Graphics2D g2, final Color color) {
     g2.setPaint(color);
     try {
       HealpixIndex healpixRing = new HealpixIndex(getHealpixBase().getNside(), Scheme.RING);
-      RangeSet rangePixelsRing = healpixRing.queryStrip(Math.toRadians(90 - Graph.LAT_MAX), Math.toRadians(90 - Graph.LAT_MIN), true);
+      RangeSet rangePixelsRing = healpixRing.queryStrip(Math.toRadians(MAX_LAT - Graph.LAT_MAX), Math.toRadians(MAX_LAT - Graph.LAT_MIN), true);
       RangeSet.ValueIterator iter = rangePixelsRing.valueIterator();
       while (iter.hasNext()) {
         long pixelRing = iter.next();
@@ -386,14 +397,14 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
   }
 
   /**
-   * Compute reference frame transformation
+   * Computes reference frame transformation.
    *
    * @param vectors vectors to transform
    * @param coordTransformation Type of transformation
    * @return Returns the vectors that have been converted
    * @throws Exception
    */
-  protected Vec3[] computeReferenceFrameTransformation(Vec3[] vectors, final CoordinateTransformation coordTransformation) throws Exception {
+  protected final Vec3[] computeReferenceFrameTransformation(final Vec3[] vectors, final CoordinateTransformation coordTransformation) throws Exception {
     if (coordTransformation.equals(CoordinateTransformation.NATIVE)) {
       return vectors;
     }
@@ -409,33 +420,34 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
       angularPosition = CoordTransform.transformInDeg(angularPosition, coordTransformation.getTransformationCode());
       ra = angularPosition.phi;
       dec = angularPosition.theta;
-      Pointing point = new Pointing((90.0 - dec) * Math.PI / 180.0, ra * Math.PI / 180.0);
+      Pointing point = new Pointing((MAX_LAT - dec) * Math.PI / ANGLE_HALF_CIRCLE, ra * Math.PI / ANGLE_HALF_CIRCLE);
       vectors[i] = new Vec3(point);
     }
     return vectors;
   }
 
   /**
-   * Compute number of vectors are needed to have the better approximation of the shape.
+   * Computes number of vectors are needed to have the better approximation of the shape.
    *
    * @param nside nside
    * @param pix pixel number
    * @return Return the number of vectors needed between two corners from HEALPIX pixel
    */
-  protected int computeNumberPointsForPixel(int nside, long pix) {
+  protected final int computeNumberPointsForPixel(final int nside, final long pix) {
     //TO DO : modifier getPixRes();
     double angularResolution = HealpixIndex.getPixRes(nside);
-    double angularResolutionImage = 360 * DEG2ARCSEC / getPixelWidth();
+    double angularResolutionImage = ANGLE_CIRCLE * DEG2ARCSEC / getPixelWidth();
     int numberOfStep = (int) (angularResolution / angularResolutionImage);
     return (numberOfStep == 0) ? 1 : numberOfStep;
   }
 
   /**
-   *
-   * @param g2
-   * @param healpix
-   * @param pix
-   * @param coordinateTransformation
+   * Draws Healpix.
+   * 
+   * @param g2 graph to decorate
+   * @param healpix healpix
+   * @param pix pixel to draw
+   * @param coordinateTransformation coordinate transformation
    */
   protected void drawHealpixPolygon(Graphics2D g2, final HealpixIndex healpix, long pix, final CoordinateTransformation coordinateTransformation) {
     try {
@@ -452,87 +464,83 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
         // draw text
         if (!pixels.isEmpty() && isDebug) {
           Point2D.Double center = shape.getPixelCenterFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
-          g2.drawString(String.valueOf(pix), (float) center.x, (float) center.y);//
+          g2.drawString(String.valueOf(pix), (float) center.x, (float) center.y);
         }
       }
-
-
-
     } catch (Exception ex) {
-      Logger.getLogger(HealpixGridDecorator.class.getName()).log(Level.SEVERE, null, ex);
+      LOG.log(Level.SEVERE, null, ex);
     }
   }
 
   /**
-   * Get healpix index
+   * Returns the healpix index.
    *
    * @return the healpixIndex
    */
-  protected HealpixIndex getHealpixBase() {
+  protected final HealpixIndex getHealpixBase() {
     return healpixBase;
   }
 
   /**
-   * Set healpix index
+   * Sets the healpix index.
    *
-   * @param healpixBase
+   * @param healpixBaseVal Healpix index
    */
-  protected final void setHealpixBase(HealpixIndex healpixBase) {
-    this.healpixBase = healpixBase;
+  protected final void setHealpixBase(final HealpixIndex healpixBaseVal) {
+    this.healpixBase = healpixBaseVal;
   }
 
   /**
-   * Get transparency value
+   * Returns the transparency value.
    *
    * @return the alpha
    */
-  public float getAlpha() {
+  public final float getAlpha() {
     return alpha;
   }
 
   /**
-   * Set the Opacity value
+   * Sets the Opacity value.
    *
-   * @param alpha the alpha to set
+   * @param alphaVal the alpha to set
    */
-  public final void setAlpha(float alpha) {
-    this.alpha = alpha;
+  public final void setAlpha(final float alphaVal) {
+    this.alpha = alphaVal;
   }
 
   /**
-   * Get the color
+   * Returns the color.
    *
    * @return the color
    */
-  public Color getColor() {
+  public final Color getColor() {
     return color;
   }
 
   /**
-   * Set the color
+   * Sets the color.
    *
-   * @param color the color to set
+   * @param colorVal the color to set
    */
-  public final void setColor(final Color color) {
-    this.color = color;
+  public final void setColor(final Color colorVal) {
+    this.color = colorVal;
   }
 
   /**
-   * Get the coordinate transformation
+   * Returns the coordinate transformation.
    *
    * @return the coordinateTransformation
    */
-  public CoordinateTransformation getCoordinateTransformation() {
+  public final CoordinateTransformation getCoordinateTransformation() {
     return coordinateTransformation;
   }
 
   /**
-   * Set the coordinate transformation
+   * Sets the coordinate transformation.
    *
-   * @param coordinateTransformation the coordinateTransformation to set
+   * @param coordinateTransformationVal the coordinateTransformation to set
    */
-  public void setCoordinateTransformation(final CoordinateTransformation coordinateTransformation) {
-    this.coordinateTransformation = coordinateTransformation;
+  public final void setCoordinateTransformation(final CoordinateTransformation coordinateTransformationVal) {
+    this.coordinateTransformation = coordinateTransformationVal;
   }
-  private static final Logger LOG = Logger.getLogger(HealpixGridDecorator.class.getName());
 }

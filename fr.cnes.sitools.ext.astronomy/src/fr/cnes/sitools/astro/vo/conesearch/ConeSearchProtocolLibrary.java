@@ -120,7 +120,7 @@ public class ConeSearchProtocolLibrary {
    */
   public VOTableRepresentation getResponse() {
     Map dataModel = fillDataModel();
-    return new VOTableRepresentation(dataModel, "votable.ftl");
+    return new VOTableRepresentation(dataModel);
   }
     private static final Logger LOG = Logger.getLogger(ConeSearchProtocolLibrary.class.getName());
 }

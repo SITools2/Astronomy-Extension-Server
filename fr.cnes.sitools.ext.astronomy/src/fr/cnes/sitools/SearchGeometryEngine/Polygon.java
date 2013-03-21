@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -16,19 +16,19 @@
 package fr.cnes.sitools.SearchGeometryEngine;
 
 import healpix.essentials.Vec3;
-import healpix.tools.SpatialVector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * This object contains methods to create a polygon
+ * Contains methods to create a polygon
  *
  * <p> A polygon is described by at a set points (>3).<br/> The last point of the polygon IS NOT the first one. </p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class Polygon implements Shape {
 
@@ -36,10 +36,7 @@ public class Polygon implements Shape {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(Polygon.class.getName());
-  /**
-   * Type of shape.
-   */
-  private static final String TYPE = "POLYGON";
+  private static final double NUMERICAL_PRECISION = 1e-15;
   /**
    * Minimum number of points to define a quadrilatere.
    */
@@ -67,7 +64,9 @@ public class Polygon implements Shape {
   }
 
   /**
-   * Create a polygon from a list of points.
+   * Creates a polygon from a list of points.
+   *
+   * <p>IllegalArgumentException if the number of points in the shape < 3</p>  
    *
    * @param pointsShape list of points
    */
@@ -79,12 +78,19 @@ public class Polygon implements Shape {
   }
 
   /**
-   * Create a polygon from two points from a rectangle.
+   * Creates a polygon from two points from a rectangle.
+   *
+   * <p>IllegalArgumentException if it is not a polygon.</p>
    *
    * @param lowerLeft upper right corner
    * @param upperRight lower left corner
    */
   public Polygon(final Point lowerLeft, final Point upperRight) {
+    if (lowerLeft == null || upperRight == null
+            || lowerLeft.getLongitude() == upperRight.getLongitude()
+            || lowerLeft.getLatitude() == upperRight.getLatitude()) {
+      throw new IllegalArgumentException("This is not a polygon.");
+    }
     Point p1 = lowerLeft;
     Point p2 = new Point(lowerLeft.getLongitude(), upperRight.getLatitude(),
             upperRight.getCoordSystem());
@@ -95,72 +101,53 @@ public class Polygon implements Shape {
     checkCoordSystem(getPoints());
   }
 
-  public final List<Polygon> splitEquatorialPolygon() {
-    Polygon polygon = new Polygon(getPoints());
-    return polygon.splitInTriangles();
-  }
-
-  public final List<Polygon> splitGeocentricPolygon() {
-    List<Polygon> polygons = new ArrayList<Polygon>();
-    double maxLatitude = getPoints().get(0).getLatitude();
-    double minLatitude = getPoints().get(0).getLatitude();
-    double maxLongitude = getPoints().get(0).getLongitude();
-    double minLongitude = getPoints().get(0).getLongitude();
-    for (int i = 1; i < getPoints().size(); i++) {
-      if (getPoints().get(i).getLongitude() > maxLongitude) {
-        maxLongitude = getPoints().get(i).getLongitude();
-      } else if (getPoints().get(i).getLongitude() < minLongitude) {
-        minLongitude = getPoints().get(i).getLongitude();
-      }
-      if (getPoints().get(i).getLatitude() > maxLatitude) {
-        maxLatitude = getPoints().get(i).getLatitude();
-      } else if (getPoints().get(i).getLatitude() < minLatitude) {
-        minLatitude = getPoints().get(i).getLatitude();
-      }
-    }
-    Point p1 = getPoints().get(0);
-    Point p4 = getPoints().get(1);
-    Point p3 = getPoints().get(2);
-    Point p2 = getPoints().get(3);
-    
-    for (double longitude = minLongitude + 5; longitude < maxLongitude; longitude += 5) {
-      Point pHight = new Point(longitude, maxLatitude, CoordSystem.GEOCENTRIC);
-      Point pLow = new Point(longitude, minLatitude, CoordSystem.GEOCENTRIC);
-      Polygon poly = new Polygon(Arrays.asList(p1, p2, pHight, pLow));
-      polygons.add(poly);
-      p1 = new Point(pLow.getLongitude(), pLow.getLatitude(), pLow.getCoordSystem());
-      p2 = new Point(pHight.getLongitude(), pHight.getLatitude(), pHight.getCoordSystem());
-    }
-    Polygon poly = new Polygon(Arrays.asList(p1, p2, p3, p4));
-    polygons.add(poly);
-    return polygons;
-  }
-
-  /**
-   * Split a no clockwised polygon in two polygons.
-   *
-   * @return a list of polygons
-   */
-  public final List<Polygon> splitPolygon() {
-    CoordSystem coord = getPoints().get(0).getCoordSystem();
-    List<Polygon> polygons;
-    switch (coord) {
-      case EQUATORIAL:
-        polygons = splitEquatorialPolygon();
-        break;
-      case GEOCENTRIC:
-        polygons = splitGeocentricPolygon();
-        break;
-      default:
-        throw new IllegalArgumentException("Reference system is not recognized.");
-    }
-    return polygons;
-  }
-
   /**
    * Empty constructor.
    */
   protected Polygon() {
+  }
+  
+    /**
+     * Test if shape is clockwised
+     * @return true if clockwise
+     */
+    public boolean isClockwise() {
+        Vec3 a = new Vec3(points.get(0).getAsVector().x(), points.get(0).getAsVector().y(), points.get(0).getAsVector().z());
+        Vec3 b = new Vec3(points.get(1).getAsVector().x(), points.get(1).getAsVector().y(), points.get(1).getAsVector().z());
+        Vec3 c = new Vec3(points.get(2).getAsVector().x(), points.get(2).getAsVector().y(), points.get(2).getAsVector().z());
+        Vec3 ba = new Vec3(a);
+        ba = ba.sub(b);
+        Vec3 bc = new Vec3(c);
+        bc = bc.sub(b);
+        ba = ba.cross(bc);
+        if(ba.dot(a)>=0)
+            return true;
+        else
+            return false;
+    }  
+
+  /**
+   * Returns
+   * <code>true</code> when the polygon is convex otherwise
+   * <code>false</code>.
+   *
+   * @return <code>true</code> when the polygon is convex otherwise <code>false</code>
+   */
+  public final boolean isConvex() {
+    Vec3 p0 = new Vec3(getPoints().get(getPoints().size() - 1));
+    Vec3 firstNormal = p0.cross(new Vec3(getPoints().get(0)));
+    for (int i = 0; i < getPoints().size() - 1; i++) {
+      Vec3 p1 = new Vec3(getPoints().get(i));
+      Vec3 p2 = new Vec3(getPoints().get(i + 1));
+      Vec3 normal = p1.cross(p2);
+      if (normal.dot(firstNormal) < 0) {
+        return false;
+      } else {
+        p0 = new Vec3(getPoints().get(i));
+        firstNormal = p0.cross(new Vec3(getPoints().get(i+1)));
+      }
+    }
+    return true;
   }
 
   /**
@@ -173,54 +160,177 @@ public class Polygon implements Shape {
   }
 
   /**
-   * Test if the shape is clockwised.
+   * Tests if the shape is clockwised.
    *
    * @return true if clockwise
    */
-  public final boolean isClockwise() {
-    Vec3 a = new Vec3(getPoints().get(0));
-    Vec3 b = new Vec3(getPoints().get(1));
-    Vec3 c = new Vec3(getPoints().get(2));
+  public final boolean isClockwised() {
+    boolean isClockwise = true;
+    int nbPoints = getPoints().size();
+    for (int i = 0; i < nbPoints - 2; i++) {
+      if (!isClockWised(getPoints().get(i), getPoints().get(i + 1), getPoints().get(i + 2))) {
+        isClockwise = false;
+        break;
+      }
+    }
+    if (isClockwise == true && !isClockWised(getPoints().get(nbPoints-2), getPoints().get(nbPoints-1), getPoints().get(0))) {
+      isClockwise = false;
+    }
+    return isClockwise;
+  }
+
+  /**
+   * Tests if the shape is counter clockwised.
+   *
+   * @return true if clockwise
+   */
+  public final boolean isCounterClockwised() {
+    return !isClockwised();
+  }
+
+  private static double numericPrecision(final double a) {
+    double res;
+    if (a < NUMERICAL_PRECISION && a > -1 * NUMERICAL_PRECISION) {
+      res = 0;
+    } else {
+      res = a;
+    }
+    return res;
+  }
+
+  /**
+   * Tests if the shape is clockwised.
+   *
+   * @param p0 1st point of the shape
+   * @param p1 2nd point of the shape
+   * @param p2 3rd point of the shape
+   * @return true if clockwise
+   */
+  public static boolean isClockWised(final Point p0, final Point p1, final Point p2) {
+    if(p0.getLatitude() == p1.getLatitude() &&  p1.getLatitude() == p2.getLatitude()) {
+      return true;
+    }
+    if(p0.getLongitude() == p1.getLongitude() &&  p1.getLongitude() == p2.getLongitude()) {
+      return true;
+    }    
+    Vec3 a = new Vec3(p0);
+    Vec3 b = new Vec3(p1);
+    Vec3 c = new Vec3(p2);
     Vec3 ba = new Vec3(a);
     ba.sub(b);
     Vec3 bc = new Vec3(c);
     bc.sub(b);
     Vec3 abc = ba.cross(bc);
-    return (abc.dot(b) >= 0);
+    return numericPrecision(abc.dot(b)) >= 0;
   }
 
   /**
-   * Clockwise a shape.
-   */
-  public final void fixClockwise() {
-    if (!this.isClockwise()) {
-      List<Point> tmp = new ArrayList<Point>(getPoints());
-      for (int i = 0; i < tmp.size(); i++) {
-        getPoints().set(i, tmp.get(tmp.size() - 1 - i));
-      }
-    }
-  }
-
-  /**
-   * Clockwise a shape.
+   * CounterClockwises a shape.
    *
-   * @param polygon polygon
-   * @return a clockwised polygon
+   * @return the list of points in a counterclockwise way
    */
-  public final Polygon fixClockwise(final Polygon polygon) {
-    Polygon polygonClockWised;
-    if (!polygon.isClockwise()) {
-      List<Point> pointsClockWised = new ArrayList<Point>(polygon.getPoints());
-      int i = polygon.getPoints().size() - 1;
-      for (Point p : polygon.getPoints()) {
-        pointsClockWised.set(i, p);
-        i--;
-      }
-      polygonClockWised = new Polygon(pointsClockWised);
-    } else {
-      polygonClockWised = polygon;
+  private List<Point> fixCounterClockwise() {
+    List<Point> counterClockwisePoints = new ArrayList<Point>(this.points);
+    if (this.isClockwised()) {
+      Collections.reverse(counterClockwisePoints);
     }
-    return polygonClockWised;
+    return counterClockwisePoints;
+  }
+
+  /**
+   * Returns
+   * <code>true</code> when
+   * <code>p</code> is included in the triangle otherwise
+   * <code>false</code>.
+   *
+   * @param p point to test
+   * @param p0 First point of the triangle
+   * @param p1 Second point of the triangle
+   * @param p2 Third point of the triangle
+   * @return <code>true</code> when p is included in the triangle otherwise <code>false</code>
+   */
+  private boolean testPointInTriangle(final Point p, final Point p0, final Point p1, final Point p2) {
+    Vec3 p0n = new Vec3(p0);
+    Vec3 p0p1n = p0n.cross(new Vec3(p1));
+    Vec3 p1n = new Vec3(p1);
+    Vec3 p1p2n = p1n.cross(new Vec3(p2));
+    Vec3 p2n = new Vec3(p2);
+    Vec3 p2p0n = p2n.cross(new Vec3(p0));
+    return ((p0p1n.dot(new Vec3(p)) >= 0) && (p1p2n.dot(new Vec3(p)) >= 0) && (p2p0n.dot(new Vec3(p)) >= 0)) ? true : false;
+  }
+
+  protected List<Point> detectPole(List<Point> points) {
+    final double latNorthPole = 90.;
+    final double latSouthPole = -90.;
+    List<Point> cleanedPoints = new ArrayList<Point>();
+    boolean isDetectedNorthPole = false;
+    boolean isDetectedSouthPole = false;
+    for (Point iter : points) {      
+      double lat = iter.getLatitude();
+      if (lat == latNorthPole && isDetectedNorthPole == false) {
+        isDetectedNorthPole = true;
+        cleanedPoints.add(iter);
+      } else if (lat == latNorthPole && isDetectedNorthPole == true) {
+      } else if (lat == latSouthPole && isDetectedSouthPole == false) {
+        isDetectedSouthPole = true;
+        cleanedPoints.add(iter);
+      } else if (lat == latSouthPole && isDetectedSouthPole == true) {
+      } else {
+        cleanedPoints.add(iter);
+      }
+    }
+    return cleanedPoints;
+  }
+
+  /**
+   * Triangulates a whathever polygon by the use of EarCutting algorithm.
+   *
+   * @return Returns the list of triangles from the polygon
+   */
+  public final List<Polygon> triangulate() {
+    List<Point> ccPoints = fixCounterClockwise();
+    ccPoints = detectPole(ccPoints);
+    List<Polygon> polygons = new ArrayList<Polygon>();
+    List<Point> v = ccPoints;
+    int n = v.size();
+
+    int[] prev = new int[n];
+    int[] next = new int[n];
+    for (int i = 0; i < n; i++) {
+      prev[i] = i - 1;
+      next[i] = i + 1;
+    }
+    prev[0] = n - 1;
+    next[n - 1] = 0;
+
+    int i = 0;
+    while (n > POINTS_TRIANGLE) {
+      boolean isEar = true;
+      if (!isClockWised(v.get(prev[i]), v.get(i), v.get(next[i]))) {
+        int k = next[next[i]];
+        do {
+          if (testPointInTriangle(v.get(k), v.get(prev[i]), v.get(i), v.get(next[i]))) {
+            isEar = false;
+            break;
+          }
+          k = next[k];
+        } while (k != prev[i]);
+      } else {
+        isEar = false;
+      }
+
+      if (isEar) {
+        polygons.add(new Polygon(Arrays.asList(v.get(i), v.get(prev[i]), v.get(next[i]))));
+        next[prev[i]] = next[i];
+        prev[next[i]] = prev[i];
+        n--;
+        i = prev[i];
+      } else {
+        i = next[i];
+      }
+    }
+    polygons.add(new Polygon(Arrays.asList(v.get(i), v.get(prev[i]), v.get(next[i]))));
+    return polygons;
   }
 
   /**
@@ -257,41 +367,6 @@ public class Polygon implements Shape {
   }
 
   /**
-   * Splitting whatever large polygon into triangles.
-   *
-   * @return Returns a list of triangles
-   */
-  public final List<Polygon> splitInTriangles() {
-    Vec3 barycenter = getBarycenter(getPoints());
-    barycenter.normalize();
-    barycenter.scale(-1);
-    double theta = Math.atan2(Math.sqrt(barycenter.x * barycenter.x + barycenter.y * barycenter.y), barycenter.z);
-    double phi = Math.atan2(barycenter.y, barycenter.x);
-    if (phi < 0.) {
-      phi += 2 * Math.PI;
-    }
-    if (phi >= 2 * Math.PI) {
-      phi -= 2 * Math.PI;
-
-    }
-    Point pTriangle = null;
-    if (getPoints().get(0).getCoordSystem().equals(CoordSystem.GEOCENTRIC)) {
-      pTriangle = new Point(CoordSystem.convertPhiToLongitudeGeo(Math.toDegrees(phi)), CoordSystem.convertThetaToLatitudeGeo(Math.toDegrees(theta)), CoordSystem.GEOCENTRIC);
-    } else if (getPoints().get(0).getCoordSystem().equals(CoordSystem.EQUATORIAL)) {
-      pTriangle = new Point(CoordSystem.convertPhiToRa(Math.toDegrees(phi)), CoordSystem.convertThetaToDec(Math.toDegrees(theta)), CoordSystem.EQUATORIAL);
-    } else {
-      throw new IllegalAccessError("Unknown coord system");
-    }
-    List<Polygon> triangles = new ArrayList<Polygon>();
-    for (int i = 0; i < getPoints().size() - 1; i++) {
-      Polygon triangle = new Polygon(Arrays.asList(getPoints().get(i), getPoints().get(i + 1), pTriangle));
-      triangles.add(triangle);
-    }
-    triangles.add(new Polygon(Arrays.asList(getPoints().get(getPoints().size() - 1), getPoints().get(0), pTriangle)));
-    return triangles;
-  }
-
-  /**
    * Returns true.
    *
    * @return true
@@ -303,6 +378,8 @@ public class Polygon implements Shape {
 
   /**
    * Set the points of the polygon in a clockwise way.
+   *
+   * <p>IllegalArgumentException is the number of points < 3.</p>
    *
    * @param val points of the polygon
    */
@@ -333,8 +410,8 @@ public class Polygon implements Shape {
    * @return type of the shape
    */
   @Override
-  public final String getType() {
-    return TYPE;
+  public final Type getType() {
+    return Shape.Type.POLYGON;
   }
 
   @Override

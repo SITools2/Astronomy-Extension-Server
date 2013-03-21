@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({fr.cnes.sitools.astro.resolver.AstroCoordinateTest.class, fr.cnes.sitools.astro.resolver.CorotIdResolverTest.class, fr.cnes.sitools.astro.resolver.NameResolverInterfaceTest.class, fr.cnes.sitools.astro.resolver.ReverseNameResolverTest.class})
+@Suite.SuiteClasses({fr.cnes.sitools.astro.resolver.AstroCoordinateTest.class, fr.cnes.sitools.astro.resolver.CorotIdResolverTest.class, fr.cnes.sitools.astro.resolver.ReverseNameResolverTest.class})
 
 public class ResolverSuite {
     

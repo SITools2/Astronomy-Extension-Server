@@ -132,7 +132,7 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
       ReverseNameResolver reverseNameResolver = new ReverseNameResolver(coordinates[0] + " " + coordinates[1], radius);
       Map response = reverseNameResolver.getJsonResponse();
       LOG.finest(String.format("Result of the reverse name resolver:%s", response.toString()));
-      Representation rep = new GeoJsonRepresentation(response, "GeoJson.ftl");
+      Representation rep = new GeoJsonRepresentation(response);
       if (fileName != null && !"".equals(fileName)) {
         Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);

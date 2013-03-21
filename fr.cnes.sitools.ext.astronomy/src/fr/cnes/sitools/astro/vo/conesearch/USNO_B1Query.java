@@ -100,7 +100,7 @@ public class USNO_B1Query implements ConeSearchQueryInterface{
             }
             dataModel.put("features", features);
             dataModel.put("totalResults", totalResults);
-            return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+            return new GeoJsonRepresentation(dataModel);
         } catch (Exception ex) {
             throw new Exception(ex);
         }

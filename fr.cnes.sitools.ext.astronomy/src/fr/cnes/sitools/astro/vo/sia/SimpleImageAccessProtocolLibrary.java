@@ -645,7 +645,7 @@ public class SimpleImageAccessProtocolLibrary {
      */
     public VOTableRepresentation getResponse() {
         Map dataModel = fillDataModel();
-        return new VOTableRepresentation(dataModel, "votable.ftl");
+        return new VOTableRepresentation(dataModel);
     }   
     private static final Logger LOG = Logger.getLogger(SimpleImageAccessProtocolLibrary.class.getName());
     

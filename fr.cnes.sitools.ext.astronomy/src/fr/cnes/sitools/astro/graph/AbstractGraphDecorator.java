@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -26,10 +26,9 @@ import java.awt.Graphics;
  *
  * <p> This pattern is designed so that multiple decorators can be stacked on
  * top of each other, each time adding a new functionality to the overridden
- * method(s).A decorator in this context is a plot on a graph such as
- * coordinates.</p>
+ * method(s). A decorator in this context is a layer on a graph.</p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class AbstractGraphDecorator extends Graph {
 

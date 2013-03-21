@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 *
 * This file is part of SITools2.
 *
@@ -21,7 +21,7 @@ package fr.cnes.sitools.SearchGeometryEngine;
 
 /**
  * Properties of the shape.
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public interface Shape {
 
@@ -29,12 +29,29 @@ public interface Shape {
      * Returns the geometry type.
      * @return the geometry type
      */
-    String getType();
+    Type getType();
     /**
      * Checks if the shape has a surface.
      * @return true when the shape has a surface otherwise false
      */
     boolean isSurface();
-
+    
+    /**
+     * The supported shape.
+     */
+    public enum Type {
+      /**
+       * Point.
+       */
+      POINT,
+      /**
+       * Polygon.
+       */
+      POLYGON,
+      /**
+       * Cone.
+       */
+      CONE
+    }
 }
 

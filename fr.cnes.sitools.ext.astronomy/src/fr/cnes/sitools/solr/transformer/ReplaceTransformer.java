@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
 * This file is part of SITools2.
  * 
@@ -17,6 +17,7 @@ package fr.cnes.sitools.solr.transformer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.solr.handler.dataimport.Context;
 import org.apache.solr.handler.dataimport.DataImporter;
@@ -65,6 +66,7 @@ public class ReplaceTransformer extends Transformer {
         value = String.valueOf(row.get(columnName));
         if (value != null && !columnName.isEmpty()) {
           String result = value.replace(replace, by);
+          LOG.log(Level.FINEST, "{0} has been replaced by {1}", new Object[]{value, result});
           row.put(columnName, result);
         }
       }

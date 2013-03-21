@@ -201,7 +201,7 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     dataModel.put("rows", rows);
 
     // Return the response
-    Representation rep =  new VOTableRepresentation(dataModel, "votable.ftl");
+    Representation rep =  new VOTableRepresentation(dataModel);
     if (fileName != null && !"".equals(fileName)) {
       Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
