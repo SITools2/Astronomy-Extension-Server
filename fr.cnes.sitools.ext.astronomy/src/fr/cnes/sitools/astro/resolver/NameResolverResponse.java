@@ -130,7 +130,7 @@ public class NameResolverResponse {
    * @return <code>true</code> if this object has result other wise <code>false</code>
    */
   public final boolean hasResult() {
-    return (this.getError() == null) ? false : true;
+    return (this.getError() == null) ? true : false;
   }
 
 
