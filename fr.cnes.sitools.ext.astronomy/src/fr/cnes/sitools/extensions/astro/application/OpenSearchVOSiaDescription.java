@@ -1,18 +1,21 @@
-/******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
+ ****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application;
 
+import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
@@ -23,16 +26,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
-import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
@@ -125,9 +125,7 @@ public class OpenSearchVOSiaDescription extends SitoolsParameterizedResource {
   public final Representation describeOpenSearch() {
     try {
       fillDataModel();
-      Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/openSearchDescription.ftl").get();
-      TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, this.dataModel, MediaType.TEXT_XML);
-      return tpl;
+      return new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
     } catch (JSONException ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

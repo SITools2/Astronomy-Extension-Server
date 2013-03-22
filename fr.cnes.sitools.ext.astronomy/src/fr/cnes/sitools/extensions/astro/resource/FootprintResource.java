@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This directory is part of SITools2.
  * 
@@ -50,7 +50,7 @@ import org.restlet.resource.ResourceException;
 
 /**
  * 
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FootprintResource extends SitoolsParameterizedResource {
 

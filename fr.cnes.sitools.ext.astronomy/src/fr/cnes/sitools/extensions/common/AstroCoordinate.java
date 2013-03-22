@@ -68,6 +68,10 @@ public class AstroCoordinate {
     EQUATORIAL
   }
 
+  /**
+   * Clone an AstroCoordinate object.
+   * @param astro object to clone.
+   */
   protected AstroCoordinate(final AstroCoordinate astro) {
     this.ra = astro.getRaAsDecimal();
     this.dec = astro.getDecAsDecimal();
@@ -75,7 +79,7 @@ public class AstroCoordinate {
   }
 
   /**
-   * Create a point on the sphere.
+   * Creates a point on the sphere.
    *
    * @param raVal Right ascension in decimal degree.
    * @param decVal Declination in decimal degree.
@@ -87,7 +91,7 @@ public class AstroCoordinate {
   }
 
   /**
-   * Create a point on the sphere.
+   * Creates a point on the sphere.
    *
    * @param raStr Right ascension in sexagesimal in format H:M:S.sss or H M S.sss.
    * @param decStr Declination in sexagesimal in format D:M:S.sss or D M S.sss.
@@ -227,25 +231,23 @@ public class AstroCoordinate {
   }
 
   /**
-   * Converts the sky position of an object from a Equatorial reference frame to galactic frame when neeeded.
+   * Converts the sky position of an object from a reference frame to another one.
    *
-   * <p> if the coordinates of
-   * <code>astroCoord</code> are not in Equatorial frame, then a IllegalArgumentException is thrown. </p>
+   * <p> if the reference frame is not supported or a conversion problem occurs, a RuntimeException is raised.</p>
    *
-   * @param astroCoord Sky object position in Equatorial reference frame
-   * @param coordinateSystem final reference frame
-   * @throws NameResolverException if the transformation Equatorial to galactic failed
+   * @param coordSystemVal final reference frame
+   * @return the sky position in the final coordinate system
    */
-  public final AstroCoordinate transformTo(CoordinateSystem coodSystem) {
+  public final AstroCoordinate transformTo(final CoordinateSystem coordSystemVal) {
     AstroCoordinate result;
     AngularPosition angularPosition = new AngularPosition(getDecAsDecimal(), getRaAsDecimal());
-    switch (coodSystem) {
+    switch (coordSystemVal) {
       case EQUATORIAL:
         if (getCoordinateSystem() == CoordinateSystem.GALACTIC) {
           try {
             angularPosition = CoordTransform.transformInDeg(angularPosition, CoordTransform.GAL2EQ);
             result = new AstroCoordinate(angularPosition.phi(), angularPosition.theta());
-            result.setCoordinateSystem(coodSystem);
+            result.setCoordinateSystem(coordSystem);
           } catch (Exception ex) {
             throw new RuntimeException(ex);
           }
@@ -258,7 +260,7 @@ public class AstroCoordinate {
           try {
             angularPosition = CoordTransform.transformInDeg(angularPosition, CoordTransform.EQ2GAL);
             result = new AstroCoordinate(angularPosition.phi(), angularPosition.theta());
-            result.setCoordinateSystem(coodSystem);
+            result.setCoordinateSystem(coordSystem);
           } catch (Exception ex) {
             throw new RuntimeException(ex);
           }
@@ -267,21 +269,27 @@ public class AstroCoordinate {
         }
         break;
       default:
-        throw new RuntimeException(coodSystem + " is not supported.");
+        throw new RuntimeException(coordSystem + " is not supported.");
     }
     return result;
   }
 
-  public final void processTo(CoordinateSystem coordSystem) {
+  /**
+   * Converts the current object in the specified coordSystem.
+   * 
+   * <p>A RuntimeException is raised when a problem occurs during the conversion, including a not supported coordinate system.</p>
+   * @param coordSystemVal final coordinate system 
+   */
+  public final void processTo(final CoordinateSystem coordSystemVal) {
     AngularPosition angularPosition = new AngularPosition(getDecAsDecimal(), getRaAsDecimal());
-    switch (coordSystem) {
+    switch (coordSystemVal) {
       case EQUATORIAL:
         if (getCoordinateSystem() == CoordinateSystem.GALACTIC) {
           try {
             angularPosition = CoordTransform.transformInDeg(angularPosition, CoordTransform.GAL2EQ);
             setRaAsDecimal(angularPosition.phi);
             setDecAsDecimal(angularPosition.theta());
-            setCoordinateSystem(coordSystem);
+            setCoordinateSystem(coordSystemVal);
           } catch (Exception ex) {
             throw new RuntimeException(ex);
           }
@@ -293,14 +301,14 @@ public class AstroCoordinate {
             angularPosition = CoordTransform.transformInDeg(angularPosition, CoordTransform.EQ2GAL);
             setRaAsDecimal(angularPosition.phi);
             setDecAsDecimal(angularPosition.theta());
-            setCoordinateSystem(coordSystem);
+            setCoordinateSystem(coordSystemVal);
           } catch (Exception ex) {
             throw new RuntimeException(ex);
           }
         } 
         break;
       default:
-        throw new RuntimeException(coordSystem + " is not supported.");
+        throw new RuntimeException(coordSystemVal + " is not supported.");
     }   
   }
 

@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Provides the GlobWeb configuration file.
+ * Provides the MIZAR configuration file.
  * 
  * <p>This service answers to the following scenario:<br/> 
  * As administrator, I want to change the GlobWeb configuration file by the administration pannel

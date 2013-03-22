@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -32,7 +32,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- * Publishes the Globweb configuration file.
+ * Publishes the MIZAR configuration file.
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */

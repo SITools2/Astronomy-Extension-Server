@@ -275,7 +275,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
       Field field = fieldIter.next();
-      String description = (field.getDESCRIPTION() == null)?null:field.getDESCRIPTION().getContent().get(0).toString();
+      String description = (field.getDESCRIPTION() == null) ? null : field.getDESCRIPTION().getContent().get(0).toString();
       this.dico.put(field.getName(), new VoDictionary(description, field.getUnit()));
     }
   }

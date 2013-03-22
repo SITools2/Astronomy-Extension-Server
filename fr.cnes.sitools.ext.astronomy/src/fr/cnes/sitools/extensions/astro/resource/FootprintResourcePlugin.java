@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2011 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -27,13 +27,13 @@ import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Jean-Christophe Malapert
+ * Provides some footprint capabilities.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FootprintResourcePlugin extends ResourceModel {
 
     /**
-     * Constructs the administration panel
+     * Constructs the administration panel.
      */
     public FootprintResourcePlugin() {
         super();

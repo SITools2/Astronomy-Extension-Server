@@ -208,7 +208,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     cds.setNext(imcce);
     imcce.setNext(corot);
     NameResolverResponse response = cds.getResponse();
-    if(!response.hasResult()) {
+    if (!response.hasResult()) {
       throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
     }
     String credits = response.getCredits();
