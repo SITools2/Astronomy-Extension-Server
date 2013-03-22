@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  *
@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({fr.cnes.sitools.astro.resolver.AstroCoordinateTest.class, fr.cnes.sitools.astro.resolver.CorotIdResolverTest.class, fr.cnes.sitools.astro.resolver.ReverseNameResolverTest.class})
+@Suite.SuiteClasses({fr.cnes.sitools.astro.resolver.AstroCoordinateTest.class, fr.cnes.sitools.astro.resolver.CorotIdResolverTest.class, fr.cnes.sitools.astro.resolver.CDSResolverTest.class, fr.cnes.sitools.astro.resolver.IMCCEResolverTest.class, fr.cnes.sitools.astro.resolver.NameResolverTest.class, fr.cnes.sitools.astro.resolver.ReverseNameResolverTest.class})
 
 public class ResolverSuite {
     

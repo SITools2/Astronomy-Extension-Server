@@ -17,6 +17,9 @@ package fr.cnes.sitools.extensions.common;
 
 import healpix.core.AngularPosition;
 import healpix.tools.CoordTransform;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import jsky.coords.DMS;
 import jsky.coords.HMS;
@@ -52,6 +55,11 @@ public class AstroCoordinate {
    * Coordinate system.
    */
   private CoordinateSystem coordSystem;
+  
+  /**
+   * Provides complementary metadata.
+   */
+  private Map<String, String> metadata = new HashMap<String, String>(); 
 
   /**
    * List of supported coordinate system.
@@ -310,6 +318,47 @@ public class AstroCoordinate {
       default:
         throw new RuntimeException(coordSystemVal + " is not supported.");
     }   
+  }
+  
+  /**
+   * Provides read-only access to the map.
+   * @return complementary information
+   */
+  public final Map<String, String> getMatadata() {
+    return Collections.unmodifiableMap(this.metadata);
+  }
+  
+  /**
+   * Checks if some complementary metadata has been defined.
+   * @return <code>True</code> if come complementaty is defined otherwise <code>false</code>
+   */
+  public final boolean hasMetadata() {
+    return (getMatadata().isEmpty()) ? false : true;
+  }
+  
+  /**
+   * Sets metadata.
+   * @param metadataMap metadata to set
+   */
+  public final void setMetadata(final Map<String, String> metadataMap) {
+    this.metadata = metadataMap;
+  }
+
+  /**
+   * Adds metadata.
+   * @param metadataMap metadata to add at the current one
+   */
+  public final void addMetadata(final Map<String, String> metadataMap) {
+    this.metadata.putAll(metadataMap);
+  }
+
+  /**
+   * Adds metadata.
+   * @param key metadata keyword
+   * @param value metadata value
+   */
+  public final void addMetadata(final String key, final String value) {
+    this.metadata.put(key, value);
   }
 
   /**

@@ -97,7 +97,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
     try {
       Object json = callImcce(objectName, epoch);
       List<AstroCoordinate> astrocoordinates = processResponse(json);      
-      response.addAstoCoordinates(astrocoordinates);     
+      response.addAstoCoordinates(astrocoordinates);
     } catch (NameResolverException ex) {
       if (this.successor != null) {
         response = this.successor.getResponse();
@@ -203,6 +203,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
       double ra = Double.valueOf(jsonObj.getString("ra"));
       double dec = Double.valueOf(jsonObj.getString("dec"));
       AstroCoordinate astroCoord = new AstroCoordinate(ra, dec);
+      astroCoord.addMetadata("type", jsonObj.getString("type"));
       return astroCoord;
     } catch (JSONException ex) {
       throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);

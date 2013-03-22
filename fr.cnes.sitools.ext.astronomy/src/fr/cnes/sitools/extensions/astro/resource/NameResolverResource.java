@@ -25,8 +25,10 @@ import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.Disposition;
@@ -266,6 +268,14 @@ public class NameResolverResource extends SitoolsParameterizedResource {
       Map properties = new HashMap();
       properties.put("identifier", name.concat(String.valueOf(i++)));
       properties.put("credits", name);
+      Map<String, String> metadata = astroIter.getMatadata();
+      Set<String> keys = metadata.keySet();
+      Iterator<String> keyIter = keys.iterator();
+      while (keyIter.hasNext()) {
+        String key = keyIter.next();
+        properties.put(key, metadata.get(key));
+      }
+      
       feature.put("properties", properties);
 
       Map geometry = new HashMap();

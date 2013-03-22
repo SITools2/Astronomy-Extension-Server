@@ -18,29 +18,43 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.List;
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Test of CorotIdResolver object.
+ * Test of IMCCE name resolver.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class CorotIdResolverTest {
+public class IMCCEResolverTest {
+    @After
+    public void tearDown() {
+    }
 
     /**
-     * Test of getCoordinates method, of class CorotIdResolver.
+     * Test of getCoordinates method, of class AbstractNameResolver.
      */
     @Test
     public void testGetCoordinates() throws Exception {
         System.out.println("getCoordinates");
-        CorotIdResolver instance = new CorotIdResolver("105290723");             
-        NameResolverResponse response = instance.getResponse();
-        List<AstroCoordinate> result = response.getAstroCoordinates();
-        assertEquals(279.88184, result.get(0).getRaAsDecimal(),0.001);
-        assertEquals(6.4019198, result.get(0).getDecAsDecimal(),0.001);        
+        AbstractNameResolver imcce = new IMCCESsoResolver("mars","22-03-2013T15:55:00");
+        NameResolverResponse response = imcce.getResponse();
+        List<fr.cnes.sitools.extensions.common.AstroCoordinate> coords = response.getAstroCoordinates();
+        assertNotNull(coords);
+        fr.cnes.sitools.extensions.common.AstroCoordinate coordinate = coords.get(0);
+        assertEquals("RA is not correct for mars", 7.489974375, coordinate.getRaAsDecimal(),0.0001);
+        assertEquals("DEC is not correct for mars", 2.51544325, coordinate.getDecAsDecimal(),0.0001);
     }
 
-
+    /**
+     * Test of getCreditsName method.
+     */
+    @Test
+    public void testGetCreditsName() {
+        System.out.println("getCreditsName");
+        AbstractNameResolver imcce = new IMCCESsoResolver("mars","22-03-2013T15:55:00");
+        NameResolverResponse response = imcce.getResponse();
+        assertEquals("IMCCE", response.getCredits());
+    }  
 }
