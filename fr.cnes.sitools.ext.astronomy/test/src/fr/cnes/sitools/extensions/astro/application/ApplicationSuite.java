@@ -1,6 +1,8 @@
 /*
  * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
+ * This file is part of SITools2.
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package fr.cnes.sitools.extensions.astro.application;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import fr.cnes.sitools.extensions.astro.resource.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -25,9 +27,8 @@ import org.junit.runners.Suite;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({fr.cnes.sitools.SearchGeometryEngine.SearchGeometryEngineSuite.class, 
-  fr.cnes.sitools.astro.resolver.ResolverSuite.class, fr.cnes.sitools.extensions.astro.application.ApplicationSuite.class,
-  fr.cnes.sitools.extensions.astro.resource.ResourceSuite.class})
-public class RootSuite {    
+@Suite.SuiteClasses({ConeSearchVOTest.class})
+
+public class ApplicationSuite {
     
 }
