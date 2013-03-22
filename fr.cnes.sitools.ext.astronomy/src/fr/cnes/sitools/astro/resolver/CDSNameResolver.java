@@ -25,7 +25,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import org.restlet.Client;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -178,6 +180,9 @@ public class CDSNameResolver extends AbstractNameResolver {
     LOG.log(Level.INFO, "Call CDS name resolver: {0}", url);
     ClientResourceProxy clientProxy = new ClientResourceProxy(url, Method.GET);
     ClientResource client = clientProxy.getClientResource();
+    Client clientHTTP = new Client(Protocol.HTTP);
+    clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
+    client.setNext(clientHTTP);
     Status status = client.getStatus();
     if (status.isSuccess()) {
       try {

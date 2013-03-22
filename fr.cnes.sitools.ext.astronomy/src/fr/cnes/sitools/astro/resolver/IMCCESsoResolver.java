@@ -25,7 +25,9 @@ import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.Client;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -126,15 +128,18 @@ public class IMCCESsoResolver extends AbstractNameResolver {
     LOG.log(Level.INFO, "Call IMCCE name resolver: {0}", service);
 
     //requesting
-    ClientResourceProxy client = new ClientResourceProxy(service, Method.GET);
-    ClientResource clientResource = client.getClientResource();
-    Status status = clientResource.getStatus();
+    ClientResourceProxy clientProxy = new ClientResourceProxy(service, Method.GET);
+    ClientResource client = clientProxy.getClientResource();   
+    Client clientHTTP = new Client(Protocol.HTTP);
+    clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
+    client.setNext(clientHTTP);    
+    Status status = client.getStatus();
 
     // when the response is fine, we process the response
     if (status.isSuccess()) {
       String result;
       try {
-        result = clientResource.get().getText();
+        result = client.get().getText();
       } catch (IOException ex) {
         throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
       } catch (ResourceException ex) {

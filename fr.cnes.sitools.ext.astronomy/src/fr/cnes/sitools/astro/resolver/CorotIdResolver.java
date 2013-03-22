@@ -22,9 +22,11 @@ import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -117,6 +119,9 @@ public class CorotIdResolver extends AbstractNameResolver {
     ClientResourceProxy proxy = new ClientResourceProxy(query, Method.GET);
     ClientResource client = proxy.getClientResource();
     client.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "guest", "sitools2public"));
+    Client clientHTTP = new Client(Protocol.HTTP);
+    clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
+    client.setNext(clientHTTP);    
     Status status = client.getStatus();
     if (status.isSuccess()) {
       try {

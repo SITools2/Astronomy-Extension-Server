@@ -25,6 +25,11 @@ package fr.cnes.sitools.astro.resolver;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class AbstractNameResolver {
+  
+  /**
+   * Time out of 10 seconds when calling each name resolver.
+   */
+  protected static final int SERVER_TIMEOUT = 10000;
 
   /**
    * The next element in the chain of responsibility.
