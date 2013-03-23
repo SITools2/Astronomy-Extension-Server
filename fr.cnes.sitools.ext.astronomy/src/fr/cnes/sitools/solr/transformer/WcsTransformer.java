@@ -44,7 +44,7 @@ import org.apache.solr.handler.dataimport.Transformer;
  * <ul> 
  * <li>the WCS center of the frame</li> 
  * <li>the Ra/Dec of each corner of the FOV</li>
- * <li>the Healpix index of the FOV<li> 
+ * <li>the Healpix index of the FOV</li> 
  * </ul> 
  * </p>
  *

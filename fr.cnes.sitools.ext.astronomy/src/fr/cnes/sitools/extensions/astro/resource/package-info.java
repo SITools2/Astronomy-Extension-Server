@@ -7,6 +7,7 @@
   <li>ReverNameResolver plugin</li>
   <li>Export VOTable</li>
   <li>CutOff plugin</li>
+  <li>Sky coverage plugin</li>
  </ul>
  */
 package fr.cnes.sitools.extensions.astro.resource;

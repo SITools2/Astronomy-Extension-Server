@@ -25,9 +25,13 @@ import org.apache.solr.handler.dataimport.Transformer;
  * Replaces a string by another one using the DIH transformer.
  *
  * <p>The DIH extracts data and it organizes data by the use of attributes called "field". Each field is considered as a column. Each column
- * can be processed by this transformer. Thus, to use this transformer, set to a field the following attributes: <ul> <li>column, name of
- * the column that has been previouly extracted by the DIH</li> <li>name, name of the field</li> <li>replace, string to replace<li> <li>by,
- * new value of the string to replace</li> </ul> </p>
+ * can be processed by this transformer. Thus, to use this transformer, set to a field the following attributes: 
+ * <ul> 
+ * <li>column, name of the column that has been previouly extracted by the DIH</li> <li>name, name of the field</li>
+ * <li>replace, string to replace</li>
+ * <li>by, new value of the string to replace</li> 
+ * </ul>
+ * </p>
  *
  * <p> Here is an example how to configure the DIH configuration file
  * <pre><code><field column="..." name="..." replace="..." by="..."/></code></pre> </p>

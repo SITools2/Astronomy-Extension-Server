@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * 
  * <p>This service answers to the following scenario:<br/>
  * As user, I want to know the sky coverage of my survey and its representation in the sky
- * in order to give me an idea where I can search for data.
+ * in order to give me an idea where I can find data.
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>

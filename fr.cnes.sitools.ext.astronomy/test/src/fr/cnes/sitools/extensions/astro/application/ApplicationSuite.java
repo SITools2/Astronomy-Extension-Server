@@ -18,7 +18,6 @@
  */
 package fr.cnes.sitools.extensions.astro.application;
 
-import fr.cnes.sitools.extensions.astro.resource.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -27,7 +26,7 @@ import org.junit.runners.Suite;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ConeSearchVOTest.class})
+@Suite.SuiteClasses({ConeSearchVOTest.class, SIAVOTest.class })
 
 public class ApplicationSuite {
     

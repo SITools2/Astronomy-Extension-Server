@@ -49,8 +49,8 @@ import org.restlet.resource.ResourceException;
 /**
  * Searchs on different name resolvers and returns one or several names.
  *
- * <p> In this current version, there are three name resolver<br/> services. The first one is based on CDS for stars and deep object. The
- * second one is based on solar system objects.<br/> And the last one is based on Corot </p>
+ * <p> In this current version, there are three name resolver services. The first one is based on CDS for stars and deep object. The
+ * second one is based on solar system objects.And the last one is based on Corot </p>
  *
  * <p>
  * <pre>

@@ -71,18 +71,22 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Creates a SOLR query String doing the following steps:
+     * Creates a SOLR query, which is stored in <code>query</code> parameter.
+     * 
+     * <p>
+     * This method is doing the following steps:
      * <ul>
-     * <li>Returns User query parameters</li>
-     * <li>Returns the Solr server URL</li>
+     * <li>Gets user query parameters</li>
+     * <li>Gets the Solr server URL</li>
      * <li>Creates the geometry from positional search given by the user</li>
      * <li>Transforms a Shape into Healpix pixels</li>
-     * <li>Deletes Geometry parameters</li>
-     * <li>Returns the Query String to send to SOLR</li>
-     * </ul>
-     * Each step is overidden by a subclass.     
+     * <li>Deletes the Geometry parameters</li>
+     * <li>Computes and stores the Query String to send to SOLR</li>
+     * </ul>     
+     * Each step is overidden by a subclass.
+     * </p>
      */
-    public void createQueryBuilder() {
+    public final void createQueryBuilder() {
 
         // Get user query parameters and configuration
         Map<String, Object> queryParametersToProcess = getUserParametersToProcess();
@@ -94,7 +98,7 @@ public abstract class AbstractSolrQueryRequestFactory {
         // Create the Healpix object
         computeHealpix(shape);
 
-
+        // Removes the geometry parameters to keep the remaining parameters to process
         removeUserGeometryParameters(queryParametersToProcess);
 
         query = buildSolrQueryFrom(solrServerUrl, queryParametersToProcess);
@@ -141,7 +145,7 @@ public abstract class AbstractSolrQueryRequestFactory {
      * Returns the Solr request String.
      * @return the Solr request
      */
-    public String getSolrQueryRequest() {
+    public final String getSolrQueryRequest() {
         return this.query;
     }
 
@@ -178,7 +182,7 @@ public abstract class AbstractSolrQueryRequestFactory {
             if (Util.isNotEmpty(parameters) && hasAlreadyFirstTerm) {
                 queryBuilder = queryBuilder.concat(" AND " + parameters);
             } else if (Util.isNotEmpty(parameters)) {
-                queryBuilder = queryBuilder.concat(parameters);               
+                queryBuilder = queryBuilder.concat(parameters);
             }
         }
         return queryBuilder;
@@ -189,7 +193,7 @@ public abstract class AbstractSolrQueryRequestFactory {
      * @param queryParameters Query parameters
      * @return search terms constraint
      */
-    protected String searchTermsConstraint(Map<String, Object> queryParameters) {
+    protected final String searchTermsConstraint(Map<String, Object> queryParameters) {
         String result = "";
         if (Util.isSet(queryParameters.get("q"))) {
             result = "searchTerms:" + String.valueOf(queryParameters.get("q"));
@@ -203,7 +207,7 @@ public abstract class AbstractSolrQueryRequestFactory {
      * @param queryParametersToProcess User query parameters
      * @return parameter constraint
      */
-    protected String parameterConstraint(Map<String, Object> queryParametersToProcess) {
+    protected final String parameterConstraint(Map<String, Object> queryParametersToProcess) {
         String result = "";
         Set<String> params = queryParametersToProcess.keySet();
         assert params != null;
@@ -221,7 +225,7 @@ public abstract class AbstractSolrQueryRequestFactory {
             }
             i++;
         }
-        queryParametersToProcess.remove(params);        
+        queryParametersToProcess.remove(params);
         return result;
     }
 
@@ -230,7 +234,7 @@ public abstract class AbstractSolrQueryRequestFactory {
      * @param queryParametersToProcess User query parameters
      * @return the start
      */
-    protected int computeStartSolr(Map<String, Object> queryParametersToProcess) {
+    protected final int computeStartSolr(Map<String, Object> queryParametersToProcess) {
         if (!queryParametersToProcess.get("startIndex").equals(OpenSearchSearch.DEFAULT_START_INDEX)) {
             return Integer.valueOf(String.valueOf(queryParametersToProcess.get("startIndex"))) - 1;
         } else if (!queryParametersToProcess.get("startPage").equals(OpenSearchSearch.DEFAULT_START_PAGE)) {
@@ -245,7 +249,7 @@ public abstract class AbstractSolrQueryRequestFactory {
      * @param shape shape
      * @return an array of parameters
      */
-    protected String[] parseShape(final String shape) {
+    protected final String[] parseShape(final String shape) {
         return shape.split(",");
     }
 
