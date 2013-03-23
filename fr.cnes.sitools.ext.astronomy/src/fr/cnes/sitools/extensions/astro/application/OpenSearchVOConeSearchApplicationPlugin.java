@@ -41,7 +41,8 @@ import org.restlet.routing.Template;
  * 
  * <p>
  * Application for AstroGlobWeb Module. This application queries a Simple Cone Search service 
- * by the use of (Healpix,order) parameters and it returns a GeoJson file.
+ * by the use of (Healpix,order) parameters and it returns a GeoJson file.<br/>
+ * The cache directive is set to FOREVER
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>

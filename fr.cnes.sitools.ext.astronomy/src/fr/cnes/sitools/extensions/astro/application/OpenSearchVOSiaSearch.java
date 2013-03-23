@@ -18,6 +18,7 @@ import fr.cnes.sitools.astro.vo.sia.SIASearchQuery;
 import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
@@ -433,7 +434,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
       Field field = fieldIter.next();
-      String description = (field.getDESCRIPTION() == null)?null:field.getDESCRIPTION().getContent().get(0).toString();
+      String description = (field.getDESCRIPTION() == null) ? null : field.getDESCRIPTION().getContent().get(0).toString();
       this.dico.put(field.getName(), new VoDictionary(description, field.getUnit()));
     }
   }
@@ -555,7 +556,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       }
       dataModel.put("totalResults", features.size());
       dataModel.put("features", features);
-      return new GeoJsonRepresentation(dataModel);
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

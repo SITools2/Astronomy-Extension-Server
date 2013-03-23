@@ -19,6 +19,7 @@
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.ArrayList;
@@ -92,7 +93,11 @@ public class OpenSearchVOSiaSearchDico extends SitoolsParameterizedResource {
     } else {
       output = "No definition found";
     }    
-    return new StringRepresentation(output, MediaType.TEXT_PLAIN);
+    Representation rep = new StringRepresentation(output, MediaType.TEXT_PLAIN);
+    CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+    rep = cache.getRepresentation();
+    getResponse().setCacheDirectives(cache.getCacheDirectives());
+    return rep;
   }  
   
   /**
@@ -120,9 +125,9 @@ public class OpenSearchVOSiaSearchDico extends SitoolsParameterizedResource {
     RepresentationInfo representationInfoTxt = new RepresentationInfo(MediaType.TEXT_PLAIN);
     representationInfoTxt.setDocumentation(documentationTxt);
     
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();    
+    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     representationsInfo.add(representationInfoTxt);
-    
+
     List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("name", true, "xs:string", ParameterStyle.PLAIN, "keyword name for which the definition must be found."));
 

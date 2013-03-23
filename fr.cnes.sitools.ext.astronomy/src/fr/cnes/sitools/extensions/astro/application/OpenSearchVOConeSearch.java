@@ -1,5 +1,4 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -11,8 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
@@ -20,6 +18,7 @@ import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
@@ -27,6 +26,7 @@ import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -215,7 +216,11 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       }
       dataModel.put("features", features);
       dataModel.put("totalResults", features.size());
-      return new GeoJsonRepresentation(dataModel);
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

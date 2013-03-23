@@ -21,14 +21,19 @@ package fr.cnes.sitools.extensions.astro.application;
 import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
@@ -130,7 +135,11 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
     public final Representation describeOpenSearch() {
         try {
             fillDataModel();
-            return new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
+            Representation rep = new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
+            CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+            rep = cache.getRepresentation();
+            getResponse().setCacheDirectives(cache.getCacheDirectives());
+            return rep;
         } catch (JSONException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

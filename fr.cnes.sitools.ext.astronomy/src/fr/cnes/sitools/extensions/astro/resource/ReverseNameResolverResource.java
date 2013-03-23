@@ -17,11 +17,13 @@ import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import healpix.core.HealpixIndex;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -120,7 +122,9 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
 
   /**
    * Returns the response by the use of a Freemarker template (GeoJson.ftl).
-   *
+   * 
+   * <p>The cache directive is set to FOREVER</p>
+   * 
    * @return the GeoJSON representation
    */
   @Get
@@ -129,8 +133,11 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
       LOG.finest(String.format("ReverseNameResolver (ra=%s,dec=%s,radius=%s)", coordinates[0], coordinates[1], radius));
       ReverseNameResolver reverseNameResolver = new ReverseNameResolver(coordinates[0] + " " + coordinates[1], radius);
       Map response = reverseNameResolver.getJsonResponse();
-      LOG.finest(String.format("Result of the reverse name resolver:%s", response.toString()));
+      LOG.finest(String.format("Result of the reverse name resolver:%s", response.toString()));      
       Representation rep = new GeoJsonRepresentation(response);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());        
       if (fileName != null && !"".equals(fileName)) {
         Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);

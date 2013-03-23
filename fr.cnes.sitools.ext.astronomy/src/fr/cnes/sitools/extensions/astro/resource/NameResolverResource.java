@@ -22,6 +22,7 @@ import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,8 +51,8 @@ import org.restlet.resource.ResourceException;
  * Searchs on different name resolvers and returns one or several names.
  *
  * <p> In this current version, there are three name resolver services. The first one is based on CDS for stars and deep object. The
- * second one is based on solar system objects.And the last one is based on Corot </p>
- *
+ * second one is based on solar system objects.And the last one is based on Corot <br/>
+ * The cache directive is set to FOREVER for CDS and COROT. For IMMCE, the cache is set to NO_CACHE</p>
  * <p>
  * <pre>
  * Example of requests:
@@ -140,8 +141,12 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         iter.processTo(coordSystem);
       }
       String credits = response.getCredits();
-      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
-      return new GeoJsonRepresentation(dataModel);
+      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());          
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
     } else {
       LOG.log(Level.WARNING, null, response.getError());
       throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
@@ -165,12 +170,16 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         iter.processTo(coordSystem);
       }
       String credits = response.getCredits();
-      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
-      return new GeoJsonRepresentation(dataModel);
+      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());            
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
     } else {
       LOG.log(Level.WARNING, null, response.getError());
       throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
-    }    
+    }
   }
 
   /**
@@ -180,7 +189,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
    */
   private Representation resolveIAS() {
     AbstractNameResolver ias = new CorotIdResolver(objectName);
-    NameResolverResponse response = ias.getResponse();    
+    NameResolverResponse response = ias.getResponse();
     if (response.hasResult()) {
       LOG.log(Level.INFO, "Corot name resolver is selected for {0}", objectName);
       getResponse().setStatus(Status.SUCCESS_OK);
@@ -190,21 +199,25 @@ public class NameResolverResource extends SitoolsParameterizedResource {
       }
       String credits = response.getCredits();
       Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
-      return new GeoJsonRepresentation(dataModel);
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
     } else {
       LOG.log(Level.WARNING, null, response.getError());
       throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
-    }    
+    }
   }
-  
+
 
   /**
-   * Returns the GeoJSON of the object name after calling all resolvers until an object is found or all resolvers have been called.   
+   * Returns the GeoJSON of the object name after calling all resolvers until an object is found or all resolvers have been called.
    * @return the GeoJSON of the object name
    */
   private Representation callChainedResolver() {
     Map dataModel;
-    AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);    
+    AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
     AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
     AbstractNameResolver corot = new CorotIdResolver(objectName);
     cds.setNext(imcce);
@@ -213,13 +226,18 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     if (!response.hasResult()) {
       throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
     }
-    String credits = response.getCredits();
+    String credits = response.getCredits();    
     List<AstroCoordinate> coordinates = response.getAstroCoordinates();
     for (AstroCoordinate iter:coordinates) {
       iter.processTo(coordSystem);
     }
     dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
-    return new GeoJsonRepresentation(dataModel);
+    Representation rep = new GeoJsonRepresentation(dataModel);
+    CacheBrowser.CacheDirectiveBrowser cacheDirective = (credits.equals("IMCCE")) ? CacheBrowser.CacheDirectiveBrowser.NO_CACHE : CacheBrowser.CacheDirectiveBrowser.FOREVER;    
+    CacheBrowser cache = CacheBrowser.createCache(cacheDirective, rep);
+    rep = cache.getRepresentation();
+    getResponse().setCacheDirectives(cache.getCacheDirectives());     
+    return rep;
   }
 
   /**
@@ -275,7 +293,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         String key = keyIter.next();
         properties.put(key, metadata.get(key));
       }
-      
+
       feature.put("properties", properties);
 
       Map geometry = new HashMap();
@@ -408,11 +426,11 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     responseBad.getRepresentations().add(representationInfo);
     responseBad.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);
     responseBad.setDocumentation(Status.CLIENT_ERROR_BAD_REQUEST.getDescription() + "- coordinate system is unknown");
-    
+
     ResponseInfo responseNotFound = new ResponseInfo();
     responseNotFound.getRepresentations().add(representationInfo);
     responseNotFound.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
-    responseNotFound.setDocumentation("object not found.");    
+    responseNotFound.setDocumentation("object not found.");
 
     ResponseInfo responseUnavailable = new ResponseInfo();
     responseUnavailable.getRepresentations().add(representationInfo);

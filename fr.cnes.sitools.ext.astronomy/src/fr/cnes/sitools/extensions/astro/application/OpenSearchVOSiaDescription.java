@@ -18,6 +18,7 @@ package fr.cnes.sitools.extensions.astro.application;
 import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -125,7 +126,11 @@ public class OpenSearchVOSiaDescription extends SitoolsParameterizedResource {
   public final Representation describeOpenSearch() {
     try {
       fillDataModel();
-      return new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
+      Representation rep = new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
     } catch (JSONException ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
