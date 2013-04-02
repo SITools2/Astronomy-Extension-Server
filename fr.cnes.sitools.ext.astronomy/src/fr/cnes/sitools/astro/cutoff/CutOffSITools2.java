@@ -21,7 +21,7 @@ package fr.cnes.sitools.astro.cutoff;
 import edu.jhu.pha.sdss.fits.FITSImage;
 import edu.jhu.pha.sdss.fits.FITSImage.DataTypeNotSupportedException;
 import edu.jhu.pha.sdss.fits.FITSImage.NoImageDataFoundException;
-import fr.cnes.sitools.astro.resolver.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;

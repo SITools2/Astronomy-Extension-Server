@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  *
@@ -19,7 +19,8 @@
 package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
-import fr.cnes.sitools.astro.resolver.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
 import org.restlet.data.Status;
@@ -66,9 +68,41 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    */
   private static final String URL = "http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php?from=SITools2&EPOCH=<EPOCH>&";
   /**
+   * Max value in degree of declination axis.
+   */
+  private static final double MAX_DEC = 90.;
+  /**
+   * One degree.
+   */
+  private static final double ONE_DEG = 1.0;
+  /**
+   * One degree in arsec.
+   */
+  private static final double ONE_DEG_IN_ARSEC = 3600.;
+  /**
    * Conversion arcsec to degree.
    */
-  private static final double ARCSEC_2_DEG = 1 / 3600.;
+  private static final double ARCSEC_2_DEG = ONE_DEG / ONE_DEG_IN_ARSEC;
+  /**
+   * Multiplation factor to embed the entire Healpix pixel in the ROI.
+   */
+  private static final double MULT_FACT = 1.5;
+  /**
+   * True when Healpix mode is used.
+   */
+  private boolean isHealpixMode;
+  /**
+   * Healpix is not defined.
+   */
+  private static final int NOT_DEFINED = -1;
+  /**
+   * Pixel to check.
+   */
+  private long pixelToCheck;
+  /**
+   * Healpix index.
+   */
+  private HealpixIndex healpixIndex;
 
   /**
    * keywords.
@@ -152,6 +186,9 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     this.ra = raVal;
     this.dec = decVal;
     this.radius = radiusVal;
+    this.isHealpixMode = false;
+    this.pixelToCheck = NOT_DEFINED;
+    this.healpixIndex = null;
   }
 
   /**
@@ -165,18 +202,19 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   public ConeSearchSolarObjectQuery(final long healpix, final int order, final String time) throws Exception {
     int nside = (int) Math.pow(2, order);
     double pixRes = HealpixIndex.getPixRes(nside);
-    HealpixIndex healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
+    this.healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
+    this.pixelToCheck = healpix;
     Pointing pointing = healpixIndex.pix2ang(healpix);
     this.ra = Math.toDegrees(pointing.phi);
-    this.dec = 90.0 - Math.toDegrees(pointing.theta);
-    this.radius = pixRes * ARCSEC_2_DEG;
+    this.dec = MAX_DEC - Math.toDegrees(pointing.theta);
+    this.radius = pixRes * ARCSEC_2_DEG * MULT_FACT;
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", time));
+    this.isHealpixMode = true;
   }
 
   @Override
   public final GeoJsonRepresentation getResponse() {
     Map dataModel = new HashMap();
-    int totalResults = 0;
 
     List features = new ArrayList();
     List<Map<Field, String>> response;
@@ -191,55 +229,20 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
 
     for (Map<Field, String> record : response) {
       parseRecord(features, record);
-      totalResults++;
     }
     dataModel.put("features", features);
-    dataModel.put("totalResults", totalResults);
-    return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+    dataModel.put("totalResults", features.size());
+    return new GeoJsonRepresentation(dataModel);
 
-  }
-
-  /**
-   * Returns the value in the right datatype.
-   *
-   * @param dataType VOTable datatype
-   * @param value value to cast
-   * @return the value in the right datatype
-   */
-  private Object getDataType(final net.ivoa.xml.votable.v1.DataType dataType, final String value) {
-    Object response;
-    switch (dataType) {
-      case DOUBLE:
-        response = Double.valueOf(value);
-        break;
-      case DOUBLE_COMPLEX:
-        response = Double.valueOf(value);
-        break;
-      case FLOAT:
-        response = Float.valueOf(value);
-        break;
-      case FLOAT_COMPLEX:
-        response = Float.valueOf(value);
-        break;
-      case INT:
-        response = Integer.valueOf(value);
-        break;
-      case LONG:
-        response = Long.valueOf(value);
-        break;
-      default:
-        response = value;
-        break;
-    }
-    return response;
   }
 
   /**
    * Parses Record and writes the response in features.
+   *
    * @param features the response
    * @param record the records to set
    */
-  protected final void parseRecord(List features, final Map<Field, String> record) {
+  protected final void parseRecord(final List features, final Map<Field, String> record) {
     Map feature = new HashMap();
     Map geometry = new HashMap();
     Map properties = new HashMap();
@@ -253,15 +256,15 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
       String ucd = field.getUcd();
       net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
       String value = record.get(field);
-      if (ucd != null && value != null && !value.isEmpty()) {
-        Object response = getDataType(dataType, value);
+      if (Utility.isSet(ucd) && Utility.isSet(value) && !value.isEmpty()) {
+        Object response = Utility.getDataType(dataType, value);
         ReservedWords ucdWord = ReservedWords.find(ucd);
         switch (ucdWord) {
           case POS_EQ_RA_MAIN:
-            coordinatesRa = record.get(field).replace(" ", ":");
+            coordinatesRa = record.get(field);
             break;
           case POS_EQ_DEC_MAIN:
-            coordinatesDec = record.get(field).replace(" ", ":");
+            coordinatesDec = record.get(field);
             break;
           case IMAGE_TITLE:
             String identifier = record.get(field);
@@ -277,7 +280,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
             break;
         }
       } else {
-        Object response = getDataType(dataType, value);
+        Object response = Utility.getDataType(dataType, value);
         properties.put(field.getName(), response);
       }
     }
@@ -287,6 +290,46 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     geometry.put("crs", "equatorial.ICRS");
     feature.put("geometry", geometry);
     feature.put("properties", properties);
-    features.add(feature);
+    if (isValid(feature)) {
+      if (!isHealpixMode) {
+        features.add(feature);
+      } else if (isPointIsInsidePixel(astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal())) {
+        features.add(feature);
+      } else {
+        feature.clear();
+      }
+    } else {
+      LOG.log(Level.WARNING, "{0} does not have an identifier. Also, this record is ignored.", feature.toString());
+      feature.clear();
+    }
+  }
+
+  /**
+   * Returns true when the point (ra,dec) is inside the pixel otherwise false.
+   *
+   * @param raSolarObj right ascension in degree
+   * @param decSolarObj declination in degree
+   * @return true when the point (ra,dec) is inside the pixel otherwise false
+   */
+  private boolean isPointIsInsidePixel(final double raSolarObj, final double decSolarObj) {
+    boolean result;
+    try {
+      long healpixFromService = this.healpixIndex.ang2pix_nest(Math.PI / 2 - Math.toRadians(decSolarObj), Math.toRadians(raSolarObj));
+      result = (healpixFromService == this.pixelToCheck) ? true : false;
+    } catch (Exception ex) {
+      result = false;
+      LOG.log(Level.WARNING, null, ex);
+    }
+    return result;
+  }
+
+  /**
+   * Returns true when identifier is set.
+   *
+   * @param feature data model
+   * @return true when identifier os set
+   */
+  private boolean isValid(final Map feature) {
+    return ((Map) feature.get("properties")).containsKey("identifier");
   }
 }

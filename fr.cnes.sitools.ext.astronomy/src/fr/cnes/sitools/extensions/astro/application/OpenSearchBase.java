@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 * 
 * This file is part of SITools2.
 * 
@@ -92,7 +92,7 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
     protected final void computeIndexedFields() throws JSONException, IOException {
         this.indexedFields = new ArrayList<Index>();
         // Use Luke to get the index definition
-        ClientResource client = new ClientResource(getSolrBaseUrl() + "/admin/luke?wt=json&numTerms" + Index.MAX_TOP_TERMS);               
+        ClientResource client = new ClientResource(getSolrBaseUrl() + "/admin/luke?wt=json&numTerms=" + Index.MAX_TOP_TERMS);               
         
         JSONObject json = new JSONObject(client.get().getText());
         JSONObject fields = json.getJSONObject("fields");

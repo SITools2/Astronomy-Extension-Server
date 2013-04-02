@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 * 
 * This file is part of SITools2.
 * 
@@ -29,7 +29,8 @@ import org.restlet.representation.OutputRepresentation;
 
 /**
  * Creates a cutoff on a FITS image.
- * @author Jean-Christophe Malapert
+ * 
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CutOffRepresentation extends OutputRepresentation {
   /**
@@ -43,7 +44,8 @@ public class CutOffRepresentation extends OutputRepresentation {
     private CutOffInterface cutout;
     
     /**
-     * Constructs a cutoff.
+     * Constructs a new cutoff representation.
+     * 
      * @param media media type
      * @param cutoff curoff object
      */
@@ -54,6 +56,11 @@ public class CutOffRepresentation extends OutputRepresentation {
 
     /**
      * Writes the response.
+     * 
+     * <p>
+     * A RuntimeException is raised when a problem happens while the cut off is processed.
+     * </p>
+     *
      * @param out output stream
      * @throws IOException IO Exception
      */
@@ -63,6 +70,7 @@ public class CutOffRepresentation extends OutputRepresentation {
             this.cutout.createCutoutFits(out);
         } catch (CutOffException ex) {
             LOG.log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
-    }    
+    }
 }

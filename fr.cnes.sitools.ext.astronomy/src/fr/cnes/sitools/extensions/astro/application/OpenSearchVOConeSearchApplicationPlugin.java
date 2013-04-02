@@ -1,18 +1,17 @@
-/**
- * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
-* This file is part of SITools2.
+ * This file is part of SITools2.
  * 
-* SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+ * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * 
-* SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
-* You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
-*****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************/
+
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.model.Category;
@@ -20,11 +19,13 @@ import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -36,12 +37,12 @@ import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 
 /**
-/**
  * Plugin to access to the Simple Cone Search service.
  * 
  * <p>
  * Application for AstroGlobWeb Module. This application queries a Simple Cone Search service 
- * by the use of (Healpix,order) parameters and it returns a GeoJson file.
+ * by the use of (Healpix,order) parameters and it returns a GeoJson file.<br/>
+ * The cache directive is set to FOREVER
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
@@ -68,6 +69,11 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    * Maximum of characters that is allowed for the longname by the open search standard.
    */
   private static final int MAX_LENGTH_LONGNAME = 48;
+  
+  /**
+   * Dictionary.
+   */
+  private Map<String, VoDictionary> dico = new HashMap<String, VoDictionary>();
 
   /**
    * Constructor.
@@ -204,10 +210,19 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
       router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearch.class);
-      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);
+      router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchDico.class);
+      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);      
       attachParameterizedResources(router);
     }
     return router;
+  }
+  
+  /**
+   * Returns the dictionary.
+   * @return the dictonary
+   */
+  public final Map<String, VoDictionary> getDico() {
+    return this.dico;
   }
 
   @Override
@@ -243,7 +258,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
           constraintList.add(constraint);
         }
         ApplicationPluginParameter tags = params.get("tags");
-        if (tags.getValue().length() > MAX_LENGTH_TAGS || tags.getValue().contains("<") 
+        if (tags.getValue().length() > MAX_LENGTH_TAGS || tags.getValue().contains("<")
                 || tags.getValue().contains(">")) {
           ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("tags");
@@ -252,7 +267,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
           constraintList.add(constraint);
         }
         ApplicationPluginParameter longName = params.get("longName");
-        if (longName.getValue().length() > MAX_LENGTH_LONGNAME || longName.getValue().contains("<") 
+        if (longName.getValue().length() > MAX_LENGTH_LONGNAME || longName.getValue().contains("<")
                 || longName.getValue().contains(">")) {
           ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("longName");
@@ -285,7 +300,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
           constraintList.add(constraint);
         }
         ApplicationPluginParameter syndicationRight = params.get("syndicationRight");
-        if (!syndicationRight.getValue().equals("open") && !syndicationRight.getValue().equals("closed") && !syndicationRight.getValue().equals("private") 
+        if (!syndicationRight.getValue().equals("open") && !syndicationRight.getValue().equals("closed") && !syndicationRight.getValue().equals("private")
                 && !syndicationRight.getValue().equals("limited")) {
           ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("syndicationRight");

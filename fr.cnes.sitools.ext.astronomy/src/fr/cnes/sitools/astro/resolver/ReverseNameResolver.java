@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -19,6 +19,8 @@
  */
 package fr.cnes.sitools.astro.resolver;
 
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.util.ClientResourceProxy;
 import fr.cnes.sitools.util.Util;
 import java.io.IOException;
@@ -34,44 +36,64 @@ import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 
 /**
- * This object contains methods to handle CDS reverse name resolver.<br/> A
- * ReverseNameResolver allows you to get an object name given both a sky
- * position and a radius. <br/> N.B: The maximal Radius is fixed to 0.5°
+ * Queries the CDS reverse name resolver and returns the object name for a given sky position and a radius. <br/>
+ * N.B: The maximal Radius is fixed to 0.5°
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ReverseNameResolver {
-
-    private static final String reverseService = "http://alasky.u-strasbg.fr/cgi/simbad-flat/simbad-quick.py?Ident=<coordinates>&SR=<radius>";
+  /**
+   * Logger.
+   */
+    private static final Logger LOG = Logger.getLogger(ReverseNameResolver.class.getName());
+   /**
+    * Template URL for the CDS reverse name resolver service.
+    */
+    private static final String TEMPLATE_REVERSE_NAME_RESOLVER = "http://alasky.u-strasbg.fr/cgi/simbad-flat/simbad-quick.py?Ident=<coordinates>&SR=<radius>";
+    /**
+     * input parameter : sky position.
+     */
     private final String coordinates;
+    /**
+     * input parameter : radius.
+     */
     private double radius;
+    /**
+     * Init the data model.
+     */
     private Map dataModel = new HashMap();
+    /**
+     * Max radius.
+     */
     private static final double MAX_RADIUS = 0.5;
-    private static final int RESPONSE_WTH_SECONDS=6;
+    /**
+     * Minimum time in seconds to wait to redo another request. 
+     */
+    private static final int RESPONSE_IN_SECONDS_TO_WAIT = 6;
 
     /**
-     * Create a ReverseNameResolver instance based on - coordinates (ex:
-     * 23:42:30.02 -42:34:12.02) - Healpix order The Healpix order allows to fix
-     * the radius of the reverse name resolver
+     * Creates a ReverseNameResolver instance based on coordinates (ex: 23:42:30.02 -42:34:12.02) and the Healpix order.<br/>
+     * 
+     * <p>The Healpix order allows to fix the radius of the reverse name resolver</p>
      *
-     * @param coordinates coordinates
-     * @param radius radius of the cone search
+     * @param coordinatesVal coordinates
+     * @param radiusVal radius in degree of the cone search
      * @throws NameResolverException  
      */
-    public ReverseNameResolver(final String coordinates, double radius) throws NameResolverException {
-        this.coordinates = coordinates;
-        this.radius = (radius > MAX_RADIUS) ? MAX_RADIUS : radius;
+    public ReverseNameResolver(final String coordinatesVal, final double radiusVal) throws NameResolverException {
+        this.coordinates = coordinatesVal;
+        this.radius = (radiusVal > MAX_RADIUS) ? MAX_RADIUS : radiusVal;
         process();
     }
 
     /**
-     * Build the query and create the response
+     * Builds the query and creates the response.
      *
      * @throws NameResolverException
      */
     private void process() throws NameResolverException {
         // building the query
-        String serviceToQuery = reverseService.replace("<coordinates>", coordinates);
+        String serviceToQuery = TEMPLATE_REVERSE_NAME_RESOLVER.replace("<coordinates>", coordinates);
         serviceToQuery = serviceToQuery.replace("<radius>", String.valueOf(radius));
 
         // requesting
@@ -106,7 +128,7 @@ public class ReverseNameResolver {
                     // The CDS server could return position with seconds or without second term.
                     HMS hms;
                     DMS dms;
-                    if (positionElts.length == RESPONSE_WTH_SECONDS) {
+                    if (positionElts.length == RESPONSE_IN_SECONDS_TO_WAIT) {
                         hms = new HMS(String.format("%s:%s:%s", positionElts[0], positionElts[1], positionElts[2]));
                         dms = new DMS(String.format("%s:%s:%s", positionElts[3], positionElts[4], positionElts[5]));
                     } else {
@@ -132,7 +154,7 @@ public class ReverseNameResolver {
                     geometry.put("type", "Point");
                     AstroCoordinate astroCoordinate = new AstroCoordinate(hms.toString(true), dms.toString(true));
                     geometry.put("coordinates", String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()));
-                    geometry.put("crs", AbstractNameResolver.CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+                    geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
                     feature.put("geometry", geometry);
 
                     dataModel.put("features", Arrays.asList(feature));
@@ -170,8 +192,7 @@ public class ReverseNameResolver {
      *
      * @return response
      */
-    public Map getJsonResponse() {
+    public final Map getJsonResponse() {
         return Collections.unmodifiableMap(this.dataModel);
-    }
-    private static final Logger LOG = Logger.getLogger(ReverseNameResolver.class.getName());
+    }    
 }

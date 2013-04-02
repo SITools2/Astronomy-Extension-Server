@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -100,7 +100,7 @@ public class USNO_B1Query implements ConeSearchQueryInterface{
             }
             dataModel.put("features", features);
             dataModel.put("totalResults", totalResults);
-            return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+            return new GeoJsonRepresentation(dataModel);
         } catch (Exception ex) {
             throw new Exception(ex);
         }

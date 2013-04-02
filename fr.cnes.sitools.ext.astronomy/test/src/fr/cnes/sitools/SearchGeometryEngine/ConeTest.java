@@ -66,16 +66,4 @@ public class ConeTest {
         boolean result = instance.isSurface();
         assertEquals(expResult, result);
     }
-
-    /**
-     * Test of getType method, of class Cone.
-     */
-    @Test
-    public void testGetType() {
-        System.out.println("getType");
-        Cone instance = new Cone();
-        String expResult = "CONE";
-        String result = instance.getType();
-        assertEquals(expResult, result);
-    }
 }

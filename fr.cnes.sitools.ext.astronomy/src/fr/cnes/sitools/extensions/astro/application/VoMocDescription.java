@@ -1,18 +1,16 @@
-/**
- * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
-* This file is part of SITools2.
- * 
-* SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+/*****************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of SITools2.
+ *
+ * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
-* SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
-* You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
-*****************************************************************************
- */
+ *
+ * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ ****************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import cds.moc.HealpixMoc;
@@ -31,6 +29,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
 import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Variant;
@@ -39,12 +39,10 @@ import org.restlet.resource.ResourceException;
 
 /**
  * Retrieves and transforms a HEALPix Multi-Order Coverage map in different representations.
- * 
- * <p>
- * The HEALPix Multi-Order Coverage map is stored as a FITS file. Also, this FITS file is converted
- * in different representations according to media type that is asked by the user.
- * </p>
- * 
+ *
+ * <p> The HEALPix Multi-Order Coverage map is stored as a FITS file. Also, this FITS file is converted in different representations
+ * according to media type that is asked by the user. </p>
+ *
  * @see <a href="http://ivoa.net/Documents/Notes/MOC/index.html">IVOA note - MOC</a>
  * @author Jean-Christophe Malapert
  */
@@ -54,19 +52,17 @@ public class VoMocDescription extends MocDescription {
    * Size of one FITS block (bytes).
    */
   private static final int FITS_BLOCK_SIZE = 1024;
-  
   /**
    * Size of the FITS buffer (bytes).
    */
   private static final int BUFFER_FITS = 32 * FITS_BLOCK_SIZE;
-  
   /**
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(VoMocDescription.class.getName());
 
   @Override
-  public final void doInit() {    
+  public final void doInit() {
     MediaType.register("image/fits", "FITS image");
     getMetadataService().addExtension("fits", MediaType.valueOf("image/fits"));
     getVariants().add(new Variant(MediaType.valueOf("image/fits")));
@@ -75,6 +71,9 @@ public class VoMocDescription extends MocDescription {
     if (!getRequest().getMethod().equals(Method.OPTIONS)) {
       try {
         computeMoc();
+      } catch (IllegalArgumentException ex) {
+        LOG.log(Level.WARNING, null, ex);
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);        
       } catch (Exception ex) {
         LOG.log(Level.SEVERE, null, ex);
         throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -82,6 +81,15 @@ public class VoMocDescription extends MocDescription {
     }
   }
 
+  /**
+   * Retrieves the MOC located in the mocdescribe parameter.
+   * 
+   * <p>
+   * An IllegalArgumentException is returned when mocdescribe is empty.
+   * </p>
+   *
+   * @throws Exception Error while MOC is processed.
+   */
   @Override
   protected final void computeMoc() throws Exception {
     ApplicationPluginModel model = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel();
@@ -92,6 +100,9 @@ public class VoMocDescription extends MocDescription {
       InputStream is = client.get().getStream();
       BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FITS);
       this.setMoc(new HealpixMoc(bis, HealpixMoc.FITS));
+    } else {
+      LOG.log(Level.SEVERE, "mocdescribe parameter must be set.");
+      throw new IllegalArgumentException("mocdescribe parameter must be set.");
     }
   }
 
@@ -103,7 +114,7 @@ public class VoMocDescription extends MocDescription {
     setName("Computes the sky coverage from a HEALPix Multi-Order Coverage (MOC) FITS");
     setDescription("Computing the sky coverage, <a href=\"http://ivoa.net/Documents/Notes/MOC/index.html\">IVOA note - MOC</a>");
   }
-  
+
   @Override
   protected final void describeGet(final MethodInfo info) {
     this.addInfo(info);
@@ -144,6 +155,11 @@ public class VoMocDescription extends MocDescription {
     representationsInfo.add(representationInfoJson);
     representationsInfo.add(representationInfoPng);
     representationsInfo.add(representationInfoTxt);
+    
+    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    parametersInfo.add(new ParameterInfo("mocdescribe", true, "xs:string", ParameterStyle.PLAIN, "MOC's URL."));
+        
+    responseOK.setParameters(parametersInfo);    
 
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);
@@ -154,7 +170,8 @@ public class VoMocDescription extends MocDescription {
     representationInfoError.setReference("error");
 
     responseNOK.getRepresentations().add(representationInfoError);
-    responseNOK.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
+    responseNOK.getStatuses().add(Status.SERVER_ERROR_INTERNAL);    
+    responseNOK.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);    
 
     info.setResponses(Arrays.asList(responseOK, responseNOK));
   }

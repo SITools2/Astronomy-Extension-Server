@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 *
 * This file is part of SITools2.
 *
@@ -21,7 +21,7 @@ package fr.cnes.sitools.SearchGeometryEngine;
 
 /**
  * Interface that provides an unique way to retieve the Healpix pixels from the index.
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public interface Index {
 
@@ -29,7 +29,7 @@ public interface Index {
      * Returns the index.
      * @return the index
      */
-    Object getIndex();
+    Object getIndex();    
 
 }
 

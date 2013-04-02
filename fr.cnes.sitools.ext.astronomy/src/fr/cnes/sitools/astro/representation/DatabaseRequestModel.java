@@ -1,6 +1,5 @@
-/**
- * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/*******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -15,8 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ *****************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
 import fr.cnes.sitools.common.exception.SitoolsException;
@@ -37,18 +35,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class makes easier the use of DatabaseRequest object in Freemarker The
+ * This class makes easier the use of DatabaseRequest object in Freemarker.<br/> The
  * connection to the database is closed in this class.
  *
+ * <p><pre>
  * Example usage:
  *
- * in your Java source: TemplateSequenceModel rows = new
- * DatabaseRequestModel(rs); root.put("rows",rows);
+ * in your Java source: 
+ * <code>TemplateSequenceModel rows = new DatabaseRequestModel(rs); 
+ * root.put("rows",rows);</code>
  *
- * in your .ftl <#list rows as row> ${row["column1"]} - ${row["column2"]}
- * <#/list>
+ * in your .ftl 
+ * <code><#list rows as row> ${row["column1"]} - ${row["column2"]}
+ * <#/list></code>
+ * </pre>
+ * </p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class DatabaseRequestModel implements TemplateSequenceModel {
   /**
@@ -69,7 +72,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
     private int size;
 
     /**
-     * Create a DatabaseRequest Model instance.
+     * Creates a DatabaseRequest Model instance.
      *
      * @param rsVal database connection
      * @param converterChainedVal the converter object
@@ -85,7 +88,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
             try {
                 this.rs.close();
             } catch (SitoolsException ex) {
-                Logger.getLogger(DatabaseRequestModel.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -116,7 +119,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
             try {
                 this.rs.close();
             } catch (SitoolsException ex1) {
-                Logger.getLogger(DatabaseRequestModel.class.getName()).log(Level.WARNING, null, ex1);
+                LOG.log(Level.WARNING, null, ex1);
             } finally {
                 throw new TemplateModelException(ex.toString());
             }
@@ -127,7 +130,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
             try {
                 this.rs.close();
             } catch (SitoolsException ex) {
-                Logger.getLogger(DatabaseRequestModel.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, null, ex);
             }
         }
 
@@ -144,7 +147,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
     }
 
     /**
-     * This class wraps a record from the database to a Row object.
+     * Wraps a record from the database to a Row object.
      */
     public class Row implements TemplateHashModel {
 
@@ -162,7 +165,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         private ConverterChained converterChained = null;
 
         /**
-         * Contructs a row.
+         * Contructs a new row.
          * @param rsVal resultSet
          * @param converterChainedVal SITools2 converter
          * @throws SitoolsException Exception
@@ -175,7 +178,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         }
 
         /**
-         * Create a HashMap of the different attributes from a record. 
+         * Creates a HashMap of the different attributes from a record. 
          * 
          * <p>
          * The key of the hash map is the columnAlias
@@ -218,11 +221,10 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
                 try {
                     this.rs.close();
                 } catch (SitoolsException ex) {
-                    Logger.getLogger(DatabaseRequestModel.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.log(Level.WARNING, null, ex);
                 }
             }
             return isEmpty;
-
         }
     }    
 }

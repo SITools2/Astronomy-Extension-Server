@@ -48,7 +48,7 @@ public class ConeSearchSolarObjectResourceTest extends AbstractSitoolsServiceTes
   private final String urlAttachment = "/plugin/solarObjects";
   private ResourceModel rm;
   private static final String datasetId = "cc659853-d130-4434-b52b-89ec57db3735";
-  private static final String request = "/fuse/plugin/solarObjects?healpix=10&order=8&EPOCH=2013-01-23T18:31:00";
+  private static final String request = "/fuse/plugin/solarObjects?healpix=8&order=8&EPOCH=2013-01-23T18:31:00";
 
   public ConeSearchSolarObjectResourceTest() {
   }

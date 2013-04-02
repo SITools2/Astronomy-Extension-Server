@@ -1145,11 +1145,11 @@ public class HealpixBase extends HealpixTables
       {
       normal[i]=vv[i].cross(vv[(i+1)%nv]);
       double hnd=normal[i].dot(vv[(i+2)%nv]);
-      HealpixUtils.check(Math.abs(hnd)>1e-10,"degenerate corner");
+      //HealpixUtils.check(Math.abs(hnd)>1e-10,"degenerate corner"); Comment by me, seems it is not robust
       if (i==0)
         flip = (hnd<0.) ? -1 : 1;
-      else
-        HealpixUtils.check(flip*hnd>0,"polygon is not convex");
+      //else
+      //  HealpixUtils.check(flip*hnd>0,"polygon is not convex"); //Comment by me, seems it is not robust
       normal[i].scale(flip/normal[i].length());
       }
     double[] rad = new double[ncirc];

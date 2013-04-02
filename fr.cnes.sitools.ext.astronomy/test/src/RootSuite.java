@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({fr.cnes.sitools.SearchGeometryEngine.SearchGeometryEngineSuite.class, 
-  fr.cnes.sitools.astro.resolver.ResolverSuite.class, 
+  fr.cnes.sitools.astro.resolver.ResolverSuite.class, fr.cnes.sitools.extensions.astro.application.ApplicationSuite.class,
   fr.cnes.sitools.extensions.astro.resource.ResourceSuite.class})
 public class RootSuite {    
     

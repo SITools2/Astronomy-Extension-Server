@@ -1,5 +1,5 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/*******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
@@ -68,7 +68,7 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
               + "&facet.field=order5&facet.field=order6&facet.field=order7"
               + "&facet.field=order8&facet.field=order9&facet.field=order10"
               + "&facet.field=order11&facet.field=order12&facet.field=order13");
-      Logger.getLogger(OpenSearchSearch.class.getName()).log(Level.INFO, query);
+      LOG.log(Level.INFO, query);
       ClientResource client = new ClientResource(query);
       Representation rep = client.get();
       JsonRepresentation json = new JsonRepresentation(rep.getText());

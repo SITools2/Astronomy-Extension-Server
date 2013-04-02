@@ -1,6 +1,5 @@
-/**
- * *****************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/*******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -11,8 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ ******************************************************************************/
 package fr.cnes.sitools.solr.transformer;
 
 import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
@@ -40,19 +38,30 @@ import org.apache.solr.handler.dataimport.DataImporter;
 import org.apache.solr.handler.dataimport.Transformer;
 
 /**
- * Computes some geographical quantities from the Word Coordinates System (WCS) keywords.
+ * Computes some geographical parameters from the Word Coordinates System (WCS) keywords.
  *
- * <p> When WCS keywords exist, the DIH computes: <ul> <li>the WCS center of the frame</li> <li>the Ra/Dec of each corner of the FOV</li>
- * <li>the Healpix index of the FOV<li> </ul> </p>
+ * <p> When WCS keywords exist, the DIH computes: 
+ * <ul> 
+ * <li>the WCS center of the frame</li> 
+ * <li>the Ra/Dec of each corner of the FOV</li>
+ * <li>the Healpix index of the FOV</li> 
+ * </ul> 
+ * </p>
  *
- * <p> To set up the Healpix configuration, some attributes must be set to entity tag: <ul> <li>transformer, transformer name</li>
- * <li>minOrder (optional, default: 0), minimum order for which Healpix is computed</li> <li>maxOrder (optional, default: 13), maximum order
- * for which Healpix is computed</li> <li>scheme, Healpix Scheme </ul> Here is an example of a Healpix configuration:
+ * <p> To set up the Healpix configuration, some attributes must be set to entity tag:
+ * <ul> 
+ * <li>transformer, transformer name</li>
+ * <li>minOrder (optional, default: 0), minimum order for which Healpix is computed</li>
+ * <li>maxOrder (optional, default: 13), maximum order
+ * for which Healpix is computed</li>
+ * <li>scheme, Healpix Scheme</li>
+ * </ul> Here is an example of a Healpix configuration:
  * <pre>
  * <code>
  * entity name="headers" query="select * from fuse.headers" transformer="fr.cnes.sitools.solr.transformer.WcsTransformer" minOrder="3" maxOrder="13" scheme="NESTED">
  * </code>
- * </pre> </p>
+ * </pre>
+ * </p>
  *
  * <p> To map, a solrColumn with a wcs element, configure the solr fields as follow <field column="<name>" ... wcs="..."/> where wcs keyword
  * can take the following values : NAXIS1,NAXIS2,EQUINOX,CTYPE1,CTYPE2,CRPIX1,CRPIX2,CRVAL1,CRVAL2,CDELT1,CDELT2
@@ -136,6 +145,9 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
 
   /**
    * Returns the transformation that is applied in this method.
+   * 
+   * <p>This transformer computes the footprint and its Healpix index.</p>
+   * 
    *
    * @param rowVal row to convert
    * @param context Data Handler context
@@ -149,16 +161,16 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
     this.row = rowVal;
     try {
       wcs = new WCSTransform(this);
-      computeWcsCenter(this.row, wcs);
-      points = computeFootprint(this.row, wcs);
+      computeWcsCenter(wcs);
+      points = computeFootprint(wcs);
     } catch (IllegalArgumentException ex) {
-      Logger.getLogger(WcsTransformer.class.getName()).log(Level.WARNING, null, ex);
-      points = computePointSource(this.row);
+      LOG.log(Level.WARNING, null, ex);
+      points = computePointSource();
     } catch (RuntimeException ex) {
-      Logger.getLogger(WcsTransformer.class.getName()).log(Level.WARNING, null, ex);
-      points = computePointSource(this.row);
+      LOG.log(Level.WARNING, null, ex);
+      points = computePointSource();
     }
-    computeHealpix(points, this.row);
+    computeHealpix(points);
     return this.row;
   }
 
@@ -180,12 +192,13 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
   }
 
   /**
-   * Gets the point source based on RA and DEC keywords.
+   * Returns the point source based on RA and DEC keywords.
+   * 
+   * <p><code>null</code> is returned when <code>RA_WCS</code> or <code>DEC_WCS</code> cannot be retrieved.</p>
    *
-   * @param rowVal row to transform
    * @return one point in the list or null when RA or DEC is not set
    */
-  private List<Point2D.Double> computePointSource(final Map<String, Object> rowVal) {
+  private List<Point2D.Double> computePointSource() {
     double ra = getDoubleValue(RA_WCS, DEFAULT_VALUE);
     double dec = getDoubleValue(DEC_WCS, DEFAULT_VALUE);
     if (ra != DEFAULT_VALUE && dec != DEFAULT_VALUE) {
@@ -201,7 +214,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
   }
 
   /**
-   * Returns true if the xml-data-config file contains attributes with a specific wcs key.
+   * Returns <code>true</code> if the xml-data-config file contains attributes with a specific wcs key.
    *
    * @param field field
    * @param key WCS keyword
@@ -212,33 +225,31 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
   }
 
   /**
-   * Computes the center of the image.
+   * Computes and stores the center of the image in <code>row</code>.
    *
-   * @param rowVal solr row
    * @param wcs wcs
    */
-  private void computeWcsCenter(final Map<String, Object> rowVal, final WCSTransform wcs) {
+  private void computeWcsCenter(final WCSTransform wcs) {
     if (wcs.isWCS() && wcs.isValid()) {
       try {
         Point2D.Double wcsCenter = wcs.getWCSCenter();
         row.put(RA, wcsCenter.x);
         row.put(DEC, wcsCenter.y);
       } catch (IllegalArgumentException ex) {
-        Logger.getLogger(WcsTransformer.class.getName()).log(Level.WARNING, null, ex);
+        LOG.log(Level.WARNING, null, ex);
       } catch (RuntimeException ex) {
-        Logger.getLogger(WcsTransformer.class.getName()).log(Level.WARNING, null, ex);
+        LOG.log(Level.WARNING, null, ex);
       }
     }
   }
 
   /**
-   * Gets the footprint of the image.
+   * Computes, stores and returns the footprint of the image.
    *
-   * @param rowVal solr row
    * @param wcs wcs
    * @return the center of the image
    */
-  private List<Point2D.Double> computeFootprint(final Map<String, Object> rowVal, final WCSTransform wcs) {
+  private List<Point2D.Double> computeFootprint(final WCSTransform wcs) {
     List<Point2D.Double> points = null;
     if (wcs != null && wcs.isWCS() && wcs.isValid()) {
       try {
@@ -257,21 +268,20 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
           points = Arrays.asList(p2, p3, p4, p1);
         }
       } catch (IllegalArgumentException ex) {
-        Logger.getLogger(WcsTransformer.class.getName()).log(Level.SEVERE, null, ex);
+        LOG.log(Level.SEVERE, null, ex);
       } catch (RuntimeException ex) {
-        Logger.getLogger(WcsTransformer.class.getName()).log(Level.SEVERE, null, ex);
+        LOG.log(Level.SEVERE, null, ex);
       }
     }
     return points;
   }
 
   /**
-   * Computes Healpix.
+   * Computes and stores Healpix.
    *
-   * @param points points describing the polygon
-   * @param rowVal solr row
+   * @param points points describing the polygon   
    */
-  private void computeHealpix(final List<Point2D.Double> points, final Map<String, Object> rowVal) {
+  private void computeHealpix(final List<Point2D.Double> points) {
     try {
       List<Point> skyPoints = new ArrayList<Point>(points.size());
       for (Point2D.Double point : points) {
@@ -324,12 +334,12 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
   }
 
   /**
-   * Returns the Healpix index at a specific order.
+   * Returns the Healpix index in RING scheme at a specific order.
    *
    * @param order Healpix resolution
    * @param index index
    * @return the Healpix index at a given order
-   * @throws Exception Excpetion
+   * @throws Exception scheme is unknown
    */
   private List<Long> computeAtOrder(final int order, final Index index) throws Exception {
     ((RingIndex) index).setOrder(order);

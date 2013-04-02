@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -120,7 +120,7 @@ public class ConeSearchProtocolLibrary {
    */
   public VOTableRepresentation getResponse() {
     Map dataModel = fillDataModel();
-    return new VOTableRepresentation(dataModel, "votable.ftl");
+    return new VOTableRepresentation(dataModel);
   }
     private static final Logger LOG = Logger.getLogger(ConeSearchProtocolLibrary.class.getName());
 }

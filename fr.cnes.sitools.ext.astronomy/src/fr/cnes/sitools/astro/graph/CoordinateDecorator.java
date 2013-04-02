@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+* Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
 *
 * This file is part of SITools2.
 *
@@ -30,14 +30,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This object provides methods to decorate the Graph by coordinates
+ * Provides methods to decorate the Graph by a coordinates grid.
  *
- * <p>
- * This class allows to plot coordinate axes to the graph
- * </p>
+ * <p>This class allows to plot coordinate axes to the graph</p>
  * 
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
@@ -46,9 +43,9 @@ import java.util.logging.Logger;
  * ((CircleDecorator)graph).setColor(Color.yellow); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
- * @author Jean-Christophe Malapert
+ * </pre></p>
+ * 
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CoordinateDecorator extends AbstractGraphDecorator {
     /**
@@ -77,8 +74,11 @@ public class CoordinateDecorator extends AbstractGraphDecorator {
     private static final int TWO_INCREMENTAL_STEP_GRID = 20;    
 
     /**
-     * Constructor.
-     * @param g graph component
+     * Constructs a new coordinates grid as decorator. 
+     *
+     * <p>The coordinates grid is customized by a color and a transparency.</p>
+     * 
+     * @param g graph component to decorate
      * @param colorVal color of this concrete decorator
      * @param alphaVal transparency from 0 to 1
      */
@@ -89,17 +89,19 @@ public class CoordinateDecorator extends AbstractGraphDecorator {
     }
 
     /**
-     * Constructs a new CoordinateDecorator.
-     * @param g graph
+     * Constructs a new coordinates grid as decorator with YELLOW color and a <code>DEFAULT_ALPHA</code> transparency.
+     *
+     * @param g graph to decorate
      */
     public CoordinateDecorator(final Graph g) {
         this(g, Color.YELLOW, DEFAULT_ALPHA);
     }
 
     /**
-     * Draw latitudes/declination.
-     * @param g2 graph component
-     * @param colorVal color
+     * Draws latitudes/declination lines.
+     * 
+     * @param g2 graph to decorate
+     * @param colorVal color to set
      */
     protected final void drawLatitudeLines(final Graphics2D g2, final Color colorVal) {
         g2.setPaint(colorVal);
@@ -123,9 +125,9 @@ public class CoordinateDecorator extends AbstractGraphDecorator {
     }
 
     /**
-     * Draw longitudes/right ascension.
-     * @param g2 graph
-     * @param colorVal color
+     * Draws longitudes/right ascension lines.
+     * @param g2 graph to decorate
+     * @param colorVal color to set
      */
     protected final void drawLongitudeLines(final Graphics2D g2, final Color colorVal) {
         g2.setPaint(colorVal);

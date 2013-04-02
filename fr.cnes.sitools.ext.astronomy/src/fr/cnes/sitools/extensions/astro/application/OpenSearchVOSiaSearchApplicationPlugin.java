@@ -1,5 +1,5 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.model.Category;
@@ -23,11 +23,13 @@ import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +45,8 @@ import org.restlet.routing.Template;
  * 
  * <p>
  * Application for AstroGlobWeb Module. This application queries a Simple Image Access service 
- * by the use of (Healpix,order) parameters and it returns a GeoJson file.
+ * by the use of (Healpix,order) parameters and it returns a GeoJson file.<br/>
+ * <p>The cache directive is set to FOREVER</p>
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
@@ -71,6 +74,10 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
    * Maximum of characters that is allowed for the longname by the open search standard.
    */
   private static final int MAX_LENGTH_LONGNAME = 48;  
+  /**
+   * Dictionary.
+   */
+  private Map<String, VoDictionary> dico = new HashMap<String, VoDictionary>();  
   /**
    * Constructor.
    */
@@ -199,11 +206,20 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaDescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
+      router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearchDico.class);
       router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearch.class);
       attachParameterizedResources(router);
     }
     return router;
   }
+  
+  /**
+   * Returns the dictionary.
+   * @return the dictonary
+   */
+  public final Map<String, VoDictionary> getDico() {
+    return this.dico;
+  }  
 
   @Override
   public final Validator<AbstractApplicationPlugin> getValidator() {

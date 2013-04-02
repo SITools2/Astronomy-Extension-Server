@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  *
  * <p> The concrete component works for whatever projection </p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class GenericProjection extends Graph {
 
@@ -52,7 +52,7 @@ public class GenericProjection extends Graph {
   }
 
   /**
-   * Analyze the projection and find xmin, xmax, ymin, ymax values.
+   * Computes xmin, xmax, ymin, ymax values of the projection and returns them.
    *
    * @return [xmin, xmax, ymin, ymax]
    */
@@ -91,7 +91,7 @@ public class GenericProjection extends Graph {
   }
 
   /**
-   * Set up image size with a fixed height.
+   * Sets up image size with a fixed height.
    */
   private void setupImageSize() {
     double deltaX = getRange()[X_MAX] - getRange()[X_MIN];

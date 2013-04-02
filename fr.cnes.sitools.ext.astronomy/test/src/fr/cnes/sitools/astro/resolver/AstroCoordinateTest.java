@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -18,48 +18,21 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
- *
- * @author malapert
+ * Test of AstroCoordinate object.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class AstroCoordinateTest {
-
-    /**
-     * Test of getType method, of class AstroCoordinate.
-     */
-    @Test
-    public void testGetType() {
-        System.out.println("getType");
-        AstroCoordinate instance = new AstroCoordinate(20, 30);
-        instance.setType("IMCCE");
-        String expResult = "IMCCE";
-        String result = instance.getType();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setType method, of class AstroCoordinate.
-     */
-    @Test
-    public void testSetType() {
-        System.out.println("setType");
-        String type = "IMCCE";
-        AstroCoordinate instance = new AstroCoordinate(20, 30);
-        instance.setType(type);
-    }
 
     /**
      * Test of getRaAsDecimal method, of class AstroCoordinate.
      */
     @Test
-    public void testGetRaAsDecimal() {
+    public final void testGetRaAsDecimal() {
         System.out.println("getRaAsDecimal");
         AstroCoordinate instance = new AstroCoordinate(20, 30);
         double expResult = 20.0;
@@ -71,7 +44,7 @@ public class AstroCoordinateTest {
      * Test of getDecAsDecimal method, of class AstroCoordinate.
      */
     @Test
-    public void testGetDecAsDecimal() {
+    public final void testGetDecAsDecimal() {
         System.out.println("getDecAsDecimal");
         AstroCoordinate instance = new AstroCoordinate(20, 30);
         double expResult = 30.0;
@@ -83,7 +56,7 @@ public class AstroCoordinateTest {
      * Test of getRaAsSexagesimal method, of class AstroCoordinate.
      */
     @Test
-    public void testGetRaAsSexagesimal() {
+    public final void testGetRaAsSexagesimal() {
         System.out.println("getRaAsSexagesimal");
         AstroCoordinate instance = new AstroCoordinate(20, 30);
         String expResult = "01:20:00.000";
@@ -95,7 +68,7 @@ public class AstroCoordinateTest {
      * Test of getDecAsSexagesimal method, of class AstroCoordinate.
      */
     @Test
-    public void testGetDecAsSexagesimal() {
+    public final void testGetDecAsSexagesimal() {
         System.out.println("getDecAsSexagesimal");
         AstroCoordinate instance = new AstroCoordinate(20, 30);
         String expResult = "+30:00:00.00";
@@ -107,7 +80,7 @@ public class AstroCoordinateTest {
      * Test of setRaAsDecimal method, of class AstroCoordinate.
      */
     @Test
-    public void testSetRaAsDecimal() {
+    public final void testSetRaAsDecimal() {
         System.out.println("setRaAsDecimal");
         double ra = 0.0;
         AstroCoordinate instance = new AstroCoordinate(20, 30);
@@ -118,7 +91,7 @@ public class AstroCoordinateTest {
      * Test of setDecAsDecimal method, of class AstroCoordinate.
      */
     @Test
-    public void testSetDecAsDecimal() {
+    public final void testSetDecAsDecimal() {
         System.out.println("setDecAsDecimal");
         double dec = 0.0;
         AstroCoordinate instance = new AstroCoordinate(20, 30);
@@ -129,7 +102,7 @@ public class AstroCoordinateTest {
      * Test of setRaAsSexagesimal method, of class AstroCoordinate.
      */
     @Test
-    public void testSetRaAsSexagesimal() {
+    public final void testSetRaAsSexagesimal() {
         System.out.println("setRaAsSexagesimal");
         String ra = "20:00:00";
         AstroCoordinate instance = new AstroCoordinate(20, 30);
@@ -140,11 +113,10 @@ public class AstroCoordinateTest {
      * Test of setDecAsSexagesimal method, of class AstroCoordinate.
      */
     @Test
-    public void testSetDecAsSexagesimal() {
+    public final void testSetDecAsSexagesimal() {
         System.out.println("setDecAsSexagesimal");
         String dec = "20:00:00";
         AstroCoordinate instance = new AstroCoordinate(20, 30);
         instance.setDecAsSexagesimal(dec);
     }
-
 }

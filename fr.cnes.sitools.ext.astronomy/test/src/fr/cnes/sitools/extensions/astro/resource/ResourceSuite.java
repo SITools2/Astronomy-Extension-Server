@@ -30,8 +30,8 @@ import org.junit.runners.Suite;
   fr.cnes.sitools.extensions.astro.resource.ReverseNameResolverResourceTest.class, 
   fr.cnes.sitools.extensions.astro.resource.ConeSearchResourceTest.class, 
   fr.cnes.sitools.extensions.astro.resource.CoverageResourceTest.class,
-  fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResourceTest.class,
-  ExportVOResourceTest.class})
+  ExportVOResourceTest.class,
+  fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResourceTest.class})
 
 public class ResourceSuite {
     

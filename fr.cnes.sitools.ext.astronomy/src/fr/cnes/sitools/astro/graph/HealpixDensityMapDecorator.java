@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -27,13 +27,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This objects provides methods to decorate a graph by a density map.
- * <p>
- * Provides a density map from a Healpix map.
- * </p>
+ * Povides methods to decorate a graph by a density map.
  *
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Provides a density map from a Healpix map.</p>
+ *
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
@@ -55,9 +53,8 @@ import java.util.logging.Logger;
  * ((CircleDecorator)graph).setColor(Color.yellow); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
- * @author Jean-Christophe Malapert
+ * </pre></p>
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class HealpixDensityMapDecorator extends HealpixGridDecorator {
 
@@ -85,7 +82,7 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
    * @param nside Healpix nside
    * @param scheme Healpix scheme
    * @param alpha transparency
-   * @throws Exception Healpix Exception
+   * @throws Exception if a Healpix Exception happens.
    */
   public HealpixDensityMapDecorator(final Graph graph, final int nside, final Scheme scheme, final float alpha) throws Exception {
     super(graph, nside, scheme, null, alpha);
@@ -99,7 +96,7 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
    * @param scheme Healpix scheme
    * @param order Healpix order
    * @param alpha transparency
-   * @throws Exception Healpix Excception
+   * @throws Exception if a Healpix Exception happens
    */
   public HealpixDensityMapDecorator(final Graph graph, final Scheme scheme, final int order, final float alpha) throws Exception {
     this(graph, (int) Math.pow(2, order), scheme, alpha);
@@ -108,13 +105,13 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   /**
    * Imports a Healpix density map.
    *
-   * @param healpixMapDouble density map
+   * @param healpixMapDoubleVal density map
    * @param coordinateTransformation Coordinates transformation to apply
    * @throws Exception Healpix Exception
    */
-  public void importHealpixMap(final HealpixMapDouble healpixMapDouble, final CoordinateTransformation coordinateTransformation) throws Exception {
+  public final void importHealpixMap(final HealpixMapDouble healpixMapDoubleVal, final CoordinateTransformation coordinateTransformation) throws Exception {
     this.setCoordinateTransformation(coordinateTransformation);
-    this.getHealpixMapDouble().importGeneral(healpixMapDouble, false);
+    this.getHealpixMapDouble().importGeneral(healpixMapDoubleVal, false);
     double[] data = this.healpixMapDouble.getData();
     setMinValue(data[0]);
     for (int i = 0; i < data.length; i++) {
@@ -151,7 +148,7 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Set the max density.
+   * Sets the max density.
    *
    * @param max the max density
    */
@@ -160,7 +157,7 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Set the min density.
+   * Sets the min density.
    *
    * @param min the min density
    */
@@ -171,9 +168,9 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   /**
    * Draws a Healpix polygon.
    *
-   * @param g2 graphic
+   * @param g2 graphic to decorate
    * @param healpix Healpix index
-   * @param pix Helapix pixel to draw
+   * @param pix Healpix pixel to draw
    * @param coordinateTransformation Coordinate Transformation to apply
    */
   @Override
@@ -201,7 +198,9 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Color gradient based on HSB scale. The min value is represented by a blue color. The max value is represented by a red color.
+   * Returns a color gradient based on HSB scale.
+   * 
+   * <p>The min value is represented by a blue color. The max value is represented by a red color.</p>
    *
    * @param number density number
    * @param min min value

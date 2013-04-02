@@ -78,16 +78,4 @@ public class PointTest {
         boolean result = instance.isSurface();
         assertEquals(expResult, result);
     }
-
-    /**
-     * Test of getType method, of class Point.
-     */
-    @Test
-    public void testGetType() {
-        System.out.println("getType");
-        Point instance = new Point();
-        String expResult = "POINT";
-        String result = instance.getType();
-        assertEquals(expResult, result);
-    }
 }

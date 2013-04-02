@@ -18,7 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutoff;
 
-import fr.cnes.sitools.astro.resolver.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.util.Base64.OutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;

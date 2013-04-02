@@ -1,6 +1,5 @@
-/**
- * *****************************************************************************
- * Copyright 2011 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -11,25 +10,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ *****************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
-import fr.cnes.sitools.astro.resolver.AbstractNameResolver.CoordinateSystem;
-import fr.cnes.sitools.astro.resolver.AstroCoordinate;
 import fr.cnes.sitools.astro.resolver.CDSNameResolver;
 import fr.cnes.sitools.astro.resolver.CorotIdResolver;
 import fr.cnes.sitools.astro.resolver.IMCCESsoResolver;
-import fr.cnes.sitools.astro.resolver.NameResolverException;
+import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
-import fr.cnes.sitools.util.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.Disposition;
@@ -50,9 +50,9 @@ import org.restlet.resource.ResourceException;
 /**
  * Searchs on different name resolvers and returns one or several names.
  *
- * <p> In this current version, there are three name resolver<br/> services. The first one is based on CDS for stars and deep object. The
- * second one is based on solar system objects.<br/> And the last one is based on Corot </p>
- *
+ * <p> In this current version, there are three name resolver services. The first one is based on CDS for stars and deep object. The
+ * second one is based on solar system objects.And the last one is based on Corot <br/>
+ * The cache directive is set to FOREVER for CDS and COROT. For IMMCE, the cache is set to NO_CACHE</p>
  * <p>
  * <pre>
  * Example of requests:
@@ -83,7 +83,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
   /**
    * Coordinate system as input parameter.
    */
-  private AbstractNameResolver.CoordinateSystem coordSystem;
+  private CoordinateSystem coordSystem;
 
   /**
    * Initialize the name resolver, the epoch and the object name.
@@ -127,98 +127,136 @@ public class NameResolverResource extends SitoolsParameterizedResource {
   /**
    * Returns the representation based on CDS response.
    *
-   * @return The representation
-   * @throws NameResolverException Not found or error
+   * @return the representation
    */
-  private Representation resolveCds() throws NameResolverException {
-    LOG.finest(String.format("CDS name resolver is choosen with the following parameter %s",
-            objectName));
-    AbstractNameResolver nameResolverInterface = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
-    List<AstroCoordinate> astro = nameResolverInterface.getCoordinates(this.coordSystem);
-    getResponse().setStatus(Status.SUCCESS_OK);
-    Map dataModel = getDataModel(nameResolverInterface.getCreditsName(), astro, this.coordSystem.name());
-    return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+  private Representation resolveCds() {
+    LOG.finest(String.format("CDS name resolver is choosen with the following parameter %s", objectName));
+    AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);    
+    NameResolverResponse response = cds.getResponse();    
+    if (response.hasResult()) {
+      LOG.log(Level.INFO, "CDS name resolver is selected for {0}.", objectName);
+      getResponse().setStatus(Status.SUCCESS_OK);
+      List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+      for (AstroCoordinate iter:coordinates) {
+        iter.processTo(coordSystem);
+      }
+      String credits = response.getCredits();
+      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());          
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
+    } else {
+      LOG.log(Level.WARNING, null, response.getError());
+      throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
+    }
   }
 
   /**
    * Returns the representation based on IMCCE response.
    *
-   * @return The representation
-   * @throws NameResolverException Not found or error
+   * @return the representation
    */
-  private Representation resolveIMCCE() throws NameResolverException {
+  private Representation resolveIMCCE() {
     LOG.finest(String.format("IMCCE name resolver is choosen with the following parameter %s", objectName));
-    AbstractNameResolver nameResolverInterface = new IMCCESsoResolver(objectName, epoch);
-    List<AstroCoordinate> astro = nameResolverInterface.getCoordinates(this.coordSystem);
-    getResponse().setStatus(Status.SUCCESS_OK);
-    Map dataModel = getDataModel(nameResolverInterface.getCreditsName(), astro, this.coordSystem.name());
-    return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+    AbstractNameResolver imcce = new IMCCESsoResolver(objectName, epoch);
+    NameResolverResponse response = imcce.getResponse();    
+    if (response.hasResult()) {
+      LOG.log(Level.INFO, "IMCCE name resolver is selected for {0}.", objectName);
+      getResponse().setStatus(Status.SUCCESS_OK);
+      List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+      for (AstroCoordinate iter:coordinates) {
+        iter.processTo(coordSystem);
+      }
+      String credits = response.getCredits();
+      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());            
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
+    } else {
+      LOG.log(Level.WARNING, null, response.getError());
+      throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
+    }
   }
 
   /**
    * Returns the representation based on IAS response.
    *
-   * @return The representation
-   * @throws NameResolverException Not found or error
+   * @return the representation
    */
-  private Representation resolveIAS() throws NameResolverException {
+  private Representation resolveIAS() {
+    AbstractNameResolver ias = new CorotIdResolver(objectName);
+    NameResolverResponse response = ias.getResponse();
+    if (response.hasResult()) {
+      LOG.log(Level.INFO, "Corot name resolver is selected for {0}", objectName);
+      getResponse().setStatus(Status.SUCCESS_OK);
+      List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+      for (AstroCoordinate iter:coordinates) {
+        iter.processTo(coordSystem);
+      }
+      String credits = response.getCredits();
+      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
+      Representation rep = new GeoJsonRepresentation(dataModel);
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      return rep;
+    } else {
+      LOG.log(Level.WARNING, null, response.getError());
+      throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
+    }
+  }
 
-    LOG.finest("IAS name resolver is choosen");
-    AbstractNameResolver nameResolverInterface = new CorotIdResolver(objectName);
-    List<AstroCoordinate> astro = nameResolverInterface.getCoordinates(this.coordSystem);
-    getResponse().setStatus(Status.SUCCESS_OK);
-    Map dataModel = getDataModel(nameResolverInterface.getCreditsName(), astro, this.coordSystem.name());
-    return new GeoJsonRepresentation(dataModel, "GeoJson.ftl");
+
+  /**
+   * Returns the GeoJSON of the object name after calling all resolvers until an object is found or all resolvers have been called.
+   * @return the GeoJSON of the object name
+   */
+  private Representation callChainedResolver() {
+    Map dataModel;
+    AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
+    AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
+    AbstractNameResolver corot = new CorotIdResolver(objectName);
+    cds.setNext(imcce);
+    imcce.setNext(corot);
+    NameResolverResponse response = cds.getResponse();
+    if (!response.hasResult()) {
+      throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
+    }
+    String credits = response.getCredits();    
+    List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+    for (AstroCoordinate iter:coordinates) {
+      iter.processTo(coordSystem);
+    }
+    dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
+    Representation rep = new GeoJsonRepresentation(dataModel);
+    CacheBrowser.CacheDirectiveBrowser cacheDirective = (credits.equals("IMCCE")) ? CacheBrowser.CacheDirectiveBrowser.NO_CACHE : CacheBrowser.CacheDirectiveBrowser.FOREVER;    
+    CacheBrowser cache = CacheBrowser.createCache(cacheDirective, rep);
+    rep = cache.getRepresentation();
+    getResponse().setCacheDirectives(cache.getCacheDirectives());     
+    return rep;
   }
 
   /**
    * Returns the name resolver reponse.
    *
-   * @return The representation
+   * @return the representation
    */
   @Get
   public final Representation getNameResolverResponse() {
     Representation rep = null;
 
     if (this.nameResolver.equals("CDS")) {
-      try {
-        rep = resolveCds();
-      } catch (NameResolverException ex) {
-        LOG.log(Level.WARNING, null, ex);
-        throw new ResourceException(ex.getStatus(), ex);
-      }
+      rep = resolveCds();
     } else if (this.nameResolver.equals("IMCCE")) {
-      try {
-        rep = resolveIMCCE();
-      } catch (NameResolverException ex) {
-        LOG.log(Level.WARNING, null, ex);
-        throw new ResourceException(ex.getStatus(), ex);
-      }
+      rep = resolveIMCCE();
     } else if (this.nameResolver.equals("IAS")) {
-      try {
-        rep = resolveIAS();
-      } catch (NameResolverException ex) {
-        LOG.log(Level.WARNING, null, ex);
-        throw new ResourceException(ex.getStatus(), ex);
-      }
+      rep = resolveIAS();
     } else if (this.nameResolver.equals("ALL")) {
-      try {
-        rep = resolveCds();
-      } catch (NameResolverException ex) {
-        try {
-          rep = resolveIMCCE();
-        } catch (NameResolverException ex1) {
-          try {
-            rep = resolveIAS();
-          } catch (NameResolverException ex2) {
-            LOG.log(Level.WARNING, null, ex2);
-            throw new ResourceException(ex.getStatus(), ex2);
-          }
-        }
-      }
-    } else {
-      LOG.warning("cannot find the name resolver");
-      throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot find the name resolver");
+      rep = callChainedResolver();
     }
     if (fileName != null && !"".equals(fileName)) {
       Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
@@ -248,9 +286,14 @@ public class NameResolverResource extends SitoolsParameterizedResource {
       Map properties = new HashMap();
       properties.put("identifier", name.concat(String.valueOf(i++)));
       properties.put("credits", name);
-      if (Util.isSet(astroIter.getType())) {
-        properties.put("type", astroIter.getType());
+      Map<String, String> metadata = astroIter.getMatadata();
+      Set<String> keys = metadata.keySet();
+      Iterator<String> keyIter = keys.iterator();
+      while (keyIter.hasNext()) {
+        String key = keyIter.next();
+        properties.put(key, metadata.get(key));
       }
+
       feature.put("properties", properties);
 
       Map geometry = new HashMap();
@@ -377,18 +420,30 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     ResponseInfo responseError = new ResponseInfo();
     responseError.getRepresentations().add(representationInfo);
     responseError.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
-    responseError.setDocumentation("This error may happen when the response is being writting or when the name resolver is unknown");
+    responseError.setDocumentation("Unexpected error");
 
     ResponseInfo responseBad = new ResponseInfo();
     responseBad.getRepresentations().add(representationInfo);
     responseBad.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);
-    responseBad.setDocumentation("This error happens when the coordinate system or the object is unknown");
+    responseBad.setDocumentation(Status.CLIENT_ERROR_BAD_REQUEST.getDescription() + "- coordinate system is unknown");
+
+    ResponseInfo responseNotFound = new ResponseInfo();
+    responseNotFound.getRepresentations().add(representationInfo);
+    responseNotFound.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
+    responseNotFound.setDocumentation("object not found.");
+
+    ResponseInfo responseUnavailable = new ResponseInfo();
+    responseUnavailable.getRepresentations().add(representationInfo);
+    responseUnavailable.getStatuses().add(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+    responseUnavailable.setDocumentation(Status.SERVER_ERROR_SERVICE_UNAVAILABLE.getDescription());
 
     // Set responses
     List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
     responseInfo.add(responseOK);
     responseInfo.add(responseError);
     responseInfo.add(responseBad);
+    responseInfo.add(responseUnavailable);
+    responseInfo.add(responseNotFound);
     info.getResponses().addAll(responseInfo);
   }
 }

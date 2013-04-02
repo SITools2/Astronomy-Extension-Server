@@ -1,5 +1,5 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/*******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*******************************************************************************/
+
 package fr.cnes.sitools.astro.representation;
 
 import cds.moc.HealpixMoc;
@@ -28,6 +29,7 @@ import org.restlet.representation.OutputRepresentation;
 
 /**
  * FITS Representation for Healpix multi-resolution order.
+ * 
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FitsRepresentation extends OutputRepresentation {
@@ -58,7 +60,7 @@ public class FitsRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Constructs a nex FITS representation for which the filename
+     * Constructs a new FITS representation for which the filename
      * is given by the user.
      * @param filenameVal FITS filename
      * @param mocVal healpix MOC
@@ -105,7 +107,7 @@ public class FitsRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Set the Healpix MOC to convert into FITS.
+     * Sets the Healpix MOC to convert into FITS.
      * @param mocVal the moc to set
      */
     protected final void setMoc(final HealpixMoc mocVal) {

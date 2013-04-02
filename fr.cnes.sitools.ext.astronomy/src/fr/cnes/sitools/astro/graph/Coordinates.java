@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 /**
  * This class implements a shape based on coordinates.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class Coordinates {
 
@@ -47,7 +47,7 @@ public class Coordinates {
 
 
   /**
-   * Constructor.
+   * Constructs a new Coodinates.
    */
   public Coordinates() {
     this.xList = new ArrayList<Double>();
@@ -55,7 +55,7 @@ public class Coordinates {
   }
 
   /**
-   * Add a coordinate to a shape.
+   * Adds a point to a shape.
    *
    * @param x x value
    * @param y y value
@@ -66,7 +66,7 @@ public class Coordinates {
   }
 
   /**
-   * Add a coordinate to a shape.
+   * Adds a point to a shape.
    *
    * @param coord Coordinate
    */
@@ -78,7 +78,7 @@ public class Coordinates {
   }
 
   /**
-   * Get an array of x values.
+   * Returns an array of x values.
    *
    * @return An array of x values
    */
@@ -87,7 +87,7 @@ public class Coordinates {
   }
 
   /**
-   * Get an array of y values.
+   * Returns an array of y values.
    *
    * @return An array of y values
    */
@@ -96,9 +96,9 @@ public class Coordinates {
   }
 
   /**
-   * Get a coordinate for a specific index.
+   * Returns a point from a shape.
    *
-   * @param i index
+   * @param i index of the point in the shape
    * @return a point
    */
   public final Point2D.Double getCoordinate(final int i) {
@@ -109,22 +109,22 @@ public class Coordinates {
   }
 
   /**
-   * Number of coordinates.
+   * Returns the number of points.
    *
-   * @return Number of coordinates
+   * @return number of points
    */
   public final int getLength() {
     return this.xList.size();
   }
 
   /**
-   * Get the projected pixels.
+   * Returns the projected pixels.
    *
    * @param proj selected projection
    * @param range The highest/lowest values for x and y coordinate
    * @param pixelWidth Number of pixels along X axis
    * @param pixelHeight Number of pixels along Y axis
-   * @return List of projected points
+   * @return list of projected points
    */
   public final List<Point2D.Double> getPixelsFromProjection(final Projection proj, final double[] range, final double pixelWidth, final double pixelHeight) {
     assert (proj != null && range.length == Graph.NUMBER_VALUES_RANGE);
@@ -149,7 +149,7 @@ public class Coordinates {
   }
 
   /**
-   * Scale along X axis.
+   * Scales along X axis.
    *
    * @param o coordinate to scale
    * @param range range
@@ -161,7 +161,7 @@ public class Coordinates {
   }
 
   /**
-   * Scale along Y axis.
+   * Scales along Y axis.
    *
    * @param o coordinate to scale
    * @param range range
@@ -175,7 +175,7 @@ public class Coordinates {
   /**
    * Returns the center of the shape.
    *
-   * @return Center of the shape
+   * @return center of the shape
    */
   public final SpatialVector getCenter() {
     Point2D.Double vec = this.getCoordinate(0);
@@ -196,7 +196,7 @@ public class Coordinates {
    * @param pixelHeight pixel height
    * @return Returns the picel center
    */
-  public Point2D.Double getPixelCenterFromProjection(final Projection proj, final double[] range, final double pixelWidth, final double pixelHeight) {
+  public final Point2D.Double getPixelCenterFromProjection(final Projection proj, final double[] range, final double pixelWidth, final double pixelHeight) {
     assert (proj != null && range.length == Graph.NUMBER_VALUES_RANGE);
     Point2D.Double point2D = new Point2D.Double();
     SpatialVector sv = this.getCenter();

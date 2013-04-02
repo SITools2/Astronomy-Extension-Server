@@ -1,5 +1,5 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+/***********************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ *************************************************************************/
 package fr.cnes.sitools.extensions.security;
 
 import fr.cnes.sitools.plugins.filters.model.FilterModel;
@@ -25,7 +25,7 @@ import org.restlet.Response;
 import org.restlet.security.Authorizer;
 
 /**
- * Authorizes to access to the file when the url matches the pattern.
+ * Authorizes to access to the file in a datastorage when the url matches the pattern of the file.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FilterFilenamePattern extends Authorizer {

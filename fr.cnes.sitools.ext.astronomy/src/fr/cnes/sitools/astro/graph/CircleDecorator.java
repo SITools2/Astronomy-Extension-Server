@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -28,10 +28,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This object provides methods to decorate the graph by a circle.
+ * Provides methods to decorate the graph by a circle.
  *
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
@@ -42,29 +41,35 @@ import java.util.logging.Logger;
  * ((CircleDecorator)graph).setColor(Color.yellow); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
- * @author Jean-Christophe Malapert
+ * </pre></p>
+ * 
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CircleDecorator extends HealpixGridDecorator {
   /**
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(CircleDecorator.class.getName());
+  
   /**
    * Index representing by a set of pixels range.
    */
   private RangeSet range;
   
   /**
-   * Default composite sets to 0.2.
+   * Default alpha composite sets to 0.2.
    */
   private static final float DEFAULT_ALPHA_COMOSITE = 0.2f;
 
   /**
-   * Constructs a circle.
+   * Constructs a new circle on the <code>graph</code> layer with a <code>color</code>
+   * and an <code>alpha</code> composite. 
+   * 
+   * <p>The circle is defined by its center (<code>ra</code>, <code>dec</code>) and its
+   * <code>radius</code> in decimal degree. The circle is computed as Healpix pixels at
+   * <code>nside</code> with the <code>scheme</code>.</p>
    *
-   * @param graph graph
+   * @param graph graph component to decore
    * @param ra Right Ascension of the center in decimal degree
    * @param dec Declination of the center in decimal degree
    * @param radius radius in decimal degree
@@ -81,9 +86,14 @@ public class CircleDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Constructor a circle.
+   * Constructs a new circle on the <code>graph</code> layer with a <code>color</code>
+   * and an <code>alpha</code> composite. 
+   * 
+   * <p>The circle is defined by its center (<code>ra</code>, <code>dec</code>) and its
+   * <code>radius</code> in decimal degree. The circle is computed as Healpix pixels at
+   * <code>order</code> with the <code>scheme</code>.</p>
    *
-   * @param graph graph
+   * @param graph graph component to decore
    * @param ra Right Ascension of the center in decimal degree
    * @param dec Declination of the center in decimal degree
    * @param radius radius in decimal degree
@@ -91,7 +101,7 @@ public class CircleDecorator extends HealpixGridDecorator {
    * @param order order
    * @param color color
    * @param alpha alpha composite [0..1]
-   * @throws Exception Exception
+   * @throws Exception if the transformation into Healpix pixels failed.
    */
   public CircleDecorator(final Graph graph, final double ra, final double dec, final double radius, final Scheme scheme, int order,
                          final Color color, final float alpha) throws Exception {
@@ -99,15 +109,22 @@ public class CircleDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Constructs a circle.
+   * Constructs a new circle on the <code>graph</code> layer. 
    *
-   * @param graph graph
+   * <p>The circle is defined by its center (<code>ra</code>, <code>dec</code>) and its
+   * <code>radius</code> in decimal degree. The circle is computed as Healpix pixels at
+   * <code>order</code> with the <code>scheme</code>.</p>
+   *
+   * <p>A default <i>CYAN</i> color is used to represent this circle.
+   * Moreover <code>DEFAULT_ALPHA_COMOSITE</code> is used by default.</p>
+   *
+   * @param graph graph component to decore
    * @param ra Right Ascension of the center in decimal degree
    * @param dec Declination of the center in decimal degree
    * @param radius radius in decimal degree
    * @param scheme scheme
    * @param order order
-   * @throws Exception Exception
+   * @throws Exception Exception if the transformation into Healpix pixels failed.
    */
   public CircleDecorator(final Graph graph, final double ra, final double dec, final double radius,
                          final Scheme scheme, final int order) throws Exception {
@@ -115,13 +132,13 @@ public class CircleDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Computes circle intersection.
+   * Computes and returns the Healpix pixels that intersect with the circle.
    *
-   * @param ra Right Ascension of the center in decimal degree
-   * @param dec Declination of the center in decimal degree
+   * @param ra Right Ascension of the cirlce's center in decimal degree
+   * @param dec Declination of the circle's center in decimal degree
    * @param radius radius in decimal degree
    * @return Returns the ranges of intersected pixels
-   * @throws Exception Healpix Exception
+   * @throws Exception if Healpix transformation failed.
    */
   private RangeSet computeIntersect(final double ra, final double dec, final double radius) throws Exception {
     Pointing point = new Pointing(Math.toRadians(Graph.DEC_MAX - dec), Math.toRadians(ra));
@@ -143,9 +160,13 @@ public class CircleDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Draws a pixel based on its coordinates.
+   * Draws a Healpix pixel according to a coordinate system.
    *
-   * @param g2 graphic
+   * <p>When the pixel area is "small", only the four points of the pixel are used to plot it.
+   * When the pixel area is "large", intermediate points on boundaries pixel are automatically computed
+   * to smooth the boundary of the pixel on the plot.</p>
+   *
+   * @param g2 graph component to decore
    * @param healpix Healpix index
    * @param pix Pixel to draw
    * @param coordinateTransformation Coordinate transformation
@@ -166,5 +187,5 @@ public class CircleDecorator extends HealpixGridDecorator {
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
     }
-  }  
+  }
 }

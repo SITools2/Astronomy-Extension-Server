@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -20,10 +20,12 @@ package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchSolarObjectQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -108,17 +110,26 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
         throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
       }
     }
-  }
+  }   
 
   /**
    * Returns the SkyBot response in GeoJSON.
+   * 
+   * <p>
+   * The cache directive for the browser is set to N0_CACHE.
+   * </p>
    *
    * @return the SkyBot response in GeoJSON
    */
   @Get
   public final Representation getSolarObjectsResponse() {
     try {
-      Representation rep = this.query.getResponse();
+      Representation rep = this.query.getResponse(); 
+      
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives()); 
+      
       if (fileName != null && !"".equals(fileName)) {
         Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);
@@ -126,7 +137,7 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
       }
       return rep;
     } catch (Exception ex) {
-      Logger.getLogger(ConeSearchSolarObjectResource.class.getName()).log(Level.SEVERE, null, ex);
+      LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
     }
   }

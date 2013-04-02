@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -35,17 +35,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Creates a SOLR request based on a BBOX
+ * Creates a SOLR request based on a BBOX.
  * 
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
 
+    /**
+     * SOLR base URL.
+     */
     private final String solrBaseUrl;
+    /**
+     * Query parameters to process.
+     */
     private Map<String, Object> queryParametersToProcess;
+    /**
+     * Coordinate system.
+     */
     private final CoordSystem coordSystem;
+    /**
+     * Healpix Scheme.
+     */
     private Scheme healpixScheme;
+    /**
+     * Healpix result.
+     */
     private Object objHealpix;
+    /**
+     * Healpix order.
+     */
     private int nbOrder;
 
     /**
@@ -68,7 +86,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected Shape createGeometry(Map<String, Object> queryParametersToProcess) {
+    protected final Shape createGeometry(Map<String, Object> queryParametersToProcess) {
         // query parameter
         String bbox = (String) this.queryParametersToProcess.get(OpenSearchApplicationPlugin.GeometryShape.BBOX.getShape());
         String[] parameters = parseShape(bbox);
@@ -79,7 +97,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected void computeHealpix(Shape shape) {  
+    protected final void computeHealpix(final Shape shape) {
         Object obj = null;
         try {
             Index index = getIntersectedHealpixWithShape(shape, this.healpixScheme);
@@ -108,31 +126,31 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
             case RING:
                 nbHealpixOrder = ((RingIndex) index).getOrder();
                 nbHealpixOrder = (nbHealpixOrder > MAX_ORDER) ? MAX_ORDER : nbHealpixOrder;                
-                ((RingIndex) index).setOrder(nbHealpixOrder); 
+                ((RingIndex) index).setOrder(nbHealpixOrder);
                 this.setNbOrder(nbHealpixOrder);
-                break;                
+                break;
             case NESTED:
                 throw new UnsupportedOperationException("Not supported yet.");
                 //TODO : faire le buildSQLRequest en fonction de la multi-resolution
                 //break;
             default:
-                throw new UnsupportedOperationException("Not supported yet.");               
+                throw new UnsupportedOperationException("Not supported yet.");
         }
 
         return index;
     }
 
     @Override
-    protected String getSolrServer() {
+    protected final String getSolrServer() {
         return this.solrBaseUrl;
     }
 
     /**
-     * Returns the geometry constraint String
+     * Returns the geometry constraint String.
      * @return the geometry constraint
      */
     @Override
-    protected String geometryConstraint() {
+    protected final String geometryConstraint() {
         String constraint = "";
         if (Util.isSet(this.objHealpix)) {
             if (this.objHealpix instanceof List) {
@@ -156,24 +174,24 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
                     }
                 }
                 constraint = constraint.concat(")");
-            }         
+            }
         }
-        return constraint;        
+        return constraint;
     }
 
     /**
-     * Sets the Healpix object
-     * @param objHealpix the objHealpix to set
+     * Sets the Healpix object.
+     * @param objHealpixVal the objHealpix to set
      */
-    public void setObjHealpix(Object objHealpix) {
-        this.objHealpix = objHealpix;
+    public final void setObjHealpix(final Object objHealpixVal) {
+        this.objHealpix = objHealpixVal;
     }
 
     /**
-     * Sets the Healpix order
-     * @param nbOrder the nbOrder to set
+     * Sets the Healpix order.
+     * @param nbOrderVal the nbOrder to set
      */
-    public void setNbOrder(int nbOrder) {
-        this.nbOrder = nbOrder;
+    public final void setNbOrder(final int nbOrderVal) {
+        this.nbOrder = nbOrderVal;
     }
 }

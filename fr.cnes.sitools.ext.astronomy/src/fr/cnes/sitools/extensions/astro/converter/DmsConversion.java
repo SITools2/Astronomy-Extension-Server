@@ -1,6 +1,5 @@
-/**
- * *****************************************************************************
- * Copyright 2011 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/*******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -11,8 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
 import fr.cnes.sitools.common.validator.ConstraintViolation;

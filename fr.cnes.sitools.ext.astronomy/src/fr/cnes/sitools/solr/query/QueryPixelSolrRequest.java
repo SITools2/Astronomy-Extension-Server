@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -31,21 +31,39 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Creates a SOLR request based on a Healpix number
+ * Creates a SOLR request based on a Healpix number.
  * 
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
 
+    /**
+     * Solr base URL.
+     */
     private final String solrBaseUrl;
+    /**
+     * Query parameters to process.
+     */
     private Map<String, Object> queryParameters;
+    /**
+     * Coordinates system.
+     */
     private final CoordSystem coordSystem;
+    /**
+     * Healpix Scheme.
+     */
     private Scheme healpixScheme;
+    /**
+     * Healpix result.
+     */
     private Object objHealpix;
+    /**
+     * Healpix order.
+     */
     private int nbOrder;
 
     /**
-     * Constructs a new SOLR string based on Healpix number
+     * Constructs a new SOLR string based on Healpix number.
      * @param solrBaseUrl URL of the SOLR server
      * @param queryParameters User query parameters
      * @param coordSystem Coordinate system
@@ -59,7 +77,7 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected String getSolrServer() {
+    protected final String getSolrServer() {
         return this.solrBaseUrl;
     }
 
@@ -69,12 +87,12 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected Shape createGeometry(Map<String, Object> queryParametersToProcess) {
+    protected final Shape createGeometry(Map<String, Object> queryParametersToProcess) {
         return null;
     }
 
     @Override
-    protected void computeHealpix(Shape shape) {
+    protected final void computeHealpix(final Shape shape) {
         String healpixNested = (String) queryParameters.get(OpenSearchApplicationPlugin.GeometryShape.HEALPIX.getShape());
         int nbHealpixOrder = Integer.valueOf(String.valueOf(queryParameters.get(OpenSearchApplicationPlugin.GeometryShape.HEALPIX.getOrder())));
 
@@ -108,13 +126,13 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected void removeUserGeometryParameters(Map<String, Object> queryParameters) {
+    protected final void removeUserGeometryParameters(Map<String, Object> queryParameters) {
         queryParameters.remove(OpenSearchApplicationPlugin.GeometryShape.HEALPIX.getShape());
         queryParameters.remove(OpenSearchApplicationPlugin.GeometryShape.HEALPIX.getOrder());
     }
 
     @Override
-    protected String geometryConstraint() {
+    protected final String geometryConstraint() {
         String constraint = "";
         if (this.objHealpix != null) {
             if (this.objHealpix instanceof List) {
@@ -145,23 +163,23 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Sets the Healpix object
-     * @param objHealpix the objHealpix to set
+     * Sets the Healpix object.
+     * @param objHealpixVal the objHealpix to set
      */
-    public void setObjHealpix(Object objHealpix) {
-        this.objHealpix = objHealpix;
+    public final void setObjHealpix(final Object objHealpixVal) {
+        this.objHealpix = objHealpixVal;
     }
 
     /**
-     * Sets the Healpix order
-     * @param nbOrder the nbOrder to set
+     * Sets the Healpix order.
+     * @param nbOrderVal the nbOrder to set
      */
-    public void setNbOrder(int nbOrder) {
-        this.nbOrder = nbOrder;
+    public final void setNbOrder(final int nbOrderVal) {
+        this.nbOrder = nbOrderVal;
     }
 
     /**
-     * Transform Healpix from NESTED to RING 
+     * Transform Healpix from NESTED to RING.
      * @param nbOrder Healpix order
      * @param healpix Healpix
      * @throws RuntimeException Error when transforming NESTED to RING

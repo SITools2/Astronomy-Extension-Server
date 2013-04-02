@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
  * This file is part of SITools2.
  * 
@@ -35,21 +35,39 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Creates a SOLR request based on a polygon
+ * Creates a SOLR request based on a polygon.
  * 
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
 
+    /**
+     * Solr base URL.
+     */
     private final String solrBaseUrl;
+    /**
+     * Query parameters to process.
+     */
     private Map<String, Object> queryParameters;
+    /**
+     * Coordinates system.
+     */
     private final CoordSystem coordSystem;
+    /**
+     * Healpix scheme.
+     */
     private Scheme healpixScheme;
+    /**
+     * Healpix result.
+     */
     private Object objHealpix;
+    /**
+     * Healpix order.
+     */
     private int nbOrder;
 
     /**
-     * Constructs a new SOLR string based on a polygon
+     * Constructs a new SOLR string based on a polygon.
      * @param solrBaseUrl URL of the SOLR server
      * @param queryParameters User query parameters
      * @param coordSystem Coordinate system
@@ -63,7 +81,7 @@ public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected String getSolrServer() {
+    protected final String getSolrServer() {
         return this.solrBaseUrl;
     }
 
@@ -73,7 +91,7 @@ public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected Shape createGeometry(Map<String, Object> queryParametersToProcess) {
+    protected final Shape createGeometry(Map<String, Object> queryParametersToProcess) {
         String polygon = (String) queryParameters.get(OpenSearchApplicationPlugin.GeometryShape.POLYGON.getShape());
         String[] parameters = parseShape(polygon);
         List<Point> points = new ArrayList<Point>();
@@ -87,7 +105,7 @@ public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected void computeHealpix(Shape shape) {
+    protected final void computeHealpix(final Shape shape) {
         Object obj = null;
         try {
             Index index = getIntersectedHealpixWithShape(shape, this.healpixScheme);
@@ -104,7 +122,7 @@ public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
     }
 
     @Override
-    protected String geometryConstraint() {
+    protected final String geometryConstraint() {
         String constraint = "";
         if (this.objHealpix != null) {
             if (this.objHealpix instanceof List) {
@@ -134,7 +152,7 @@ public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
     }
     
     /**
-     * Returns the healpix numbers that intersect with the shape
+     * Returns the healpix numbers that intersect with the shape.
      * @param shape shape
      * @return healpix number on RING scheme
      * @throws UnsupportedOperationException when NESTED is asked 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  * 
@@ -20,9 +20,13 @@ package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.common.CacheBrowser;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.Disposition;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -32,7 +36,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- * Publishes the Globweb configuration file.
+ * Publishes the MIZAR configuration file.
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -58,6 +62,8 @@ public class GlobWebResource extends SitoolsParameterizedResource {
 
   /**
    * Returns the configuration file that the administrator wants to publish.
+   * 
+   * <p>The cache directive is set to NO_CACHE</p>
    *
    * @return the representation
    */
@@ -68,6 +74,11 @@ public class GlobWebResource extends SitoolsParameterizedResource {
       LOG.finest(String.format("File to publish: %s", uri));
       ClientResource client = new ClientResource(uri);
       Representation rep = new StringRepresentation(client.get().getText());
+      
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives()); 
+      
       if (fileName != null && !"".equals(fileName)) {
         Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);

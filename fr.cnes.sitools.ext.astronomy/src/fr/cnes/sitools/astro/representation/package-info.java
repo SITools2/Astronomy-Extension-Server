@@ -4,6 +4,7 @@
  * <ul>
  * <li>the <a href="http://www.ivoa.net/Documents/VOTable/">VOTable</a> representation</li>
  * <li>the GeoJson representation</li>
+ * <li>the OpenSearch description representation</li>
  * <li>the PNG representation</li>
  * <li>the FITS representation</li>
  * <li>the CutOff representation</li>

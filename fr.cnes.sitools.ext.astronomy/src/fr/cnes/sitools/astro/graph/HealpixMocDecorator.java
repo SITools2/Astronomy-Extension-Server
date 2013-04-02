@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -17,18 +17,22 @@ package fr.cnes.sitools.astro.graph;
 
 import cds.moc.Array;
 import cds.moc.HealpixMoc;
+import healpix.core.HealpixIndex;
 import healpix.essentials.Scheme;
+import healpix.essentials.Vec3;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * This objects contains methods to decorate a graph by a MOC.
  * 
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
@@ -39,9 +43,8 @@ import java.util.logging.Logger;
  * ((CircleDecorator)graph).setColor(Color.yellow); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
- * @author Jean-Christophe Malapert
+ * </pre></p>
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class HealpixMocDecorator extends HealpixGridDecorator {
   /**
@@ -50,7 +53,7 @@ public class HealpixMocDecorator extends HealpixGridDecorator {
   private static final Logger LOG = Logger.getLogger(HealpixMocDecorator.class.getName());
 
   /**
-   * MOC
+   * MOC.
    */
   private HealpixMoc moc = null;
 
@@ -67,7 +70,7 @@ public class HealpixMocDecorator extends HealpixGridDecorator {
   }
 
   /**
-   * Cosntructs a MOC decorator
+   * Cosntructs a MOC decorator.
    * @param g graph to decorate
    * @throws Exception Healpix Exception
    */
@@ -96,7 +99,7 @@ public class HealpixMocDecorator extends HealpixGridDecorator {
   @Override
   protected void drawPixels(final Graphics2D g2, final Color color) {
     if (this.moc != null) {
-      g2.setPaint(color);
+      g2.setPaint(color);      
       int minOrder = this.moc.getMinLimitOrder();
       int maxOrder = this.moc.getMaxLimitOrder();
       for (int i = minOrder; i <= maxOrder; i++) {
@@ -111,6 +114,25 @@ public class HealpixMocDecorator extends HealpixGridDecorator {
           drawHealpixPolygon(g2, getHealpixBase(), pixels.get(j), getCoordinateTransformation());
         }
       }
+    }
+  }
+  
+  @Override
+  protected void drawHealpixPolygon(Graphics2D g2, final HealpixIndex healpix, long pix, final CoordinateTransformation coordinateTransformation) {
+    try {
+      int numberOfVectors = computeNumberPointsForPixel(getHealpixBase().getNside(), pix);
+      Vec3[] vectors = healpix.boundaries(pix, numberOfVectors);
+      computeReferenceFrameTransformation(vectors, coordinateTransformation);
+      Coordinates[] shapes = splitHealpixPixelForDetectedBorder(vectors);
+
+      for (int i = 0; i < shapes.length; i++) {
+        Coordinates shape = shapes[i];
+        List<Point2D.Double> pixels = shape.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
+        g2.draw(new Polygon2D(pixels));
+        g2.fill(new Polygon2D(pixels));
+      }
+    } catch (Exception ex) {
+      LOG.log(Level.SEVERE, null, ex);
     }
   }  
 }

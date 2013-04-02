@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012, 2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -95,7 +95,7 @@ public class ConeSearchQuery {
    */
   private List<Map<Field, String>> process(final double ra, final double dec, final double sr) throws JAXBException, IOException {
     String queryService = String.format("%sRA=%s&DEC=%s&SR=%s", url, ra, dec, sr);
-    Logger.getLogger(ConeSearchQuery.class.getName()).log(Level.INFO, queryService);
+    LOG.log(Level.INFO, queryService);
     ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
     ClientResource client = proxy.getClientResource();
     JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
@@ -116,7 +116,7 @@ public class ConeSearchQuery {
    * @return records
    */
   private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
-    List<Map<Field, String>> responses = null;
+    List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
     List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
     for (Object objectIter : objects) {
       if (objectIter instanceof Table) {

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
 * This file is part of SITools2.
  * 
@@ -35,18 +35,16 @@ import javax.imageio.ImageIO;
  * Another concrete decorator for adding an image as a background.<br/> This concrete decorator allows to display a map on the graph
  * component. The map must be in plate carree projection
  * 
- * <p>
- * Here is a code to illustrate how to use it:<br/>
+ * <p>Here is a code to illustrate how to use it:<br/>
  * <pre>
  * <code>
  * Graph graph = new GenericProjection(Graph.ProjectionType.ECQ); 
  * graph = new ImageBackGroundDecorator(graph, new File("/home/malapert/Documents/Equirectangular-projection.jpg")); 
  * Utility.createJFrame(graph, 900, 500);
  * </code>
- * </pre>
- * </p>
+ * </pre></p>
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ImageBackGroundDecorator extends AbstractGraphDecorator {
 
