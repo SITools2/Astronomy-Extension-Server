@@ -621,37 +621,37 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   @Override
   public final double getDoubleValue(final String key) {
     String val = getStringValue(key);
-    return (val == null) ? 0.0 : Double.valueOf(val);
+    return (val == null || val.isEmpty()) ? 0.0 : Double.valueOf(val);
   }
 
   @Override
   public final double getDoubleValue(final String key, final double defaultValue) {
     String val = getStringValue(key);
-    return (val == null) ? defaultValue : Double.valueOf(val);
+    return (val == null || val.isEmpty()) ? defaultValue : Double.valueOf(val);
   }
 
   @Override
   public final float getFloatValue(final String key) {
     String val = getStringValue(key);
-    return (val == null) ? 0 : Float.valueOf(val);
+    return (val == null || val.isEmpty()) ? 0 : Float.valueOf(val);
   }
 
   @Override
   public final float getFloatValue(final String key, final float defaultValue) {
     String val = getStringValue(key);
-    return (val == null) ? defaultValue : Float.valueOf(val);
+    return (val == null || val.isEmpty()) ? defaultValue : Float.valueOf(val);
   }
 
   @Override
   public final int getIntValue(final String key) {
     String val = getStringValue(key);
-    return (val == null) ? 0 : Integer.valueOf(val);
+    return (val == null || val.isEmpty()) ? 0 : Integer.valueOf(val);
   }
 
   @Override
   public final int getIntValue(final String key, final int defaultValue) {
     String val = getStringValue(key);
-    return (val == null) ? defaultValue : Integer.valueOf(val);
+    return (val == null || val.isEmpty()) ? defaultValue : Integer.valueOf(val);
   }
 
   /**

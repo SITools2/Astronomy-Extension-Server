@@ -198,7 +198,8 @@ public class WCSTransform implements WorldCoordinateConverter {
         //this.ympix = 0.5 * this.nypix;
 //        this.mrot = 0.0;
 
-        this.equinox = head.getDoubleValue("EQUINOX");
+        // Modified for ICRS : for ICRS, equinox is implicit
+        this.equinox = head.getDoubleValue("EQUINOX",2000.0);
 
         if (head.findKey("PLTRAH")) {
             this.plate_fit = 1;
