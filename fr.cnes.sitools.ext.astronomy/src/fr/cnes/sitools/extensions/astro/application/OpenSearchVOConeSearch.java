@@ -217,9 +217,9 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       dataModel.put("features", features);
       dataModel.put("totalResults", features.size());
       Representation rep = new GeoJsonRepresentation(dataModel);
-      //CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
-      //rep = cache.getRepresentation();
-      //getResponse().setCacheDirectives(cache.getCacheDirectives());
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      rep = cache.getRepresentation();
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
       return rep;
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
