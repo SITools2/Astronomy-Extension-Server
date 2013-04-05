@@ -177,8 +177,8 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
         Map properties = new HashMap();
         Map feature = new HashMap();
         Iterator<Field> fieldIter = fields.iterator();
-        double raValue = Double.NaN;
-        double decValue = Double.NaN;
+        double raResponse = Double.NaN;
+        double decResponse = Double.NaN;
 
         while (fieldIter.hasNext()) {
           Field field = fieldIter.next();
@@ -190,10 +190,10 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
             OpenSearchVOConeSearch.ReservedWords ucdWord = OpenSearchVOConeSearch.ReservedWords.find(ucd);
             switch (ucdWord) {
               case POS_EQ_RA_MAIN:
-                raValue = Utility.parseRaVO(iterDoc, field);
+                raResponse = Utility.parseRaVO(iterDoc, field);
                 break;
               case POS_EQ_DEC_MAIN:
-                decValue = Utility.parseDecVO(iterDoc, field);
+                decResponse = Utility.parseDecVO(iterDoc, field);
                 break;
               case ID_MAIN:
                 properties.put("identifier", iterDoc.get(field));
@@ -204,12 +204,12 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
             }
           }
         }
-        geometry.put("coordinates", String.format("[%s,%s]", raValue, decValue));
+        geometry.put("coordinates", String.format("[%s,%s]", raResponse, decResponse));
         geometry.put("type", "Point");
         geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
         feature.put("geometry", geometry);
         feature.put("properties", properties);
-        spatialFilter(feature, ra, dec);
+        spatialFilter(feature, raResponse, decResponse);
         if (!feature.isEmpty()) {
           features.add(feature);
         }
@@ -217,9 +217,9 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       dataModel.put("features", features);
       dataModel.put("totalResults", features.size());
       Representation rep = new GeoJsonRepresentation(dataModel);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
-      rep = cache.getRepresentation();
-      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      //CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      //rep = cache.getRepresentation();
+      //getResponse().setCacheDirectives(cache.getCacheDirectives());
       return rep;
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
@@ -243,7 +243,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
    * @param dec declination
    * @see #isValid(java.util.Map) 
    */
-  private void spatialFilter(final Map feature, final double ra, final double dec) {
+  private void spatialFilter(final Map feature, final double ra, final double dec) {   
     if (isValid(feature)) {
       if (this.userParameters.isHealpixMode() && !isPointIsInsidePixel(ra, dec)) {
         LOG.log(Level.FINE, "This record {0} is ignored.", feature.toString());
@@ -310,7 +310,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     } catch (Exception ex) {
       result = false;
       LOG.log(Level.WARNING, null, ex);
-    }
+    }    
     return result;
   }
 
