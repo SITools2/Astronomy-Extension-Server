@@ -18,7 +18,7 @@ package fr.cnes.sitools.extensions.astro.application;
 import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.io.IOException;
 import java.util.Arrays;

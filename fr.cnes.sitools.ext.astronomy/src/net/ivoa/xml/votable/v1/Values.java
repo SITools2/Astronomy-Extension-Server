@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -60,7 +61,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "max",
     "option"
 })
-public class Values {
+public class Values implements Serializable {
 
     @XmlElement(name = "MIN")
     protected Min min;

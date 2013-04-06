@@ -20,7 +20,7 @@ package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

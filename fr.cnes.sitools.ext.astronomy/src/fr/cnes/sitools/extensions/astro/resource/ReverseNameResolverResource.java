@@ -17,7 +17,7 @@ import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import healpix.core.HealpixIndex;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,5 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -10,15 +11,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * ****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
@@ -26,7 +29,6 @@ import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,7 +38,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
-import org.restlet.data.CacheDirective;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -157,69 +161,20 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
   }
 
   /**
-   * Returns the JSON representation. getOr
+   * Returns the JSON representation.
    *
    * @return the JSON representation
    */
   @Get
   public final Representation getJsonResponse() {
     try {
-      Map dataModel = new HashMap();
-      List features = new ArrayList();
       double ra = userParameters.getRa();
       double dec = userParameters.getDec();
       double sr = userParameters.getSr();
-      List<Map<Field, String>> response = this.query.getResponseAt(ra, dec, sr);
-      Set<Field> fields = getFields(response);
-      fillDictionary(fields);
-      for (Map<Field, String> iterDoc : response) {
-        Map geometry = new HashMap();
-        Map properties = new HashMap();
-        Map feature = new HashMap();
-        Iterator<Field> fieldIter = fields.iterator();
-        double raResponse = Double.NaN;
-        double decResponse = Double.NaN;
-
-        while (fieldIter.hasNext()) {
-          Field field = fieldIter.next();
-          net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
-          String ucd = field.getUcd();
-          String value = iterDoc.get(field);
-          if (Utility.isSet(value) && !value.isEmpty()) {
-            Object responseDataType = Utility.getDataType(dataType, value);
-            OpenSearchVOConeSearch.ReservedWords ucdWord = OpenSearchVOConeSearch.ReservedWords.find(ucd);
-            switch (ucdWord) {
-              case POS_EQ_RA_MAIN:
-                raResponse = Utility.parseRaVO(iterDoc, field);
-                break;
-              case POS_EQ_DEC_MAIN:
-                decResponse = Utility.parseDecVO(iterDoc, field);
-                break;
-              case ID_MAIN:
-                properties.put("identifier", iterDoc.get(field));
-                break;
-              default:
-                properties.put(field.getName(), responseDataType);
-                break;
-            }
-          }
-        }
-        geometry.put("coordinates", String.format("[%s,%s]", raResponse, decResponse));
-        geometry.put("type", "Point");
-        geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
-        feature.put("geometry", geometry);
-        feature.put("properties", properties);
-        spatialFilter(feature, raResponse, decResponse);
-        if (!feature.isEmpty()) {
-          features.add(feature);
-        }
-      }
-      dataModel.put("features", features);
-      dataModel.put("totalResults", features.size());
+      List<Map<Field, String>> response = useCacheHealpix(query, ra, dec, sr, true);
+      Map dataModel = createGeoJsonDataModel(response);
       Representation rep = new GeoJsonRepresentation(dataModel);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
-      rep = cache.getRepresentation();
-      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      rep = useCacheBrowser(rep, cacheIsEnabled());
       return rep;
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
@@ -228,30 +183,145 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
   }
 
   /**
+   * Creates and returns the GeoJson data model from the response.
+   * @param response response coming from the cache or the VO server
+   * @return GeoJson data model
+   */
+  private Map createGeoJsonDataModel(final List<Map<Field, String>> response) {
+    Map dataModel = new HashMap();
+    List features = new ArrayList();
+    Set<Field> fields = getFields(response);
+    fillDictionary(fields);
+    for (Map<Field, String> iterDoc : response) {
+      Map geometry = new HashMap();
+      Map properties = new HashMap();
+      Map feature = new HashMap();
+      Iterator<Field> fieldIter = fields.iterator();
+      double raResponse = Double.NaN;
+      double decResponse = Double.NaN;
+
+      while (fieldIter.hasNext()) {
+        Field field = fieldIter.next();
+        net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
+        String ucd = field.getUcd();
+        String value = iterDoc.get(field);
+        if (Utility.isSet(value) && !value.isEmpty()) {
+          Object responseDataType = Utility.getDataType(dataType, value);
+          OpenSearchVOConeSearch.ReservedWords ucdWord = OpenSearchVOConeSearch.ReservedWords.find(ucd);
+          switch (ucdWord) {
+            case POS_EQ_RA_MAIN:
+              raResponse = Utility.parseRaVO(iterDoc, field);
+              break;
+            case POS_EQ_DEC_MAIN:
+              decResponse = Utility.parseDecVO(iterDoc, field);
+              break;
+            case ID_MAIN:
+              properties.put("identifier", iterDoc.get(field));
+              break;
+            default:
+              properties.put(field.getName(), responseDataType);
+              break;
+          }
+        }
+      }
+      geometry.put("coordinates", String.format("[%s,%s]", raResponse, decResponse));
+      geometry.put("type", "Point");
+      geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+      feature.put("geometry", geometry);
+      feature.put("properties", properties);
+      spatialFilter(feature, raResponse, decResponse);
+      if (!feature.isEmpty()) {
+        features.add(feature);
+      }
+    }
+    dataModel.put("features", features);
+    dataModel.put("totalResults", features.size());    
+    return dataModel;
+  }
+
+  /**
+   * Returns the representation with cache directives cache parameter is set to enable.
+   *
+   * @param rep representation to cache
+   * @param isEnabled True when the cache is enabled
+   * @return the representation with the cache directive when the cache is enabled
+   */
+  private Representation useCacheBrowser(final Representation rep, final boolean isEnabled) {
+    Representation cachedRepresentation = rep;
+    if (isEnabled) {
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      cachedRepresentation = cache.getRepresentation();
+    }
+    return cachedRepresentation;
+  }
+
+  /**
+   * Returns the response from the cache or from the VO service.
+   * 
+   * <p>
+   * A cache is always done with the option cacheable=false.<br/>
+   * When cacheable is true then the cache VOservices is used. In this cache
+   * the results are loaded to the VO servers once a day.<br/>
+   * When cacheable is false then the cache VOservices#solarBodies is used. In this cache
+   * the results are loaded to the VO servers each two minutes.
+   * </p>
+   * @param csQuery cone search query
+   * @param ra right ascension of the cone's center
+   * @param dec declination of the cone's center
+   * @param sr radius of the cone
+   * @param isEnabled cache enable or disable
+   * @return the response from the cache or from the VO service
+   * @throws Exception - an error occurs dwhen calling the server
+   */
+  private List<Map<Field, String>> useCacheHealpix(final ConeSearchQuery csQuery, final double ra, final double dec, final double sr, final boolean isEnabled) throws Exception {
+    String applicationID = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getId();
+    String cacheID = SingletonCacheHealpixDataAccess.generateId(applicationID, String.valueOf(userParameters.getOrder()), String.valueOf(userParameters.getHealpix()));
+    CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
+    Cache cache = (isEnabled) ? cacheManager.getCache("VOservices") : cacheManager.getCache("VOservices#solarBodies");
+    List<Map<Field, String>> response;
+    if (cache.isKeyInCache(cacheID)) {
+      LOG.log(Level.INFO, "Use of the cache for ID {0}", cacheID);
+      response = (List<Map<Field, String>>) cache.get(cacheID).getObjectValue();
+    } else {
+      response = csQuery.getResponseAt(ra, dec, sr);
+      LOG.log(Level.INFO, "Caching result for ID {0}", cacheID);
+      Element element = new Element(cacheID, response);
+      cache.put(element);
+    }
+    return response;
+  }
+
+  /**
+   * Returns True when the cache is enabled otherwise False.
+   *
+   * @return True when the cache is enabled otherwise False
+   */
+  private boolean cacheIsEnabled() {
+    return Boolean.parseBoolean(((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
+  }
+
+  /**
    * Filters the response.
    *
-   * <p>
-   * the <code>feature</code> is cleared :
-   * <ul>
-   * <li>when the query mode is Healpix and the record is not in the queried Healpix pixel</li>
-   * <li>when is not valid</li>
-   * </ul>
-   * </p>
+   * <p> the
+   * <code>feature</code> is cleared : <ul> <li>when the query mode is Healpix and the record is not in the queried Healpix pixel</li>
+   * <li>when is not valid</li> </ul> </p>
    *
    * @param feature record
    * @param ra right asciension
    * @param dec declination
-   * @see #isValid(java.util.Map) 
+   * @see #isValid(java.util.Map)
    */
-  private void spatialFilter(final Map feature, final double ra, final double dec) {   
+  private void spatialFilter(final Map feature, final double ra, final double dec) {
     if (isValid(feature)) {
       if (this.userParameters.isHealpixMode() && !isPointIsInsidePixel(ra, dec)) {
         LOG.log(Level.FINE, "This record {0} is ignored.", feature.toString());
         feature.clear();
       }
     } else {
-        LOG.log(Level.WARNING, "The record record {0} is not valid : No identifier found in the response.", feature.toString());
-        feature.clear();      
+      LOG.log(Level.WARNING, "The record record {0} is not valid : No identifier found in the response.", feature.toString());
+      feature.clear();
     }
   }
 
@@ -310,7 +380,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     } catch (Exception ex) {
       result = false;
       LOG.log(Level.WARNING, null, ex);
-    }    
+    }
     return result;
   }
 

@@ -1,17 +1,18 @@
-/******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
-
+ * ***************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.model.Category;
@@ -19,6 +20,7 @@ import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
@@ -31,6 +33,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.PersistenceConfiguration;
+import net.sf.ehcache.config.PersistenceConfiguration.Strategy;
+import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
@@ -38,12 +46,9 @@ import org.restlet.routing.Template;
 
 /**
  * Plugin to access to the Simple Cone Search service.
- * 
- * <p>
- * Application for AstroGlobWeb Module. This application queries a Simple Cone Search service 
- * by the use of (Healpix,order) parameters and it returns a GeoJson file.<br/>
- * The cache directive is set to FOREVER
- * </p>
+ *
+ * <p> Application for AstroGlobWeb Module. This application queries a Simple Cone Search service by the use of (Healpix,order) parameters
+ * and it returns a GeoJson file.<br/> The cache directive is set to FOREVER </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -69,7 +74,6 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    * Maximum of characters that is allowed for the longname by the open search standard.
    */
   private static final int MAX_LENGTH_LONGNAME = 48;
-  
   /**
    * Dictionary.
    */
@@ -90,7 +94,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    */
   public OpenSearchVOConeSearchApplicationPlugin(final Context context) {
     super(context);
-    constructor();
+    constructor();    
   }
 
   /**
@@ -192,8 +196,16 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     param.setValueType("String");
     param.setValue("http://alasky.u-strasbg.fr/footprints/tables/vizier/II_306_sdss8/MOC");
     this.addParameter(param);
-  }
 
+    param = new ApplicationPluginParameter();
+    param.setName("cacheable");
+    param.setDescription("Set to true when the result can be cached");
+    param.setValueType("xs:enum[True,False]");
+    param.setValue("False");
+    this.addParameter(param);
+    SingletonCacheHealpixDataAccess.create();
+  }
+  
   @Override
   public final void sitoolsDescribe() {
     this.setName("VO OpenSearch Application for Cone Search");
@@ -203,7 +215,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
   }
 
   @Override
-  public final Restlet createInboundRoot() {
+  public final Restlet createInboundRoot() {    
     Router router = new Router(getContext());
     router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
     router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeDescription.class);
@@ -211,14 +223,15 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
       router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearch.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchDico.class);
-      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);      
+      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);
       attachParameterizedResources(router);
     }
     return router;
   }
-  
+
   /**
    * Returns the dictionary.
+   *
    * @return the dictonary
    */
   public final Map<String, VoDictionary> getDico() {
@@ -241,7 +254,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
           constraintList.add(constraint);
         }
         ApplicationPluginParameter description = params.get("description");
-        if (!description.getValue().isEmpty() && (description.getValue().length() > MAX_LENGTH_DESCRIPTION 
+        if (!description.getValue().isEmpty() && (description.getValue().length() > MAX_LENGTH_DESCRIPTION
                 || description.getValue().contains("<") || description.getValue().contains(">"))) {
           ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("description");

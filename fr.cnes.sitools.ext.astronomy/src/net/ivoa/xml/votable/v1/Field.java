@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlSeeAlso({
     Param.class
 })
-public class Field {
+public class Field implements Serializable{
 
     @XmlElement(name = "DESCRIPTION")
     protected AnyTEXT description;

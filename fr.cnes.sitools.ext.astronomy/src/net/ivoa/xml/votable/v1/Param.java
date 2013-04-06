@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -34,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Param")
 public class Param
-    extends Field
+    extends Field implements Serializable
 {
 
     @XmlAttribute(required = true)

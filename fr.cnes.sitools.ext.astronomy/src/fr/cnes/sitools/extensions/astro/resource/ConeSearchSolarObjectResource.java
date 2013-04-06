@@ -20,7 +20,7 @@ package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchSolarObjectQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

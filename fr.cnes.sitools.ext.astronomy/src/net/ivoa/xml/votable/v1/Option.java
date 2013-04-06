@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -45,7 +46,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "Option", propOrder = {
     "option"
 })
-public class Option {
+public class Option implements Serializable {
 
     @XmlElement(name = "OPTION")
     protected List<Option> option;

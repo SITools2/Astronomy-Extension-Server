@@ -22,7 +22,7 @@ import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import java.util.ArrayList;
 import java.util.HashMap;

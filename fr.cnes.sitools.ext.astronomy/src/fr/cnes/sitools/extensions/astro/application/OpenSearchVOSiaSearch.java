@@ -1,4 +1,5 @@
-/******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2
@@ -10,15 +11,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ *****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.vo.sia.SIASearchQuery;
 import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
@@ -39,6 +42,9 @@ import java.util.logging.Logger;
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
 import net.ivoa.xml.votable.v1.Field;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -108,12 +114,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * Origin in FITS along Y.
    */
   private static final double ORIGIN_Y = 0.5;
-  
   /**
    * Healpix Nside where the processing for the intersection is done.
    */
   private static final int HEALPIX_RESOLUTION = 128;
-  
   /**
    * Query.
    */
@@ -252,11 +256,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       return response;
     }
   }
-  
   /**
    * VO dictionary.
    */
-  private Map<String, VoDictionary> dico;  
+  private Map<String, VoDictionary> dico;
 
   @Override
   public final void doInit() {
@@ -268,14 +271,15 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
         this.userParameters = new OpenSearchVOSiaSearch.UserParameters(getRequest().getResourceRef().getQueryAsForm());
         this.dico = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getDico();
       }
-    } catch (Exception ex) {      
-        LOG.log(Level.WARNING, null, ex);
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());     
+    } catch (Exception ex) {
+      LOG.log(Level.WARNING, null, ex);
+      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
     }
   }
 
   /**
-   * Parses a row and adds it in the <code>features</code>.
+   * Parses a row and adds it in the
+   * <code>features</code>.
    *
    * @param features data
    * @param row row to be parsed
@@ -293,7 +297,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     double decValue = Double.NaN;
 
     while (fieldIter.hasNext()) {
-      Field field = fieldIter.next();      
+      Field field = fieldIter.next();
       String ucd = field.getUcd();
       net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
       String value = row.get(field);
@@ -381,21 +385,17 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       features.add(feature);
     }
   }
-  
+
   /**
    * Filters the response.
    *
-   * <p>
-   * the <code>feature</code> is cleared :
-   * <ul>
-   * <li>when the query mode is Healpix and the record is not in the queried Healpix pixel</li>
-   * <li>when is not valid</li>
-   * </ul>
-   * </p>
+   * <p> the
+   * <code>feature</code> is cleared : <ul> <li>when the query mode is Healpix and the record is not in the queried Healpix pixel</li>
+   * <li>when is not valid</li> </ul> </p>
    *
    * @param feature record
    * @param geometry geometry
-   * @see #isValid(java.util.Map) 
+   * @see #isValid(java.util.Map)
    */
   private void spatialFilter(final Map feature, final Map geometry) {
     if (isValid(feature)) {
@@ -404,16 +404,14 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
         feature.clear();
       }
     } else {
-        LOG.log(Level.WARNING, "The record record {0} is not valid : No identifier found in the response.", feature.toString());
-        feature.clear();      
+      LOG.log(Level.WARNING, "The record record {0} is not valid : No identifier found in the response.", feature.toString());
+      feature.clear();
     }
   }
 
   /**
-   * Returns the list of distinct fields from the response.
-   * <p>
-   * if response is empty, then returns an empty list.
-   * </p>
+   * Returns the list of distinct fields from the response. <p> if response is empty, then returns an empty list. </p>
+   *
    * @param response respone
    * @return the list of distinct fields from the response
    */
@@ -427,7 +425,9 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   }
 
   /**
-   * Parses the description TAG of each field and sets it to <code>dico</code>.
+   * Parses the description TAG of each field and sets it to
+   * <code>dico</code>.
+   *
    * @param fields keywords of the response
    */
   private void fillDictionary(final Set<Field> fields) {
@@ -441,6 +441,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
 
   /**
    * Returns true when the geometry intersects with the pixel otherwise false.
+   *
    * @param geometry image geometry (point or polygon)
    * @return true when the geometry intersects with the pixel otherwise false.
    */
@@ -545,26 +546,93 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       double ra = userParameters.getRa();
       double dec = userParameters.getDec();
       double size = userParameters.getSize();
-      Map dataModel = new HashMap();
-      List features = new ArrayList();
-      List<Map<Field, String>> response = this.query.getResponseAt(ra, dec, size);
-      Set<Field> fields = getFields(response);
-      fillDictionary(fields);
-      for (Map<Field, String> iterDoc : response) {
-        this.doc = iterDoc;
-        parseRow(features, doc);
-      }
-      dataModel.put("totalResults", features.size());
-      dataModel.put("features", features);
+      List<Map<Field, String>> response = useCacheHealpix(query, ra, dec, size, true);
+      Map dataModel = createGeoJsonDataModel(response);
       Representation rep = new GeoJsonRepresentation(dataModel);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
-      rep = cache.getRepresentation();
-      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      rep = useCacheBrowser(rep, true);
       return rep;
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
     }
+  }
+
+  /**
+   * Creates and returns the GeoJson data model from the response.
+   *
+   * @param response response coming from the cache or the VO server
+   * @return GeoJson data model
+   */
+  private Map createGeoJsonDataModel(final List<Map<Field, String>> response) {
+    Map dataModel = new HashMap();
+    List features = new ArrayList();
+    Set<Field> fields = getFields(response);
+    fillDictionary(fields);
+    for (Map<Field, String> iterDoc : response) {
+      this.doc = iterDoc;
+      parseRow(features, doc);
+    }
+    dataModel.put("totalResults", features.size());
+    dataModel.put("features", features);
+    return dataModel;
+  }
+
+  /**
+   * Returns the representation with cache directives cache parameter is set to enable.
+   *
+   * @param rep representation to cache
+   * @param isEnabled True when the cache is enabled
+   * @return the representation with the cache directive when the cache is enabled
+   */
+  private Representation useCacheBrowser(final Representation rep, final boolean isEnabled) {
+    Representation cachedRepresentation = rep;
+    if (isEnabled) {
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      cachedRepresentation = cache.getRepresentation();
+    }
+    return cachedRepresentation;
+  }
+
+  /**
+   * Returns the response from the cache or from the VO service.
+   *
+   * @param siaQuery SIA query
+   * @param ra right ascension of the cone's center
+   * @param dec declination of the cone's center
+   * @param sr radius of the cone
+   * @param isEnabled cache enable or disable
+   * @return the response from the cache or from the VO service
+   * @throws Exception - an error occurs dwhen calling the server
+   */
+  private List<Map<Field, String>> useCacheHealpix(final SIASearchQuery siaQuery, final double ra, final double dec, final double sr, final boolean isEnabled) throws Exception {
+    String applicationID = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getId();
+    String cacheID = SingletonCacheHealpixDataAccess.generateId(applicationID, String.valueOf(userParameters.getOrder()), String.valueOf(userParameters.getHealpix()));
+    CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
+    Cache cache = cacheManager.getCache("VOservices");
+    List<Map<Field, String>> response;
+    
+    if (cache.isKeyInCache(cacheID) && isEnabled) {
+      LOG.log(Level.INFO, "Use of the cache for ID {0}", cacheID);
+      response = (List<Map<Field, String>>) cache.get(cacheID).getObjectValue();
+    } else if(isEnabled) {
+      response = siaQuery.getResponseAt(ra, dec, sr);
+      LOG.log(Level.INFO, "Caching result for ID {0}", cacheID);
+      Element element = new Element(cacheID, response);
+      cache.put(element);
+    } else {
+      response = siaQuery.getResponseAt(ra, dec, sr);
+    }
+    return response;
+  }
+
+  /**
+   * Returns True when the cache is enabled otherwise False.
+   *
+   * @return True when the cache is enabled otherwise False
+   */
+  private boolean cacheIsEnabled() {
+    return Boolean.parseBoolean(((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
   }
 
   @Override
@@ -770,6 +838,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
 
     /**
      * Returns the Healpix index.
+     *
      * @return the Healpix index
      */
     public final HealpixIndex getHealpixIndex() {
@@ -778,6 +847,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
 
     /**
      * Returns true when Healpix mode is used otherwise false.
+     *
      * @return true when Healpix mode is used otherwise false
      */
     public final boolean isHealpixMode() {
@@ -786,6 +856,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
 
     /**
      * Returns the Healpix order.
+     *
      * @return Healpix order
      */
     public final int getOrder() {
@@ -794,6 +865,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
 
     /**
      * Returns the Healpix pixel.
+     *
      * @return the Healpix pixel
      */
     public final long getHealpix() {

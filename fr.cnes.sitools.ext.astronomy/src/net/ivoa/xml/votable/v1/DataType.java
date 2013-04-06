@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
@@ -40,7 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "dataType")
 @XmlEnum
-public enum DataType {
+public enum DataType implements Serializable {
 
     @XmlEnumValue("boolean")
     BOOLEAN("boolean"),

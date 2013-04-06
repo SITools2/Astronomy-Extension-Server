@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "Table", propOrder = {
     "content"
 })
-public class Table {
+public class Table implements Serializable {
 
     @XmlElementRefs({
         @XmlElementRef(name = "FIELD", namespace = "http://www.ivoa.net/xml/VOTable/v1.2", type = JAXBElement.class),

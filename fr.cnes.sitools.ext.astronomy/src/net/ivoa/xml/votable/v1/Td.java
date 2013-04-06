@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -44,7 +45,7 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlType(name = "Td", propOrder = {
     "value"
 })
-public class Td {
+public class Td implements Serializable {
 
     @XmlValue
     protected String value;

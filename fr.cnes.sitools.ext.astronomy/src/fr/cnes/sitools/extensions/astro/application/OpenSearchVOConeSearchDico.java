@@ -19,15 +19,13 @@
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.common.CacheBrowser;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
@@ -87,11 +85,34 @@ public class OpenSearchVOConeSearchDico extends SitoolsParameterizedResource {
       output = "No definition found";
     }
     Representation rep = new StringRepresentation(output, MediaType.TEXT_PLAIN);
-    CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
-    rep = cache.getRepresentation();
-    getResponse().setCacheDirectives(cache.getCacheDirectives());
+    rep = useCacheBrowser(rep, cacheIsEnabled());   
     return rep;
   }
+  
+  /**
+   * Returns the representation with cache directives cache parameter is set to enable.
+   *
+   * @param rep representation to cache
+   * @param isEnabled True when the cache is enabled
+   * @return the representation with the cache directive when the cache is enabled
+   */
+  private Representation useCacheBrowser(final Representation rep, final boolean isEnabled) {
+    Representation cachedRepresentation = rep;
+    if (isEnabled) {
+      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      getResponse().setCacheDirectives(cache.getCacheDirectives());
+      cachedRepresentation = cache.getRepresentation();
+    }
+    return cachedRepresentation;
+  }
+
+  /**
+   * Returns True when the cache is enabled otherwise False.
+   * @return True when the cache is enabled otherwise False
+   */
+  private boolean cacheIsEnabled() {
+    return Boolean.parseBoolean(((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
+  }  
   
   /**
    * General WADL description.
@@ -120,7 +141,7 @@ public class OpenSearchVOConeSearchDico extends SitoolsParameterizedResource {
     
     List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();    
     representationsInfo.add(representationInfoTxt);
-    
+
     List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("name", true, "xs:string", ParameterStyle.PLAIN, "keyword name for which the definition must be found."));
 
@@ -139,5 +160,5 @@ public class OpenSearchVOConeSearchDico extends SitoolsParameterizedResource {
     responseNOK.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
 
     info.setResponses(Arrays.asList(responseOK, responseNOK));
-  }  
+  }
 }

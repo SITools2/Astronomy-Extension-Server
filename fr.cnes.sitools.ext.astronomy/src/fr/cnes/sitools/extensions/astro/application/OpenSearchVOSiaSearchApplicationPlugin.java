@@ -22,6 +22,7 @@ import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
@@ -188,7 +189,14 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     param.setValueType("String");
     param.setValue("http://archives.esac.esa.int/hst/hst-vo/hla_sia?REQUEST=queryData&");
     this.addParameter(param);
-
+    
+    param = new ApplicationPluginParameter();
+    param.setName("cacheable");
+    param.setDescription("Set to true when the result can be cached");
+    param.setValueType("xs:enum[True,False]");
+    param.setValue("False");
+    this.addParameter(param);     
+    SingletonCacheHealpixDataAccess.create();
   }
 
   @Override
