@@ -600,6 +600,25 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
            transactionalMode="off">
         <persistence strategy="localTempSwap"/>
     </cache>
+    
+    <!--
+    cache for VO services
+    This cache contains a maximum in memory of 10% of the EHcache memory.
+
+    If there are more than 10% elements it will overflow to the
+    disk cache, which in this configuration will go to wherever java.io.tmp is
+    defined on your system. On a standard Linux system this will be /tmp"
+    
+    The cache is reloaded each two minutes.
+    -->           
+    <cache name="healpixImage"          
+           eternal="false"          
+           diskExpiryThreadIntervalSeconds="600"         
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+        <persistence strategy="localTempSwap"/>
+    </cache>       
+
     <!--
     cache for VO services
     This cache contains a maximum in memory of 10% of the EHcache memory.
@@ -618,6 +637,6 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
            memoryStoreEvictionPolicy="LFU"
            transactionalMode="off">
         <persistence strategy="localTempSwap"/>
-    </cache>       
+    </cache>         
          
 </ehcache>
