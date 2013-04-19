@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -104,7 +105,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
       this.epoch = epochParam.getValue();
     }
     // Get object name
-    this.objectName = String.valueOf(this.getRequestAttributes().get("objectName"));
+    this.objectName = Reference.decode(String.valueOf(this.getRequestAttributes().get("objectName")));
     // Get and check coordinate system
     String cs = String.valueOf(this.getRequestAttributes().get("coordSystem"));
     if (!getRequest().getMethod().equals(Method.OPTIONS)) {
