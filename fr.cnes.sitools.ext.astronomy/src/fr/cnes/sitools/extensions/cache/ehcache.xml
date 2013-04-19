@@ -63,7 +63,7 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
          updateCheck="true" monitoring="autodetect"
          dynamicConfig="true"
          maxBytesLocalDisk="50G"
-         maxBytesLocalHeap="1G">
+         maxBytesLocalHeap="256M">
 
     <!--
     DiskStore configuration
