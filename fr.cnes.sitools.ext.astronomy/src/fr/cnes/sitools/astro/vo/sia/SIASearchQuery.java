@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
+import net.ivoa.xml.votable.v1.Param;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.Table;
 import net.ivoa.xml.votable.v1.TableData;
@@ -141,7 +142,11 @@ public class SIASearchQuery {
         List<JAXBElement<?>> currentTable = table.getContent();
         for (JAXBElement<?> currentTableIter : currentTable) {
             // metadata case
-            if (currentTableIter.getValue() instanceof Field) {
+            if (currentTableIter.getValue() instanceof Param) {
+              // Need this condition. It seems For a Param tag
+              // is an instance of Field. And we do not want
+              // to parse a Param as a Field.
+            } else if (currentTableIter.getValue() instanceof Field) {
                 JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
                 Field field = fields.getValue();
                 responseFields.put(nbFields, field);

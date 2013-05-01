@@ -112,10 +112,10 @@ public class Invoker {
     //HealpixMoc mocA = new HealpixMoc();
     //mocA.add(mocJson);
 //        int order = 3;
-//    Graph graph = new GenericProjection(Graph.ProjectionType.AITOFF); 
-//    graph = new ImageBackGroundDecorator(graph, new File("/home/malapert/Documents/Equirectangular-projection.jpg"));
+    //Graph graph = new GenericProjection(Graph.ProjectionType.SINU); 
+    //graph = new ImageBackGroundDecorator(graph, new File("/home/malapert/Documents/Equirectangular-projection.jpg"));
 
-    //graph = new HealpixDensityMapDecorator(graph, Scheme.RING, 6, 0.5f);    
+    //graph = new HealpixDensityMapDecorator(graph, Scheme.RING, 4, 0.5f);    
     //map.fill(0.0);
    // Polygon polygon = new Polygon(new Point(-118.95597, -36.1787, CoordSystem.GEOCENTRIC), new Point(106.04403, 73.68463, CoordSystem.GEOCENTRIC));
     //Polygon polygon = new Polygon(new Point(80, 30, CoordSystem.GEOCENTRIC), new Point(100, 70, CoordSystem.GEOCENTRIC));
@@ -168,7 +168,7 @@ public class Invoker {
 //            graph = new HealpixFootprint(graph, Scheme.NESTED, order, (float)0.8);
 //            ((HealpixDensityMapDecorator)graph).importHealpixMap(mapDouble, CoordinateTransformation.EQ2GAL);                       
 //        }
- //   Utility.createJFrame(graph, 900, 500);
+//    Utility.createJFrame(graph, 900, 500);
 //
 //        Shape point = new Point(-86.921 ,74.464 , CoordSystem.GEOCENTRIC);
 //        Index index = GeometryIndex.createIndex(point, Scheme.RING);

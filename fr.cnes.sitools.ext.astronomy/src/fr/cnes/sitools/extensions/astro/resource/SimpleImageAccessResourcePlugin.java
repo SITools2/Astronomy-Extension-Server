@@ -15,6 +15,7 @@
  */
 package fr.cnes.sitools.extensions.astro.resource;
 
+import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -42,6 +43,7 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(SimpleImageAccessResourcePlugin.class.getName());
+  
 
   /**
    * Constructs the configuration panel of the plugin.
@@ -50,7 +52,7 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     super();
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
-    setClassVersion("0.1");
+    setClassVersion("0.2");
     setName("Simple Image Access Protocol");
     setDescription("This plugin provides an access to your data through the Simple Image Access Protocol");
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.SimpleImageAccessResource.class.getName());
@@ -65,7 +67,7 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
     addParam(dictionary);
-
+        
     ResourceParameter intersect = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT,
             "how matched images should intersect the region of interest",
             ResourceParameterType.PARAMETER_INTERN);
@@ -73,6 +75,12 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     intersect.setValueType(intersectEnum);
     intersect.setValue("OVERLAPS");
     addParam(intersect);
+    
+   ResourceParameter geoAttribut = new ResourceParameter(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT,
+            "Geographical attribut for OVERLAPS mode. The geographical attribut must be spoly datatype from pgsphere",
+            ResourceParameterType.PARAMETER_INTERN);    
+    geoAttribut.setValueType("xs:dataset.columnAlias");    
+    addParam(geoAttribut);    
 
     ResourceParameter verb = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.VERB,
             "Verbosity determines how many columns are to be returned in the resulting table",
@@ -168,6 +176,22 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
           constraint.setMessage("A dictionary must be set");
           constraint.setValueName(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY);
           constraintList.add(constraint);
+        }
+        
+        ResourceParameter geoAttribut = params.get(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
+        ResourceParameter intersect = params.get(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT);
+        if (intersect.getValue().equals("OVERLAPS") && !Util.isNotEmpty(geoAttribut.getValue())) {
+          ConstraintViolation constraint = new ConstraintViolation();
+          constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+          constraint.setMessage(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT + " must be defined when OVERLAPS mode is used.");
+          constraint.setValueName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
+          constraintList.add(constraint);          
+        } else if (!intersect.getValue().equals("OVERLAPS") && Util.isNotEmpty(geoAttribut.getValue())) {
+          ConstraintViolation constraint = new ConstraintViolation();
+          constraint.setLevel(ConstraintViolationLevel.WARNING);
+          constraint.setMessage(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT + " is useless when OVERLAPS mode is not used.");
+          constraint.setValueName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
+          constraintList.add(constraint);          
         }
         return constraintList;
       }

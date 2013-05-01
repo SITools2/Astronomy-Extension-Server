@@ -62,7 +62,7 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
          xsi:noNamespaceSchemaLocation="ehcache.xsd"
          updateCheck="true" monitoring="autodetect"
          dynamicConfig="true"
-         maxBytesLocalDisk="50G"
+         maxBytesLocalDisk="500M"
          maxBytesLocalHeap="256M">
 
     <!--
