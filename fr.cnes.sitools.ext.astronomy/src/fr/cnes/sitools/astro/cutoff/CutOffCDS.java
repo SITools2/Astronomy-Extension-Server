@@ -19,8 +19,8 @@
 package fr.cnes.sitools.astro.cutoff;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.util.Base64.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.logging.Logger;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
