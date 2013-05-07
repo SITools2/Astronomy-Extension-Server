@@ -71,7 +71,8 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     ResourceParameter intersect = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT,
             "how matched images should intersect the region of interest",
             ResourceParameterType.PARAMETER_INTERN);
-    String intersectEnum = "xs:enum[COVERS, ENCLOSED, CENTER, OVERLAPS]";
+    String intersectEnum = "xs:enum[CENTER, OVERLAPS]";
+    //String intersectEnum = "xs:enum[COVERS, ENCLOSED, CENTER, OVERLAPS]";
     intersect.setValueType(intersectEnum);
     intersect.setValue("OVERLAPS");
     addParam(intersect);

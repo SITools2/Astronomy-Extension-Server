@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
+ * ****************************************************************************
  */
 package fr.cnes.sitools.astro.vo.sia;
 
@@ -46,16 +46,24 @@ import net.ivoa.xml.votable.v1.Info;
 import net.ivoa.xml.votable.v1.Param;
 
 /**
- * Votable response for cone search
+ * Votable response for cone search.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInterface {
 
+  /**
+   * Logger.
+   */
+  private static final Logger LOG = Logger.getLogger(SimpleImageAccessResponse.class.getName());
+  
+  /**
+   * Data model.
+   */
   private Map dataModel = new HashMap();
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param inputParameters input parameters
    * @param model data model
@@ -65,7 +73,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Create VOTable response
+   * Creates VOTable response.
    *
    * @param inputParameters Input parameters
    * @param model data model
@@ -84,7 +92,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Set VOTable parameters coming from administration configuration
+   * Sets VOTable parameters coming from administration configuration.
    *
    * @param dataModel data model to set
    * @param model parameters from administration
@@ -108,7 +116,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Set Votable Param
+   * Sets Votable Param.
    *
    * @param params List of params
    * @param model data model
@@ -128,7 +136,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Create the response based on Table
+   * Creates the response based on Table.
    *
    * @param datasetApp Dataset application
    * @param inputParameters Input Parameters
@@ -215,7 +223,6 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
     dbParams.setPaginationExtend(nbMaxRecords);
 
     // Create predicat definition   
-
     String raColTarget = null;
     String decColTarget = null;
     for (ColumnConceptMappingDTO mapIter : mappingList) {
@@ -228,19 +235,20 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       }
     }
 
-    //TODO : Mode overlaps - where spoly_overlap_polygon(<nomCol>,'{(ra1,dec1),(ra2,dec2), ... }')
-    //       Ajouter mode implémentation overlaps
-
     SqlGeometryConstraint sql = SqlGeometryFactory.create(String.valueOf(model.getParameterByName(SimpleImageAccessProtocolLibrary.INTERSECT).getValue()));
     sql.setInputParameters(inputParameters);
-    Object geometry = (Util.isNotEmpty(model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue())) ? model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue() : Arrays.asList(raColTarget, decColTarget);
+    Object geometry = (Util.isNotEmpty(model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue()))
+                      ? model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue()
+                      : Arrays.asList(raColTarget, decColTarget);
     sql.setGeometry(geometry);
-    
-    Predicat predicat = new Predicat();
-    predicat.setStringDefinition(sql.getSqlPredicat());
-    List<Predicat> predicatList = dbParams.getPredicats();
-    predicatList.add(predicat);
-    dbParams.setPredicats(predicatList);
+
+    if (sql.getSqlPredicat() != null) {
+      Predicat predicat = new Predicat();
+      predicat.setStringDefinition(sql.getSqlPredicat());
+      List<Predicat> predicatList = dbParams.getPredicats();
+      predicatList.add(predicat);
+      dbParams.setPredicats(predicatList);
+    }
     return dbParams;
   }
 
@@ -263,8 +271,8 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   *
-   * @return
+   * Returns the data model.
+   * @return the data model
    */
   @Override
   public Map getDataModel() {
@@ -272,7 +280,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Provide the mapping between SQL column/concept for a given dictionary
+   * Provide the mapping between SQL column/concept for a given dictionary.
    *
    * @param datasetApp Application where this service is attached
    * @param dicoToFind Dictionary name to find
@@ -301,7 +309,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Set Fields and columnSqlAliasList
+   * Set Fields and columnSqlAliasList.
    *
    * @param fieldList List of fields to display on the VOTable
    * @param columnList List of SQL column
@@ -384,19 +392,18 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       anyText.getContent().add(descriptionValue);
       field.setDESCRIPTION(anyText);
       fieldList.add(field);
-
     }
   }
 
   /**
-   * Check required mapping and filter columns to map according to VERB
+   * Checks required mapping and filter columns to map according to VERB.
    *
    * @param mappingList list of mapping defined by the administrator
    * @param verb VERB of Cone search protocol
    * @return Returns the new mapping according to VERB
    * @throws SitoolsException columns with UCD ID_MAIN, POS_EQ_RA_MAIN, POS_EQ_DEC_MAIN must be mapped
    */
-  private List<ColumnConceptMappingDTO> checkRequiredMapping(final List<ColumnConceptMappingDTO> mappingList, int verb)
+  private List<ColumnConceptMappingDTO> checkRequiredMapping(final List<ColumnConceptMappingDTO> mappingList, final int verb)
           throws SitoolsException {
     final int nbConceptToMap = SimpleImageAccessProtocolLibrary.REQUIRED_UCD_CONCEPTS.size();
     int nbConcept = 0;
@@ -423,5 +430,4 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
     return conceptToMap;
 
   }
-  private static final Logger LOG = Logger.getLogger(SimpleImageAccessResponse.class.getName());
 }

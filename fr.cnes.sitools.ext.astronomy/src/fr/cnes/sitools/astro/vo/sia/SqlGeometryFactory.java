@@ -1,20 +1,53 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/*******************************************************************************
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * 
+ * This directory is part of SITools2.
+ * 
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
 /**
- *
+ * Chooses the implementation of the SQL request 
+ * based on the geometry intersection algorithm.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class SqlGeometryFactory {
+public final class SqlGeometryFactory {
   
-  public static SqlGeometryConstraint create(final String geometryMode) {
-    if (geometryMode.equals("OVERLAPS")) {
+  /**
+   * Empty constructor.
+   */
+  private SqlGeometryFactory() {    
+  }
+  
+  /**
+   * Returns the Object responsible of creating the SQL request to send to the server.
+   * 
+   * <p>
+   * The supported geometryIntersection is either CENTER or OVERLAPS otherwise
+   * an IllegalArgumentException is raised.
+   * </p>
+   * @param geometryIntersection Geometry Intersection algorithm
+   * @return the Object responsible of creating the SQL request to send to the server
+   */
+  public static SqlGeometryConstraint create(final String geometryIntersection) {
+    if (geometryIntersection.equals("OVERLAPS")) {
       return new OverlapsModeIntersection();
-    } else {
+    } else if (geometryIntersection.equals("CENTER")) {
       return new CenterModeIntersection();
+    } else {
+      throw new IllegalArgumentException("geometryMode " + geometryIntersection + " is unknown or not supported");
     }
   }
 }

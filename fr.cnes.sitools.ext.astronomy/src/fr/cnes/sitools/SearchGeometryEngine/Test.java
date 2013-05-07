@@ -42,14 +42,16 @@ import java.util.List;
 public class Test {
   
   public static void main(String[] args) throws Exception {
-    List<Point> points = new ArrayList<Point>();
-    points.add(new Point(-50,10,CoordSystem.GEOCENTRIC));
-    points.add(new Point(-50,30,CoordSystem.GEOCENTRIC));
-    points.add(new Point(50,30,CoordSystem.GEOCENTRIC));
-    points.add(new Point(50,10,CoordSystem.GEOCENTRIC));
+    //List<Point> points = new ArrayList<Point>();
+    //points.add(new Point(-50,10,CoordSystem.GEOCENTRIC));
+    //points.add(new Point(-50,30,CoordSystem.GEOCENTRIC));
+    //points.add(new Point(50,30,CoordSystem.GEOCENTRIC));
+    //points.add(new Point(50,10,CoordSystem.GEOCENTRIC));
     
-    
-    Polygon polygon = new Polygon(points);
+    double[] val = Resampling.decCircle(-40, 80, 10);
+    for (int i=0 ; i<val.length; i++) 
+      System.out.print(val[i]+" ");
+    //Polygon polygon = new Polygon(points);
 //    points.add(new Point(40,20,CoordSystem.EQUATORIAL));
 //    points.add(new Point(60,70,CoordSystem.EQUATORIAL));
 //    points.add(new Point(0,70,CoordSystem.EQUATORIAL));    
@@ -57,11 +59,11 @@ public class Test {
     //Polygon polygon = new Polygon(new Point(-118.95597, -36.1787, CoordSystem.GEOCENTRIC),
     //        new Point(106.04403, 73.68463, CoordSystem.GEOCENTRIC));    
     //Shape polygon = new Polygon(points);
-    Index index = (NestedIndex) GeometryIndex.createIndex(polygon, Scheme.NESTED);
-    ((NestedIndex)index).setOrderMax(10);
+    //Index index = (NestedIndex) GeometryIndex.createIndex(polygon, Scheme.NESTED);
+    //((NestedIndex)index).setOrderMax(10);
     //Index index = (RingIndex) GeometryIndex.createIndex(polygon, Scheme.RING);
     //((RingIndex)index).setOrder(6);    
-    HealpixMoc moc = (HealpixMoc) index.getIndex();
+    //HealpixMoc moc = (HealpixMoc) index.getIndex();
 //    RangeSet range = (RangeSet) index.getIndex();
 //    RangeSet.ValueIterator iter = range.valueIterator();
 //    HealpixMapDouble map = new HealpixMapDouble((long) Math.pow(2, 6), Scheme.RING);
@@ -69,13 +71,13 @@ public class Test {
 //      map.setPixel(iter.next(), 1.0d);
 //    }    
 
-    Graph graph = new GenericProjection(Graph.ProjectionType.ECQ);
-    graph = new HealpixGridDecorator(graph, Scheme.NESTED, 1);
+    //Graph graph = new GenericProjection(Graph.ProjectionType.ECQ);
+    //graph = new HealpixGridDecorator(graph, Scheme.NESTED, 1);
     //graph = new HealpixFootprint(graph, Scheme.RING, 6, 1.0f);
     //((HealpixFootprint)graph).importHealpixMap(map, CoordinateTransformation.NATIVE);
-    graph = new HealpixMocDecorator(graph, Color.yellow, 0.4f);
-    ((HealpixMocDecorator)graph).importMoc(moc);
-    Utility.createJFrame(graph, 900, 500);
+    //graph = new HealpixMocDecorator(graph, Color.yellow, 0.4f);
+    //((HealpixMocDecorator)graph).importMoc(moc);
+    //Utility.createJFrame(graph, 900, 500);
   }
   
 }

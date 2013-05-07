@@ -35,6 +35,11 @@ import org.restlet.Request;
 public class SimpleImageAccessProtocolLibrary {
 
   /**
+   * Logger.
+   */
+  private static final Logger LOG = Logger.getLogger(SimpleImageAccessProtocolLibrary.class.getName());
+
+  /**
    *
    */
   public static final String DICTIONARY = "PARAM_Dictionary";
@@ -69,7 +74,14 @@ public class SimpleImageAccessProtocolLibrary {
   /**
    *
    */
-  public static final List REQUIRED_UCD_CONCEPTS = Arrays.asList("VOX:Image_Title", "POS_EQ_RA_MAIN", "POS_EQ_DEC_MAIN", "VOX:Image_Naxes", "VOX:Image_Naxis", "VOX:Image_Scale", "VOX:Image_Format", "VOX:Image_AccessReference");
+  public static final List REQUIRED_UCD_CONCEPTS = Arrays.asList("VOX:Image_Title",
+                                                    "POS_EQ_RA_MAIN",
+                                                    "POS_EQ_DEC_MAIN",
+                                                    "VOX:Image_Naxes",
+                                                    "VOX:Image_Naxis",
+                                                    "VOX:Image_Scale",
+                                                    "VOX:Image_Format",
+                                                    "VOX:Image_AccessReference");
   /**
    *
    */
@@ -115,7 +127,7 @@ public class SimpleImageAccessProtocolLibrary {
    */
   public static final String MAX_RECORDS = "Max records";
   /**
-   * spoly column from pgsphere
+   * spoly column from pgsphere.
    */
   public static final String GEO_ATTRIBUT = "geoAttribut";
   private DataSetApplication datasetApp;
@@ -123,6 +135,22 @@ public class SimpleImageAccessProtocolLibrary {
   private Request request;
   private Context context;
 
+  /**
+   * Maximum value of the declination axis.
+   */
+  public static final double MAX_VALUE_FOR_DECLINATION = 90.0;
+  /**
+   * Minimum value of the declination axis.
+   */  
+  public static final double MIN_VALUE_FOR_DECLINATION = -90.0;
+  /**
+   * Maximum value of the right ascension axis.
+   */  
+  public static final double MAX_VALUE_FOR_RIGHT_ASCENSION = 360.0;
+  /**
+   * Minimum value of the right ascension axis.
+   */  
+  public static final double MIN_VALUE_FOR_RIGHT_ASCENSION = 0.0;
   /**
    *
    */
@@ -271,7 +299,7 @@ public class SimpleImageAccessProtocolLibrary {
   public enum GraphicBrowser {
 
     /**
-     * JPEG format
+     * JPEG format.
      */
     JPEG("image/jpeg"),
     /**
@@ -327,15 +355,15 @@ public class SimpleImageAccessProtocolLibrary {
   public enum ParamStandardFormat {
 
     /**
-     * All format
+     * All format.
      */
     ALL("ALL", new ArrayList<String>()),
     /**
-     * Graphic format
+     * Graphic format.
      */
     GRAPHIC("GRAPHIC", new ArrayList<String>()),
     /**
-     * METADATA format
+     * METADATA format.
      */
     METADATA("METADATA", new ArrayList<String>()),
     /**
@@ -343,11 +371,11 @@ public class SimpleImageAccessProtocolLibrary {
      */
     GRAPHIC_ALL("GRAPHIC-ALL", new ArrayList<String>());
     /**
-     * format
+     * format.
      */
     private final String format;
     /**
-     * All formats
+     * All formats.
      */
     private List<String> formats;
 
@@ -363,7 +391,7 @@ public class SimpleImageAccessProtocolLibrary {
     }
 
     /**
-     * Get the format name
+     * Get the format name.
      *
      * @return Returns the format name.
      */
@@ -385,7 +413,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @param val new supported format value.
      */
-    private void addFormat(String val) {
+    private void addFormat(final String val) {
       this.formats.add(val);
     }
 
@@ -394,7 +422,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @param val Set a list of formats for a format name.
      */
-    private void setFormat(List<String> val) {
+    private void setFormat(final List<String> val) {
       this.formats.addAll(val);
     }
 
@@ -404,7 +432,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @param format format Name.
      * @param specialValue Value for a format name.
      */
-    private static void addFormat(String format, ParamStandardFormat specialValue) {
+    private static void addFormat(final String format, final ParamStandardFormat specialValue) {
       for (ParamStandardFormat it : ParamStandardFormat.values()) {
         if (it.equals(specialValue) && !ParamStandardFormat.hasFormat(format)) {
           it.addFormat(format);
@@ -418,7 +446,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @param format Format name.
      * @param specialValue List of format.
      */
-    private static void setFormat(List<String> format, ParamStandardFormat specialValue) {
+    private static void setFormat(final List<String> format, final ParamStandardFormat specialValue) {
       for (ParamStandardFormat it : ParamStandardFormat.values()) {
         if (it.equals(specialValue)) {
           it.setFormat(format);
@@ -432,7 +460,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @param format Format name.
      * @return Returns the list of supported formats.
      */
-    public static List<String> getFormats(ParamStandardFormat format) {
+    public static List<String> getFormats(final ParamStandardFormat format) {
       for (ParamStandardFormat it : ParamStandardFormat.values()) {
         if (it.equals(format)) {
           return it.getFormats();
@@ -447,7 +475,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @param format Format name.
      * @return Returns the list of supported formats.
      */
-    public static List<String> getFormats(String format) {
+    public static List<String> getFormats(final String format) {
       for (ParamStandardFormat it : ParamStandardFormat.values()) {
         if (it.getFormatName().equals(format)) {
           return it.getFormats();
@@ -475,7 +503,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @param format format to test
      * @return Returns true when the format is included in the list otherwise false.
      */
-    public static boolean hasFormat(String format) {
+    public static boolean hasFormat(final String format) {
       for (ParamStandardFormat it : ParamStandardFormat.values()) {
         if (it.getFormats().contains(format)) {
           return true;
@@ -612,14 +640,14 @@ public class SimpleImageAccessProtocolLibrary {
   //public enum ImageFormat{}
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param datasetApp Dataset Application
    * @param resourceModel Data model
    * @param request Request
    * @param context Context
    */
-  public SimpleImageAccessProtocolLibrary(DataSetApplication datasetApp, ResourceModel resourceModel, Request request, Context context) {
+  public SimpleImageAccessProtocolLibrary(final DataSetApplication datasetApp, final ResourceModel resourceModel, final Request request, final Context context) {
     this.datasetApp = datasetApp;
     this.resourceModel = resourceModel;
     this.request = request;
@@ -627,7 +655,7 @@ public class SimpleImageAccessProtocolLibrary {
   }
 
   /**
-   * Fill data Model that will be used in the template
+   * Fill data Model that will be used in the template.
    *
    * @return data model for the template
    */
@@ -649,13 +677,12 @@ public class SimpleImageAccessProtocolLibrary {
   }
 
   /**
-   * VOTable response
+   * VOTable response.
    *
    * @return VOTable response
    */
-  public VOTableRepresentation getResponse() {
+  public final VOTableRepresentation getResponse() {
     Map dataModel = fillDataModel();
     return new VOTableRepresentation(dataModel);
-  }
-  private static final Logger LOG = Logger.getLogger(SimpleImageAccessProtocolLibrary.class.getName());
+  }  
 }
