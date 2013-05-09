@@ -139,7 +139,7 @@ public class Resampling {
   
   /**
    * Resamples Right ascension along the hour great circle 
-   * given the start and the stop of Right ascension axis.
+   * given the start and the stop of Right ascension axis
    * 
    * <p>
    * Some examples with a step of 10
