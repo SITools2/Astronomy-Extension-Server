@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  * 
@@ -22,11 +22,8 @@ import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.restlet.data.CacheDirective;
 import org.restlet.data.Disposition;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -45,7 +42,7 @@ public class GlobWebResource extends SitoolsParameterizedResource {
   /**
    * the GlobWeb configuration file.
    */
-  private String configurationFile;
+  private transient String configurationFile;
   /**
    * Logger.
    */
@@ -70,17 +67,17 @@ public class GlobWebResource extends SitoolsParameterizedResource {
   @Get
   public final Representation getconfigurationFile() {
     try {
-      String uri = String.format("file://%s/%s/%s", SitoolsSettings.getInstance().getRootDirectory(), "data/freemarker", this.configurationFile);
+      final String uri = String.format("file://%s/%s/%s", SitoolsSettings.getInstance().getRootDirectory(), "data/freemarker", this.configurationFile);
       LOG.finest(String.format("File to publish: %s", uri));
-      ClientResource client = new ClientResource(uri);
+      final ClientResource client = new ClientResource(uri);
       Representation rep = new StringRepresentation(client.get().getText());
       
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
       rep = cache.getRepresentation();
       getResponse().setCacheDirectives(cache.getCacheDirectives()); 
       
       if (fileName != null && !"".equals(fileName)) {
-        Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+        final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);
         rep.setDisposition(disp);
       }

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  * Constructs SQL predicat for Overlaps mode intersection.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class OverlapsModeIntersection extends SqlGeometryConstraint {
+public class OverlapsModeIntersection extends AbstractSqlGeometryConstraint {
   
   /**
    * Logger.
@@ -47,13 +47,7 @@ public class OverlapsModeIntersection extends SqlGeometryConstraint {
   /**
    * geometry attribut.
    */
-  private String geomCol;
-
-  /**
-   * Empty constructor.
-   */
-  public OverlapsModeIntersection() {
-  }
+  private transient String geomCol;
 
   @Override
   public final void setGeometry(final Object geometry) {
@@ -70,9 +64,9 @@ public class OverlapsModeIntersection extends SqlGeometryConstraint {
       return null;
     }
 
-    List ranges = (List) computeRange();
-    List<Double[]> raRanges = (List<Double[]>) ranges.get(0);
-    double[] decRange = (double[]) ranges.get(1);
+    final List ranges = (List) computeRange();
+    final List<Double[]> raRanges = (List<Double[]>) ranges.get(0);
+    final double[] decRange = (double[]) ranges.get(1);
 
     String predicatDefinition;
     if (isNorthPoleCollision()) {
@@ -101,8 +95,8 @@ public class OverlapsModeIntersection extends SqlGeometryConstraint {
       
     } else if (raRanges.size() == 1 && isLargePolygon()) {
       LOG.log(Level.FINEST, "Large polygon case");
-      Double[] raRange1 = raRanges.get(0);
-      double mean = (raRange1[MIN] + raRange1[MAX]) / 2.0;
+      final Double[] raRange1 = raRanges.get(0);
+      final double mean = (raRange1[MIN] + raRange1[MAX]) / 2.0;
       raRanges.add(new Double[]{mean, raRange1[MAX]});
       raRanges.set(0, new Double[]{raRange1[MIN], mean});
       predicatDefinition = buildMultiPolygon(raRanges, decRange);
@@ -114,7 +108,7 @@ public class OverlapsModeIntersection extends SqlGeometryConstraint {
     }
     return predicatDefinition;
   }
-  
+
   /**
    * Builds a multi-polygon syntax for PgSphere based on a set right ascension ranges and a declination range.
    * 
@@ -127,14 +121,14 @@ public class OverlapsModeIntersection extends SqlGeometryConstraint {
    * @return the SQL predicat
    */
   private String buildMultiPolygon(final List<Double[]> raRanges, final double[] decRange) {
-    StringBuilder sb = new StringBuilder(" AND (");
-    buildPolygon(sb, raRanges.get(0), decRange);
+    final StringBuilder stringBuilder = new StringBuilder(" AND (");
+    buildPolygon(stringBuilder, raRanges.get(0), decRange);
     if (raRanges.size() == 2) {
-      sb.append(" OR ");
-      buildPolygon(sb, raRanges.get(1), decRange);
+      stringBuilder.append(" OR ");
+      buildPolygon(stringBuilder, raRanges.get(1), decRange);
     }
-    sb.append(")");
-    return sb.toString();
+    stringBuilder.append(")");
+    return stringBuilder.toString();
   }
 
   /**
@@ -142,56 +136,56 @@ public class OverlapsModeIntersection extends SqlGeometryConstraint {
    * <p>
    * A range is an array that is composed of two values : min and max value.
    * </p>
-   * @param sb SQL predicat to complete
+   * @param stringBuilder SQL predicat to complete
    * @param raRange right ascension range [min,max]
    * @param decRange declination range [min,max]
    */
-  private void buildPolygon(final StringBuilder sb, final Double[] raRange, final double[] decRange) {
-    sb.append(String.format("spoly_overlap_polygon(%s,'{", geomCol));
-    double[] pointsRa = Resampling.hourCircle(raRange[MIN], raRange[MAX], DEFAULT_SAMPLING_VALUE_RA);
-    double[] pointsDec = Resampling.decCircle(decRange[MIN], decRange[MAX], DEFAULT_SAMPLING_VALUE_DEC);
-    buildRaLine(sb, pointsRa, decRange[MIN], false);
-    buildDecLine(sb, pointsDec, raRange[MAX], false);
-    buildRaLine(sb, pointsRa, decRange[MAX], true);
-    buildDecLine(sb, pointsDec, raRange[MIN], true);
-    sb.deleteCharAt(sb.length() - 1);
-    sb.append("}')");
+  private void buildPolygon(final StringBuilder stringBuilder, final Double[] raRange, final double[] decRange) {
+    stringBuilder.append(String.format("spoly_overlap_polygon(%s,'{", geomCol));
+    final double[] pointsRa = Resampling.hourCircle(raRange[MIN], raRange[MAX], DEFAULT_SAMPLING_VALUE_RA);
+    final double[] pointsDec = Resampling.decCircle(decRange[MIN], decRange[MAX], DEFAULT_SAMPLING_VALUE_DEC);
+    buildRaLine(stringBuilder, pointsRa, decRange[MIN], false);
+    buildDecLine(stringBuilder, pointsDec, raRange[MAX], false);
+    buildRaLine(stringBuilder, pointsRa, decRange[MAX], true);
+    buildDecLine(stringBuilder, pointsDec, raRange[MIN], true);
+    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    stringBuilder.append("}')");
   }
 
   /**
    * Builds a line of the polygon for the SIAP request along the right ascension axis.
-   * @param sb polygon to complete
+   * @param stringBuilder polygon to complete
    * @param raCoordinates values in the line along right ascension axis
    * @param staticDecCoordinate constant declination.
    * @param isReverseOrder indicates if the order where <code>raCoordinates</code> array must be read
    */
-  private void buildRaLine(final StringBuilder sb, final double[] raCoordinates, final double staticDecCoordinate, final boolean isReverseOrder) {
+  private void buildRaLine(final StringBuilder stringBuilder, final double[] raCoordinates, final double staticDecCoordinate, final boolean isReverseOrder) {
     if (isReverseOrder) {
       for (int i = raCoordinates.length - 1; i > 0; i--) {
-        sb.append(String.format("(%sd,%sd),", raCoordinates[i], staticDecCoordinate));
+        stringBuilder.append(String.format("(%sd,%sd),", raCoordinates[i], staticDecCoordinate));
       }
     } else {
       for (int i = 0; i < raCoordinates.length - 1; i++) {
-        sb.append(String.format("(%sd,%sd),", raCoordinates[i], staticDecCoordinate));
+        stringBuilder.append(String.format("(%sd,%sd),", raCoordinates[i], staticDecCoordinate));
       }
     }
   }
 
     /**
    * Builds a line of the polygon for the SIAP request along the declination axis.
-   * @param sb polygon to complete
+   * @param stringBuilder polygon to complete
    * @param decCoordinates values in the line along declination axis
    * @param staticRaCoordinate constant right ascension.
    * @param isReverseOrder indicates if the order where <code>raCoordinates</code> array must be read
    */
-  private void buildDecLine(final StringBuilder sb, final double[] decCoordinates, final double staticRaCoordinate, final boolean isReverseOrder) {
+  private void buildDecLine(final StringBuilder stringBuilder, final double[] decCoordinates, final double staticRaCoordinate, final boolean isReverseOrder) {
     if (isReverseOrder) {
       for (int i = decCoordinates.length - 1; i > 0; i--) {
-        sb.append(String.format("(%sd,%sd),", staticRaCoordinate, decCoordinates[i]));
+        stringBuilder.append(String.format("(%sd,%sd),", staticRaCoordinate, decCoordinates[i]));
       }
     } else {
       for (int i = 0; i < decCoordinates.length - 1; i++) {
-        sb.append(String.format("(%sd,%sd),", staticRaCoordinate, decCoordinates[i]));
+        stringBuilder.append(String.format("(%sd,%sd),", staticRaCoordinate, decCoordinates[i]));
       }
     }
   }

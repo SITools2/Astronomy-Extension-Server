@@ -41,7 +41,7 @@ public final class SqlGeometryFactory {
    * @param geometryIntersection Geometry Intersection algorithm
    * @return the Object responsible of creating the SQL request to send to the server
    */
-  public static SqlGeometryConstraint create(final String geometryIntersection) {
+  public static AbstractSqlGeometryConstraint create(final String geometryIntersection) {
     if (geometryIntersection.equals("OVERLAPS")) {
       return new OverlapsModeIntersection();
     } else if (geometryIntersection.equals("CENTER")) {

@@ -53,7 +53,7 @@ public class ConeSearchQuery {
   /**
    * Service url.
    */
-  private String url;
+  private final transient String url;
 
   /**
    * Create a cone search query.
@@ -67,46 +67,45 @@ public class ConeSearchQuery {
   /**
    * Retrieve data from VO.
    *
-   * @param ra Ra of the center of the cone
-   * @param dec Dec of the center of the cone
-   * @param sr radius of the cone
+   * @param rightAscension Ra of the center of the cone
+   * @param declination Dec of the center of the cone
+   * @param radius radius of the cone
    * @return records from cone search protocol
-   * @throws Exception Exception
+   * @throws ConeSearchException Exception
    */
-  public final List<Map<Field, String>> getResponseAt(final double ra, final double dec, final double sr) throws Exception {
+  public final List<Map<Field, String>> getResponseAt(final double rightAscension, final double declination, final double radius) throws ConeSearchException {
     try {
-      return process(ra, dec, sr);
+      return process(rightAscension, declination, radius);
     } catch (JAXBException ex) {
-      throw new Exception(ex);
+      throw new ConeSearchException(ex);
     } catch (IOException ex) {
-      throw new Exception(ex);
+      throw new ConeSearchException(ex);
     }
   }
 
   /**
    * Returns the result of the query.
    *
-   * @param ra Ra of the center of the cone
-   * @param dec Dec of the center of the cone
-   * @param sr radius of the cone
+   * @param rightAscension Ra of the center of the cone
+   * @param declination Dec of the center of the cone
+   * @param radius radius of the cone
    * @return the result of the query
    * @throws JAXBException Parsing Exception
    * @throws IOException Exception
    */
-  private List<Map<Field, String>> process(final double ra, final double dec, final double sr) throws JAXBException, IOException {
-    String queryService = String.format("%sRA=%s&DEC=%s&SR=%s", url, ra, dec, sr);
+  private List<Map<Field, String>> process(final double rightAscension, final double declination, final double radius) throws JAXBException, IOException {
+    final String queryService = String.format("%sRA=%s&DEC=%s&SR=%s", url, rightAscension, declination, radius);
     LOG.log(Level.INFO, queryService);
-    ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
-    ClientResource client = proxy.getClientResource();
-    JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
-    Unmarshaller um = ctx.createUnmarshaller();
+    final ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
+    final ClientResource client = proxy.getClientResource();
+    final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+    final Unmarshaller unMarshaller = ctx.createUnmarshaller();
     String result = client.get().getText();
     result = result.replace("http://www.ivoa.net/xml/VOTable/v1.1", "http://www.ivoa.net/xml/VOTable/v1.2");
-    VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
-    List<Resource> resources = votable.getRESOURCE();
-    Resource resource = resources.get(0);
-    List<Map<Field, String>> response = parseResponse(resource);
-    return response;
+    final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
+    final List<Resource> resources = votable.getRESOURCE();
+    final Resource resource = resources.get(0);
+    return parseResponse(resource);    
   }
 
   /**
@@ -117,10 +116,10 @@ public class ConeSearchQuery {
    */
   private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
     List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
-    List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
+    final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
     for (Object objectIter : objects) {
       if (objectIter instanceof Table) {
-        Table table = (Table) objectIter;
+        final Table table = (Table) objectIter;
         responses = parseTable(table);
       }
     }
@@ -135,28 +134,28 @@ public class ConeSearchQuery {
    */
   private List<Map<Field, String>> parseTable(final Table table) {
     int nbFields = 0;
-    List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
-    Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
-    List<JAXBElement<?>> currentTable = table.getContent();
+    final List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
+    final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
+    final List<JAXBElement<?>> currentTable = table.getContent();
     for (JAXBElement<?> currentTableIter : currentTable) {
       // metadata case
       if (currentTableIter.getValue() instanceof Field) {
-        JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
-        Field field = fields.getValue();
+        final JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
+        final Field field = fields.getValue();
         responseFields.put(nbFields, field);
         nbFields++;
         // data
       } else if (currentTableIter.getValue() instanceof Data) {
-        JAXBElement<Data> datas = (JAXBElement<Data>) currentTableIter;
-        Data data = datas.getValue();
-        TableData tableData = data.getTABLEDATA();
-        List<Tr> trs = tableData.getTR();
+        final JAXBElement<Data> datas = (JAXBElement<Data>) currentTableIter;
+        final Data data = datas.getValue();
+        final TableData tableData = data.getTABLEDATA();
+        final List<Tr> trs = tableData.getTR();
         for (Tr trsIter : trs) {
           Map<Field, String> response = new HashMap<Field, String>();
-          List<Td> tds = trsIter.getTD();
+          final List<Td> tds = trsIter.getTD();
           int nbTd = 0;
           for (Td tdIter : tds) {
-            String value = tdIter.getValue();
+            final String value = tdIter.getValue();
             response.put(responseFields.get(nbTd), value);
             nbTd++;
           }

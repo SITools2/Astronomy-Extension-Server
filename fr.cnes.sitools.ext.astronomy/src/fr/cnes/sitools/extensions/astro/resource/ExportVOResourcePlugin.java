@@ -68,11 +68,11 @@ public class ExportVOResourcePlugin extends ResourceModel {
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.MULTIPLE);
     // this.getParameterByName("methods").setValue("GET");
-    ResourceParameter dictionary = new ResourceParameter(ExportVOResourcePlugin.DICTIONARY,
+    final ResourceParameter dictionary = new ResourceParameter(ExportVOResourcePlugin.DICTIONARY,
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
     addParam(dictionary);
-    ResourceParameter description = new ResourceParameter(ExportVOResourcePlugin.DESCRIPTION,
+    final ResourceParameter description = new ResourceParameter(ExportVOResourcePlugin.DESCRIPTION,
             "Description name in the VOTable", ResourceParameterType.PARAMETER_INTERN);
     addParam(description);
     this.completeAttachUrlWith("/voexport");
@@ -88,15 +88,15 @@ public class ExportVOResourcePlugin extends ResourceModel {
     return new Validator<ResourceModel>() {
       @Override
       public final Set<ConstraintViolation> validate(final ResourceModel item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, ResourceParameter> params = item.getParametersMap();
-        ResourceParameter methods = params.get("methods");
-        ResourceParameter dico = params.get(ExportVOResourcePlugin.DICTIONARY);
-        ResourceParameter url = params.get("url");
-        ResourceParameter description = params.get(ExportVOResourcePlugin.DESCRIPTION);
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, ResourceParameter> params = item.getParametersMap();
+        final ResourceParameter methods = params.get("methods");
+        final ResourceParameter dico = params.get(ExportVOResourcePlugin.DICTIONARY);
+        final ResourceParameter url = params.get("url");
+        final ResourceParameter description = params.get(ExportVOResourcePlugin.DESCRIPTION);
 
         if (!Util.isNotEmpty(description.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.WARNING);
           constraint
                   .setMessage("The description describes the VOTable. In the current configuration, you have not defined a description");
@@ -105,7 +105,7 @@ public class ExportVOResourcePlugin extends ResourceModel {
         }
 
         if (!Util.isNotEmpty(url.getValue()) || (Util.isNotEmpty(url.getValue()) && !url.getValue().startsWith("/"))) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("the Url must be set and to start by '/'");
           constraint.setValueName("url");
@@ -113,7 +113,7 @@ public class ExportVOResourcePlugin extends ResourceModel {
         }
 
         if (!Util.isNotEmpty(dico.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The dictionary for VOTable must be set");
           constraint.setValueName(ExportVOResourcePlugin.DICTIONARY);

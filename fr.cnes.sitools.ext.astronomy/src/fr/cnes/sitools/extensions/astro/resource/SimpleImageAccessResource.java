@@ -59,7 +59,7 @@ public class SimpleImageAccessResource extends SitoolsParameterizedResource {
    */
   @Override
   protected final Representation head(final Variant variant) {
-    Representation repr = super.head();
+    final Representation repr = super.head();
     repr.setMediaType(MediaType.TEXT_XML);
     return repr;
   }
@@ -72,11 +72,11 @@ public class SimpleImageAccessResource extends SitoolsParameterizedResource {
   @Get
   public final Representation getVOResponse() {
     LOG.finest(String.format("SIA : %s", getRequest()));
-    SimpleImageAccessProtocolLibrary sia = new SimpleImageAccessProtocolLibrary((DataSetApplication) this.getApplication(),
+    final SimpleImageAccessProtocolLibrary sia = new SimpleImageAccessProtocolLibrary((DataSetApplication) this.getApplication(),
             this.getModel(), this.getRequest(), this.getContext());
-    Representation rep = sia.getResponse();
+    final Representation rep = sia.getResponse();
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -104,7 +104,7 @@ public class SimpleImageAccessResource extends SitoolsParameterizedResource {
     info.setIdentifier("SimpleImageAccessProtocol");
     info.setDocumentation("Interoperability service to distribute images through the Simple Image Access Protocol");
 
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("POS", true, "string", ParameterStyle.QUERY,
             "Box Central position (decimal degree) in ICRS such as RA,DEC."));
     parametersInfo.add(new ParameterInfo("SIZE", true, "string", ParameterStyle.QUERY,
@@ -113,12 +113,12 @@ public class SimpleImageAccessResource extends SitoolsParameterizedResource {
 
     info.getResponse().getStatuses().add(Status.SUCCESS_OK);
 
-    DocumentationInfo documentation = new DocumentationInfo();
+    final DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("SIAP");
     documentation.setTextContent("Simple Image Access Protocol");
 
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
     representationInfo.setDocumentation(documentation);
     representationsInfo.add(representationInfo);
     info.getResponse().setRepresentations(representationsInfo);

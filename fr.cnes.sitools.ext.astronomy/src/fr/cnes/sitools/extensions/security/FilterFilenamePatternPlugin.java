@@ -48,7 +48,7 @@ public class FilterFilenamePatternPlugin extends FilterModel {
   public FilterFilenamePatternPlugin() {
     super();
     setName("FilterByFilenameExtension");
-    setDescription("Customizable datastorage directory authorizer by filename extension");
+    setDescription("Customizable datastorage directory authorizer by filename extension. Give access to the files matching the pattern.");
     setClassAuthor("Jean-Christophe Malapert");
     setClassOwner("CNES");
     setClassVersion("0.1");
@@ -58,7 +58,7 @@ public class FilterFilenamePatternPlugin extends FilterModel {
     /**
      * Parameter for the log directory
      */
-    FilterParameter pattern = new FilterParameter("pattern", "pattern to match", FilterParameterType.PARAMETER_INTERN);
+    final FilterParameter pattern = new FilterParameter("pattern", "pattern to match", FilterParameterType.PARAMETER_INTERN);
     pattern.setValue("(.*\\.fits)|(.*\\.txt)");
     pattern.setValueType("xs:string");
     addParam(pattern);
@@ -69,11 +69,11 @@ public class FilterFilenamePatternPlugin extends FilterModel {
     return new Validator<FilterModel>() {
       @Override
       public Set<ConstraintViolation> validate(final FilterModel item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, FilterParameter> params = item.getParametersMap();
-        String value = params.get("pattern").getValue();
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, FilterParameter> params = item.getParametersMap();
+        final String value = params.get("pattern").getValue();
         if (!Util.isNotEmpty(value)) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A pattern must be set");
           constraint.setValueName("pattern");
@@ -82,7 +82,7 @@ public class FilterFilenamePatternPlugin extends FilterModel {
           try {
             Pattern.compile(value);
           } catch (PatternSyntaxException exception) {
-            ConstraintViolation constraint = new ConstraintViolation();
+            final ConstraintViolation constraint = new ConstraintViolation();
             constraint.setLevel(ConstraintViolationLevel.CRITICAL);
             constraint.setMessage("the pattern is not valid.");
             constraint.setValueName("pattern");

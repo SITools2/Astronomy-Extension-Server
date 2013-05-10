@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -55,9 +55,9 @@ public class CenterPositionConverter extends PolygonConverter {
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
     setClassVersion("1.0");
-    ConverterParameter colOutput = new ConverterParameter("ColumnOutput", "Output column representing the footprint polygon",
+    final ConverterParameter colOutput = new ConverterParameter("ColumnOutput", "Output column representing the footprint polygon",
             ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter patternOutput = new ConverterParameter("PatternOutput", "Output pattern representing the footprint polygon",
+    final ConverterParameter patternOutput = new ConverterParameter("PatternOutput", "Output pattern representing the footprint polygon",
             ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     patternOutput.setValue("(%s,%s)");
     addParam(colOutput);
@@ -67,15 +67,15 @@ public class CenterPositionConverter extends PolygonConverter {
   @Override
   public final Record getConversionOf(final Record record) throws Exception {
     this.setRecord(record);
-    WCSTransform wcs = new WCSTransform(this);
+    final WCSTransform wcs = new WCSTransform(this);
     LOG.log(Level.FINEST, "record :{0}", record.toString());
     if (wcs.isWCS()) {
       LOG.log(Level.FINEST, "Wcs is valid");
-      String pattern = getInternParam("PatternOutput").getValue();
-      AttributeValue attrOut = getOutParam("ColumnOutput", getRecord());
+      final String pattern = getInternParam("PatternOutput").getValue();
+      final AttributeValue attrOut = getOutParam("ColumnOutput", getRecord());
 
-      Point2D.Double ptg = wcs.getWCSCenter();
-      String output = String.format(pattern, ptg.getX(), ptg.getY());
+      final Point2D.Double ptg = wcs.getWCSCenter();
+      final String output = String.format(pattern, ptg.getX(), ptg.getY());
       LOG.log(Level.FINEST, "Conversion of record into {0}", output);
       attrOut.setValue(output);
     } else {
@@ -89,11 +89,11 @@ public class CenterPositionConverter extends PolygonConverter {
     return new Validator<AbstractConverter>() {
       @Override
       public final Set<ConstraintViolation> validate(final AbstractConverter item) {
-        Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-        Map<String, ConverterParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+        final Map<String, ConverterParameter> params = item.getParametersMap();
         ConverterParameter param = params.get("PatternOutput");
         if (!Util.isNotEmpty(param.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Pattern must be set (e.g (%s,%s)");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -102,7 +102,7 @@ public class CenterPositionConverter extends PolygonConverter {
         }
         param = params.get("ColumnOutput");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("ColumnOutput must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());

@@ -25,7 +25,7 @@ import org.restlet.Response;
 import org.restlet.security.Authorizer;
 
 /**
- * Authorizes to access to the file in a datastorage when the url matches the pattern of the file.
+ * Authorizes the file access in a datastorage when the url matches the pattern of the file.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FilterFilenamePattern extends Authorizer {
@@ -33,7 +33,7 @@ public class FilterFilenamePattern extends Authorizer {
   /**
    * configuration parameters.
    */
-  private FilterModel filterModel;
+  private final transient FilterModel filterModel;
   
   /**
    * Constructor.
@@ -45,8 +45,8 @@ public class FilterFilenamePattern extends Authorizer {
 
   @Override
   public final boolean authorize(final Request request, final Response response) {
-    String urlStr = request.getResourceRef().getIdentifier(true);
-    String pattern = this.filterModel.getParameterByName("pattern").getValue();
+    final String urlStr = request.getResourceRef().getIdentifier(true);
+    final String pattern = this.filterModel.getParameterByName("pattern").getValue();
     return urlStr.matches(pattern);
   }
 }

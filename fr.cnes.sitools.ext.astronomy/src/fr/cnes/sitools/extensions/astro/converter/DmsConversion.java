@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -53,19 +53,19 @@ public class DmsConversion extends AbstractConverter {
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
     setClassVersion("1.0");
-    ConverterParameter ra = new ConverterParameter("DecIn", "Declination attribute as input",
+    final ConverterParameter declination = new ConverterParameter("DecIn", "Declination attribute as input",
             ConverterParameterType.CONVERTER_PARAMETER_IN);
-    ConverterParameter valInHms = new ConverterParameter("DecOut", "Declination attribute as output",
+    final ConverterParameter valInHms = new ConverterParameter("DecOut", "Declination attribute as output",
             ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter deg2segOrseg2dev = new ConverterParameter("ConversionType",
+    final ConverterParameter deg2segOrseg2dev = new ConverterParameter("ConversionType",
             "Set conversion type: dms2deg or deg2dms", ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     deg2segOrseg2dev.setValue("deg2dms");
     deg2segOrseg2dev.setValueType("String");
-    ConverterParameter precision = new ConverterParameter("precision", "result precision for double (#0.00)",
+    final ConverterParameter precision = new ConverterParameter("precision", "result precision for double (#0.00)",
             ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     precision.setValue("#0.00");
     precision.setValueType("String");
-    addParam(ra);
+    addParam(declination);
     addParam(valInHms);
     addParam(deg2segOrseg2dev);
     addParam(precision);
@@ -76,21 +76,21 @@ public class DmsConversion extends AbstractConverter {
     Record out = record;
     Object conversionResult = null;
 
-    Object attrIn = getInParam("DecIn", record).getValue();
+    final Object attrIn = getInParam("DecIn", record).getValue();
     if (Util.isSet(attrIn)) {
-      AttributeValue attrOut = getOutParam("DecOut", record);
-      String conversionType = getInternParam("ConversionType").getValue();
-      String precision = getInternParam("precision").getValue();
+      final AttributeValue attrOut = getOutParam("DecOut", record);
+      final String conversionType = getInternParam("ConversionType").getValue();
+      final String precision = getInternParam("precision").getValue();
 
       if (conversionType.equals("dms2deg")) {
-        String coordinateDms = String.valueOf(attrIn);
-        DMS dms = new DMS(coordinateDms);
+        final String coordinateDms = String.valueOf(attrIn);
+        final DMS dms = new DMS(coordinateDms);
         conversionResult = dms.getVal();
-        NumberFormat formatter = new DecimalFormat(precision);
+        final NumberFormat formatter = new DecimalFormat(precision);
         conversionResult = formatter.format(conversionResult);
       } else if (conversionType.equals("deg2dms")) {
-        double coordinateDegree = Double.valueOf(String.valueOf(attrIn));
-        DMS dms = new DMS(coordinateDegree);
+        final double coordinateDegree = Double.valueOf(String.valueOf(attrIn));
+        final DMS dms = new DMS(coordinateDegree);
         conversionResult = dms.toString(true);
       } else {
         throw new IllegalArgumentException("DMS Converter: conversionType is unknow, please contact the administrator");
@@ -109,11 +109,11 @@ public class DmsConversion extends AbstractConverter {
       @Override
       public final Set<ConstraintViolation> validate(final AbstractConverter item) {
         // Check quickly if the procecision is set and correct
-        Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-        Map<String, ConverterParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+        final Map<String, ConverterParameter> params = item.getParametersMap();
         ConverterParameter param = params.get("precision");
         if (!param.getValue().startsWith("#")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Precision must start by # ");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -122,7 +122,7 @@ public class DmsConversion extends AbstractConverter {
         }
         param = params.get("DecIn");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("DecIn must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -130,7 +130,7 @@ public class DmsConversion extends AbstractConverter {
         }
         param = params.get("DecOut");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("DecOut must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());

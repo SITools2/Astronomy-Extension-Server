@@ -18,6 +18,7 @@ import fr.cnes.sitools.astro.graph.Graph;
 import fr.cnes.sitools.astro.graph.Utility;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
@@ -36,27 +37,21 @@ public class PngRepresentation extends OutputRepresentation {
   /**
    * Graph.
    */
-  private Graph graph;
+  private final transient Graph graph;
   /**
    * height of the PNG.
    */
-  private int height;
-  /**
-   * width of the PNG.
-   */
-  private int width;
+  private final transient int height;
 
   /**
    * Creates a PNG representation.
    *
    * @param graphVal graph
-   * @param widthVal width in pixels
-   * @param heightVal heights in pixels
+   * @param heightVal height in pixels
    */
-  public PngRepresentation(final Graph graphVal, final int widthVal, final int heightVal) {
+  public PngRepresentation(final Graph graphVal, final int heightVal) {
     super(MediaType.IMAGE_PNG);
     this.graph = graphVal;
-    this.width = widthVal;
     this.height = heightVal;
   }
 
@@ -68,6 +63,7 @@ public class PngRepresentation extends OutputRepresentation {
    */
   @Override
   public final void write(final OutputStream out) throws IOException {
-    Utility.createPNG(graph, out, width, height);
+    LOG.log(Level.FINEST, "PNG size, h : {0}", height);
+    Utility.createPNG(graph, out, height);
   }
 }

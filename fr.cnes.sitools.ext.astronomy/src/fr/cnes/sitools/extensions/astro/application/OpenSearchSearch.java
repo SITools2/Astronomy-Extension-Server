@@ -89,15 +89,15 @@ public class OpenSearchSearch extends OpenSearchBase {
     }
     try {
       final String referenceSystem = getPluginParameters().get("referenceSystem").getValue();
-      CoordSystem coordSystem = referenceSystem.equals("geocentric") ? CoordSystem.GEOCENTRIC : CoordSystem.EQUATORIAL;
+      final CoordSystem coordSystem = referenceSystem.equals("geocentric") ? CoordSystem.GEOCENTRIC : CoordSystem.EQUATORIAL;
       final String healpixSchemeParam = getPluginParameters().get("healpixScheme").getValue();
-      Scheme healpixScheme = Scheme.valueOf(healpixSchemeParam);
-      AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(queryParameters, coordSystem, getSolrBaseUrl(), healpixScheme);
+      final Scheme healpixScheme = Scheme.valueOf(healpixSchemeParam);
+      final AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(queryParameters, coordSystem, getSolrBaseUrl(), healpixScheme);
       querySolr.createQueryBuilder();
-      String query = querySolr.getSolrQueryRequest();
+      final String query = querySolr.getSolrQueryRequest();
       LOG.log(Level.INFO, query);
-      ClientResource client = new ClientResource(query);
-      JsonRepresentation jsonRep = new JsonRepresentation(buildJsonResponse(new JSONObject(client.get().getText())));
+      final ClientResource client = new ClientResource(query);
+      final JsonRepresentation jsonRep = new JsonRepresentation(buildJsonResponse(new JSONObject(client.get().getText())));
       jsonRep.setIndenting(true);
       return jsonRep;
     } catch (Exception ex) {
@@ -111,12 +111,12 @@ public class OpenSearchSearch extends OpenSearchBase {
    */
   private void setQueryParameters() {
     final Form form = this.getRequest().getResourceRef().getQueryAsForm();
-    Set<String> parameters = form.getNames();
+    final Set<String> parameters = form.getNames();
 
     this.queryParameters = new HashMap<String, Object>(parameters.size());
 
     for (String parameterIter : parameters) {
-      Object value = form.getFirstValue(parameterIter);
+      final Object value = form.getFirstValue(parameterIter);
       this.queryParameters.put(parameterIter, value);
     }
     if (!this.queryParameters.containsKey("count")) {
@@ -147,17 +147,17 @@ public class OpenSearchSearch extends OpenSearchBase {
    * @return Returns true when input parameters is included in all query parameters
    */
   private boolean isValidInputParameters() {
-    List<String> allQueryParameters = new ArrayList<String>();
+    final List<String> allQueryParameters = new ArrayList<String>();
 
     // get Indexed fields from LUKA interface
-    List<Index> indexes = getIndexedFields();
+    final List<Index> indexes = getIndexedFields();
     for (Index index : indexes) {
       allQueryParameters.add(index.getName());
     }
 
     // Get the query shape. The shape is defined by the administrator in the plugin
-    String shape = getPluginParameters().get("queryShape").getValue();
-    OpenSearchApplicationPlugin.GeometryShape geometry = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(shape);
+    final String shape = getPluginParameters().get("queryShape").getValue();
+    final OpenSearchApplicationPlugin.GeometryShape geometry = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(shape);
     allQueryParameters.add(geometry.getShape());
     if (geometry.getOrder() != null) {
       allQueryParameters.add(geometry.getOrder());
@@ -171,7 +171,7 @@ public class OpenSearchSearch extends OpenSearchBase {
     allQueryParameters.add("format");
 
     // Check if queryParameter is incuded in QllQueryParameters
-    Set<String> queryUserParameters = this.queryParameters.keySet();
+    final Set<String> queryUserParameters = this.queryParameters.keySet();
     for (String queryUserParameter : queryUserParameters) {
       if (!allQueryParameters.contains(queryUserParameter)) {
         return false;
@@ -202,62 +202,62 @@ public class OpenSearchSearch extends OpenSearchBase {
    * @throws JSONException Exception
    */
   private JSONObject buildJsonResponse(final JSONObject json) throws JSONException {
-    JSONObject responseService = new JSONObject();
+    final JSONObject responseService = new JSONObject();
     responseService.put("type", "FeatureCollection");
-    JSONObject response = json.getJSONObject("response");
+    final JSONObject response = json.getJSONObject("response");
     responseService.put("totalResults", response.getLong("numFound"));
 
-    JSONArray docsArray = (JSONArray) response.get("docs");
+    final JSONArray docsArray = (JSONArray) response.get("docs");
 
-    List<Map> records = new ArrayList<Map>();
+    final List<Map> records = new ArrayList<Map>();
     for (int i = 0; i < docsArray.length(); i++) {
-      Map<String, Object> dataModelRecord = new HashMap<String, Object>();
-      JSONObject doc = docsArray.getJSONObject(i);
+      final Map<String, Object> dataModelRecord = new HashMap<String, Object>();
+      final JSONObject doc = docsArray.getJSONObject(i);
       dataModelRecord.put("type", "Feature");
-      Map geometry = new HashMap();
+      final Map geometry = new HashMap();
       final String referenceSystem = getPluginParameters().get("referenceSystem").getValue();
-      String footprint = (String) doc.get(OpenSearchApplicationPlugin.Standard_Open_Search.GEOMETRY_COORDINATES.getKeywordSolr());
-      JSONArray pointArray = getFirstPoint(footprint);
+      final String footprint = (String) doc.get(OpenSearchApplicationPlugin.Standard_Open_Search.GEOMETRY_COORDINATES.getKeywordSolr());
+      final JSONArray pointArray = getFirstPoint(footprint);
       if (isPoint(footprint)) {
         geometry.put("type", "Point");
         geometry.put("coordinates", Arrays.asList(pointArray.get(0), pointArray.get(1)));
         geometry.put("referencesystem", referenceSystem);
       } else {
         geometry.put("type", "Polygon");
-        String[] points = footprint.split("],");
-        List responsePoints = new ArrayList();
+        final String[] points = footprint.split("],");
+        final List responsePoints = new ArrayList();
         for (int j = 0; j < points.length; j++) {
           String point = points[j];
           point = point.replace("[", "");
           point = point.replace("]", "");
-          String[] coordinates = point.split(",");
-          List responsePoint = Arrays.asList(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+          final String[] coordinates = point.split(",");
+          final List responsePoint = Arrays.asList(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
           responsePoints.add(responsePoint);
         }
         geometry.put("coordinates", Arrays.asList(responsePoints));
       }
       dataModelRecord.put("geometry", geometry);
 
-      Map properties = new HashMap();
-      Map services = new HashMap();
-      Map download = new HashMap();
-      Map browse = new HashMap();
-      Map layer = new HashMap();
-      Map crs = new HashMap();
-      Map crsProperties = new HashMap();
+      final Map properties = new HashMap();
+      final Map services = new HashMap();
+      final Map download = new HashMap();
+      final Map browse = new HashMap();
+      final Map layer = new HashMap();
+      final Map crs = new HashMap();
+      final Map crsProperties = new HashMap();
       crsProperties.put("name", "ICRS".equals(referenceSystem) ? "equatorial.ICRS" : "urn:ogc:def:crs:OGC:1.3:CRS84");
       crs.put("properties", crsProperties);
       crs.put("type", "name");
       properties.put("crs", crs);
 
-      Iterator iter = doc.keys();
+      final Iterator iter = doc.keys();
       while (iter.hasNext()) {
-        String key = (String) iter.next();
+        final String key = (String) iter.next();
         if (!key.equals(OpenSearchApplicationPlugin.Standard_Open_Search.GEOMETRY_COORDINATES.getKeywordSolr())
                 && !key.equals(OpenSearchApplicationPlugin.Standard_Open_Search.GEOMETRY_COORDINATES_TYPE.getKeywordSolr())) {
-          String[] result = OpenSearchApplicationPlugin.Standard_Open_Search.getKeywordProperties(key);
-          String node = result[0];
-          String val = result[1];
+          final String[] result = OpenSearchApplicationPlugin.Standard_Open_Search.getKeywordProperties(key);
+          final String node = result[0];
+          final String val = result[1];
           if (node.equals("properties")) {
             properties.put(val, doc.get(key));
           } else if (node.equals("layer")) {

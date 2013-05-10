@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *

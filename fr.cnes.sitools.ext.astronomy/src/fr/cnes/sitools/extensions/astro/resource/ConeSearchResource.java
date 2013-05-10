@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -61,7 +61,7 @@ public class ConeSearchResource extends SitoolsParameterizedResource {
    */
   @Override
   protected final Representation head(final Variant variant) {
-    Representation repr = super.head();
+    final Representation repr = super.head();
     repr.setMediaType(MediaType.TEXT_XML);
     return repr;
   }
@@ -73,11 +73,11 @@ public class ConeSearchResource extends SitoolsParameterizedResource {
    */
   @Get
   public final Representation getVOResponse() {
-    ConeSearchProtocolLibrary coneSearch = new ConeSearchProtocolLibrary((DataSetApplication) this.getApplication(),
+    final ConeSearchProtocolLibrary coneSearch = new ConeSearchProtocolLibrary((DataSetApplication) this.getApplication(),
             this.getModel(), this.getRequest(), this.getContext());
-    Representation rep = coneSearch.getResponse();
+    final Representation rep = coneSearch.getResponse();
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -105,7 +105,7 @@ public class ConeSearchResource extends SitoolsParameterizedResource {
     info.setIdentifier("ConeSearchProtocol");
     info.setDocumentation("Interoperability service to distribute data through the Cone Search Protocol");
 
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("RA", true, "double", ParameterStyle.QUERY,
             "Right Ascension (decimal degree) in ICRS frame. RA varies from 0 to 360."));
     parametersInfo.add(new ParameterInfo("DEC", true, "double", ParameterStyle.QUERY,
@@ -116,12 +116,12 @@ public class ConeSearchResource extends SitoolsParameterizedResource {
 
     info.getResponse().getStatuses().add(Status.SUCCESS_OK);
 
-    DocumentationInfo documentation = new DocumentationInfo();
+    final DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("VOTable");
     documentation.setTextContent("VOTable format for interoperability");
 
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
     representationInfo.setDocumentation(documentation);
     representationsInfo.add(representationInfo);
     info.getResponse().setRepresentations(representationsInfo);

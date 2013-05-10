@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -33,6 +33,10 @@ import java.util.logging.Logger;
 public class FootprintResourcePlugin extends ResourceModel {
 
     /**
+     * Logger.
+     */
+    private static final Logger LOG = Logger.getLogger(FootprintResourcePlugin.class.getName());
+    /**
      * Constructs the administration panel.
      */
     public FootprintResourcePlugin() {
@@ -47,25 +51,24 @@ public class FootprintResourcePlugin extends ResourceModel {
         this.setDataSetSelection(DataSetSelectionType.NONE);        
         this.completeAttachUrlWith("/footprint/{featureType}");
 
-        ResourceParameter raParam = new ResourceParameter("RA", "Right ascension in decimal degree",
+        final ResourceParameter raParam = new ResourceParameter("RA", "Right ascension in decimal degree",
                 ResourceParameterType.PARAMETER_INTERN);
         raParam.setValueType("xs:dataset.columnAlias");
         this.addParam(raParam);
 
-        ResourceParameter decParam = new ResourceParameter("DEC", "Declination in decimal degree",
+        final ResourceParameter decParam = new ResourceParameter("DEC", "Declination in decimal degree",
                 ResourceParameterType.PARAMETER_INTERN);
         decParam.setValueType("xs:dataset.columnAlias");
         this.addParam(decParam);
 
-        ResourceParameter dicoParam = new ResourceParameter("WCS_DICO", "World Coordinate System dictionary",
+        final ResourceParameter dicoParam = new ResourceParameter("WCS_DICO", "World Coordinate System dictionary",
                 ResourceParameterType.PARAMETER_INTERN);
         dicoParam.setValueType("xs:String");
         this.addParam(dicoParam);
 
-        ResourceParameter cacheDirectory = new ResourceParameter("CacheDirectory",
+        final ResourceParameter cacheDirectory = new ResourceParameter("CacheDirectory",
                 "Specify a directory where MOC will be computed and cached", ResourceParameterType.PARAMETER_INTERN);
         cacheDirectory.setValueType("String");
         this.addParam(cacheDirectory);
-    }
-    private static final Logger LOG = Logger.getLogger(FootprintResourcePlugin.class.getName());
+    }    
 }

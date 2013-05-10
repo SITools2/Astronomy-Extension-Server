@@ -81,43 +81,42 @@ public class CutOffResource extends SitoolsParameterizedResource {
     CutOffInterface cutOff = null;
 
     // Get the datasetApplication
-    DataSetApplication datasetApp = (DataSetApplication) getApplication();
+    final DataSetApplication datasetApp = (DataSetApplication) getApplication();
 
     //Get the pipeline to convert the information
-    ConverterChained converterChained = datasetApp.getConverterChained();
+    final ConverterChained converterChained = datasetApp.getConverterChained();
 
-    DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(), getContext());
+    final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(), getContext());
 
     // Get DatabaseRequestParameters
-    DatabaseRequestParameters params = dsExplorerUtil.getDatabaseParams();
+    final DatabaseRequestParameters params = dsExplorerUtil.getDatabaseParams();
 
     // Retrieve param from model
     String raString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.RA_INPUT_PARAMETER);
     if (raString == null || "".equals(raString)) {
-      ResourceParameter raParam = this.getModel().getParameterByName(CutOffResourcePlugin.RA_INPUT_PARAMETER);
+      final ResourceParameter raParam = this.getModel().getParameterByName(CutOffResourcePlugin.RA_INPUT_PARAMETER);
       raString = raParam.getValue();
     }
-    double ra = Double.valueOf(raString);
-
+    final double rightAscension = Double.valueOf(raString);
 
     String decString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.DEC_INPUT_PARAMETER);
     if (decString == null || "".equals(raString)) {
-      ResourceParameter decParam = this.getModel().getParameterByName(CutOffResourcePlugin.DEC_INPUT_PARAMETER);
+      final ResourceParameter decParam = this.getModel().getParameterByName(CutOffResourcePlugin.DEC_INPUT_PARAMETER);
       decString = decParam.getValue();
     }
-    double dec = Double.valueOf(decString);
+    final double declination = Double.valueOf(decString);
 
     String radiusString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.RADIUS_INPUT_PARAMETER);
     if (radiusString == null || "".equals(radiusString)) {
-      ResourceParameter radiusParam = this.getModel().getParameterByName(CutOffResourcePlugin.RADIUS_INPUT_PARAMETER);
+      final ResourceParameter radiusParam = this.getModel().getParameterByName(CutOffResourcePlugin.RADIUS_INPUT_PARAMETER);
       radiusString = radiusParam.getValue();
     }
-    double radius = Double.valueOf(radiusString);
+    final double radius = Double.valueOf(radiusString);
 
-    ResourceParameter hduNumberParam = this.getModel().getParameterByName(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
-    int hduNumber = Integer.parseInt(hduNumberParam.getValue());
+    final ResourceParameter hduNumberParam = this.getModel().getParameterByName(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
+    final int hduNumber = Integer.parseInt(hduNumberParam.getValue());
 
-    DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(params);
+    final DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(params);
     try {
       if (params.getDistinct()) {
         databaseRequest.createDistinctRequest();
@@ -132,10 +131,10 @@ public class CutOffResource extends SitoolsParameterizedResource {
         record = converterChained.getConversionOf(record);
       }
 
-      AttributeValue attributeValue = this.getInParam(this.getModel().getParameterByName(CutOffResourcePlugin.FITS_FILE_INPUT_PARAMETER), record);
-      Representation file = CutOffResource.getFile(String.valueOf(attributeValue.getValue()), Request.getCurrent().getClientInfo(), getContext());
-      Fits fits = new Fits(file.getStream());
-      cutOff = new CutOffSITools2(fits, ra, dec, radius, hduNumber);
+      final AttributeValue attributeValue = this.getInParam(this.getModel().getParameterByName(CutOffResourcePlugin.FITS_FILE_INPUT_PARAMETER), record);
+      final Representation file = CutOffResource.getFile(String.valueOf(attributeValue.getValue()), Request.getCurrent().getClientInfo(), getContext());
+      final Fits fits = new Fits(file.getStream());
+      cutOff = new CutOffSITools2(fits, rightAscension, declination, radius, hduNumber);
 
     } catch (FitsException ex) {
       LOG.log(Level.SEVERE, null, ex);
@@ -175,7 +174,7 @@ public class CutOffResource extends SitoolsParameterizedResource {
       }
     }
 
-    boolean fitsAvaialble = cutOff.isFitsAvailable();
+    final boolean fitsAvaialble = cutOff.isFitsAvailable();
     Representation rep = null;
     if (fitsAvaialble) {
       rep = new CutOffRepresentation(MediaType.ALL, cutOff);
@@ -185,7 +184,7 @@ public class CutOffResource extends SitoolsParameterizedResource {
       rep =  new CutOffRepresentation(MediaType.IMAGE_PNG, cutOff);
     }
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -199,10 +198,10 @@ public class CutOffResource extends SitoolsParameterizedResource {
    * @return the attribute of the record that matches the param
    */
   private AttributeValue getInParam(final ResourceParameter param, final Record rec) {
-    List<AttributeValue> listRecord = rec.getAttributeValues();
+    final List<AttributeValue> listRecord = rec.getAttributeValues();
     boolean found = false;
     AttributeValue attr = null;
-    for (Iterator<AttributeValue> it = listRecord.iterator(); it.hasNext() && !found;) {
+    for (final Iterator<AttributeValue> it = listRecord.iterator(); it.hasNext() && !found;) {
       attr = it.next();
       if (attr.getName().equals(param.getValue())) {
         found = true;
@@ -235,19 +234,19 @@ public class CutOffResource extends SitoolsParameterizedResource {
       reqGET = new Request(Method.GET, RIAPUtils.getRiapBase() + fileUrl);
       reqGET.setClientInfo(clientInfo);
     }
-    org.restlet.Response r = context.getClientDispatcher().handle(reqGET);
+    final org.restlet.Response response = context.getClientDispatcher().handle(reqGET);
 
-    if (r == null) {
+    if (response == null) {
       throw new SitoolsException("ERROR GETTING FILE : " + fileUrl);
-    } else if (Status.CLIENT_ERROR_FORBIDDEN.equals(r.getStatus())) {
+    } else if (Status.CLIENT_ERROR_FORBIDDEN.equals(response.getStatus())) {
       throw new SitoolsException("CLIENT_ERROR_FORBIDDEN : " + fileUrl);
-    } else if (Status.CLIENT_ERROR_UNAUTHORIZED.equals(r.getStatus())) {
+    } else if (Status.CLIENT_ERROR_UNAUTHORIZED.equals(response.getStatus())) {
       throw new SitoolsException("CLIENT_ERROR_UNAUTHORIZED : " + fileUrl);
-    } else if (Status.isError(r.getStatus().getCode())) {
-      throw new SitoolsException("ERROR : " + r.getStatus() + " getting file : " + fileUrl);
+    } else if (Status.isError(response.getStatus().getCode())) {
+      throw new SitoolsException("ERROR : " + response.getStatus() + " getting file : " + fileUrl);
     }
 
-    return r.getEntity();
+    return response.getEntity();
 
   }
 

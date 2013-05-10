@@ -56,7 +56,7 @@ public class SIASearchQuery {
   /**
    * URL of the WS.
    */
-    private String url;    
+    private transient String url;    
 
     /**
      * Create a SIA search query.
@@ -68,49 +68,48 @@ public class SIASearchQuery {
 
     /**
      * Retrieve data from VO.
-     * @param ra Ra of the center
-     * @param dec Dec of the center
+     * @param rightAscension Ra of the center
+     * @param declination Dec of the center
      * @param size size of the zone
      * @return records from sia search protocol
-     * @throws Exception Exception
+     * @throws SimpleImageAccessException Exception
      */
-    public final List<Map<Field, String>> getResponseAt(final double ra, final double dec, final double size) throws Exception {
+    public final List<Map<Field, String>> getResponseAt(final double rightAscension, final double declination, final double size) throws SimpleImageAccessException {
         try {
-            return process(ra, dec, size);
+            return process(rightAscension, declination, size);
         } catch (JAXBException ex) {
-            throw new Exception(ex);
+            throw new SimpleImageAccessException(ex);
         } catch (IOException ex) {
-            throw new Exception(ex);
+            throw new SimpleImageAccessException(ex);
         }
     }
 
     /**
      * Returns the response.
-     * @param ra Ra of the center
-     * @param dec Dec of the center
+     * @param rightAscension Ra of the center
+     * @param declination Dec of the center
      * @param size size of the area
      * @return the response
      * @throws JAXBException Parsing error
      * @throws IOException Exception
      */
-    private List<Map<Field, String>> process(final double ra, final double dec, final double size) throws JAXBException, IOException {
-        String queryService = String.format("%sPOS=%s,%s&SIZE=%s", url, ra, dec, size);
+    private List<Map<Field, String>> process(final double rightAscension, final double declination, final double size) throws JAXBException, IOException {
+        final String queryService = String.format("%sPOS=%s,%s&SIZE=%s", url, rightAscension, declination, size);
         LOG.log(Level.INFO, queryService);
-        ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
-        ClientResource client = proxy.getClientResource();
-        JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
-        Unmarshaller um = ctx.createUnmarshaller();
+        final ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
+        final ClientResource client = proxy.getClientResource();
+        final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+        final Unmarshaller unMarshaller = ctx.createUnmarshaller();
         String result = client.get().getText();
         if (result.contains("xmlns")) {
           result = result.replace("http://www.ivoa.net/xml/VOTable/v1.1", "http://www.ivoa.net/xml/VOTable/v1.2");
         } else {
           result = result.replace("<VOTABLE", "<VOTABLE xmlns=\"http://www.ivoa.net/xml/VOTable/v1.2\"");
         }
-        VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
-        List<Resource> resources = votable.getRESOURCE();
-        Resource resource = resources.get(0);
-        List<Map<Field, String>> response = parseResponse(resource);        
-        return response;        
+        final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
+        final List<Resource> resources = votable.getRESOURCE();
+        final Resource resource = resources.get(0);
+        return parseResponse(resource);            
     }
 
     /**
@@ -120,10 +119,10 @@ public class SIASearchQuery {
      */
     private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
         List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
-        List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
+        final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
         for (Object objectIter : objects) {
             if (objectIter instanceof Table) {
-                Table table = (Table) objectIter;
+                final Table table = (Table) objectIter;
                 responses = parseTable(table);
             }
         }
@@ -138,8 +137,8 @@ public class SIASearchQuery {
     private List<Map<Field, String>> parseTable(final Table table) {
         int nbFields = 0;
         List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();        
-        Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
-        List<JAXBElement<?>> currentTable = table.getContent();
+        final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
+        final List<JAXBElement<?>> currentTable = table.getContent();
         for (JAXBElement<?> currentTableIter : currentTable) {
             // metadata case
             if (currentTableIter.getValue() instanceof Param) {
@@ -147,28 +146,27 @@ public class SIASearchQuery {
               // is an instance of Field. And we do not want
               // to parse a Param as a Field.
             } else if (currentTableIter.getValue() instanceof Field) {
-                JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
-                Field field = fields.getValue();
+                final JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
+                final Field field = fields.getValue();
                 responseFields.put(nbFields, field);
                 nbFields++;
                 // data
             } else if (currentTableIter.getValue() instanceof Data) {
-                JAXBElement<Data> datas = (JAXBElement<Data>) currentTableIter;
-                Data data = datas.getValue();
-                TableData tableData = data.getTABLEDATA();
-                List<Tr> trs = tableData.getTR();
+                final JAXBElement<Data> datas = (JAXBElement<Data>) currentTableIter;
+                final Data data = datas.getValue();
+                final TableData tableData = data.getTABLEDATA();
+                final List<Tr> trs = tableData.getTR();
                 for (Tr trsIter : trs) {
-                    Map<Field, String> response = new HashMap<Field, String>();
-                    List<Td> tds = trsIter.getTD();
+                    final Map<Field, String> response = new HashMap<Field, String>();
+                    final List<Td> tds = trsIter.getTD();
                     int nbTd = 0;
                     for (Td tdIter : tds) {
-                        String value = tdIter.getValue();
+                        final String value = tdIter.getValue();
                         response.put(responseFields.get(nbTd), value);
                         nbTd++;
                     }
                     responses.add(response);
-                }
-                
+                }                
             }
         }
         return responses;

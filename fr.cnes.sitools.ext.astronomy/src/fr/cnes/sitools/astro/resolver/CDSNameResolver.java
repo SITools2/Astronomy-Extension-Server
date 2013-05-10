@@ -58,12 +58,12 @@ public class CDSNameResolver extends AbstractNameResolver {
   /**
    * Object name to find.
    */
-  private String objectName;
+  private transient String objectName;
   
   /**
    * The choice of the name resolver at CDS.
    */
-  private NameResolverService nameResolverService;
+  private transient NameResolverService nameResolverService;
 
   /**
    * List of name resolver services for stellar objects.
@@ -148,20 +148,20 @@ public class CDSNameResolver extends AbstractNameResolver {
     try {
       String url = TEMPLATE_NAME_RESOLVER.replace("<objectName>", this.objectName);
       url = url.replace("<service>", this.nameResolverService.getServiceCode());
-      Sesame sesameResponse = parseResponse(url);
-      String[] coordinates = parseCoordinates(sesameResponse);
+      final Sesame sesameResponse = parseResponse(url);
+      final String[] coordinates = parseCoordinates(sesameResponse);
       response.addAstroCoordinate(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
     } catch (NameResolverException ex) {
-      if (this.successor != null) {
-        response = this.successor.getResponse();
-      } else {
+      if (getSuccessor() == null) {
         response.setError(ex);
+      } else {
+        response = getSuccessor().getResponse();
       }
     } catch (Exception ex) {
-      if(this.successor != null) {
-        response = this.successor.getResponse();
-      } else {
+      if (getSuccessor() == null) {
         response.setError(new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex));
+      } else {
+        response = getSuccessor().getResponse();
       }
     } finally {
       return response;
@@ -178,17 +178,17 @@ public class CDSNameResolver extends AbstractNameResolver {
   private Sesame parseResponse(final String url) throws NameResolverException {
     assert url != null;
     LOG.log(Level.INFO, "Call CDS name resolver: {0}", url);
-    ClientResourceProxy clientProxy = new ClientResourceProxy(url, Method.GET);
-    ClientResource client = clientProxy.getClientResource();
-    Client clientHTTP = new Client(Protocol.HTTP);
+    final ClientResourceProxy clientProxy = new ClientResourceProxy(url, Method.GET);
+    final ClientResource client = clientProxy.getClientResource();
+    final Client clientHTTP = new Client(Protocol.HTTP);
     clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
     client.setNext(clientHTTP);
-    Status status = client.getStatus();
+    final Status status = client.getStatus();
     if (status.isSuccess()) {
       try {
-        JAXBContext ctx = JAXBContext.newInstance(new Class[]{fr.cnes.sitools.astro.resolver.CDSFactory.class});
-        Unmarshaller um = ctx.createUnmarshaller();
-        Sesame response = (Sesame) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
+        final JAXBContext ctx = JAXBContext.newInstance(new Class[]{fr.cnes.sitools.astro.resolver.CDSFactory.class});
+        final Unmarshaller unMarshaller = ctx.createUnmarshaller();
+        final Sesame response = (Sesame) unMarshaller.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
         return response;
       } catch (IOException ex) {
         throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -211,8 +211,8 @@ public class CDSNameResolver extends AbstractNameResolver {
    * @throws NameResolverException - if empty response from CDS
    */
   private String[] parseCoordinates(final Sesame sesameResponse) throws NameResolverException {
-    Target target = sesameResponse.getTarget().get(0);
-    List<Resolver> resolvers = target.getResolver();
+    final Target target = sesameResponse.getTarget().get(0);
+    final List<Resolver> resolvers = target.getResolver();
     String[] coordinates = new String[2];
     for (Resolver resolver : resolvers) {
       List<JAXBElement<?>> terms = resolver.getINFOOrERROROrOid();

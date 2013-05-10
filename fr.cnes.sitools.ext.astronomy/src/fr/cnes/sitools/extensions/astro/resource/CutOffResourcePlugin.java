@@ -81,14 +81,14 @@ public class CutOffResourcePlugin extends ResourceModel {
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.SINGLE);
     this.getParameterByName("methods").setValue("GET");
-    ResourceParameter ra = new ResourceParameter("RA", "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
-    ResourceParameter dec = new ResourceParameter("DEC", "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
-    ResourceParameter radius = new ResourceParameter("Radius", "Radius in which the image will be cut", ResourceParameterType.PARAMETER_USER_INPUT);
-    ResourceParameter fitsFile = new ResourceParameter("FitsFile", "Fits file to cut", ResourceParameterType.PARAMETER_INTERN);
+    final ResourceParameter rightAscension = new ResourceParameter("RA", "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter declination = new ResourceParameter("DEC", "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter radius = new ResourceParameter("Radius", "Radius in which the image will be cut", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter fitsFile = new ResourceParameter("FitsFile", "Fits file to cut", ResourceParameterType.PARAMETER_INTERN);
     fitsFile.setValueType("xs:dataset.columnAlias");
-    ResourceParameter hduNumber = new ResourceParameter("hduNumber", "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
-    addParam(ra);
-    addParam(dec);
+    final ResourceParameter hduNumber = new ResourceParameter("hduNumber", "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
+    addParam(rightAscension);
+    addParam(declination);
     addParam(radius);
     addParam(fitsFile);
     addParam(hduNumber);
@@ -99,11 +99,11 @@ public class CutOffResourcePlugin extends ResourceModel {
    * Returns
    * <code>true</code> when the object exists and is not empty(!="").
    *
-   * @param o object to check
+   * @param object object to check
    * @return <code>true</code> when the object exists and is not empty(!=""); otherwise <code>false</code>
    */
-  private static boolean isSet(final Object o) {
-    return (o != null && !o.equals("")) ? true : false;
+  private static boolean isSet(final Object object) {
+    return (object != null && !object.equals("")) ? true : false;
   }
 
   /**
@@ -116,13 +116,13 @@ public class CutOffResourcePlugin extends ResourceModel {
     return new Validator<ResourceModel>() {
       @Override
       public final Set<ConstraintViolation> validate(final ResourceModel item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, ResourceParameter> params = item.getParametersMap();
-        ResourceParameter fitsFile = params.get("FitsFile");
-        ResourceParameter hduNumber = params.get("hduNumber");
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, ResourceParameter> params = item.getParametersMap();
+        final ResourceParameter fitsFile = params.get("FitsFile");
+        final ResourceParameter hduNumber = params.get("hduNumber");
 
         if (!isSet(fitsFile)) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(fitsFile.getName());
           constraint.setMessage("Fits file must be set");
@@ -130,16 +130,16 @@ public class CutOffResourcePlugin extends ResourceModel {
         }
 
         if (!isSet(hduNumber)) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(hduNumber.getName());
           constraint.setMessage("HDU number must be set");
           constraintList.add(constraint);
         } else {
           try {
-            int number = Integer.parseInt(hduNumber.getValue());
+            final int number = Integer.parseInt(hduNumber.getValue());
             if (number < 0) {
-              ConstraintViolation constraint = new ConstraintViolation();
+              final ConstraintViolation constraint = new ConstraintViolation();
               constraint.setLevel(ConstraintViolationLevel.CRITICAL);
               constraint.setValueName(hduNumber.getName());
               constraint.setMessage("HDU number must be >= 0");
@@ -147,7 +147,7 @@ public class CutOffResourcePlugin extends ResourceModel {
               constraintList.add(constraint);
             }
           } catch (NumberFormatException ex) {
-            ConstraintViolation constraint = new ConstraintViolation();
+            final ConstraintViolation constraint = new ConstraintViolation();
             constraint.setLevel(ConstraintViolationLevel.CRITICAL);
             constraint.setValueName(hduNumber.getName());
             constraint.setMessage("HDU number must be an integer");

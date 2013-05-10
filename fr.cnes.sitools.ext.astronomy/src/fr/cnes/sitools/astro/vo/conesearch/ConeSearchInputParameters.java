@@ -45,35 +45,35 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
   /**
    * Verbosity mode.
    */
-  private int verb = DEFAULT_VERBOSITY_MODE;
+  private transient int verb = DEFAULT_VERBOSITY_MODE;
   /**
    * Data model.
    */
-  private Map dataModel = new HashMap();
+  private final transient Map dataModel = new HashMap();
   /**
    * User request.
    */
-  private final Request request;
+  private final transient Request request;
   /**
    * Application context.
    */
-  private final Context context;
+  private final transient Context context;
   /**
    * Application.
    */
-  private final DataSetApplication datasetApp;
+  private final transient DataSetApplication datasetApp;
   /**
    * Right ascension of the cone center.
    */
-  private double ra;
+  private transient double rightAscension;
   /**
    * Declination of the cone center.
    */
-  private double dec;
+  private transient double declination;
   /**
    * Radius of the cone.
    */
-  private double sr;
+  private transient double radius;
 
   /**
    * Constructor.
@@ -90,10 +90,10 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
     this.datasetApp = datasetAppVal;
     this.context = contextVal;
     this.request = requestVal;
-    String raInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.RA);
-    String decInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.DEC);
-    String srInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.SR);
-    String verbInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.VERB);
+    final String raInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.RA);
+    final String decInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.DEC);
+    final String srInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.SR);
+    final String verbInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(ConeSearchProtocolLibrary.VERB);
     checkInputParameters(raInput, decInput, srInput, maxSr, verbInput, verbosity, verbVal);
   }
 
@@ -110,16 +110,16 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
    */
   private void checkInputParameters(final String raInput, final String decInput, final String srInput, final double maxSr,
           final String verbInput, final boolean verbosity, final int verbVal) {
-    List<Info> infos = new ArrayList<Info>();
+    final List<Info> infos = new ArrayList<Info>();
 
     try {
-      this.ra = Double.valueOf(raInput);
-      if (this.ra > ConeSearchProtocolLibrary.RA_MAX || this.ra < ConeSearchProtocolLibrary.RA_MIN) {
-        throw new Exception(this.ra + " for RA parameter is not allowed. RA must be in [0,360]");
+      this.rightAscension = Double.valueOf(raInput);
+      if (this.rightAscension > ConeSearchProtocolLibrary.RA_MAX || this.rightAscension < ConeSearchProtocolLibrary.RA_MIN) {
+        throw new ConeSearchException(this.rightAscension + " for RA parameter is not allowed. RA must be in [0,360]");
       }
       this.datasetApp.getLogger().log(Level.FINEST, "RA: {0}", raInput);
-    } catch (Exception ex) {
-      Info info = new Info();
+    } catch (ConeSearchException ex) {
+      final Info info = new Info();
       info.setID("RA");
       info.setName("Error in RA");
       info.setValueAttribute("Error in input RA: " + ex.getMessage());
@@ -128,13 +128,13 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
     }
 
     try {
-      this.dec = Double.valueOf(decInput);
-      if (this.dec > ConeSearchProtocolLibrary.DEC_MAX || this.dec < ConeSearchProtocolLibrary.DEC_MIN) {
-        throw new Exception(this.dec + " for DEC parameter is not allowed. DEC must be in [-90,90]");
+      this.declination = Double.valueOf(decInput);
+      if (this.declination > ConeSearchProtocolLibrary.DEC_MAX || this.declination < ConeSearchProtocolLibrary.DEC_MIN) {
+        throw new ConeSearchException(this.declination + " for DEC parameter is not allowed. DEC must be in [-90,90]");
       }
       this.datasetApp.getLogger().log(Level.FINEST, "DEC: {0}", decInput);
-    } catch (Exception ex) {
-      Info info = new Info();
+    } catch (ConeSearchException ex) {
+      final Info info = new Info();
       info.setID("DEC");
       info.setName("Error in DEC");
       info.setValueAttribute("Error in input DEC: " + ex.getMessage());
@@ -143,16 +143,16 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
     }
 
     try {
-      this.sr = Double.valueOf(srInput);
-      if (this.sr <= 0.0) {
-        throw new Exception(this.sr + " for SR parameter is not allowed. SR must be a positive value");
-      } else if (this.sr > maxSr) {
-        throw new Exception(this.sr
+      this.radius = Double.valueOf(srInput);
+      if (this.radius <= 0.0) {
+        throw new ConeSearchException(this.radius + " for SR parameter is not allowed. SR must be a positive value");
+      } else if (this.radius > maxSr) {
+        throw new ConeSearchException(this.radius
                 + " for SR parameter is not allowed. SR must be a positive value inferior or equal to " + maxSr);
       }
       this.datasetApp.getLogger().log(Level.FINEST, "SR: {0}", srInput);
-    } catch (Exception ex) {
-      Info info = new Info();
+    } catch (ConeSearchException ex) {
+      final Info info = new Info();
       info.setID("SR");
       info.setName("Error in SR");
       info.setValueAttribute("Error in input SR: " + ex.getMessage());
@@ -161,7 +161,7 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
     }
 
     try {
-      if (verbosity == true) {
+      if (verbosity) {
         if (verbInput == null) {
           this.verb = verbVal;
         } else {
@@ -186,7 +186,7 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
    * @return Ra
    */
   public final double getRa() {
-    return this.ra;
+    return this.rightAscension;
   }
 
   /**
@@ -195,7 +195,7 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
    * @return Dec
    */
   public final double getDec() {
-    return this.dec;
+    return this.declination;
   }
 
   /**
@@ -204,7 +204,7 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
    * @return Sr
    */
   public final double getSr() {
-    return this.sr;
+    return this.radius;
   }
 
   /**

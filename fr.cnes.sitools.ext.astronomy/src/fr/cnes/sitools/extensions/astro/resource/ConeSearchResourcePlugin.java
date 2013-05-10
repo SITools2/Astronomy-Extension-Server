@@ -70,68 +70,67 @@ public class ConeSearchResourcePlugin extends ResourceModel {
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.NONE);
 
-    ResourceParameter dictionary = new ResourceParameter(ConeSearchProtocolLibrary.DICTIONARY,
+    final ResourceParameter dictionary = new ResourceParameter(ConeSearchProtocolLibrary.DICTIONARY,
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
     addParam(dictionary);
 
-    ResourceParameter verb = new ResourceParameter(ConeSearchProtocolLibrary.VERB,
+    final ResourceParameter verb = new ResourceParameter(ConeSearchProtocolLibrary.VERB,
             "Verbosity determines how many columns are to be returned in the resulting table",
             ResourceParameterType.PARAMETER_INTERN);
-    String verbEnum = "xs:enum[1, 2, 3]";
-    verb.setValueType(verbEnum);
+    verb.setValueType("xs:enum[1, 2, 3]");
     verb.setValue("1");
     addParam(verb);
 
-    ResourceParameter xpos = new ResourceParameter(ConeSearchProtocolLibrary.X, "x position of the source point",
+    final ResourceParameter xpos = new ResourceParameter(ConeSearchProtocolLibrary.X, "x position of the source point",
             ResourceParameterType.PARAMETER_INTERN);
     xpos.setValueType("xs:dataset.columnAlias");
     addParam(xpos);
 
-    ResourceParameter ypos = new ResourceParameter(ConeSearchProtocolLibrary.Y, "y position of the source point",
+    final ResourceParameter ypos = new ResourceParameter(ConeSearchProtocolLibrary.Y, "y position of the source point",
             ResourceParameterType.PARAMETER_INTERN);
     ypos.setValueType("xs:dataset.columnAlias");
     addParam(ypos);
 
-    ResourceParameter zpos = new ResourceParameter(ConeSearchProtocolLibrary.Z, "z position of the source point",
+    final ResourceParameter zpos = new ResourceParameter(ConeSearchProtocolLibrary.Z, "z position of the source point",
             ResourceParameterType.PARAMETER_INTERN);
     zpos.setValueType("xs:dataset.columnAlias");
     addParam(zpos);
 
-    ResourceParameter responsibleParty = new ResourceParameter(ConeSearchProtocolLibrary.RESPONSIBLE_PARTY,
+    final ResourceParameter responsibleParty = new ResourceParameter(ConeSearchProtocolLibrary.RESPONSIBLE_PARTY,
             "The data provider's name and email", ResourceParameterType.PARAMETER_INTERN);
     addParam(responsibleParty);
 
-    ResourceParameter serviceName = new ResourceParameter(ConeSearchProtocolLibrary.SERVICE_NAME,
+    final ResourceParameter serviceName = new ResourceParameter(ConeSearchProtocolLibrary.SERVICE_NAME,
             "The name of the catalog served by the service, for example : IRSA.2MASS.ExtendedSources",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(serviceName);
 
-    ResourceParameter description = new ResourceParameter(ConeSearchProtocolLibrary.DESCRIPTION,
+    final ResourceParameter description = new ResourceParameter(ConeSearchProtocolLibrary.DESCRIPTION,
             "A couple of paragraphs of text that describe the nature of the catalog and its wider context",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(description);
 
-    ResourceParameter instrument = new ResourceParameter(ConeSearchProtocolLibrary.INSTRUMENT,
+    final ResourceParameter instrument = new ResourceParameter(ConeSearchProtocolLibrary.INSTRUMENT,
             "The instrument that made the observations, for example STScI.HST.WFPC2",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(instrument);
 
-    ResourceParameter waveband = new ResourceParameter(ConeSearchProtocolLibrary.WAVEBAND,
+    final ResourceParameter waveband = new ResourceParameter(ConeSearchProtocolLibrary.WAVEBAND,
             "The waveband of the observations", ResourceParameterType.PARAMETER_INTERN);
-    String waveBandEnum = "xs:enum-multiple[radio, millimeter, infrared, optical, ultraviolet, xray, gammaray]";
+    final String waveBandEnum = "xs:enum-multiple[radio, millimeter, infrared, optical, ultraviolet, xray, gammaray]";
     waveband.setValueType(waveBandEnum);
     addParam(waveband);
 
-    ResourceParameter epoch = new ResourceParameter(ConeSearchProtocolLibrary.EPOCH,
+    final ResourceParameter epoch = new ResourceParameter(ConeSearchProtocolLibrary.EPOCH,
             "The epoch of the observations, as a free-form string", ResourceParameterType.PARAMETER_INTERN);
     addParam(epoch);
 
-    ResourceParameter coverage = new ResourceParameter(ConeSearchProtocolLibrary.COVERAGE,
+    final ResourceParameter coverage = new ResourceParameter(ConeSearchProtocolLibrary.COVERAGE,
             "The coverage on the sky, as a free-form string", ResourceParameterType.PARAMETER_INTERN);
     addParam(coverage);
 
-    ResourceParameter maxSR = new ResourceParameter(
+    final ResourceParameter maxSR = new ResourceParameter(
             ConeSearchProtocolLibrary.MAX_SR,
             "The largest search radius, given in decimal degrees, that will be accepted by the service without returning an error"
             + " condition. A value of 180.0 indicates that there is no restriction",
@@ -139,16 +138,15 @@ public class ConeSearchResourcePlugin extends ResourceModel {
     maxSR.setValue("180");
     addParam(maxSR);
 
-    ResourceParameter maxRecords = new ResourceParameter(ConeSearchProtocolLibrary.MAX_RECORDS,
+    final ResourceParameter maxRecords = new ResourceParameter(ConeSearchProtocolLibrary.MAX_RECORDS,
             "The largest number of records that the service will return", ResourceParameterType.PARAMETER_INTERN);
     maxRecords.setValue("-1");
     addParam(maxRecords);
 
-    ResourceParameter verbosity = new ResourceParameter(ConeSearchProtocolLibrary.VERBOSITY,
+    final ResourceParameter verbosity = new ResourceParameter(ConeSearchProtocolLibrary.VERBOSITY,
             "True or false, depending on whether the service supports the VERB keyword in the request",
             ResourceParameterType.PARAMETER_INTERN);
-    String verbosityEnum = "xs:enum[True, False]";
-    verbosity.setValueType(verbosityEnum);
+    verbosity.setValueType("xs:enum[True, False]");
     verbosity.setValue("True");
     addParam(verbosity);
 
@@ -165,79 +163,78 @@ public class ConeSearchResourcePlugin extends ResourceModel {
     return new Validator<ResourceModel>() {
       @Override
       public Set<ConstraintViolation> validate(final ResourceModel item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, ResourceParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, ResourceParameter> params = item.getParametersMap();
 
-        ResourceParameter maxSr = params.get(ConeSearchProtocolLibrary.MAX_SR);
+        final ResourceParameter maxSr = params.get(ConeSearchProtocolLibrary.MAX_SR);
         if (!Util.isNotEmpty(maxSr.getValue())
                 || !(Double.valueOf(maxSr.getValue()) > 0 && Double.valueOf(maxSr.getValue()) <= MAX_RADIUS)) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The SR value must be set and a positive value inferior to 180");
           constraint.setValueName(ConeSearchProtocolLibrary.MAX_SR);
           constraintList.add(constraint);
         }
 
-        ResourceParameter dictionary = params.get(ConeSearchProtocolLibrary.DICTIONARY);
+        final ResourceParameter dictionary = params.get(ConeSearchProtocolLibrary.DICTIONARY);
         if (!Util.isNotEmpty(dictionary.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A reference to a VO dictionary must be set");
           constraint.setValueName(ConeSearchProtocolLibrary.DICTIONARY);
           constraintList.add(constraint);
         }
 
-        ResourceParameter verb = params.get(ConeSearchProtocolLibrary.VERB);
+        final ResourceParameter verb = params.get(ConeSearchProtocolLibrary.VERB);
         if (!Util.isNotEmpty(verb.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A verbosity level (1,2,3) must be set");
           constraint.setValueName(ConeSearchProtocolLibrary.VERB);
           constraintList.add(constraint);
         }
 
-        ResourceParameter verbosity = params.get(ConeSearchProtocolLibrary.VERBOSITY);
+        final ResourceParameter verbosity = params.get(ConeSearchProtocolLibrary.VERBOSITY);
         if (!Util.isNotEmpty(verbosity.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("Verbosity (true, false) must be set");
           constraint.setValueName(ConeSearchProtocolLibrary.VERBOSITY);
           constraintList.add(constraint);
         }
 
-        ResourceParameter xCol = params.get(ConeSearchProtocolLibrary.X);
+        final ResourceParameter xCol = params.get(ConeSearchProtocolLibrary.X);
         if (!Util.isNotEmpty(xCol.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A reference to X attribute must be set");
           constraint.setValueName(ConeSearchProtocolLibrary.X);
           constraintList.add(constraint);
         }
 
-        ResourceParameter yCol = params.get(ConeSearchProtocolLibrary.Y);
+        final ResourceParameter yCol = params.get(ConeSearchProtocolLibrary.Y);
         if (!Util.isNotEmpty(yCol.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A reference to Y attribute must be set");
           constraint.setValueName(ConeSearchProtocolLibrary.Y);
           constraintList.add(constraint);
         }
 
-        ResourceParameter zCol = params.get(ConeSearchProtocolLibrary.Z);
+        final ResourceParameter zCol = params.get(ConeSearchProtocolLibrary.Z);
         if (!Util.isNotEmpty(zCol.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A reference to Z attribute must be set");
           constraint.setValueName(ConeSearchProtocolLibrary.Z);
           constraintList.add(constraint);
         }
 
-        ResourceParameter maxRecords = params.get(ConeSearchProtocolLibrary.MAX_RECORDS);
+        final ResourceParameter maxRecords = params.get(ConeSearchProtocolLibrary.MAX_RECORDS);
         if (!Util.isNotEmpty(maxRecords.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-          constraint
-                  .setMessage("A max record must be defined. If set to -1 then maxRecords is equal to the number of records in the dataset");
+          constraint.setMessage("A max record must be defined. If set to -1 then maxRecords is equal to the number of records in the dataset");
           constraint.setValueName(ConeSearchProtocolLibrary.MAX_RECORDS);
           constraintList.add(constraint);
         }

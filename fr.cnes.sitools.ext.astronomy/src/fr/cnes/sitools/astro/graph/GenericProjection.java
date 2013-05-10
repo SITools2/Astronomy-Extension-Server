@@ -48,7 +48,6 @@ public class GenericProjection extends Graph {
   public GenericProjection(final ProjectionType projectionType) {
     this.setProjection(ProjectionFactory.fromPROJ4Specification(new String[]{"+proj=" + projectionType.getProjectionCode()}));
     this.setRange(analyzeRange());
-    setupImageSize();
   }
 
   /**
@@ -61,10 +60,10 @@ public class GenericProjection extends Graph {
     double ymax = -1 * DEFAULT_VALUE;
     double xmin = DEFAULT_VALUE;
     double xmax = -1 * DEFAULT_VALUE;
-    double[] rangePixels = new double[NUMBER_VALUES_RANGE];
+    final double[] rangePixels = new double[NUMBER_VALUES_RANGE];
     for (int i = Graph.LAT_MIN; i <= Graph.LAT_MAX; i++) {
       for (int j = Graph.LONG_MIN; j <= Graph.LONG_MAX; j++) {
-        Point2D.Double point2D = new Point2D.Double();
+        final Point2D.Double point2D = new Point2D.Double();
         try {
           this.getProjection().project(MapMath.degToRad(j), MapMath.degToRad(i), point2D);
         } catch (ProjectionException ex) {
@@ -88,16 +87,5 @@ public class GenericProjection extends Graph {
     rangePixels[Y_MIN] = ymin;
     rangePixels[Y_MAX] = ymax;
     return rangePixels;
-  }
-
-  /**
-   * Sets up image size with a fixed height.
-   */
-  private void setupImageSize() {
-    double deltaX = getRange()[X_MAX] - getRange()[X_MIN];
-    double deltaY = getRange()[Y_MAX] - getRange()[Y_MIN];
-    double ratio = Math.abs(deltaX / deltaY);
-    int height = getPixelHeight();
-    setPixelWidth((int) Math.ceil(height * ratio));
   }
 }

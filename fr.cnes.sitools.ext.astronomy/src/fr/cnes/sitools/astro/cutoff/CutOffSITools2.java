@@ -164,6 +164,32 @@ public class CutOffSITools2 implements CutOffInterface {
     }
 
     /**
+     * Cutoff constructor.
+     *
+     * <p>
+     * A cutout can be defined by a cone search on a specific HDU.
+     * HDU number is required because each FITS extension could have
+     * its own projection or astrometry
+     * </p>
+     * @param fitsObjUrl URL of the Fits file to cut
+     * @param ra Center Ra for cone search in decimal degree
+     * @param dec Center dec for cone search in decimal degree
+     * @param radius radius in decimal degree
+     * @param hduNumber HDU number to process (HDU number starts at 0)
+     * @throws CutOffException
+     */
+    public CutOffSITools2(final URL fitsObjUrl, final double ra, final double dec, final double radius, final int hduNumber) throws CutOffException {        
+        try {
+            final Fits fitsObj = new Fits(fitsObjUrl);
+            init(fitsObj, ra, dec, radius, hduNumber);
+        } catch (FitsException ex) {
+            throw new CutOffException(ex);
+        } catch (IOException ex) {
+            throw new CutOffException(ex);
+        }
+    }
+    
+    /**
      * Cut off service based on ra and dec in sexagecimal.
      * @param fits Fits file
      * @param ra ra in sexagecimal
@@ -182,9 +208,29 @@ public class CutOffSITools2 implements CutOffInterface {
             throw new CutOffException(ex);
         }
     }
+    /**
+     * Cut off service based on ra and dec in sexagecimal.
+     * @param fitsUrl URL of the Fits file
+     * @param ra ra in sexagecimal
+     * @param dec dec in sexagecimal
+     * @param radius radius in degree
+     * @param hduNumber hdu Number
+     * @throws CutOffException CutOff Exception
+     */
+    public CutOffSITools2(final URL fitsUrl, final String ra, final String dec, final double radius, final int hduNumber) throws CutOffException {
+        try {
+            AstroCoordinate astro = new AstroCoordinate(ra, dec);
+            Fits fitsObj = new Fits(fitsUrl);
+            init(fitsObj, astro.getRaAsDecimal(), astro.getDecAsDecimal(), radius, hduNumber);
+        } catch (FitsException ex) {
+            throw new CutOffException(ex);
+        } catch (IOException ex) {
+            throw new CutOffException(ex);
+        }
+    }    
 
     /**
-     * Initialize the constructor
+     * Initialize the constructor.
      * @param fits Fits object
      * @param ra right ascension
      * @param dec declination

@@ -24,16 +24,12 @@ import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
-import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
@@ -56,11 +52,11 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
     /**
      * Data model.
      */
-    private Map dataModel = new HashMap();
+    private final transient Map dataModel = new HashMap();
     /**
      * Plugin configuration.
      */
-    private Map<String, ApplicationPluginParameter> parameters;
+    private transient Map<String, ApplicationPluginParameter> parameters;
 
     @Override
     public final void doInit() {
@@ -77,7 +73,7 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
      */
     private String buildTemplateURL() throws JSONException, IOException {
         final String serviceURL = getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel().getUrlAttach();
-        String queryShape = parameters.get("queryShape").getValue();
+        final String queryShape = parameters.get("queryShape").getValue();
         String shape;        
         if (queryShape.equals(GeometryShape.CONE.getShape())) {
             shape = "cone={sitools:cone}&amp;";
@@ -86,8 +82,7 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
         } else {
             shape = "";
         }
-        final String description =  String.format("%s/search?%sformat=json", serviceURL, shape);
-        return description;
+        return String.format("%s/search?%sformat=json", serviceURL, shape);        
     }
 
     /**
@@ -136,7 +131,7 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
         try {
             fillDataModel();
             Representation rep = new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
-            CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+            final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
             rep = cache.getRepresentation();
             getResponse().setCacheDirectives(cache.getCacheDirectives());
             return rep;
@@ -166,28 +161,28 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
     info.setIdentifier("OpenSearchConeSearchProtocol");
     info.setDocumentation("OpenSearch description for the Cone Search Protocol");
 
-    DocumentationInfo documentationXml = new DocumentationInfo();
+    final DocumentationInfo documentationXml = new DocumentationInfo();
     documentationXml.setTitle("XML");
     documentationXml.setTextContent("Opensearch description.");
 
-    DocumentationInfo documentationHTML = new DocumentationInfo();
+    final DocumentationInfo documentationHTML = new DocumentationInfo();
     documentationHTML.setTitle("Error");
     documentationHTML.setTextContent("Returns the error.");
 
-    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
+    final RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
     representationInfoError.setIdentifier("error");
     representationInfoError.setDocumentation(documentationHTML);
 
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
     representationInfo.setDocumentation(documentationXml);
 
     // represensation when the response is fine
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
     responseOK.setStatuses(Arrays.asList(Status.SUCCESS_OK));
     responseOK.getRepresentations().add(representationInfo);
 
     // represensation when the response is fine
-    ResponseInfo responseNOK = new ResponseInfo();
+    final ResponseInfo responseNOK = new ResponseInfo();
     responseNOK.setStatuses(Arrays.asList(Status.SERVER_ERROR_INTERNAL));
     responseNOK.getRepresentations().add(representationInfoError);
 

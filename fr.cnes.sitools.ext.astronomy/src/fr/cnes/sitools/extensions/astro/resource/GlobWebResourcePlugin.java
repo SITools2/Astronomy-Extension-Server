@@ -64,7 +64,7 @@ public class GlobWebResourcePlugin extends ResourceModel {
         setDescription("Provides the configuration file of the Globweb module");
         setDataSetSelection(DataSetSelectionType.NONE);
         setResourceClassName(fr.cnes.sitools.extensions.astro.resource.GlobWebResource.class.getName());
-        ResourceParameter configurationFile = new ResourceParameter(CONF_ADM, "Filename located in <root>/data/freemarker", 
+        final ResourceParameter configurationFile = new ResourceParameter(CONF_ADM, "Filename located in <root>/data/freemarker", 
                 ResourceParameterType.PARAMETER_USER_INPUT);
         configurationFile.setValueType("String");
         this.addParam(configurationFile);
@@ -80,11 +80,11 @@ public class GlobWebResourcePlugin extends ResourceModel {
         return new Validator<ResourceModel>() {
             @Override
             public final Set<ConstraintViolation> validate(final ResourceModel item) {
-                Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-                Map<String, ResourceParameter> params = item.getParametersMap();
-                ResourceParameter resourceParam = params.get(CONF_ADM);
+                final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+                final Map<String, ResourceParameter> params = item.getParametersMap();
+                final ResourceParameter resourceParam = params.get(CONF_ADM);
                 if (!Util.isNotEmpty(resourceParam.getValue())) {
-                    ConstraintViolation constraint = new ConstraintViolation();
+                    final ConstraintViolation constraint = new ConstraintViolation();
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setMessage("The configuration filename must be set");
                     constraint.setValueName("conf");

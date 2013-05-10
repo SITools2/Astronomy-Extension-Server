@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  * ((HealpixFootprint)graph).setColor(Color.RED);
  * graph = new CircleDecorator(graph, 0.0, 0.0, 1, Scheme.RING, 10);
  * ((CircleDecorator)graph).setColor(Color.yellow); 
- * Utility.createJFrame(graph, 900, 500);
+ * Utility.createJFrame(graph, 900);
  * </code>
  * </pre></p>
  *
@@ -91,45 +91,46 @@ public class HealpixFootprint extends HealpixDensityMapDecorator {
   /**
    * Draws a Healpix pixel.
    *
-   * @param g2 graph to decorate
+   * @param graphic2D graph to decorate
    * @param healpix Helapix index
    * @param pix pixel to draw
    * @param coordinateTransformation Coordinate transformation to apply
    */
   @Override
-  protected void drawHealpixPolygon(final Graphics2D g2, final HealpixIndex healpix, final long pix, final CoordinateTransformation coordinateTransformation) {
+  protected void drawHealpixPolygon(final Graphics2D graphic2D, final HealpixIndex healpix, final long pix, final CoordinateTransformation coordinateTransformation) {
     try {
-      int numberOfVectors = computeNumberPointsForPixel(getHealpixMapDouble().getNside(), pix);
-      Vec3[] vectors = getHealpixMapDouble().boundaries(pix, numberOfVectors);
+      final int numberOfVectors = computeNumberPointsForPixel(getHealpixMapDouble().getNside(), pix);
+      final Vec3[] vectors = getHealpixMapDouble().boundaries(pix, numberOfVectors);
       computeReferenceFrameTransformation(vectors, coordinateTransformation);
-      Coordinates[] coordinates = splitHealpixPixelForDetectedBorder(vectors);
+      final Coordinates[] coordinates = splitHealpixPixelForDetectedBorder(vectors);
+      final Polygon2D poly = new Polygon2D();
       for (int i = 0; i < coordinates.length; i++) {
-        Coordinates coordinate = coordinates[i];
-        List<Point2D.Double> pixels = coordinate.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
-        g2.setPaint(this.getColor());
-        Polygon2D poly = new Polygon2D(pixels);
-        g2.draw(poly);
-        g2.fill(poly);
+        final Coordinates coordinate = coordinates[i];
+        final List<Point2D.Double> pixels = coordinate.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
+        graphic2D.setPaint(this.getColor());
+        poly.setPoints(pixels);
+        graphic2D.draw(poly);
+        graphic2D.fill(poly);
       }
     } catch (Exception ex) {
-      Logger.getLogger(HealpixGridDecorator.class.getName()).log(Level.SEVERE, null, ex);
+      LOG.log(Level.FINER, null, ex);
     }
   }
 
   /**
    * Draws pixels having its density=1.0d.
    *
-   * @param g2 graph to decorate
+   * @param graphic2D graph to decorate
    * @param color color of pixels
    */
   @Override
-  protected void drawPixels(final Graphics2D g2, final Color color) {
-    g2.setPaint(color);
-    HealpixMapDouble map = this.getHealpixMapDouble();
-    double[] pixels = map.getData();
+  protected void drawPixels(final Graphics2D graphic2D, final Color color) {
+    graphic2D.setPaint(color);
+    final HealpixMapDouble map = this.getHealpixMapDouble();
+    final double[] pixels = map.getData();
     for (int i = 0; i < pixels.length; i++) {
       if (pixels[i] == 1.0d) {
-        drawHealpixPolygon(g2, getHealpixBase(), i, getCoordinateTransformation());
+        drawHealpixPolygon(graphic2D, getHealpixBase(), i, getCoordinateTransformation());
       }
     }
   }

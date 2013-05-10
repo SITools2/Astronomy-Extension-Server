@@ -26,14 +26,18 @@ import org.restlet.representation.Representation;
 public class CacheBrowser {
 
   /**
+   * Number of hours in one day.
+   */
+  private static final int NUMBER_OF_HOURS_IN_DAY = 24;
+  /**
    * Representation to cache.
    */
-  private Representation rep;
+  private final transient Representation rep;
 
   /**
    * Cache directives.
    */
-  private List<CacheDirective> cacheDirectivesBrowser;
+  private transient List<CacheDirective> cacheDirectivesBrowser = null;
   
   /**
    * Constructor.
@@ -41,7 +45,6 @@ public class CacheBrowser {
    */
   protected CacheBrowser(final Representation repVal) {
     this.rep = repVal;
-    this.cacheDirectivesBrowser = null;
   }
 
   /**
@@ -51,8 +54,7 @@ public class CacheBrowser {
    * @return the right cache directive according to the choice of the cache
    */
   public static CacheBrowser createCache(final CacheDirectiveBrowser cacheDirective, final Representation repVal) {
-    CacheBrowser cache = new CacheBrowser(repVal);
-    List<CacheDirective> cacheDirectives;
+    final CacheBrowser cache = new CacheBrowser(repVal);
     switch(cacheDirective) {
       case FOREVER:
         cache.createCacheForEver();
@@ -107,7 +109,7 @@ public class CacheBrowser {
    * Creates the cache directive for the "forever" choice.
    */
   private void createCacheForEver() {
-    List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
+    final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(CacheDirective.publicInfo());
     this.cacheDirectivesBrowser = cacheDirectives;
   }
@@ -116,7 +118,7 @@ public class CacheBrowser {
    * Creates the cache directive for the "nocache" choice.
    */  
   private void createNoCache() {
-    List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
+    final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(CacheDirective.noCache());
     this.cacheDirectivesBrowser = cacheDirectives;
   }
@@ -124,14 +126,13 @@ public class CacheBrowser {
   /**
    * Creates the cache directive for the "cacheday" choice.
    */  
-  private void createCacheDay() {
-    final int numberOfHoursInDay = 24;
-    Calendar expiresOn = Calendar.getInstance();
-    long age = expiresOn.getTimeInMillis();
-    expiresOn.add(Calendar.HOUR_OF_DAY, numberOfHoursInDay);
+  private void createCacheDay() {    
+    final Calendar expiresOn = Calendar.getInstance();
+    final long age = expiresOn.getTimeInMillis();
+    expiresOn.add(Calendar.HOUR_OF_DAY, NUMBER_OF_HOURS_IN_DAY);
     rep.setExpirationDate(expiresOn.getTime());
-    CacheDirective maxAge = CacheDirective.maxAge((int) (expiresOn.getTimeInMillis() - age));
-    List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
+    final CacheDirective maxAge = CacheDirective.maxAge((int) (expiresOn.getTimeInMillis() - age));
+    final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(maxAge);
     this.cacheDirectivesBrowser =  cacheDirectives;
   }  

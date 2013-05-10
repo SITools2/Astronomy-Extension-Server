@@ -53,19 +53,19 @@ public class HmsConversion extends AbstractConverter {
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
     setClassVersion("1.0");
-    ConverterParameter ra = new ConverterParameter("Ra in", "Right ascension attribute as input",
+    final ConverterParameter rightAscension = new ConverterParameter("Ra in", "Right ascension attribute as input",
             ConverterParameterType.CONVERTER_PARAMETER_IN);
-    ConverterParameter valInHms = new ConverterParameter("Ra out", "Right ascension attribute as output",
+    final ConverterParameter valInHms = new ConverterParameter("Ra out", "Right ascension attribute as output",
             ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter deg2segOrseg2dev = new ConverterParameter("Conversion type",
+    final ConverterParameter deg2segOrseg2dev = new ConverterParameter("Conversion type",
             "Set conversion type: sexa2deg or deg2sexa", ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     deg2segOrseg2dev.setValue("deg2sexa");
     deg2segOrseg2dev.setValueType("String");
-    ConverterParameter precision = new ConverterParameter("precision", "result precision for double (#0.00)",
+    final ConverterParameter precision = new ConverterParameter("precision", "result precision for double (#0.00)",
             ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     precision.setValue("#0.00");
     precision.setValueType("String");
-    addParam(ra);
+    addParam(rightAscension);
     addParam(valInHms);
     addParam(deg2segOrseg2dev);
     addParam(precision);
@@ -76,21 +76,21 @@ public class HmsConversion extends AbstractConverter {
     Record out = record;
     Object conversionResult = null;
 
-    Object attrIn = getInParam("Ra in", record).getValue();
+    final Object attrIn = getInParam("Ra in", record).getValue();
     if (Util.isSet(attrIn)) {
-      AttributeValue attrOut = getOutParam("Ra out", record);
-      String conversionType = getInternParam("Conversion type").getValue();
-      String precision = getInternParam("precision").getValue();
+      final AttributeValue attrOut = getOutParam("Ra out", record);
+      final String conversionType = getInternParam("Conversion type").getValue();
+      final String precision = getInternParam("precision").getValue();
 
       if (conversionType.equals("sexa2deg")) {
-        String coordinateHms = String.valueOf(attrIn);
-        HMS hms = new HMS(coordinateHms);
+        final String coordinateHms = String.valueOf(attrIn);
+        final HMS hms = new HMS(coordinateHms);
         conversionResult = hms.getVal() * 360. / 24.;
-        NumberFormat formatter = new DecimalFormat(precision);
+        final NumberFormat formatter = new DecimalFormat(precision);
         conversionResult = formatter.format(conversionResult);
       } else if (conversionType.equals("deg2sexa")) {
         double coordinateDegree = new Double(String.valueOf(attrIn)).doubleValue();
-        HMS hms = new HMS(coordinateDegree * 24. / 360.);
+        final HMS hms = new HMS(coordinateDegree * 24. / 360.);
         conversionResult = hms.toString(true);
       } else {
         throw new IllegalArgumentException("HMS Converter: conversionType is unknow, please contact the administrator");
@@ -109,11 +109,11 @@ public class HmsConversion extends AbstractConverter {
       @Override
       public final Set<ConstraintViolation> validate(final AbstractConverter item) {
         // Check quickly if the procecision is set and correct
-        Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-        Map<String, ConverterParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+        final Map<String, ConverterParameter> params = item.getParametersMap();
         ConverterParameter param = params.get("precision");
         if (!param.getValue().startsWith("#")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Precision must start by # ");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -122,7 +122,7 @@ public class HmsConversion extends AbstractConverter {
         }
         param = params.get("Ra in");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Ra in must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -130,7 +130,7 @@ public class HmsConversion extends AbstractConverter {
         }
         param = params.get("Ra out");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Ra out must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());

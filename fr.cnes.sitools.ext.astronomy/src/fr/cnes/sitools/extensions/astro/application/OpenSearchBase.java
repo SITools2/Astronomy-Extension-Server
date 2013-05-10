@@ -53,15 +53,15 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
   /**
    * List of indexed fields.
    */
-    private List<Index> indexedFields;
+    private transient List<Index> indexedFields;
     /**
      * SOLR base URL.
      */
-    private String solrBaseUrl;
+    private transient String solrBaseUrl;
     /**
      * Data model.
      */
-    private ApplicationPluginModel paramModel;    
+    private transient ApplicationPluginModel paramModel;    
 
     /**
      * Init.
@@ -71,7 +71,7 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
         super.doInit();   
         setAutoDescribing(false);
         this.paramModel = ((OpenSearchApplicationPlugin) getApplication()).getModel();
-        String attach = getSitoolsSetting(Consts.APP_SOLR_URL);
+        final String attach = getSitoolsSetting(Consts.APP_SOLR_URL);
         this.solrBaseUrl = RIAPUtils.getRiapBase() + attach + "/" + getPluginParameters().get("solrCore").getValue();
         try {
             computeIndexedFields();
@@ -92,22 +92,22 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
     protected final void computeIndexedFields() throws JSONException, IOException {
         this.indexedFields = new ArrayList<Index>();
         // Use Luke to get the index definition
-        ClientResource client = new ClientResource(getSolrBaseUrl() + "/admin/luke?wt=json&numTerms=" + Index.MAX_TOP_TERMS);               
+        final ClientResource client = new ClientResource(getSolrBaseUrl() + "/admin/luke?wt=json&numTerms=" + Index.MAX_TOP_TERMS);               
         
-        JSONObject json = new JSONObject(client.get().getText());
-        JSONObject fields = json.getJSONObject("fields");
+        final JSONObject json = new JSONObject(client.get().getText());
+        final JSONObject fields = json.getJSONObject("fields");
         
         // iter on all fields of the solr index
-        Iterator iter = fields.keys();
+        final Iterator iter = fields.keys();
         while (iter.hasNext()) {
-            String key = (String) iter.next();
-            JSONObject node = fields.getJSONObject(key);
+            final String key = (String) iter.next();
+            final JSONObject node = fields.getJSONObject(key);
             // parse index
             boolean isIndexField = node.has("index");
             if (isIndexField && node.getString("index").contains("S")) {
-                String indexType = node.getString("type");
-                JSONArray topTermsArray = node.getJSONArray("topTerms");
-                Map<String, Long> terms = new HashMap<String, Long>();
+                final String indexType = node.getString("type");
+                final JSONArray topTermsArray = node.getJSONArray("topTerms");
+                final Map<String, Long> terms = new HashMap<String, Long>();
                 for (int i = 0; i < topTermsArray.length(); i += 2) {
                     terms.put(topTermsArray.getString(i), topTermsArray.getLong(i + 1));
                 }

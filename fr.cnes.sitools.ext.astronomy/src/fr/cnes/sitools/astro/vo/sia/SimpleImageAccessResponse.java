@@ -60,7 +60,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   /**
    * Data model.
    */
-  private Map dataModel = new HashMap();
+  private final transient Map dataModel = new HashMap();
 
   /**
    * Constructor.
@@ -80,7 +80,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    */
   private void createResponse(final SimpleImageAccessInputParameters inputParameters, final ResourceModel model) {
     // createResponse
-    String dictionaryName = model.getParameterByName(SimpleImageAccessProtocolLibrary.DICTIONARY).getValue();
+    final String dictionaryName = model.getParameterByName(SimpleImageAccessProtocolLibrary.DICTIONARY).getValue();
 
     inputParameters.getDatasetApplication().getLogger().log(Level.FINEST, "DICO: {0}", dictionaryName);
 
@@ -97,8 +97,8 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    * @param dataModel data model to set
    * @param model parameters from administration
    */
-  private void setVotableParametersFromConfiguration(Map dataModel, final ResourceModel model) {
-    List<Param> params = new ArrayList<Param>();
+  private void setVotableParametersFromConfiguration(final Map dataModel, final ResourceModel model) {
+    final List<Param> params = new ArrayList<Param>();
     setVotableParam(params, model, SimpleImageAccessProtocolLibrary.COVERAGE, DataType.CHAR);
     setVotableParam(params, model, SimpleImageAccessProtocolLibrary.TEMPORAL, DataType.CHAR);
     setVotableParam(params, model, SimpleImageAccessProtocolLibrary.INSTRUMENT, DataType.CHAR);
@@ -123,11 +123,11 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    * @param parameterName parameter name
    * @param datatype datatype
    */
-  private void setVotableParam(List<Param> params, final ResourceModel model, final String parameterName,
+  private void setVotableParam(final List<Param> params, final ResourceModel model, final String parameterName,
           final DataType datatype) {
-    String parameterValue = model.getParameterByName(parameterName).getValue();
+    final String parameterValue = model.getParameterByName(parameterName).getValue();
     if (Util.isNotEmpty(parameterValue)) {
-      Param param = new Param();
+      final Param param = new Param();
       param.setName(parameterName);
       param.setValue(parameterValue);
       param.setDatatype(datatype);
@@ -145,8 +145,8 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    */
   private void setVotableResource(final DataSetApplication datasetApp, final SimpleImageAccessInputParameters inputParameters,
           final ResourceModel model, final String dictionaryName) {
-    List<Field> fieldList = new ArrayList<Field>();
-    List<String> columnList = new ArrayList<String>();
+    final List<Field> fieldList = new ArrayList<Field>();
+    final List<String> columnList = new ArrayList<String>();
     DatabaseRequest databaseRequest = null;
 
     try {
@@ -156,7 +156,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       mappingList = checkRequiredMapping(mappingList, inputParameters.getVerb());
 
       // Get query parameters
-      DatabaseRequestParameters dbParams = setQueryParameters(datasetApp, model, inputParameters, mappingList);
+      final DatabaseRequestParameters dbParams = setQueryParameters(datasetApp, model, inputParameters, mappingList);
       databaseRequest = DatabaseRequestFactory.getDatabaseRequest(dbParams);
 
       // Execute query
@@ -170,10 +170,9 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       dataModel.put("sqlColAlias", columnList);
 
       // Complete data model with data
-      int count = databaseRequest.getCount();
-      count = (count > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : count;
-      ConverterChained converterChained = datasetApp.getConverterChained();
-      TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
+      final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();     
+      final ConverterChained converterChained = datasetApp.getConverterChained();
+      final TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
       ((DatabaseRequestModel) rows).setSize(count);
       dataModel.put("rows", rows);
 
@@ -183,8 +182,9 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
           databaseRequest.close();
         }
       } catch (SitoolsException ex1) {
+          LOG.log(Level.FINER, null, ex1);
       } finally {
-        List<Info> infos = new ArrayList<Info>();
+        final List<Info> infos = new ArrayList<Info>();
         datasetApp.getLogger().log(Level.FINEST, "ERROR: {0}", ex.getMessage());
         setVotableError(infos, "Query", "Error in query", "Error in input query: " + ex.getMessage());
         if (!infos.isEmpty()) {
@@ -206,14 +206,14 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
           final SimpleImageAccessInputParameters inputParameters, List<ColumnConceptMappingDTO> mappingList) {
 
     // Get the dataset
-    DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil(datasetApp, inputParameters.getRequest(),
+    final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil(datasetApp, inputParameters.getRequest(),
             inputParameters.getContext());
 
     // Get query parameters
-    DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
+    final DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
 
     // Get dataset records
-    int nbRecordsInDataSet = datasetApp.getDataSet().getNbRecords();
+    final int nbRecordsInDataSet = datasetApp.getDataSet().getNbRecords();
 
     // Get max records that is defined by admin
     int nbMaxRecords = Integer.valueOf(model.getParameterByName(SimpleImageAccessProtocolLibrary.MAX_RECORDS).getValue());
@@ -226,7 +226,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
     String raColTarget = null;
     String decColTarget = null;
     for (ColumnConceptMappingDTO mapIter : mappingList) {
-      String ucd = mapIter.getConcept().getPropertyFromName("ucd").getValue();
+      final String ucd = mapIter.getConcept().getPropertyFromName("ucd").getValue();
       if (ucd.equals(SimpleImageAccessProtocolLibrary.REQUIRED_UCD_CONCEPTS.get(1))) {
         raColTarget = mapIter.getColumnAlias();
       }
@@ -235,17 +235,17 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       }
     }
 
-    SqlGeometryConstraint sql = SqlGeometryFactory.create(String.valueOf(model.getParameterByName(SimpleImageAccessProtocolLibrary.INTERSECT).getValue()));
+    final AbstractSqlGeometryConstraint sql = SqlGeometryFactory.create(String.valueOf(model.getParameterByName(SimpleImageAccessProtocolLibrary.INTERSECT).getValue()));
     sql.setInputParameters(inputParameters);
-    Object geometry = (Util.isNotEmpty(model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue()))
+    final Object geometry = (Util.isNotEmpty(model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue()))
                       ? model.getParameterByName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT).getValue()
                       : Arrays.asList(raColTarget, decColTarget);
     sql.setGeometry(geometry);
 
     if (sql.getSqlPredicat() != null) {
-      Predicat predicat = new Predicat();
+      final Predicat predicat = new Predicat();
       predicat.setStringDefinition(sql.getSqlPredicat());
-      List<Predicat> predicatList = dbParams.getPredicats();
+      final List<Predicat> predicatList = dbParams.getPredicats();
       predicatList.add(predicat);
       dbParams.setPredicats(predicatList);
     }
@@ -253,16 +253,16 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Set the votable error
+   * Set the votable error.
    *
-   * @param infos
-   * @param id
-   * @param name
-   * @param value
+   * @param infos infos
+   * @param id id 
+   * @param name name
+   * @param value value
    */
-  private void setVotableError(List<Info> infos, final String id, final String name, final String value) {
+  private void setVotableError(final List<Info> infos, final String id, final String name, final String value) {
     if (Util.isNotEmpty(name)) {
-      Info info = new Info();
+      final Info info = new Info();
       info.setID(id);
       info.setName(name);
       info.setValueAttribute(value);
@@ -275,7 +275,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    * @return the data model
    */
   @Override
-  public Map getDataModel() {
+  public final Map getDataModel() {
     return Collections.unmodifiableMap(this.dataModel);
   }
 
@@ -292,14 +292,14 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
     List<ColumnConceptMappingDTO> colConceptMappingDTOList = null;
 
     // Get the list of dictionnaries related to the datasetApplication
-    List<DictionaryMappingDTO> dicoMappingList = datasetApp.getDictionaryMappings();
+    final List<DictionaryMappingDTO> dicoMappingList = datasetApp.getDictionaryMappings();
     if (!Util.isSet(dicoMappingList) || dicoMappingList.isEmpty()) {
       throw new SitoolsException("No mapping with VO concepts has been done. please contact the administrator");
     }
 
     // For each dictionary, find the interesting one and return the mapping SQLcolumn/concept
     for (DictionaryMappingDTO dicoMappingIter : dicoMappingList) {
-      String dicoName = dicoMappingIter.getDictionaryName();
+      final String dicoName = dicoMappingIter.getDictionaryName();
       if (dicoToFind.equals(dicoName)) {
         colConceptMappingDTOList = dicoMappingIter.getMapping();
         break;
@@ -315,7 +315,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    * @param columnList List of SQL column
    * @param mappingList List of SQL column/concept
    */
-  private void setFields(List<Field> fieldList, List<String> columnList, final List<ColumnConceptMappingDTO> mappingList) {
+  private void setFields(final List<Field> fieldList, final List<String> columnList, final List<ColumnConceptMappingDTO> mappingList) {
 
     for (ColumnConceptMappingDTO mappingIter : mappingList) {
 
@@ -333,7 +333,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       String arraysize = null;
       String descriptionValue = null;
       columnList.add(mappingIter.getColumnAlias());
-      Concept concept = mappingIter.getConcept();
+      final Concept concept = mappingIter.getConcept();
       if (concept.getName() != null) {
         name = concept.getName();
       }
@@ -373,7 +373,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       if (concept.getDescription() != null) {
         descriptionValue = concept.getDescription();
       }
-      Field field = new Field();
+      final Field field = new Field();
       field.setID(id);
       field.setName(name);
       field.setUcd(ucd);
@@ -388,7 +388,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       field.setType(type);
       field.setXtype(xtype);
       field.setArraysize(arraysize);
-      AnyTEXT anyText = new AnyTEXT();
+      final AnyTEXT anyText = new AnyTEXT();
       anyText.getContent().add(descriptionValue);
       field.setDESCRIPTION(anyText);
       fieldList.add(field);
@@ -407,10 +407,10 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
           throws SitoolsException {
     final int nbConceptToMap = SimpleImageAccessProtocolLibrary.REQUIRED_UCD_CONCEPTS.size();
     int nbConcept = 0;
-    List<ColumnConceptMappingDTO> conceptToMap = new ArrayList<ColumnConceptMappingDTO>(mappingList);
+    final List<ColumnConceptMappingDTO> conceptToMap = new ArrayList<ColumnConceptMappingDTO>(mappingList);
     for (ColumnConceptMappingDTO mappingIter : mappingList) {
-      Concept concept = mappingIter.getConcept();
-      String ucdValue = concept.getPropertyFromName("ucd").getValue();
+      final Concept concept = mappingIter.getConcept();
+      final String ucdValue = concept.getPropertyFromName("ucd").getValue();
       if (Util.isNotEmpty(ucdValue) && SimpleImageAccessProtocolLibrary.REQUIRED_UCD_CONCEPTS.contains(ucdValue)) {
         nbConcept++;
       } else if (verb == 1) {
@@ -419,7 +419,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
     }
 
     if (nbConceptToMap != nbConcept) {
-      StringBuilder buffer = new StringBuilder("columns with ");
+      final StringBuilder buffer = new StringBuilder("columns with ");
       for (ColumnConceptMappingDTO mappingIter : mappingList) {
         buffer.append(mappingIter.getConcept().getName()).append(" ");
       }

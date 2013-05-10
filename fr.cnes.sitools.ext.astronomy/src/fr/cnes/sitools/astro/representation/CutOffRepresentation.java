@@ -41,7 +41,7 @@ public class CutOffRepresentation extends OutputRepresentation {
   /**
    * Interface.
    */
-    private CutOffInterface cutout;
+    private final transient CutOffInterface cutout;
     
     /**
      * Constructs a new cutoff representation.
@@ -70,7 +70,7 @@ public class CutOffRepresentation extends OutputRepresentation {
             this.cutout.createCutoutFits(out);
         } catch (CutOffException ex) {
             LOG.log(Level.SEVERE, null, ex);
-            throw new RuntimeException(ex);
+            throw new RepresentationRuntimeException(ex);
         }
     }
 }

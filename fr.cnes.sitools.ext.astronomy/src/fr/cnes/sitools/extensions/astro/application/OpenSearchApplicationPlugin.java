@@ -138,9 +138,9 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
      * Declination in degree.
      */
     PROPERTIES_DEC("properties.dec", "dec", "properties");
-    private final String keywordSolr;
-    private final String keyword;
-    private final String node;
+    private final transient String keywordSolr;
+    private final transient String keyword;
+    private final transient String node;
 
     Standard_Open_Search(final String keywordSolr, final String keyword, final String node) {
       this.keywordSolr = keywordSolr;
@@ -148,15 +148,15 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
       this.node = node;
     }
 
-    public String getKeywordSolr() {
+    public final String getKeywordSolr() {
       return this.keywordSolr;
     }
 
-    public String getKeyword() {
+    public final String getKeyword() {
       return this.keyword;
     }
 
-    public String getNode() {
+    public final String getNode() {
       return this.node;
     }
 
@@ -167,11 +167,11 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
      * @return Returns an array [node name, keyword]
      */
     public static String[] getKeywordProperties(final String keywordSolr) {
-      String result[] = new String[2];
+      final String result[] = new String[2];
       result[0] = "properties"; // no standard fields are in properties node
-      Standard_Open_Search[] standardOpenSearchArray = Standard_Open_Search.values();
+      final Standard_Open_Search[] standardOpenSearchArray = Standard_Open_Search.values();
       for (int i = 0; i < standardOpenSearchArray.length; i++) {
-        Standard_Open_Search standardOpenSearch = standardOpenSearchArray[i];
+        final Standard_Open_Search standardOpenSearch = standardOpenSearchArray[i];
         if (standardOpenSearch.getKeywordSolr().equals(keywordSolr)) {
           result[0] = standardOpenSearch.getNode();
           result[1] = standardOpenSearch.getKeyword();
@@ -192,22 +192,22 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
     private final String shape;
     private final String order;
 
-    GeometryShape(String shape, String order) {
+    GeometryShape(final String shape, final String order) {
       this.shape = shape;
       this.order = order;
     }
 
-    public String getShape() {
+    public final String getShape() {
       return this.shape;
     }
 
-    public String getOrder() {
+    public final String getOrder() {
       return this.order;
     }
 
-    public static GeometryShape getGeometryShapeFrom(String value) {
+    public static GeometryShape getGeometryShapeFrom(final String value) {
       GeometryShape result = null;
-      GeometryShape[] shapes = GeometryShape.values();
+      final GeometryShape[] shapes = GeometryShape.values();
       for (GeometryShape shape : shapes) {
         if (shape.getShape().equals(value) || value.equals(shape.getOrder())) {
           result = shape;
@@ -216,7 +216,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
       return result;
     }
 
-    public String getOpenSearchDescription(String coordsystem) {
+    public String getOpenSearchDescription(final String coordsystem) {
       String result;
       if (getOrder() != null) {
         result = String.format("%s={%s:%s?}&amp;%s={%s:%s?}", getShape(), coordsystem, getShape(), getOrder(), coordsystem, getOrder());
@@ -228,7 +228,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
   }
 
   /**
-   * Constructor
+   * Constructor.
    */
   public OpenSearchApplicationPlugin() {
     super();
@@ -236,25 +236,25 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
   }
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param context Context
    */
-  public OpenSearchApplicationPlugin(Context context) {
+  public OpenSearchApplicationPlugin(final Context context) {
     super(context);
     constructor();
   }
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param context Context
    * @param model Plugin model
    */
-  public OpenSearchApplicationPlugin(Context context, ApplicationPluginModel model) {
+  public OpenSearchApplicationPlugin(final Context context, final ApplicationPluginModel model) {
     super(context, model);
     try {
-      Category category = Category.valueOf(getParameter("category").getValue());
+      final Category category = Category.valueOf(getParameter("category").getValue());
       if (model.getCategory() == null) {
         model.setCategory(category);
       }
@@ -265,7 +265,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
   }
 
   /**
-   * Constructor with all parameters
+   * Constructor with all parameters.
    */
   private void constructor() {
     this.getModel().setClassAuthor("J-C Malapert");
@@ -351,7 +351,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
   }
 
   @Override
-  public void sitoolsDescribe() {
+  public final void sitoolsDescribe() {
     this.setName("OpenSearch Application");
     this.setAuthor("J-C Malapert");
     this.setOwner("CNES");
@@ -360,8 +360,8 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
   }
 
   @Override
-  public Restlet createInboundRoot() {
-    Router router = new Router(getContext());
+  public final Restlet createInboundRoot() {
+    final Router router = new Router(getContext());
     router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
     router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchDescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
@@ -376,103 +376,103 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
   }
 
   @Override
-  public Validator<AbstractApplicationPlugin> getValidator() {
+  public final Validator<AbstractApplicationPlugin> getValidator() {
     return new Validator<AbstractApplicationPlugin>() {
       @Override
       public Set<ConstraintViolation> validate(AbstractApplicationPlugin item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, ApplicationPluginParameter> params = item.getModel().getParametersMap();
-        ApplicationPluginParameter shortName = params.get("shortName");
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, ApplicationPluginParameter> params = item.getModel().getParametersMap();
+        final ApplicationPluginParameter shortName = params.get("shortName");
         if (!shortName.getValue().isEmpty() && (shortName.getValue().length() > 16 || shortName.getValue().contains("<") || shortName.getValue().contains(">"))) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("shortName");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 16 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter description = params.get("description");
+        final ApplicationPluginParameter description = params.get("description");
         if (!description.getValue().isEmpty() && (description.getValue().length() > 1024 || description.getValue().contains("<") || description.getValue().contains(">"))) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("description");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 1024 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter contact = params.get("contact");
+        final ApplicationPluginParameter contact = params.get("contact");
         if (contact.getValue().contains("@") && contact.getValue().contains(".")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("contact");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must be an email address");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter tags = params.get("tags");
+        final ApplicationPluginParameter tags = params.get("tags");
         if (tags.getValue().length() > 256 || tags.getValue().contains("<") || tags.getValue().contains(">")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("tags");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 256 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter longName = params.get("longName");
+        final ApplicationPluginParameter longName = params.get("longName");
         if (longName.getValue().length() > 48 || longName.getValue().contains("<") || longName.getValue().contains(">")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("longName");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 48 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter imagePng = params.get("imagePng");
+        final ApplicationPluginParameter imagePng = params.get("imagePng");
         try {
           if (!imagePng.getValue().isEmpty()) {
-            URL url = new URL(imagePng.getValue());
+            final URL url = new URL(imagePng.getValue());
           }
         } catch (MalformedURLException ex) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("imagePng");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage(ex.getMessage());
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter imageIcon = params.get("imageIcon");
+        final ApplicationPluginParameter imageIcon = params.get("imageIcon");
         try {
           if (!imageIcon.getValue().isEmpty()) {
-            URL url = new URL(imageIcon.getValue());
+            final URL url = new URL(imageIcon.getValue());
           }
         } catch (MalformedURLException ex) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("imageIcon");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage(ex.getMessage());
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter syndicationRight = params.get("syndicationRight");
+        final ApplicationPluginParameter syndicationRight = params.get("syndicationRight");
         if (!syndicationRight.getValue().equals("open") && !syndicationRight.getValue().equals("closed") && !syndicationRight.getValue().equals("private") && !syndicationRight.getValue().equals("limited")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("syndicationRight");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("syndicationRight must take one of the following values : open, private, limited, closed");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter solrCore = params.get("solrCore");
+        final ApplicationPluginParameter solrCore = params.get("solrCore");
         if (solrCore.getValue().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("solrCore");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A SOLR core must be set");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter referencesystem = params.get("referenceSystem");
+        final ApplicationPluginParameter referencesystem = params.get("referenceSystem");
         if (!referencesystem.getValue().equals("ICRS") && !referencesystem.getValue().equals("geographic")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("referenceSystem");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("referenceSystem must take one of the following values : ICRS, geographic");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter healpixScheme = params.get("healpixScheme");
+        final ApplicationPluginParameter healpixScheme = params.get("healpixScheme");
         if (!healpixScheme.getValue().equals("RING") && !healpixScheme.getValue().equals("NESTED")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("healpixScheme");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("healpixScheme must take one of the following values : RING, NESTED");

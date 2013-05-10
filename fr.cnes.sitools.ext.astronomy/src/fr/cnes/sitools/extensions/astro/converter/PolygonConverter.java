@@ -101,9 +101,9 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
     setClassVersion("0.1");
-    ConverterParameter colOutput = new ConverterParameter("ColumnOutput", "Output column representing the footprint polygon",
+    final ConverterParameter colOutput = new ConverterParameter("ColumnOutput", "Output column representing the footprint polygon",
             ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter patternOutput = new ConverterParameter("PatternOutput", "Output pattern representing the footprint polygon",
+    final ConverterParameter patternOutput = new ConverterParameter("PatternOutput", "Output pattern representing the footprint polygon",
             ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     patternOutput.setValue("((%s,%s),(%s,%s),(%s,%s),(%s,%s),(%s,%s))");
     addParam(colOutput);
@@ -113,26 +113,26 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
   @Override
   public Record getConversionOf(final Record recordVal) throws Exception {
     this.setRecord(recordVal);
-    WCSTransform wcs = new WCSTransform(this);
+    final WCSTransform wcs = new WCSTransform(this);
     if (wcs.isWCS()) {
-      double[] polygonCelest = new double[NUMBER_POINTS_POLYGON];
-      double heightPix = wcs.getHeight();
-      double widthPix = wcs.getWidth();
-      double[] polygonPix = {ORIGIN_X, heightPix + ORIGIN_Y,
+      final double[] polygonCelest = new double[NUMBER_POINTS_POLYGON];
+      final double heightPix = wcs.getHeight();
+      final double widthPix = wcs.getWidth();
+      final double[] polygonPix = {ORIGIN_X, heightPix + ORIGIN_Y,
         widthPix + ORIGIN_X, heightPix + ORIGIN_Y,
         widthPix + ORIGIN_X, ORIGIN_Y,
         ORIGIN_X, ORIGIN_Y};
 
       for (int i = 0; i < polygonPix.length; i += 2) {
-        Point2D.Double ptg = wcs.pix2wcs(polygonPix[i], polygonPix[i + 1]);
+        final Point2D.Double ptg = wcs.pix2wcs(polygonPix[i], polygonPix[i + 1]);
         polygonCelest[i] = ptg.getX();
         polygonCelest[i + 1] = ptg.getY();
       }
 
-      String pattern = getInternParam("PatternOutput").getValue();
-      AttributeValue attrOut = getOutParam("ColumnOutput", this.getRecord());
+      final String pattern = getInternParam("PatternOutput").getValue();
+      final AttributeValue attrOut = getOutParam("ColumnOutput", this.getRecord());
 
-      String output = String.format(pattern, polygonCelest[P1_X], polygonCelest[P1_Y],
+      final String output = String.format(pattern, polygonCelest[P1_X], polygonCelest[P1_Y],
               polygonCelest[P2_X], polygonCelest[P2_Y],
               polygonCelest[P3_X], polygonCelest[P3_Y],
               polygonCelest[P4_X], polygonCelest[P4_Y],
@@ -148,11 +148,11 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
     return new Validator<AbstractConverter>() {
       @Override
       public Set<ConstraintViolation> validate(final AbstractConverter item) {
-        Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-        Map<String, ConverterParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+        final Map<String, ConverterParameter> params = item.getParametersMap();
         ConverterParameter param = params.get("PatternOutput");
         if (!Util.isNotEmpty(param.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Pattern must be set (e.g ((%s,%s),(%s,%s),(%s,%s),(%s,%s),(%s,%s)))");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -161,7 +161,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
         }
         param = params.get("ColumnOutput");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("ColumnOutput must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -174,7 +174,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final boolean findKey(final String key) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return true;
@@ -185,7 +185,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final String getStringValue(final String key) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return String.valueOf(iterAtt.getValue());
@@ -196,7 +196,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final String getStringValue(final String key, final String defaultValue) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return String.valueOf(iterAtt.getValue());
@@ -207,7 +207,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final double getDoubleValue(final String key) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return Double.valueOf(String.valueOf(iterAtt.getValue()));
@@ -218,7 +218,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final double getDoubleValue(final String key, final double defaultValue) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return Double.valueOf(String.valueOf(iterAtt.getValue()));
@@ -229,7 +229,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final float getFloatValue(final String key) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return Float.valueOf(String.valueOf(iterAtt.getValue()));
@@ -240,7 +240,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final float getFloatValue(final String key, final float defaultValue) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return Float.valueOf(String.valueOf(iterAtt.getValue()));
@@ -251,7 +251,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final int getIntValue(final String key) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return Integer.valueOf(String.valueOf(iterAtt.getValue()));
@@ -262,7 +262,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
 
   @Override
   public final int getIntValue(final String key, final int defaultValue) {
-    List<AttributeValue> att = this.getRecord().getAttributeValues();
+    final List<AttributeValue> att = this.getRecord().getAttributeValues();
     for (AttributeValue iterAtt : att) {
       if (iterAtt.getName().toUpperCase().equals(key)) {
         return Integer.valueOf(String.valueOf(iterAtt.getValue()));

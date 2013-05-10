@@ -39,23 +39,23 @@ public class Index {
   /**
    * Index name.
    */
-  private String name;
+  private transient String name;
   /**
    * Stored in the index.
    */
-  private boolean stored;
+  private transient boolean stored;
   /**
    * data type.
    */
-  private DataType datatype;
+  private transient DataType datatype;
   /**
    * dictinct values for a parameter considered as a parameter.
    */
-  private Map<String, Long> topTerms;
+  private transient Map<String, Long> topTerms;
   /**
    * defines if a parameter is a category. The definition of a category depends on MAX_TOP_TERMS.
    */
-  private boolean canBeCategorized;
+  private transient boolean canBeCategorized;
 
   /**
    * Returns the Solr index name.
@@ -159,10 +159,10 @@ public class Index {
      * @return the enum from its data type
      */
     public static DataType getDataTypeFromSolrDataTypeName(final String solrDataTypeName) {
-      DataType[] dataTypeArray = DataType.values();
+      final DataType[] dataTypeArray = DataType.values();
       for (int i = 0; i < dataTypeArray.length; i++) {
-        DataType dataType = dataTypeArray[i];
-        List<String> solrIndexesName = dataType.getSolrTypes();
+        final DataType dataType = dataTypeArray[i];
+        final List<String> solrIndexesName = dataType.getSolrTypes();
         for (String solrIndex : solrIndexesName) {
           if (solrIndex.equals(solrDataTypeName)) {
             return dataType;
@@ -204,7 +204,7 @@ public class Index {
    * @return Returns the population of an index
    */
   public final long getPopulation() {
-    assert (computeCanBeCategorized());
+    assert computeCanBeCategorized();
     long population = 0;
     for (String term : getTopTerms().keySet()) {
       population += getTopTerms().get(term);

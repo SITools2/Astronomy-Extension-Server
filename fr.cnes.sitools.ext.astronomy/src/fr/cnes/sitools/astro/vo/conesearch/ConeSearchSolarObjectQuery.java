@@ -20,7 +20,7 @@ package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.AbstractUtility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
@@ -50,19 +50,19 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * Query.
    */
-  private ConeSearchQuery query;
+  private transient ConeSearchQuery query;
   /**
    * Right ascension.
    */
-  private double ra;
+  private transient double rightAscension;
   /**
    * Declination.
    */
-  private double dec;
+  private transient double declination;
   /**
    * Radius in decimal degree.
    */
-  private double radius;
+  private transient double radius;
   /**
    * URL to query the WS.
    */
@@ -90,7 +90,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * True when Healpix mode is used.
    */
-  private boolean isHealpixMode;
+  private transient boolean isHealpixMode;
   /**
    * Healpix is not defined.
    */
@@ -98,11 +98,11 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * Pixel to check.
    */
-  private long pixelToCheck;
+  private transient long pixelToCheck;
   /**
    * Healpix index.
    */
-  private HealpixIndex healpixIndex;
+  private transient HealpixIndex healpixIndex;
 
   /**
    * keywords.
@@ -160,10 +160,10 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
      */
     public static ReservedWords find(final String keyword) {
       ReservedWords response = ReservedWords.NONE;
-      ReservedWords[] words = ReservedWords.values();
+      final ReservedWords[] words = ReservedWords.values();
       for (int i = 0; i < words.length; i++) {
-        ReservedWords word = words[i];
-        String reservedName = word.getName();
+        final ReservedWords word = words[i];
+        final String reservedName = word.getName();
         if (keyword.equals(reservedName)) {
           response = word;
           break;
@@ -183,8 +183,8 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    */
   public ConeSearchSolarObjectQuery(final double raVal, final double decVal, final double radiusVal, final String timeVal) {
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", timeVal));
-    this.ra = raVal;
-    this.dec = decVal;
+    this.rightAscension = raVal;
+    this.declination = decVal;
     this.radius = radiusVal;
     this.isHealpixMode = false;
     this.pixelToCheck = NOT_DEFINED;
@@ -200,13 +200,13 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    * @throws Exception Exception
    */
   public ConeSearchSolarObjectQuery(final long healpix, final int order, final String time) throws Exception {
-    int nside = (int) Math.pow(2, order);
-    double pixRes = HealpixIndex.getPixRes(nside);
+    final int nside = (int) Math.pow(2, order);
+    final double pixRes = HealpixIndex.getPixRes(nside);
     this.healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
     this.pixelToCheck = healpix;
-    Pointing pointing = healpixIndex.pix2ang(healpix);
-    this.ra = Math.toDegrees(pointing.phi);
-    this.dec = MAX_DEC - Math.toDegrees(pointing.theta);
+    final Pointing pointing = healpixIndex.pix2ang(healpix);
+    this.rightAscension = Math.toDegrees(pointing.phi);
+    this.declination = MAX_DEC - Math.toDegrees(pointing.theta);
     this.radius = pixRes * ARCSEC_2_DEG * MULT_FACT;
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", time));
     this.isHealpixMode = true;
@@ -214,12 +214,12 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
 
   @Override
   public final GeoJsonRepresentation getResponse() {
-    Map dataModel = new HashMap();
+    final Map dataModel = new HashMap();
 
-    List features = new ArrayList();
+    final List features = new ArrayList();
     List<Map<Field, String>> response;
     try {
-      response = query.getResponseAt(ra, dec, radius);
+      response = query.getResponseAt(rightAscension, declination, radius);
     } catch (Exception ex) {
       throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No data found");
     }
@@ -233,7 +233,6 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     dataModel.put("features", features);
     dataModel.put("totalResults", features.size());
     return new GeoJsonRepresentation(dataModel);
-
   }
 
   /**
@@ -243,22 +242,22 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    * @param record the records to set
    */
   protected final void parseRecord(final List features, final Map<Field, String> record) {
-    Map feature = new HashMap();
-    Map geometry = new HashMap();
-    Map properties = new HashMap();
+    final Map feature = new HashMap();
+    final Map geometry = new HashMap();
+    final Map properties = new HashMap();
     String coordinatesRa = null;
     String coordinatesDec = null;
 
-    Set<Field> fields = record.keySet();
-    Iterator<Field> iter = fields.iterator();
+    final Set<Field> fields = record.keySet();
+    final Iterator<Field> iter = fields.iterator();
     while (iter.hasNext()) {
-      Field field = iter.next();
-      String ucd = field.getUcd();
-      net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
-      String value = record.get(field);
-      if (Utility.isSet(ucd) && Utility.isSet(value) && !value.isEmpty()) {
-        Object response = Utility.getDataType(dataType, value);
-        ReservedWords ucdWord = ReservedWords.find(ucd);
+      final Field field = iter.next();
+      final String ucd = field.getUcd();
+      final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
+      final String value = record.get(field);
+      if (AbstractUtility.isSet(ucd) && AbstractUtility.isSet(value) && !value.isEmpty()) {
+        final Object response = AbstractUtility.getDataType(dataType, value);
+        final ReservedWords ucdWord = ReservedWords.find(ucd);
         switch (ucdWord) {
           case POS_EQ_RA_MAIN:
             coordinatesRa = record.get(field);
@@ -280,11 +279,11 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
             break;
         }
       } else {
-        Object response = Utility.getDataType(dataType, value);
+        final Object response = AbstractUtility.getDataType(dataType, value);
         properties.put(field.getName(), response);
       }
     }
-    AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesRa, coordinatesDec);
+    final AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesRa, coordinatesDec);
     geometry.put("coordinates", String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()));
     geometry.put("type", "Point");
     geometry.put("crs", "equatorial.ICRS");
@@ -305,16 +304,16 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   }
 
   /**
-   * Returns true when the point (ra,dec) is inside the pixel otherwise false.
+   * Returns true when the point (rightAscension,declination) is inside the pixel otherwise false.
    *
    * @param raSolarObj right ascension in degree
    * @param decSolarObj declination in degree
-   * @return true when the point (ra,dec) is inside the pixel otherwise false
+   * @return true when the point (rightAscension,declination) is inside the pixel otherwise false
    */
   private boolean isPointIsInsidePixel(final double raSolarObj, final double decSolarObj) {
     boolean result;
     try {
-      long healpixFromService = this.healpixIndex.ang2pix_nest(Math.PI / 2 - Math.toRadians(decSolarObj), Math.toRadians(raSolarObj));
+      final long healpixFromService = this.healpixIndex.ang2pix_nest(Math.PI / 2 - Math.toRadians(decSolarObj), Math.toRadians(raSolarObj));
       result = (healpixFromService == this.pixelToCheck) ? true : false;
     } catch (Exception ex) {
       result = false;

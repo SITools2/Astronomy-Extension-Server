@@ -52,14 +52,13 @@ public class NameResolverResourcePlugin extends ResourceModel {
             + " to query name resolver services. coordSystem variable is either GALACTIC or EQUATORIAL");
     setDataSetSelection(DataSetSelectionType.NONE);
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.NameResolverResource.class.getName());
-    ResourceParameter xsEnumEditable = new ResourceParameter("nameResolver",
+    final ResourceParameter xsEnumEditable = new ResourceParameter("nameResolver",
             "Select your resolver name service for avoiding to add resolverName as URL parameter",
             ResourceParameterType.PARAMETER_USER_INPUT);
     xsEnumEditable.setValue("CDS"); // default value
-    String valueTypexsEnumEditable = "xs:enum-multiple[IMCCE,CDS,IAS,ALL]";
-    xsEnumEditable.setValueType(valueTypexsEnumEditable);
+    xsEnumEditable.setValueType("xs:enum-multiple[IMCCE,CDS,IAS,ALL]");
     this.addParam(xsEnumEditable);
-    ResourceParameter epoch = new ResourceParameter("epoch", "Set an epoch for avoiding to add epoch as URL parameter",
+    final ResourceParameter epoch = new ResourceParameter("epoch", "Set an epoch for avoiding to add epoch as URL parameter",
             ResourceParameterType.PARAMETER_USER_INPUT);
     epoch.setValueType("String");
     epoch.setValue("now");

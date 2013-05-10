@@ -66,11 +66,11 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
   /**
    * Positional region where the request must be done.
    */
-  private String[] coordinates;
+  private transient String[] coordinates;
   /**
    * Radius in degree of the cone seach.
    */
-  private double radius;
+  private transient double radius;
 
   /**
    * Initialize the service and checks if the time between now and the last access is superior to 6s. When the time is inferior to 6s, an
@@ -81,8 +81,8 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
     super.doInit();
     if (!getRequest().getMethod().equals(Method.OPTIONS)) {
       if (getContext().getAttributes().containsKey("lastRequestToReverseNameResolver")) {
-        long lastTimeMilliSeconds = Long.valueOf(String.valueOf(getContext().getAttributes().get("lastRequestToReverseNameResolver")));
-        long currentTimeMilliSeconds = System.currentTimeMillis();
+        final long lastTimeMilliSeconds = Long.valueOf(String.valueOf(getContext().getAttributes().get("lastRequestToReverseNameResolver")));
+        final long currentTimeMilliSeconds = System.currentTimeMillis();
         if (currentTimeMilliSeconds - lastTimeMilliSeconds >= MAX_TIME_MILLISECONDS_BETWEEN_TWO_REQUESTS) {
           getContext().getAttributes().put("lastRequestToReverseNameResolver", currentTimeMilliSeconds);
         } else {
@@ -93,16 +93,16 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
       }
 
       if (this.getRequestAttributes().containsKey("coordinates-order")) {
-        String[] coordinatesOrder = String.valueOf(this.getRequestAttributes().get("coordinates-order")).split(";");
+        final String[] coordinatesOrder = String.valueOf(this.getRequestAttributes().get("coordinates-order")).split(";");
         try {
-          int order = Integer.valueOf(coordinatesOrder[1]);
-          double pixRes = HealpixIndex.getPixRes((long) Math.pow(2, order));
+          final int order = Integer.valueOf(coordinatesOrder[1]);
+          final double pixRes = HealpixIndex.getPixRes((long) Math.pow(2, order));
           this.radius = (pixRes > MAX_RADIUS) ? MAX_RADIUS : pixRes / 2;
           this.radius *= ARCSEC_2_DEG;
         } catch (NumberFormatException ex) {
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
         }
-        String coordinatesInput = coordinatesOrder[0];
+        final String coordinatesInput = coordinatesOrder[0];
         if (coordinatesInput.contains("+")) {
           this.coordinates = coordinatesInput.split("\\+");
           this.coordinates[0] = this.coordinates[0].replace("%20", "");
@@ -131,15 +131,15 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
   public final Representation getReverseNameResolverResponse() {
     try {
       LOG.finest(String.format("ReverseNameResolver (ra=%s,dec=%s,radius=%s)", coordinates[0], coordinates[1], radius));
-      ReverseNameResolver reverseNameResolver = new ReverseNameResolver(coordinates[0] + " " + coordinates[1], radius);
-      Map response = reverseNameResolver.getJsonResponse();
+      final ReverseNameResolver reverseNameResolver = new ReverseNameResolver(coordinates[0] + " " + coordinates[1], radius);
+      final Map response = reverseNameResolver.getJsonResponse();
       LOG.finest(String.format("Result of the reverse name resolver:%s", response.toString()));      
       Representation rep = new GeoJsonRepresentation(response);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
       rep = cache.getRepresentation();
       getResponse().setCacheDirectives(cache.getCacheDirectives());        
       if (fileName != null && !"".equals(fileName)) {
-        Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+        final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);
         rep.setDisposition(disp);
       }
@@ -170,7 +170,7 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
     info.setDocumentation("Gets the object information based on its coordinates.");
 
     // coordinates/order parameter
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("coordinates-order", true, "String", ParameterStyle.TEMPLATE,
             "coordinates and the Healpix order separated by ; (e.g.00:42:44.31 +41:16:09.4;12)"));
 
@@ -178,10 +178,10 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
     info.getRequest().setParameters(parametersInfo);
 
     // Response OK
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
     List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
-    DocumentationInfo doc = new DocumentationInfo();
+    final DocumentationInfo doc = new DocumentationInfo();
     doc.setTitle("Reverse Name Resolver representation");
     doc.setTextContent("<pre>{\n"
             + "totalResults=1,\n"
@@ -212,28 +212,28 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
     representationInfo.setDocumentation("SITools2 status error page");
     representationsInfo.add(representationInfo);
 
-    ResponseInfo responseError = new ResponseInfo();
+    final ResponseInfo responseError = new ResponseInfo();
     responseError.getRepresentations().add(representationInfo);
     responseError.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
     responseError.setDocumentation("Not foreseen error");
 
-    ResponseInfo responseBad = new ResponseInfo();
+    final ResponseInfo responseBad = new ResponseInfo();
     responseBad.getRepresentations().add(representationInfo);
     responseBad.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);
     responseBad.setDocumentation("This error happens when the user input parameters are wrong");
 
-    ResponseInfo responseNotFound = new ResponseInfo();
+    final ResponseInfo responseNotFound = new ResponseInfo();
     responseNotFound.getRepresentations().add(representationInfo);
     responseNotFound.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
     responseNotFound.setDocumentation("This error happens when no result is returned from the reverse name resolver");
 
-    ResponseInfo responseUnavailable = new ResponseInfo();
+    final ResponseInfo responseUnavailable = new ResponseInfo();
     responseUnavailable.getRepresentations().add(representationInfo);
     responseUnavailable.getStatuses().add(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
     responseUnavailable.setDocumentation("This error happens when the time between two queries is inferior to 6 seconds");
 
     // Set responses
-    List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
+    final List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
     responseInfo.add(responseOK);
     responseInfo.add(responseError);
     responseInfo.add(responseBad);

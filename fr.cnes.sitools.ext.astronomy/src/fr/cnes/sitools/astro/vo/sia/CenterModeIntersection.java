@@ -23,27 +23,21 @@ import java.util.List;
   /**
    * Constructs SQL predicat for Center mode intersection.
    */
-  public class CenterModeIntersection extends SqlGeometryConstraint {
+  public class CenterModeIntersection extends AbstractSqlGeometryConstraint {
 
     /**
      * Right ascension attribut.
      */
-    private String raCol;
+    private transient String raCol;
     /**
      * Declination attribut.
      */
-    private String decCol;
-
-    /**
-     * Empty constructor.
-     */
-    public CenterModeIntersection() {
-    }
+    private transient String decCol;
 
     @Override
     public final void setGeometry(final Object geometry) {
       if (geometry instanceof String[]) {
-        String[] geometryArray = (String[]) geometry;
+        final String[] geometryArray = (String[]) geometry;
         if (geometryArray.length != 2) {
           throw new IllegalArgumentException("geometry must be an array of two elements that contains racolName and decColName");
         } else {
@@ -61,16 +55,16 @@ import java.util.List;
         return null;
       }
       
-      List ranges = (List) computeRange();
-      List<Double[]> raRanges = (List<Double[]>) ranges.get(0);
-      double[] decRange = (double[]) ranges.get(1);
+      final List ranges = (List) computeRange();
+      final List<Double[]> raRanges = (List<Double[]>) ranges.get(0);
+      final double[] decRange = (double[]) ranges.get(1);
       String predicatDefinition;
       if (raRanges.size() == 1) {
-        Double[] raRange = raRanges.get(0);
+        final Double[] raRange = raRanges.get(0);
         predicatDefinition = String.format(" AND ( %s BETWEEN %s AND %s ) AND ( %s BETWEEN %s AND %s )", decCol, decRange[0], decRange[1], raCol, raRange[0], raRange[1]);
       } else {
-        Double[] raRange1 = raRanges.get(0);
-        Double[] raRange2 = raRanges.get(1);
+        final Double[] raRange1 = raRanges.get(0);
+        final Double[] raRange2 = raRanges.get(1);
         predicatDefinition = String.format(" AND ( %s BETWEEN %s AND %s ) AND (( %s BETWEEN %s AND %s ) OR ( %s BETWEEN %s AND %s ))", 
                                              decCol, decRange[0], decRange[1], 
                                              raCol, raRange1[0], raRange1[1], raCol, raRange2[0], raRange2[1]);

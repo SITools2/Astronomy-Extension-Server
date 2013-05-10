@@ -448,7 +448,7 @@ public class Polygon implements Shape {
   public final String toString() {
     String result = "(";
     for (Point point : points) {
-      result += String.format(" (%s , %s)", point.getLongitude(), point.getLatitude());
+      result = result.concat(String.format(" (%s , %s)", point.getLongitude(), point.getLatitude()));
     }
     return result.concat(")");
   }

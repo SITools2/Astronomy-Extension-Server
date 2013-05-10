@@ -26,7 +26,7 @@ import java.util.List;
  * Interface to define a SQL spatial constraint.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public abstract class SqlGeometryConstraint {
+public abstract class AbstractSqlGeometryConstraint {
 
   /**
    * Index where the min value of a range is located.
@@ -40,15 +40,15 @@ public abstract class SqlGeometryConstraint {
   /**
    * Size parameter given by the user.
    */
-  private double[] sizeArray = new double[2];
+  private transient double[] sizeArray = new double[2];
   /**
    * Central position along right ascension axis.
    */
-  private double raUser;
+  private transient double raUser;
   /**
    * Central position along declination axis.
    */
-  private double decUser;
+  private transient double decUser;
 
   /**
    * Sets the geometry attribute.
@@ -158,8 +158,8 @@ public abstract class SqlGeometryConstraint {
    * @return an array [List<Ra[min,max]>, Dec[min,max])
    */
   protected final Object computeRange() {
-    List<Double[]> raRange = new ArrayList<Double[]>();
-    double[] decRange = new double[2];
+    final List<Double[]> raRange = new ArrayList<Double[]>();
+    final double[] decRange = new double[2];
 
     if (this.isPolesCollision()) {
       decRange[MIN] = SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_DECLINATION;

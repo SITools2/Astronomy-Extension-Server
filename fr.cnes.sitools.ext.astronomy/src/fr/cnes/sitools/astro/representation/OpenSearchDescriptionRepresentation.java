@@ -17,6 +17,7 @@ package fr.cnes.sitools.astro.representation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -65,11 +66,11 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
   /**
    * Data model for the GeoJson representation.
    */
-  private final Map dataModel;
+  private final transient Map dataModel;
   /**
    * Template file.
    */
-  private final String ftl;
+  private final transient String ftl;
 
   /**
    * Creates an OpenSearch description representation with a template and a data model as parameters.
@@ -100,9 +101,10 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
    */
   @Override
   public final void write(final OutputStream out) throws IOException {
-        Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
+        final Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
                 + ftl).get();
-        TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, dataModel, getMediaType());
+        final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, dataModel, getMediaType());
+        LOG.log(Level.FINEST, ftl, tpl);
         out.write(tpl.getText().getBytes());
         out.flush();
   }

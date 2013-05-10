@@ -22,7 +22,7 @@ import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.AbstractUtility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
@@ -121,21 +121,20 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   /**
    * Query.
    */
-  private SIASearchQuery query;
+  private transient SIASearchQuery query;
   /**
    * User parameters.
    */
-  private OpenSearchVOSiaSearch.UserParameters userParameters;
+  private transient OpenSearchVOSiaSearch.UserParameters userParameters;
   /**
    * data model.
    */
-  private Map<Field, String> doc;
+  private transient Map<Field, String> doc;
   /**
    * Mapping keyword<-->UCD.
    */
-  private Map<String, String[]> map = new HashMap<String, String[]>() {
-    {
-      put("CD1_1", new String[]{"VOX:WCS_CDMatrix", "0"});
+  private static final transient Map<String, String[]> map = new HashMap<String, String[]>() {
+    { put("CD1_1", new String[]{"VOX:WCS_CDMatrix", "0"});
       put("CD1_2", new String[]{"VOX:WCS_CDMatrix", "1"});
       put("CD2_1", new String[]{"VOX:WCS_CDMatrix", "2"});
       put("CD2_2", new String[]{"VOX:WCS_CDMatrix", "3"});
@@ -242,11 +241,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
      */
     public static ReservedWords find(final String keyword) {
       ReservedWords response = ReservedWords.NONE;
-      if (Utility.isSet(keyword)) {
-        ReservedWords[] words = ReservedWords.values();
+      if (AbstractUtility.isSet(keyword)) {
+        final ReservedWords[] words = ReservedWords.values();
         for (int i = 0; i < words.length; i++) {
-          ReservedWords word = words[i];
-          String reservedName = word.getName();
+          final ReservedWords word = words[i];
+          final String reservedName = word.getName();
           if (keyword.equals(reservedName)) {
             response = word;
             break;
@@ -259,13 +258,13 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   /**
    * VO dictionary.
    */
-  private Map<String, VoDictionary> dico;
+  private transient Map<String, VoDictionary> dico;
 
   @Override
   public final void doInit() {
     try {
       super.doInit();
-      String url = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getModel().getParametersMap().get("siaSearchURL").getValue();
+      final String url = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getModel().getParametersMap().get("siaSearchURL").getValue();
       this.query = new SIASearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
         this.userParameters = new OpenSearchVOSiaSearch.UserParameters(getRequest().getResourceRef().getQueryAsForm());
@@ -285,47 +284,47 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @param row row to be parsed
    */
   protected final void parseRow(final List features, final Map<Field, String> row) {
-    Map geometry = new HashMap();
-    WCSTransform wcs = new WCSTransform(this);
+    final Map geometry = new HashMap();
+    final WCSTransform wcs = new WCSTransform(this);
     String format = null;
     String download = null;
-    Map properties = new HashMap();
-    Map feature = new HashMap();
-    Set<Field> fields = row.keySet();
-    Iterator<Field> fieldIter = fields.iterator();
+    final Map properties = new HashMap();
+    final Map feature = new HashMap();
+    final Set<Field> fields = row.keySet();
+    final Iterator<Field> fieldIter = fields.iterator();
     double raValue = Double.NaN;
     double decValue = Double.NaN;
 
     while (fieldIter.hasNext()) {
-      Field field = fieldIter.next();
-      String ucd = field.getUcd();
-      net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
-      String value = row.get(field);
+      final Field field = fieldIter.next();
+      final String ucd = field.getUcd();
+      final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
+      final String value = row.get(field);
 
-      if (Utility.isSet(value) && !value.isEmpty()) {
+      if (AbstractUtility.isSet(value) && !value.isEmpty()) {
         Object response;
-        ReservedWords ucdWord = ReservedWords.find(ucd);
+        final ReservedWords ucdWord = ReservedWords.find(ucd);
         switch (ucdWord) {
           case POS_EQ_RA_MAIN:
-            raValue = Utility.parseRaVO(row, field);
+            raValue = AbstractUtility.parseRaVO(row, field);
             break;
           case POS_EQ_DEC_MAIN:
-            decValue = Utility.parseDecVO(row, field);
+            decValue = AbstractUtility.parseDecVO(row, field);
             break;
           case IMAGE_TITLE:
-            response = Utility.getDataType(dataType, value);
+            response = AbstractUtility.getDataType(dataType, value);
             properties.put("identifier", response);
             break;
           case IMAGE_MJDATEOBS:
-            response = Utility.getDataType(dataType, value);
-            properties.put("date-obs", Utility.modifiedJulianDateToISO(Double.valueOf(String.valueOf(response))));
+            response = AbstractUtility.getDataType(dataType, value);
+            properties.put("date-obs", AbstractUtility.modifiedJulianDateToISO(Double.valueOf(String.valueOf(response))));
             break;
           case IMAGE_ACCESS_REFERENCE:
-            response = Utility.getDataType(dataType, value);
+            response = AbstractUtility.getDataType(dataType, value);
             download = String.valueOf(response);
             break;
           case IMAGE_FORMAT:
-            response = Utility.getDataType(dataType, value);
+            response = AbstractUtility.getDataType(dataType, value);
             format = String.valueOf(response);
             break;
           case WCS_COORD_REF_PIXEL:
@@ -342,7 +341,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             break;
           default:
             try {
-              response = Utility.getDataType(dataType, value);
+              response = AbstractUtility.getDataType(dataType, value);
               properties.put(field.getName(), response);
             } catch (NumberFormatException ex) {
               properties.put(field.getName(), value);
@@ -353,9 +352,9 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     }
 
     if (wcs.isWCS()) {
-      double[] polygonCelest = computeWcsCorner(wcs);
-      String pattern = "[[[%s,%s],[%s,%s],[%s,%s],[%s,%s],[%s,%s]]]";
-      String output = String.format(pattern, polygonCelest[P1_X], polygonCelest[P1_Y],
+      final double[] polygonCelest = computeWcsCorner(wcs);
+      final String pattern = "[[[%s,%s],[%s,%s],[%s,%s],[%s,%s],[%s,%s]]]";
+      final String output = String.format(pattern, polygonCelest[P1_X], polygonCelest[P1_Y],
               polygonCelest[P2_X], polygonCelest[P2_Y],
               polygonCelest[P3_X], polygonCelest[P3_Y],
               polygonCelest[P4_X], polygonCelest[P4_Y],
@@ -373,10 +372,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     feature.put("geometry", geometry);
     feature.put("properties", properties);
     if (hasFileToDownload(format, download)) {
-      Map downloadMap = new HashMap();
+      final Map downloadMap = new HashMap();
       downloadMap.put("url", download);
       downloadMap.put("mimetype", format);
-      Map services = new HashMap();
+      final Map services = new HashMap();
       services.put("download", downloadMap);
       feature.put("services", services);
     }
@@ -418,7 +417,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   private Set<Field> getFields(final List<Map<Field, String>> response) {
     Set<Field> fields = new HashSet<Field>();
     if (!response.isEmpty()) {
-      Map<Field, String> mapResponse = response.get(0);
+      final Map<Field, String> mapResponse = response.get(0);
       fields = mapResponse.keySet();
     }
     return fields;
@@ -431,10 +430,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @param fields keywords of the response
    */
   private void fillDictionary(final Set<Field> fields) {
-    Iterator<Field> fieldIter = fields.iterator();
+    final Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
-      Field field = fieldIter.next();
-      String description = (field.getDESCRIPTION() == null) ? null : field.getDESCRIPTION().getContent().get(0).toString();
+      final Field field = fieldIter.next();
+      final String description = (field.getDESCRIPTION() == null) ? null : field.getDESCRIPTION().getContent().get(0).toString();
       this.dico.put(field.getName(), new VoDictionary(description, field.getUnit()));
     }
   }
@@ -447,17 +446,17 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    */
   private boolean isGeometryIsInsidePixel(final Map geometry) {
     boolean result;
-    String type = String.valueOf(geometry.get("type"));
+    final String type = String.valueOf(geometry.get("type"));
     if (type.equals("Point")) {
       String coordinates = String.valueOf(geometry.get("coordinates"));
       coordinates = coordinates.replace("[", "");
       coordinates = coordinates.replace("]", "");
-      String[] coordinateArray = coordinates.split(",");
-      double ra = Double.valueOf(coordinateArray[0]);
-      double dec = Double.valueOf(coordinateArray[1]);
+      final String[] coordinateArray = coordinates.split(",");
+      final double rightAscension = Double.valueOf(coordinateArray[0]);
+      final double declination = Double.valueOf(coordinateArray[1]);
       try {
-        long healpixFromService = this.userParameters.getHealpixIndex().ang2pix_nest(Math.PI / 2 - Math.toRadians(dec),
-                Math.toRadians(ra));
+        long healpixFromService = this.userParameters.getHealpixIndex().ang2pix_nest(Math.PI / 2 - Math.toRadians(declination),
+                Math.toRadians(rightAscension));
         if (healpixFromService == this.userParameters.getHealpix()) {
           result = true;
         } else {
@@ -468,20 +467,20 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       }
 
     } else if (type.equals("Polygon")) {
-      String coordinates = String.valueOf(geometry.get("coordinates"));
-      String[] coordinateArray = coordinates.split("\\],\\[");
-      Pointing[] pointings = new Pointing[coordinateArray.length - 1];
+      final String coordinates = String.valueOf(geometry.get("coordinates"));
+      final String[] coordinateArray = coordinates.split("\\],\\[");
+      final Pointing[] pointings = new Pointing[coordinateArray.length - 1];
       for (int i = 0; i < coordinateArray.length - 1; i++) {
         coordinateArray[i] = coordinateArray[i].replace("]", "");
         coordinateArray[i] = coordinateArray[i].replace("[", "");
-        String[] skyCoordinate = coordinateArray[i].split(",");
-        double ra = Double.valueOf(skyCoordinate[0]);
-        double dec = Double.valueOf(skyCoordinate[1]);
-        Pointing pointing = new Pointing(Math.PI / 2 - Math.toRadians(dec), Math.toRadians(ra));
+        final String[] skyCoordinate = coordinateArray[i].split(",");
+        final double rightAscension = Double.valueOf(skyCoordinate[0]);
+        final double declination = Double.valueOf(skyCoordinate[1]);
+        final Pointing pointing = new Pointing(Math.PI / 2 - Math.toRadians(declination), Math.toRadians(rightAscension));
         pointings[i] = pointing;
       }
       try {
-        RangeSet range = this.userParameters.getHealpixIndex().queryPolygonInclusive(pointings, HEALPIX_RESOLUTION);
+        final RangeSet range = this.userParameters.getHealpixIndex().queryPolygonInclusive(pointings, HEALPIX_RESOLUTION);
         result = range.contains(this.userParameters.getHealpix());
       } catch (Exception ex) {
         result = false;
@@ -509,15 +508,15 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @return the position of the sky of each corner
    */
   private double[] computeWcsCorner(final WCSTransform wcs) {
-    double[] polygonCelest = new double[NUMBER_COORDINATES_POLYGON];
-    double heightPix = wcs.getHeight();
-    double widthPix = wcs.getWidth();
-    double[] polygonPix = {ORIGIN_X, heightPix + ORIGIN_Y,
+    final double[] polygonCelest = new double[NUMBER_COORDINATES_POLYGON];
+    final double heightPix = wcs.getHeight();
+    final double widthPix = wcs.getWidth();
+    final double[] polygonPix = {ORIGIN_X, heightPix + ORIGIN_Y,
       widthPix + ORIGIN_X, heightPix + ORIGIN_Y,
       widthPix + ORIGIN_X, ORIGIN_Y,
       ORIGIN_X, ORIGIN_Y};
     for (int i = 0; i < polygonPix.length; i += 2) {
-      Point2D.Double ptg = wcs.pix2wcs(polygonPix[i], polygonPix[i + 1]);
+      final Point2D.Double ptg = wcs.pix2wcs(polygonPix[i], polygonPix[i + 1]);
       polygonCelest[i] = ptg.getX();
       polygonCelest[i + 1] = ptg.getY();
     }
@@ -543,11 +542,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   @Get
   public final Representation getJsonResponse() {
     try {
-      double ra = userParameters.getRa();
-      double dec = userParameters.getDec();
-      double size = userParameters.getSize();
-      List<Map<Field, String>> response = useCacheHealpix(query, ra, dec, size, true);
-      Map dataModel = createGeoJsonDataModel(response);
+      final double rightAscension = userParameters.getRa();
+      final double declination = userParameters.getDec();
+      final double size = userParameters.getSize();
+      final List<Map<Field, String>> response = useCacheHealpix(query, rightAscension, declination, size, true);
+      final Map dataModel = createGeoJsonDataModel(response);
       Representation rep = new GeoJsonRepresentation(dataModel);
       rep = useCacheBrowser(rep, true);
       return rep;
@@ -564,9 +563,9 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @return GeoJson data model
    */
   private Map createGeoJsonDataModel(final List<Map<Field, String>> response) {
-    Map dataModel = new HashMap();
-    List features = new ArrayList();
-    Set<Field> fields = getFields(response);
+    final Map dataModel = new HashMap();
+    final List features = new ArrayList();
+    final Set<Field> fields = getFields(response);
     fillDictionary(fields);
     for (Map<Field, String> iterDoc : response) {
       this.doc = iterDoc;
@@ -587,7 +586,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   private Representation useCacheBrowser(final Representation rep, final boolean isEnabled) {
     Representation cachedRepresentation = rep;
     if (isEnabled) {
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
       getResponse().setCacheDirectives(cache.getCacheDirectives());
       cachedRepresentation = cache.getRepresentation();
     }
@@ -598,30 +597,30 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * Returns the response from the cache or from the VO service.
    *
    * @param siaQuery SIA query
-   * @param ra right ascension of the cone's center
-   * @param dec declination of the cone's center
-   * @param sr radius of the cone
+   * @param rightAscension right ascension of the cone's center
+   * @param declination declination of the cone's center
+   * @param radius radius of the cone
    * @param isEnabled cache enable or disable
    * @return the response from the cache or from the VO service
    * @throws Exception - an error occurs dwhen calling the server
    */
-  private List<Map<Field, String>> useCacheHealpix(final SIASearchQuery siaQuery, final double ra, final double dec, final double sr, final boolean isEnabled) throws Exception {
-    String applicationID = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getId();
-    String cacheID = SingletonCacheHealpixDataAccess.generateId(applicationID, String.valueOf(userParameters.getOrder()), String.valueOf(userParameters.getHealpix()));
-    CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
-    Cache cache = cacheManager.getCache("VOservices");
+  private List<Map<Field, String>> useCacheHealpix(final SIASearchQuery siaQuery, final double rightAscension, final double declination, final double radius, final boolean isEnabled) throws Exception {
+    final String applicationID = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getId();
+    final String cacheID = SingletonCacheHealpixDataAccess.generateId(applicationID, String.valueOf(userParameters.getOrder()), String.valueOf(userParameters.getHealpix()));
+    final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
+    final Cache cache = cacheManager.getCache("VOservices");
     List<Map<Field, String>> response;
     
     if (cache.isKeyInCache(cacheID) && isEnabled) {
       LOG.log(Level.INFO, "Use of the cache for ID {0}", cacheID);
       response = (List<Map<Field, String>>) cache.get(cacheID).getObjectValue();
     } else if(isEnabled) {
-      response = siaQuery.getResponseAt(ra, dec, sr);
+      response = siaQuery.getResponseAt(rightAscension, declination, radius);
       LOG.log(Level.INFO, "Caching result for ID {0}", cacheID);
-      Element element = new Element(cacheID, response);
+      final Element element = new Element(cacheID, response);
       cache.put(element);
     } else {
-      response = siaQuery.getResponseAt(ra, dec, sr);
+      response = siaQuery.getResponseAt(rightAscension, declination, radius);
     }
     return response;
   }
@@ -638,12 +637,12 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   @Override
   public final boolean findKey(final String key) {
     boolean isFound = false;
-    String[] ucdObj = map.get(key);
-    Set<Field> fields = this.doc.keySet();
-    Iterator<Field> fieldIter = fields.iterator();
+    final String[] ucdObj = map.get(key);
+    final Set<Field> fields = this.doc.keySet();
+    final Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
-      Field field = fieldIter.next();
-      String ucd = field.getUcd();
+      final Field field = fieldIter.next();
+      final String ucd = field.getUcd();
       if (ucd != null && ucdObj != null && ucdObj[0].equals(ucd)) {
         isFound = true;
         break;
@@ -655,15 +654,15 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   @Override
   public final String getStringValue(final String key) {
     String value = null;
-    String[] ucdObj = map.get(key);
-    Set<Field> fields = this.doc.keySet();
-    Iterator<Field> fieldIter = fields.iterator();
+    final String[] ucdObj = map.get(key);
+    final Set<Field> fields = this.doc.keySet();
+    final Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
-      Field field = fieldIter.next();
-      String ucd = field.getUcd();
+      final Field field = fieldIter.next();
+      final String ucd = field.getUcd();
       if (ucd != null && ucdObj != null && ucd.equals(ucdObj[0])) {
         if (ucdObj.length == 2) {
-          String fieldValue = this.doc.get(field);
+          final String fieldValue = this.doc.get(field);
           if (fieldValue != null) {
             value = fieldValue.split(" ")[Integer.valueOf(ucdObj[1])];
           }
@@ -682,43 +681,43 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
 
   @Override
   public final String getStringValue(final String key, final String defaultValue) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null) ? defaultValue : val;
   }
 
   @Override
   public final double getDoubleValue(final String key) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null || val.isEmpty()) ? 0.0 : Double.valueOf(val);
   }
 
   @Override
   public final double getDoubleValue(final String key, final double defaultValue) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null || val.isEmpty()) ? defaultValue : Double.valueOf(val);
   }
 
   @Override
   public final float getFloatValue(final String key) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null || val.isEmpty()) ? 0 : Float.valueOf(val);
   }
 
   @Override
   public final float getFloatValue(final String key, final float defaultValue) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null || val.isEmpty()) ? defaultValue : Float.valueOf(val);
   }
 
   @Override
   public final int getIntValue(final String key) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null || val.isEmpty()) ? 0 : Integer.valueOf(val);
   }
 
   @Override
   public final int getIntValue(final String key, final int defaultValue) {
-    String val = getStringValue(key);
+    final String val = getStringValue(key);
     return (val == null || val.isEmpty()) ? defaultValue : Integer.valueOf(val);
   }
 
@@ -730,15 +729,15 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     /**
      * right ascension.
      */
-    private double ra;
+    private transient double rightAscension;
     /**
      * declination.
      */
-    private double dec;
+    private transient double declination;
     /**
      * size of the ROI.
      */
-    private double size;
+    private transient double size;
     /**
      * Healpix is not defined.
      */
@@ -746,19 +745,19 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     /**
      * Healpix order.
      */
-    private int order;
+    private transient int order;
     /**
      * Healpix pixel.
      */
-    private long healpix;
+    private transient long healpix;
     /**
      * Healpix index.
      */
-    private HealpixIndex healpixIndex;
+    private transient HealpixIndex healpixIndex;
     /**
      * Healpix is used.
      */
-    private boolean isHealpixMode;
+    private transient boolean isHealpixMode;
     /**
      * One degree.
      */
@@ -797,24 +796,24 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
      * @throws Exception if user input parameters are wrong
      */
     private void computeInputChoice(final Form form) throws Exception {
-      String posInput = form.getFirstValue(SimpleImageAccessProtocolLibrary.POS);
+      final String posInput = form.getFirstValue(SimpleImageAccessProtocolLibrary.POS);
       String raInput;
       String decInput;
       if (posInput == null) {
         raInput = null;
         decInput = null;
       } else {
-        String[] pos = posInput.split(",");
+        final String[] pos = posInput.split(",");
         raInput = pos[0];
         decInput = pos[1];
       }
 
-      String sizeInput = form.getFirstValue(SimpleImageAccessProtocolLibrary.SIZE);
-      String healpixInput = form.getFirstValue("healpix");
-      String orderInput = form.getFirstValue("order");
+      final String sizeInput = form.getFirstValue(SimpleImageAccessProtocolLibrary.SIZE);
+      final String healpixInput = form.getFirstValue("healpix");
+      final String orderInput = form.getFirstValue("order");
       if (raInput != null && decInput != null && sizeInput != null) {
-        this.ra = Double.valueOf(raInput);
-        this.dec = Double.valueOf(decInput);
+        this.rightAscension = Double.valueOf(raInput);
+        this.declination = Double.valueOf(decInput);
         this.size = Double.valueOf(sizeInput);
         this.order = NOT_DEFINED;
         this.healpix = NOT_DEFINED;
@@ -823,13 +822,13 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       } else if (healpixInput != null && orderInput != null) {
         this.healpix = Long.valueOf(healpixInput);
         this.order = Integer.valueOf(orderInput);
-        int nside = (int) Math.pow(2, order);
-        double pixRes = HealpixIndex.getPixRes(nside) * ARCSEC2DEG;
+        final int nside = (int) Math.pow(2, order);
+        final double pixRes = HealpixIndex.getPixRes(nside) * ARCSEC2DEG;
         this.healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
         this.isHealpixMode = true;
-        Pointing pointing = healpixIndex.pix2ang(healpix);
-        this.ra = Math.toDegrees(pointing.phi);
-        this.dec = MAX_DEC - Math.toDegrees(pointing.theta);
+        final Pointing pointing = healpixIndex.pix2ang(healpix);
+        this.rightAscension = Math.toDegrees(pointing.phi);
+        this.declination = MAX_DEC - Math.toDegrees(pointing.theta);
         this.size = pixRes * MULT_FACT;
       } else {
         throw new Exception("wrong input parameters");
@@ -878,7 +877,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
      * @return the right ascension in degree
      */
     public final double getRa() {
-      return this.ra;
+      return this.rightAscension;
     }
 
     /**
@@ -887,7 +886,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
      * @return the declination
      */
     public final double getDec() {
-      return this.dec;
+      return this.declination;
     }
 
     /**
@@ -922,16 +921,16 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             "Healpix number"));
     parametersInfo.add(new ParameterInfo("order", true, "integer", ParameterStyle.QUERY,
             "Healpix order"));
-    ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
+    final ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
     json.setFixed("json");
     parametersInfo.add(json);
 
     info.getRequest().setParameters(parametersInfo);
 
     // represensation when the response is fine
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
 
-    DocumentationInfo documentation = new DocumentationInfo();
+    final DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("GeoJSON");
     documentation.setTextContent("<pre>{\n"
             + "totalResults: 1,\n"
@@ -955,16 +954,16 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             + "  identifier: \"HST0\"\n"
             + "}\n"
             + "}]}</pre>");
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
     representationInfo.setDocumentation(documentation);
     representationsInfo.add(representationInfo);
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);
 
     // represensation when the response is not fine
-    ResponseInfo responseNOK = new ResponseInfo();
-    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
+    final ResponseInfo responseNOK = new ResponseInfo();
+    final RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
     representationInfoError.setReference("error");
 
     responseNOK.getRepresentations().add(representationInfoError);

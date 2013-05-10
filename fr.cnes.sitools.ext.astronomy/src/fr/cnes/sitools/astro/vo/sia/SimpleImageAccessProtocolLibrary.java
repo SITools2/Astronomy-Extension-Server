@@ -130,10 +130,10 @@ public class SimpleImageAccessProtocolLibrary {
    * spoly column from pgsphere.
    */
   public static final String GEO_ATTRIBUT = "geoAttribut";
-  private DataSetApplication datasetApp;
-  private ResourceModel resourceModel;
-  private Request request;
-  private Context context;
+  private transient DataSetApplication datasetApp;
+  private transient ResourceModel resourceModel;
+  private transient Request request;
+  private transient Context context;
 
   /**
    * Maximum value of the declination axis.
@@ -209,7 +209,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public String getServiceName() {
+    public final String getServiceName() {
       return this.serviceName;
     }
   }
@@ -280,7 +280,7 @@ public class SimpleImageAccessProtocolLibrary {
      */
     public final int verbosityMode;
 
-    Verb(int verbosityMode) {
+    Verb(final int verbosityMode) {
       this.verbosityMode = verbosityMode;
     }
 
@@ -288,7 +288,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public int getVerbosityMode() {
+    public final int getVerbosityMode() {
       return this.verbosityMode;
     }
   }
@@ -316,11 +316,11 @@ public class SimpleImageAccessProtocolLibrary {
     private final String format;
 
     /**
-     * new Instance of Graphic browser
+     * new Instance of Graphic browser.
      *
      * @param format Format name.
      */
-    GraphicBrowser(String format) {
+    GraphicBrowser(final String format) {
       this.format = format;
     }
 
@@ -334,12 +334,12 @@ public class SimpleImageAccessProtocolLibrary {
     }
 
     /**
-     * Check if val is a graphic format.p
+     * Check if val is a graphic format.
      *
      * @param val Format.
      * @return Returns True when val is contained in the list of Graphic format otherwise False.
      */
-    public static boolean contains(String val) {
+    public static boolean contains(final String val) {
       for (GraphicBrowser it : GraphicBrowser.values()) {
         if (it.getFormat().equals(val)) {
           return true;
@@ -385,7 +385,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @param val format name.
      * @param formats values for this format name.
      */
-    ParamStandardFormat(String val, List<String> formats) {
+    ParamStandardFormat(final String val, final List<String> formats) {
       this.format = val;
       this.formats = formats;
     }
@@ -490,7 +490,7 @@ public class SimpleImageAccessProtocolLibrary {
      * @return Returns format names.
      */
     public static List<String> getCtes() {
-      List<String> formats = new ArrayList<String>();
+      final List<String> formats = new ArrayList<String>();
       for (ParamStandardFormat it : ParamStandardFormat.values()) {
         formats.add(it.getFormatName());
       }
@@ -589,7 +589,7 @@ public class SimpleImageAccessProtocolLibrary {
     private String defaultValue;
     private DataType dataType;
 
-    ParamStandardInput(String inputParameterName, List<ImageService> supportedImageService, String description, String defaultValue, DataType dataType) {
+    ParamStandardInput(final String inputParameterName, final List<ImageService> supportedImageService, final String description, final String defaultValue, final DataType dataType) {
       this.inputParameterName = inputParameterName;
       this.supportedImageService = supportedImageService;
       this.description = description;
@@ -601,7 +601,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public String getInputParameterName() {
+    public final String getInputParameterName() {
       return this.inputParameterName;
     }
 
@@ -609,7 +609,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public List<ImageService> getSupportedImageService() {
+    public final List<ImageService> getSupportedImageService() {
       return Collections.unmodifiableList(this.supportedImageService);
     }
 
@@ -617,7 +617,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public String getDescription() {
+    public final String getDescription() {
       return this.description;
     }
 
@@ -625,7 +625,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public String getDefaultValue() {
+    public final String getDefaultValue() {
       return this.defaultValue;
     }
 
@@ -633,7 +633,7 @@ public class SimpleImageAccessProtocolLibrary {
      *
      * @return
      */
-    public DataType getDataType() {
+    public final DataType getDataType() {
       return this.dataType;
     }
   };
@@ -664,13 +664,13 @@ public class SimpleImageAccessProtocolLibrary {
     Map dataModel;
 
     // Handling input parameters
-    DataModelInterface inputParameters = new SimpleImageAccessInputParameters(datasetApp, request, this.context, this.resourceModel);
+    final DataModelInterface inputParameters = new SimpleImageAccessInputParameters(datasetApp, request, this.context, this.resourceModel);
 
     // data model response
     if (inputParameters.getDataModel().containsKey("infos")) {
       dataModel = inputParameters.getDataModel();
     } else {
-      SimpleImageAccessDataModelInterface response = new SimpleImageAccessResponse((SimpleImageAccessInputParameters) inputParameters, resourceModel);
+      final SimpleImageAccessDataModelInterface response = new SimpleImageAccessResponse((SimpleImageAccessInputParameters) inputParameters, resourceModel);
       dataModel = response.getDataModel();
     }
     return dataModel;
@@ -682,7 +682,7 @@ public class SimpleImageAccessProtocolLibrary {
    * @return VOTable response
    */
   public final VOTableRepresentation getResponse() {
-    Map dataModel = fillDataModel();
+    final Map dataModel = fillDataModel();
     return new VOTableRepresentation(dataModel);
   }  
 }

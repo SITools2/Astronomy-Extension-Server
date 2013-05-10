@@ -29,9 +29,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONException;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -72,19 +74,19 @@ public class NameResolverResource extends SitoolsParameterizedResource {
   /**
    * Name resolver that is configured by the administrator.
    */
-  private String nameResolver;
+  private transient String nameResolver;
   /**
    * Object name as input parameter.
    */
-  private String objectName;
+  private transient String objectName;
   /**
    * Time as input parameter.
    */
-  private String epoch;
+  private transient String epoch;
   /**
    * Coordinate system as input parameter.
    */
-  private CoordinateSystem coordSystem;
+  private transient CoordinateSystem coordSystem;
 
   /**
    * Initialize the name resolver, the epoch and the object name.
@@ -95,30 +97,30 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     // Get nameResolverInterface parameter from URL
     this.nameResolver = getRequest().getResourceRef().getQueryAsForm().getFirstValue("nameResolver");
     if (this.nameResolver == null || "".equals(this.nameResolver)) {
-      ResourceParameter nameResolverParam = this.getModel().getParameterByName("nameResolver");
+      final ResourceParameter nameResolverParam = this.getModel().getParameterByName("nameResolver");
       this.nameResolver = nameResolverParam.getValue();
     }
     // Get epoch parameter from URL
     this.epoch = getRequest().getResourceRef().getQueryAsForm().getFirstValue("epoch");
     if (this.epoch == null || "".equals(this.epoch)) {
-      ResourceParameter epochParam = this.getModel().getParameterByName("epoch");
+      final ResourceParameter epochParam = this.getModel().getParameterByName("epoch");
       this.epoch = epochParam.getValue();
     }
     // Get object name
     this.objectName = Reference.decode(String.valueOf(this.getRequestAttributes().get("objectName")));
     // Get and check coordinate system
-    String cs = String.valueOf(this.getRequestAttributes().get("coordSystem"));
+    final String coordinatesSystem = String.valueOf(this.getRequestAttributes().get("coordSystem"));
     if (!getRequest().getMethod().equals(Method.OPTIONS)) {
-      if (cs.equalsIgnoreCase(CoordinateSystem.EQUATORIAL.name())) {
+      if (coordinatesSystem.equalsIgnoreCase(CoordinateSystem.EQUATORIAL.name())) {
         this.coordSystem = CoordinateSystem.EQUATORIAL;
-      } else if (cs.equalsIgnoreCase(CoordinateSystem.GALACTIC.name())) {
+      } else if (coordinatesSystem.equalsIgnoreCase(CoordinateSystem.GALACTIC.name())) {
         this.coordSystem = CoordinateSystem.GALACTIC;
       } else {
-        LOG.log(Level.WARNING, "Name resolver service - Wrong parameter: {0}", cs);
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, cs + " must be either EQUATORIAL or GALACTIC");
+        LOG.log(Level.WARNING, "Name resolver service - Wrong parameter: {0}", coordinatesSystem);
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, coordinatesSystem + " must be either EQUATORIAL or GALACTIC");
       }
       // Check if all required parameters are set
-      if (this.objectName.isEmpty() || cs.isEmpty()) {
+      if (this.objectName.isEmpty() || coordinatesSystem.isEmpty()) {
         LOG.log(Level.WARNING, "Name resolver service - Wrong parameters");
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Check your input parameters");
       }
@@ -132,19 +134,19 @@ public class NameResolverResource extends SitoolsParameterizedResource {
    */
   private Representation resolveCds() {
     LOG.finest(String.format("CDS name resolver is choosen with the following parameter %s", objectName));
-    AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);    
-    NameResolverResponse response = cds.getResponse();    
+    final AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);    
+    final NameResolverResponse response = cds.getResponse();    
     if (response.hasResult()) {
       LOG.log(Level.INFO, "CDS name resolver is selected for {0}.", objectName);
       getResponse().setStatus(Status.SUCCESS_OK);
-      List<AstroCoordinate> coordinates = response.getAstroCoordinates();
-      for (AstroCoordinate iter:coordinates) {
+      final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+      for (AstroCoordinate iter : coordinates) {
         iter.processTo(coordSystem);
       }
-      String credits = response.getCredits();
-      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());          
+      final String credits = response.getCredits();
+      final Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());          
       Representation rep = new GeoJsonRepresentation(dataModel);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
       rep = cache.getRepresentation();
       getResponse().setCacheDirectives(cache.getCacheDirectives());
       return rep;
@@ -161,19 +163,19 @@ public class NameResolverResource extends SitoolsParameterizedResource {
    */
   private Representation resolveIMCCE() {
     LOG.finest(String.format("IMCCE name resolver is choosen with the following parameter %s", objectName));
-    AbstractNameResolver imcce = new IMCCESsoResolver(objectName, epoch);
-    NameResolverResponse response = imcce.getResponse();    
+    final AbstractNameResolver imcce = new IMCCESsoResolver(objectName, epoch);
+    final NameResolverResponse response = imcce.getResponse();    
     if (response.hasResult()) {
       LOG.log(Level.INFO, "IMCCE name resolver is selected for {0}.", objectName);
       getResponse().setStatus(Status.SUCCESS_OK);
-      List<AstroCoordinate> coordinates = response.getAstroCoordinates();
-      for (AstroCoordinate iter:coordinates) {
+      final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+      for (AstroCoordinate iter : coordinates) {
         iter.processTo(coordSystem);
       }
-      String credits = response.getCredits();
-      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());            
+      final String credits = response.getCredits();
+      final Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());            
       Representation rep = new GeoJsonRepresentation(dataModel);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
       rep = cache.getRepresentation();
       getResponse().setCacheDirectives(cache.getCacheDirectives());
       return rep;
@@ -189,19 +191,19 @@ public class NameResolverResource extends SitoolsParameterizedResource {
    * @return the representation
    */
   private Representation resolveIAS() {
-    AbstractNameResolver ias = new CorotIdResolver(objectName);
-    NameResolverResponse response = ias.getResponse();
+    final AbstractNameResolver ias = new CorotIdResolver(objectName);
+    final NameResolverResponse response = ias.getResponse();
     if (response.hasResult()) {
       LOG.log(Level.INFO, "Corot name resolver is selected for {0}", objectName);
       getResponse().setStatus(Status.SUCCESS_OK);
-      List<AstroCoordinate> coordinates = response.getAstroCoordinates();
-      for (AstroCoordinate iter:coordinates) {
+      final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+      for (AstroCoordinate iter : coordinates) {
         iter.processTo(coordSystem);
       }
-      String credits = response.getCredits();
-      Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
+      final String credits = response.getCredits();
+      final Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
       Representation rep = new GeoJsonRepresentation(dataModel);
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
       rep = cache.getRepresentation();
       getResponse().setCacheDirectives(cache.getCacheDirectives());
       return rep;
@@ -218,24 +220,26 @@ public class NameResolverResource extends SitoolsParameterizedResource {
    */
   private Representation callChainedResolver() {
     Map dataModel;
-    AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
-    AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
-    AbstractNameResolver corot = new CorotIdResolver(objectName);
+    final AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
+    final AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
+    final AbstractNameResolver corot = new CorotIdResolver(objectName);
     cds.setNext(imcce);
     imcce.setNext(corot);
-    NameResolverResponse response = cds.getResponse();
+    final NameResolverResponse response = cds.getResponse();
     if (!response.hasResult()) {
       throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
     }
-    String credits = response.getCredits();    
-    List<AstroCoordinate> coordinates = response.getAstroCoordinates();
-    for (AstroCoordinate iter:coordinates) {
+    final String credits = response.getCredits();    
+    final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+    for (AstroCoordinate iter : coordinates) {
       iter.processTo(coordSystem);
     }
     dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
     Representation rep = new GeoJsonRepresentation(dataModel);
-    CacheBrowser.CacheDirectiveBrowser cacheDirective = (credits.equals("IMCCE")) ? CacheBrowser.CacheDirectiveBrowser.NO_CACHE : CacheBrowser.CacheDirectiveBrowser.FOREVER;    
-    CacheBrowser cache = CacheBrowser.createCache(cacheDirective, rep);
+    final CacheBrowser.CacheDirectiveBrowser cacheDirective = (credits.equals("IMCCE"))
+                                                               ? CacheBrowser.CacheDirectiveBrowser.NO_CACHE
+                                                               : CacheBrowser.CacheDirectiveBrowser.FOREVER;    
+    final CacheBrowser cache = CacheBrowser.createCache(cacheDirective, rep);
     rep = cache.getRepresentation();
     getResponse().setCacheDirectives(cache.getCacheDirectives());     
     return rep;
@@ -260,7 +264,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
       rep = callChainedResolver();
     }
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -278,26 +282,26 @@ public class NameResolverResource extends SitoolsParameterizedResource {
    */
   private Map getDataModel(final String name, final List<AstroCoordinate> astroList, final String referenceFrame) {
 
-    Map dataModel = new HashMap();
-    List<Map> features = new ArrayList<Map>();
-    int i = 0;
+    final Map dataModel = new HashMap();
+    final ArrayList<Map> features = new ArrayList<Map>();
+    int index = 0;
+    final Map feature = new HashMap();
+    final Map properties = new HashMap();
+    final Map geometry = new HashMap();
     for (AstroCoordinate astroIter : astroList) {
-      Map feature = new HashMap();
-
-      Map properties = new HashMap();
-      properties.put("identifier", name.concat(String.valueOf(i++)));
+      feature.clear();
+      properties.clear();
+      geometry.clear();
+      properties.put("identifier", name.concat(String.valueOf(index++)));
       properties.put("credits", name);
-      Map<String, String> metadata = astroIter.getMatadata();
-      Set<String> keys = metadata.keySet();
-      Iterator<String> keyIter = keys.iterator();
-      while (keyIter.hasNext()) {
-        String key = keyIter.next();
-        properties.put(key, metadata.get(key));
+      final Map<String, String> metadata = astroIter.getMatadata();
+      final Set<Entry<String, String>> entries = metadata.entrySet();
+      final Iterator<Entry<String, String>> iter = entries.iterator();
+      while (iter.hasNext()) {
+          final Entry<String, String> entry = iter.next();
+          properties.put(entry.getKey(), entry.getValue());
       }
-
-      feature.put("properties", properties);
-
-      Map geometry = new HashMap();
+      feature.put("properties", properties);     
       geometry.put("type", "Point");
       geometry.put("coordinates", String.format("[%s,%s]", astroIter.getRaAsDecimal(), astroIter.getDecAsDecimal()));
       geometry.put("crs", (CoordinateSystem.EQUATORIAL.name().equals(referenceFrame)) ? CoordinateSystem.EQUATORIAL.name().concat(".ICRS") : CoordinateSystem.GALACTIC.name());
@@ -330,52 +334,52 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     info.setDocumentation("Get the object's coordinates from its name and time for planets.");
 
     // objecName parameter
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("objectName", true, "String", ParameterStyle.TEMPLATE,
             "Object name to resolve"));
 
     // reference frame parameter
-    ParameterInfo paramCoordSys = new ParameterInfo("coordSystem", true, "String", ParameterStyle.TEMPLATE,
+    final ParameterInfo paramCoordSys = new ParameterInfo("coordSystem", true, "String", ParameterStyle.TEMPLATE,
             "Coordinate system in which the output is formated");
-    List<OptionInfo> coordsysOption = new ArrayList<OptionInfo>();
-    OptionInfo optionEquatorial = new OptionInfo("Equatorial system in ICRS");
+    final List<OptionInfo> coordsysOption = new ArrayList<OptionInfo>();
+    final OptionInfo optionEquatorial = new OptionInfo("Equatorial system in ICRS");
     optionEquatorial.setValue(CoordinateSystem.EQUATORIAL.name());
     coordsysOption.add(optionEquatorial);
-    OptionInfo optionGalactic = new OptionInfo("Galactic system");
+    final OptionInfo optionGalactic = new OptionInfo("Galactic system");
     optionGalactic.setValue(CoordinateSystem.GALACTIC.name());
     coordsysOption.add(optionGalactic);
     paramCoordSys.setOptions(coordsysOption);
     parametersInfo.add(paramCoordSys);
 
     // Name resolver parameter
-    ParameterInfo nameResolverParam = new ParameterInfo("nameResolver", false, "String", ParameterStyle.QUERY,
+    final ParameterInfo nameResolverParam = new ParameterInfo("nameResolver", false, "String", ParameterStyle.QUERY,
             "The selected name resolver");
-    List<OptionInfo> nameResolverOption = new ArrayList<OptionInfo>();
-    OptionInfo optionCDS = new OptionInfo("The CDS name resolver based on SIMBAD and NED");
+    final List<OptionInfo> nameResolverOption = new ArrayList<OptionInfo>();
+    final OptionInfo optionCDS = new OptionInfo("The CDS name resolver based on SIMBAD and NED");
     optionCDS.setValue("CDS");
     nameResolverOption.add(optionCDS);
-    OptionInfo optionIAS = new OptionInfo("The IAS name resolver for Corot");
+    final OptionInfo optionIAS = new OptionInfo("The IAS name resolver for Corot");
     optionIAS.setValue("IAS");
     nameResolverOption.add(optionIAS);
     nameResolverParam.setOptions(nameResolverOption);
-    OptionInfo optionIMCCE = new OptionInfo("The IMCEE name resolver for solar system bodies");
+    final OptionInfo optionIMCCE = new OptionInfo("The IMCEE name resolver for solar system bodies");
     optionIMCCE.setValue("IMCCE");
     nameResolverOption.add(optionIMCCE);
     nameResolverParam.setOptions(nameResolverOption);
-    OptionInfo optionAll = new OptionInfo("Query all name resolvers");
+    final OptionInfo optionAll = new OptionInfo("Query all name resolvers");
     optionAll.setValue("ALL");
     nameResolverOption.add(optionAll);
-    String nameResolverFromModel = this.getModel().getParameterByName("nameResolver").getValue();
-    String defaultNameResolver = (nameResolverFromModel != null && !nameResolverFromModel.isEmpty()) ? nameResolverFromModel
+    final String nameResolverFromModel = this.getModel().getParameterByName("nameResolver").getValue();
+    final String defaultNameResolver = (nameResolverFromModel != null && !nameResolverFromModel.isEmpty()) ? nameResolverFromModel
             : "CDS";
     nameResolverParam.setDefaultValue(defaultNameResolver);
     parametersInfo.add(nameResolverParam);
 
     // Time frame for IMCCE
-    ParameterInfo time = new ParameterInfo("epoch", false, "String", ParameterStyle.QUERY,
+    final ParameterInfo time = new ParameterInfo("epoch", false, "String", ParameterStyle.QUERY,
             "Time frame for IMCCE name resolver. See documentation from IMCCE");
-    String timeFromModel = this.getModel().getParameterByName("epoch").getValue();
-    String defaultTime = (timeFromModel != null && !timeFromModel.isEmpty()) ? timeFromModel : "now";
+    final String timeFromModel = this.getModel().getParameterByName("epoch").getValue();
+    final String defaultTime = (timeFromModel != null && !timeFromModel.isEmpty()) ? timeFromModel : "now";
     time.setDefaultValue(defaultTime);
     parametersInfo.add(time);
 
@@ -383,10 +387,10 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     info.getRequest().setParameters(parametersInfo);
 
     // Response OK
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
     List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
-    DocumentationInfo doc = new DocumentationInfo();
+    final DocumentationInfo doc = new DocumentationInfo();
     doc.setTitle("Name Resolver representation");
     doc.setTextContent("<pre>{\n"
             + "totalResults: 1,\n"
@@ -418,28 +422,28 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     representationInfo.setDocumentation("SITools2 status error page");
     representationsInfo.add(representationInfo);
 
-    ResponseInfo responseError = new ResponseInfo();
+    final ResponseInfo responseError = new ResponseInfo();
     responseError.getRepresentations().add(representationInfo);
     responseError.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
     responseError.setDocumentation("Unexpected error");
 
-    ResponseInfo responseBad = new ResponseInfo();
+    final ResponseInfo responseBad = new ResponseInfo();
     responseBad.getRepresentations().add(representationInfo);
     responseBad.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);
     responseBad.setDocumentation(Status.CLIENT_ERROR_BAD_REQUEST.getDescription() + "- coordinate system is unknown");
 
-    ResponseInfo responseNotFound = new ResponseInfo();
+    final ResponseInfo responseNotFound = new ResponseInfo();
     responseNotFound.getRepresentations().add(representationInfo);
     responseNotFound.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
     responseNotFound.setDocumentation("object not found.");
 
-    ResponseInfo responseUnavailable = new ResponseInfo();
+    final ResponseInfo responseUnavailable = new ResponseInfo();
     responseUnavailable.getRepresentations().add(representationInfo);
     responseUnavailable.getStatuses().add(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
     responseUnavailable.setDocumentation(Status.SERVER_ERROR_SERVICE_UNAVAILABLE.getDescription());
 
     // Set responses
-    List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
+    final List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
     responseInfo.add(responseOK);
     responseInfo.add(responseError);
     responseInfo.add(responseBad);

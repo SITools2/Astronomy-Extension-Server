@@ -37,7 +37,6 @@ import fr.cnes.sitools.astro.resolver.CDSNameResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
 import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
-import fr.cnes.sitools.astro.vo.conesearch.USNO_B1Query;
 import fr.cnes.sitools.common.SitoolsSettings;
 import healpix.core.Healpix;
 import healpix.essentials.HealpixBase;
@@ -112,7 +111,15 @@ public class Invoker {
     //HealpixMoc mocA = new HealpixMoc();
     //mocA.add(mocJson);
 //        int order = 3;
-    //Graph graph = new GenericProjection(Graph.ProjectionType.SINU); 
+    Graph graph = new GenericProjection(Graph.ProjectionType.AITOFF); 
+    graph = new HealpixGridDecorator(graph, Scheme.RING, 4);
+    ((HealpixGridDecorator)graph).setColor(Color.RED);
+    //graph = new CoordinateDecorator(graph);
+    //graph = new CircleDecorator(graph, 0, 0, 10, Scheme.RING, 4);
+    //((CircleDecorator)graph).setColor(Color.BLUE);
+    // graph = new CircleDecorator(graph, 0, 80, 20, Scheme.RING, 4);
+    //((CircleDecorator)graph).setColor(Color.gray);     
+    Utility.createJFrame(graph, 200);
     //graph = new ImageBackGroundDecorator(graph, new File("/home/malapert/Documents/Equirectangular-projection.jpg"));
 
     //graph = new HealpixDensityMapDecorator(graph, Scheme.RING, 4, 0.5f);    
@@ -208,30 +215,30 @@ public class Invoker {
 //      }
 
 
-        String[] args1 = new String[1];
-        
-        args1[0] = SITOOLS_MAIN_CLASS; 
-        args = args1;
-        if (args.length != 1) {
-            System.err.println("Sitools Main class is not set");
-            System.exit(1);
-        }
-
-        Class[] argTypes = new Class[1];
-        argTypes[0] = String[].class;
-        try {
-            Method mainMethod = Class.forName(args[0]).getDeclaredMethod("main", argTypes);
-            Object[] argListForInvokedMain = new Object[1];
-            argListForInvokedMain[0] = new String[0];
-            mainMethod.invoke(null,argListForInvokedMain);            
-        } catch (ClassNotFoundException ex) {
-            System.err.println("Class " + args[0] + "not found in classpath.");
-        } catch (NoSuchMethodException ex) {
-            System.err.println("Class " + args[0] + "does not define public static void main(String[])");
-        } catch (InvocationTargetException ex) {
-            System.err.println("Exception while executing " + args[0] + ":" + ex.getTargetException());
-        } catch (IllegalAccessException ex) {
-            System.err.println("main(String[]) in class " + args[0] + " is not public");
-        }
+//        String[] args1 = new String[1];
+//        
+//        args1[0] = SITOOLS_MAIN_CLASS; 
+//        args = args1;
+//        if (args.length != 1) {
+//            System.err.println("Sitools Main class is not set");
+//            System.exit(1);
+//        }
+//
+//        Class[] argTypes = new Class[1];
+//        argTypes[0] = String[].class;
+//        try {
+//            Method mainMethod = Class.forName(args[0]).getDeclaredMethod("main", argTypes);
+//            Object[] argListForInvokedMain = new Object[1];
+//            argListForInvokedMain[0] = new String[0];
+//            mainMethod.invoke(null,argListForInvokedMain);            
+//        } catch (ClassNotFoundException ex) {
+//            System.err.println("Class " + args[0] + "not found in classpath.");
+//        } catch (NoSuchMethodException ex) {
+//            System.err.println("Class " + args[0] + "does not define public static void main(String[])");
+//        } catch (InvocationTargetException ex) {
+//            System.err.println("Exception while executing " + args[0] + ":" + ex.getTargetException());
+//        } catch (IllegalAccessException ex) {
+//            System.err.println("main(String[]) in class " + args[0] + " is not public");
+//        }
   }
 }

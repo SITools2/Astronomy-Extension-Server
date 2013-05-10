@@ -47,39 +47,39 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
   /**
    * Init value for right ascension parameter of the user input.
    */
-  private double ra = 0.0;
+  private transient double ra = 0.0;
   /**
    * Init value for declination parameter of the user input.
    */
-  private double dec = 0.0;
+  private transient double dec = 0.0;
   /**
    * Array that stores the size parameter of the user input.
    */
-  private double[] size;
+  private transient double[] size;
   /**
    * Default value for the verb parameter of the user input.
    */
-  private int verb = 0;
+  private transient int verb = 0;
   /**
    * Data model that stores the metadata response of the service.
    */
-  private Map dataModel = new HashMap();
+  private final transient Map dataModel = new HashMap();
   /**
    * Request.
    */
-  private Request request;
+  private final transient Request request;
   /**
    * Context.
    */
-  private Context context;
+  private final transient Context context;
   /**
    * Application where this resources is linked.
    */
-  private DataSetApplication datasetApp;
+  private final transient DataSetApplication datasetApp;
   /**
    * Configuration parameters of this resource.
    */
-  private ResourceModel resourceModel;
+  private final transient ResourceModel resourceModel;
 
   /**
    * Constructs the objet that returns the metadata of the service.
@@ -93,11 +93,11 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
     this.context = contextVal;
     this.request = requestVal;
     this.resourceModel = resourceModelVal;
-    String posInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.POS);
-    String sizeInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.SIZE);
-    String format = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.FORMAT);
-    String intersect = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.INTERSECT);
-    String verbosity = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.VERB);
+    final String posInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.POS);
+    final String sizeInput = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.SIZE);
+    final String format = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.FORMAT);
+    final String intersect = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.INTERSECT);
+    final String verbosity = this.request.getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.VERB);
     //TODO check the differentParameters
     if (Util.isSet(format) && format.equals(SimpleImageAccessProtocolLibrary.ParamStandardFormat.METADATA.name())) {
       fillMetadataFormat();
@@ -112,14 +112,14 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
   private void fillMetadataFormat() {
     this.dataModel.put("description", this.resourceModel.getParameterByName(SimpleImageAccessProtocolLibrary.DESCRIPTION).getValue());
 
-    Info info = new Info();
+    final Info info = new Info();
     info.setName("QUERY_STATUS");
     info.setValueAttribute("OK");
-    List<Info> listInfos = new ArrayList<Info>();
+    final List<Info> listInfos = new ArrayList<Info>();
     listInfos.add(info);
     this.dataModel.put("infos", listInfos);
 
-    List<Param> listParam = new ArrayList<Param>();
+    final List<Param> listParam = new ArrayList<Param>();
     Param param = new Param();
     param.setName("INPUT:POS");
     param.setValue("0,0");
@@ -146,10 +146,10 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
     anyText = new AnyTEXT();
     anyText.getContent().add("Requested format of images.");
     param.setDESCRIPTION(anyText);
-    List<String> formatList = SimpleImageAccessProtocolLibrary.ParamStandardFormat.getCtes();
-    Values values = new Values();
+    final List<String> formatList = SimpleImageAccessProtocolLibrary.ParamStandardFormat.getCtes();
+    final Values values = new Values();
     for (String formatIter : formatList) {
-      Option option = new Option();
+      final Option option = new Option();
       option.setValue(formatIter);
       values.getOPTION().add(option);
     }
@@ -184,24 +184,24 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
    * @param sizeInput input parameter for SIZE
    */
   private void checkInputParameters(final String posInput, final String sizeInput) {
-    List<Info> infos = new ArrayList<Info>();
+    final List<Info> infos = new ArrayList<Info>();
 
     if (!Util.isSet(posInput)) {
-      Info info = new Info();
+      final Info info = new Info();
       info.setID("POS");
       info.setName("Error in POS");
       info.setValueAttribute("POS must be set");
       infos.add(info);
       this.datasetApp.getLogger().log(Level.WARNING, "POS must be set");
     } else {
-      String[] coord = posInput.split(",");
+      final String[] coord = posInput.split(",");
 
       try {
         if (coord.length != 2) {
-          throw new Exception("Wrong argument number for POS");
+          throw new SimpleImageAccessException("Wrong argument number for POS");
         }
-      } catch (Exception ex) {
-        Info info = new Info();
+      } catch (SimpleImageAccessException ex) {
+        final Info info = new Info();
         info.setID("POS");
         info.setName("Error in POS");
         info.setValueAttribute("Error in input POS: " + ex.getMessage());
@@ -212,11 +212,11 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
       try {
         this.ra = Double.valueOf(coord[0]);
         if (this.ra > SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_RIGHT_ASCENSION || this.ra < SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_RIGHT_ASCENSION) {
-          throw new Exception(this.ra + " for RA parameter is not allowed. RA must be in [0,360]");
+          throw new SimpleImageAccessException(this.ra + " for RA parameter is not allowed. RA must be in [0,360]");
         }
         this.datasetApp.getLogger().log(Level.FINEST, "RA: {0}", coord[0]);
-      } catch (Exception ex) {
-        Info info = new Info();
+      } catch (SimpleImageAccessException ex) {
+        final Info info = new Info();
         info.setID("RA");
         info.setName("Error in RA");
         info.setValueAttribute("Error in input RA: " + ex.getMessage());
@@ -227,11 +227,11 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
       try {
         this.dec = Double.valueOf(coord[1]);
         if (this.dec > SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_DECLINATION || this.dec < SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_DECLINATION) {
-          throw new Exception(this.dec + " for DEC parameter is not allowed. DEC must be in [-90,90]");
+          throw new SimpleImageAccessException(this.dec + " for DEC parameter is not allowed. DEC must be in [-90,90]");
         }
         this.datasetApp.getLogger().log(Level.FINEST, "DEC: {0}", coord[1]);
-      } catch (Exception ex) {
-        Info info = new Info();
+      } catch (SimpleImageAccessException ex) {
+        final Info info = new Info();
         info.setID("DEC");
         info.setName("Error in DEC");
         info.setValueAttribute("Error in input DEC: " + ex.getMessage());
@@ -241,7 +241,7 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
     }
 
     if (!Util.isSet(sizeInput)) {
-      Info info = new Info();
+      final Info info = new Info();
       info.setID("SIZE");
       info.setName("Error in SIZE");
       info.setValueAttribute("SIZE must be set");
@@ -250,9 +250,9 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
     } else {
 
       try {
-        String[] sizeBbox = sizeInput.split(",");
+        final String[] sizeBbox = sizeInput.split(",");
         if (sizeBbox.length != 1 && sizeBbox.length != 2) {
-          throw new Exception("Wrong argument number for SIZE ");
+          throw new SimpleImageAccessException("Wrong argument number for SIZE ");
         } else if (sizeBbox.length == 1) {
           this.size = new double[1];
           this.size[0] = Double.valueOf(sizeBbox[0]);
@@ -261,8 +261,8 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
           this.size[0] = Double.valueOf(sizeBbox[0]);
           this.size[1] = Double.valueOf(sizeBbox[1]);
         }
-      } catch (Exception ex) {
-        Info info = new Info();
+      } catch (SimpleImageAccessException ex) {
+        final Info info = new Info();
         info.setID("SIZE");
         info.setName("Error in SIZE");
         info.setValueAttribute("Error in input SIZE: " + ex.getMessage());

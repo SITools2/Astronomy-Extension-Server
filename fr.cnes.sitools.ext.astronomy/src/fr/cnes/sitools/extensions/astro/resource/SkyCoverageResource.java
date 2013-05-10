@@ -1,14 +1,14 @@
 /*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file is part of SITools2
+ * This file inputStream part of SITools2
  * 
- * This program is free software: you can redistribute it and/or modify
+ * This program inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This program inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -24,7 +24,7 @@ import fr.cnes.sitools.astro.graph.GenericProjection;
 import fr.cnes.sitools.astro.graph.Graph;
 import fr.cnes.sitools.astro.graph.HealpixGridDecorator;
 import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
-import fr.cnes.sitools.astro.representation.FitsRepresentation;
+import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
 import fr.cnes.sitools.astro.representation.PngRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.util.ClientResourceProxy;
@@ -70,23 +70,23 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
    */
   private static final int FITS_BUFFER = 32 * FITS_BLOCK;
   /**
-   * Transforms the value of the sky coverage in percent. This constant is used when the TXT representation is called
+   * Transforms the value of the sky coverage in percent. This constant inputStream used when the TXT representation inputStream called
    */
   private static final int NORMALIZE_TO_PERCENT = 100;
   /**
-   * Default opacity (0.1) for coodinates. This constant is used when the PNG representation is called
+   * Default opacity (0.1) for coodinates. This constant inputStream used when the PNG representation inputStream called
    */
   private static final float DEFAULT_OPACITY_COORDINATES = 0.1f;
   /**
-   * Default opacity (1.0) for MOC. This constant is used when the PNG representation is called
+   * Default opacity (1.0) for MOC. This constant inputStream used when the PNG representation inputStream called
    */
   private static final float DEFAULT_OPACITY_MOC = 1.0f;
   /**
-   * Default PNG width. This constant is used when the PNG representation is called
+   * Default PNG width. This constant inputStream used when the PNG representation inputStream called
    */
   private static final int DEFAULT_GRAPH_WIDTH = 800;
   /**
-   * Default PNG height. This constant is used when the PNG representation is called
+   * Default PNG height. This constant inputStream used when the PNG representation inputStream called
    */
   private static final int DEFAULT_GRAPH_HEIGHT = 400;
   /**
@@ -118,8 +118,8 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
     getVariants().add(new Variant(MediaType.valueOf("fits")));
     getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     getVariants().add(new Variant(MediaType.IMAGE_PNG));
-    String mocs = getRequest().getResourceRef().getQueryAsForm().getFirstValue(SkyCoverageResourcePlugin.INPUT_PARAMETER);
-    String[] mocArray = mocs.split(";");
+    final String mocs = getRequest().getResourceRef().getQueryAsForm().getFirstValue(SkyCoverageResourcePlugin.INPUT_PARAMETER);
+    final String[] mocArray = mocs.split(";");
     if (!getRequest().getMethod().equals(Method.OPTIONS)) {
       try {
         procesSkyCoverage(mocArray);
@@ -134,14 +134,14 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
    * Computes the sky coverage with a list of MOC's URLs and stores the result in moc variable.
    *
    * @param mocArray List of MOC's URL.
-   * @throws Exception if an error occurs during the Healpix processing, if the URL is malformed or if an error occurs when getting the
+   * @throws Exception if an error occurs during the Healpix processing, if the URL inputStream malformed or if an error occurs when getting the
    * result as a stream
    */
   protected final void procesSkyCoverage(final String[] mocArray) throws Exception {
-    String firstMoc = mocArray[0];
+    final String firstMoc = mocArray[0];
     HealpixMoc mocA = readMoc(firstMoc);
     for (int i = 1; i < mocArray.length; i++) {
-      HealpixMoc mocB = readMoc(mocArray[i]);
+      final HealpixMoc mocB = readMoc(mocArray[i]);
       mocA = mocA.intersection(mocB);
     }
     this.setMoc(mocA);
@@ -155,21 +155,21 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
    * @throws Exception if an error occurs during the Healpix processing or when getting the stream
    */
   protected final HealpixMoc readMoc(final String mocUrl) throws Exception {
-    ClientResourceProxy client = new ClientResourceProxy(mocUrl, Method.GET);
-    Representation rep = client.getClientResource().get(MediaType.valueOf("image/fits"));
-    InputStream is = rep.getStream();
-    BufferedInputStream bis = new BufferedInputStream(is, FITS_BUFFER);
+    final ClientResourceProxy client = new ClientResourceProxy(mocUrl, Method.GET);
+    final Representation rep = client.getClientResource().get(MediaType.valueOf("image/fits"));
+    final InputStream inputStream = rep.getStream();
+    final BufferedInputStream bis = new BufferedInputStream(inputStream, FITS_BUFFER);
     return new HealpixMoc(bis, HealpixMoc.FITS);
   }
 
   /**
    * Expresses the sky coverage in percent.
    *
-   * @param d sky coverage from 0 to 1
+   * @param skyCoverageArea sky coverage from 0 to 1
    * @return the sky coverage in percent
    */
-  private String percent(final double d) {
-    return NORMALIZE_TO_PERCENT * d + "%";
+  private String percent(final double skyCoverageArea) {
+    return NORMALIZE_TO_PERCENT * skyCoverageArea + "%";
   }
 
   /**
@@ -179,9 +179,9 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
    */
   @Get("txt")
   public final Representation getCoverage() {
-    Representation rep = new StringRepresentation(percent(this.getMoc().getCoverage()), MediaType.TEXT_PLAIN);
+    final Representation rep = new StringRepresentation(percent(this.getMoc().getCoverage()), MediaType.TEXT_PLAIN);
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -202,7 +202,7 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
       rep = new JsonRepresentation(getMoc().toString());
     }
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -216,9 +216,9 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
    */
   @Get("fits")
   public final Representation getFitsResult() {
-    Representation rep = new FitsRepresentation("skyCoverage.fits", getMoc());
+    final Representation rep = new FitsMocRepresentation("skyCoverage.fits", getMoc());
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -247,9 +247,9 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
       }
     }
 
-    Representation rep = new PngRepresentation(graph, getPngWidth(), getPngHeight());
+    final Representation rep = new PngRepresentation(graph, getPngHeight());
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -360,23 +360,23 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
 
     info.getResponse().getStatuses().add(Status.SUCCESS_OK);
 
-    DocumentationInfo documentationJson = new DocumentationInfo();
+    final DocumentationInfo documentationJson = new DocumentationInfo();
     documentationJson.setTitle("Sky coverage in  JSON");
     documentationJson.setTextContent("Returns the sky coverage as a MOC in JSON");
 
-    DocumentationInfo documentationPng = new DocumentationInfo();
+    final DocumentationInfo documentationPng = new DocumentationInfo();
     documentationPng.setTitle("Sky coverage in PNG");
     documentationPng.setTextContent("Returns the sky coverage as a PNG file");
 
-    DocumentationInfo documentationTxt = new DocumentationInfo();
+    final DocumentationInfo documentationTxt = new DocumentationInfo();
     documentationTxt.setTitle("Sky coverage in TXT");
     documentationTxt.setTextContent("Returns the sky coverage as a percent of the full sky");
 
-    DocumentationInfo documentationFits = new DocumentationInfo();
+    final DocumentationInfo documentationFits = new DocumentationInfo();
     documentationFits.setTitle("Sky coverage in FITS");
     documentationFits.setTextContent("Returns the sky coverage as a FITS");
 
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
     representationInfo.setDocumentation(documentationJson);
     representationsInfo.add(representationInfo);

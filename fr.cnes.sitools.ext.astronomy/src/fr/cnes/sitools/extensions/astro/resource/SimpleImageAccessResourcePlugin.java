@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -63,73 +63,69 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     // and we do not want to see it in the web user interface
     this.setDataSetSelection(DataSetSelectionType.NONE);
 
-    ResourceParameter dictionary = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY,
+    final ResourceParameter dictionary = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY,
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
     addParam(dictionary);
         
-    ResourceParameter intersect = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT,
+    final ResourceParameter intersect = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT,
             "how matched images should intersect the region of interest",
             ResourceParameterType.PARAMETER_INTERN);
-    String intersectEnum = "xs:enum[CENTER, OVERLAPS]";
     //String intersectEnum = "xs:enum[COVERS, ENCLOSED, CENTER, OVERLAPS]";
-    intersect.setValueType(intersectEnum);
+    intersect.setValueType("xs:enum[CENTER, OVERLAPS]");
     intersect.setValue("OVERLAPS");
     addParam(intersect);
     
-   ResourceParameter geoAttribut = new ResourceParameter(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT,
+   final ResourceParameter geoAttribut = new ResourceParameter(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT,
             "Geographical attribut for OVERLAPS mode. The geographical attribut must be spoly datatype from pgsphere",
             ResourceParameterType.PARAMETER_INTERN);    
     geoAttribut.setValueType("xs:dataset.columnAlias");    
     addParam(geoAttribut);    
 
-    ResourceParameter verb = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.VERB,
+    final ResourceParameter verb = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.VERB,
             "Verbosity determines how many columns are to be returned in the resulting table",
             ResourceParameterType.PARAMETER_INTERN);
-    String verbEnum = "xs:enum[0, 1, 2, 3]";
-    verb.setValueType(verbEnum);
+    verb.setValueType("xs:enum[0, 1, 2, 3]");
     verb.setValue("1");
     addParam(verb);
 
 
-    ResourceParameter responsibleParty = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.RESPONSIBLE_PARTY,
+    final ResourceParameter responsibleParty = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.RESPONSIBLE_PARTY,
             "The data provider's name and email", ResourceParameterType.PARAMETER_INTERN);
     addParam(responsibleParty);
 
-    ResourceParameter serviceName = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.SERVICE_NAME,
+    final ResourceParameter serviceName = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.SERVICE_NAME,
             "The name of the service",
             ResourceParameterType.PARAMETER_INTERN);
-    String serviceNameEnum = "xs:enum[Image Cutout Service, Image Mosaicing Service, Atlas Image Archive, Pointed Image Archive]";
-    serviceName.setValueType(serviceNameEnum);
+    serviceName.setValueType("xs:enum[Image Cutout Service, Image Mosaicing Service, Atlas Image Archive, Pointed Image Archive]");
     serviceName.setValue("Pointed Image Archive");
     addParam(serviceName);
 
-    ResourceParameter description = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DESCRIPTION,
+    final ResourceParameter description = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DESCRIPTION,
             "A couple of paragraphs of text that describe the nature of the service and its wider context",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(description);
 
-    ResourceParameter instrument = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INSTRUMENT,
+    final ResourceParameter instrument = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INSTRUMENT,
             "The instrument that made the observations, for example STScI.HST.WFPC2",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(instrument);
 
-    ResourceParameter waveband = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.WAVEBAND,
+    final ResourceParameter waveband = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.WAVEBAND,
             "The waveband of the observations", ResourceParameterType.PARAMETER_INTERN);
-    String waveBandEnum = "xs:enum[radio, millimeter, infrared, optical, ultraviolet, xray, gammaray]";
-    waveband.setValueType(waveBandEnum);
+    waveband.setValueType("xs:enum[radio, millimeter, infrared, optical, ultraviolet, xray, gammaray]");
     addParam(waveband);
 
 
-    ResourceParameter coverage = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.COVERAGE,
+    final ResourceParameter coverage = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.COVERAGE,
             "The coverage on the sky, as a free-form string", ResourceParameterType.PARAMETER_INTERN);
     addParam(coverage);
 
-    ResourceParameter temporal = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.TEMPORAL,
+    final ResourceParameter temporal = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.TEMPORAL,
             "The temporal coverage, as a free-form string", ResourceParameterType.PARAMETER_INTERN);
     addParam(temporal);
 
-    ResourceParameter maxQuerySize = new ResourceParameter(
+    final ResourceParameter maxQuerySize = new ResourceParameter(
             fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.MAX_QUERY_SIZE,
             "The largest search area, given in decimal degrees, that will be accepted by the service without returning an error condition."
             + " A value of 64800 indicates that there is no restriction",
@@ -137,20 +133,20 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     maxQuerySize.setValue("64800");
     addParam(maxQuerySize);
 
-    ResourceParameter maxImageSize = new ResourceParameter(
+    final ResourceParameter maxImageSize = new ResourceParameter(
             fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.MAX_IMAGE_SIZE,
             "The largest image area, given in decimal degrees, that will be returned by the service",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(maxImageSize);
 
-    ResourceParameter maxFileSize = new ResourceParameter(
+    final ResourceParameter maxFileSize = new ResourceParameter(
             fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.MAX_FILE_SIZE,
             "The largest file size, given in Bytes, that will be returned by the service",
             ResourceParameterType.PARAMETER_INTERN);
     addParam(maxFileSize);
 
 
-    ResourceParameter maxRecords = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.MAX_RECORDS,
+    final ResourceParameter maxRecords = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.MAX_RECORDS,
             "The largest number of records that the service will return", ResourceParameterType.PARAMETER_INTERN);
     maxRecords.setValue("-1");
     addParam(maxRecords);
@@ -167,28 +163,28 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     return new Validator<ResourceModel>() {
       @Override
       public final Set<ConstraintViolation> validate(final ResourceModel item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, ResourceParameter> params = item.getParametersMap();
-        ResourceParameter dico = params.get(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY);
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, ResourceParameter> params = item.getParametersMap();
+        final ResourceParameter dico = params.get(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY);
 
         if (!Util.isNotEmpty(dico.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.WARNING);
           constraint.setMessage("A dictionary must be set");
           constraint.setValueName(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY);
           constraintList.add(constraint);
         }
         
-        ResourceParameter geoAttribut = params.get(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
-        ResourceParameter intersect = params.get(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT);
+        final ResourceParameter geoAttribut = params.get(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
+        final ResourceParameter intersect = params.get(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.INTERSECT);
         if (intersect.getValue().equals("OVERLAPS") && !Util.isNotEmpty(geoAttribut.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT + " must be defined when OVERLAPS mode is used.");
           constraint.setValueName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
           constraintList.add(constraint);          
         } else if (!intersect.getValue().equals("OVERLAPS") && Util.isNotEmpty(geoAttribut.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.WARNING);
           constraint.setMessage(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT + " is useless when OVERLAPS mode is not used.");
           constraint.setValueName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  * 
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.restlet.data.CacheDirective;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -80,19 +79,19 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
   /**
    * Healpix input parameter.
    */
-  private String healpix;
+  private transient String healpix;
   /**
    * Order input parameter.
    */
-  private String order;
+  private transient String order;
   /**
    * Time input parameter.
    */
-  private String time;
+  private transient String time;
   /**
    * The IMCCE Object.
    */
-  private ConeSearchSolarObjectQuery query;
+  private transient ConeSearchSolarObjectQuery query;
 
   /**
    * Gets the input parameters and create the IMCCE object.
@@ -126,12 +125,12 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
     try {
       Representation rep = this.query.getResponse(); 
       
-      CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
+      final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.NO_CACHE, rep);
       rep = cache.getRepresentation();
       getResponse().setCacheDirectives(cache.getCacheDirectives()); 
       
       if (fileName != null && !"".equals(fileName)) {
-        Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+        final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(fileName);
         rep.setDisposition(disp);
       }
@@ -163,12 +162,12 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
     info.setDocumentation("Get solar objects from a cone");
 
     // query parameter
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("healpix", true, "Long", ParameterStyle.QUERY,
             "Helapix index"));
     parametersInfo.add(new ParameterInfo("order", true, "Integer", ParameterStyle.QUERY,
             "Helapix order"));
-    ParameterInfo epoch = new ParameterInfo("EPOCH", false, "String", ParameterStyle.QUERY,
+    final ParameterInfo epoch = new ParameterInfo("EPOCH", false, "String", ParameterStyle.QUERY,
             "Search at a time");
     epoch.setDefaultValue("now");
     parametersInfo.add(epoch);
@@ -177,10 +176,10 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
     info.getRequest().setParameters(parametersInfo);
 
     // Response OK
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
     List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
-    DocumentationInfo doc = new DocumentationInfo();
+    final DocumentationInfo doc = new DocumentationInfo();
     doc.setTitle("Name Resolver representation");
     doc.setTextContent("<pre>{\n"
             + "totalResults: 1,\n"
@@ -212,18 +211,18 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
     representationInfo.setDocumentation("SITools2 status error page");
     representationsInfo.add(representationInfo);
 
-    ResponseInfo responseError = new ResponseInfo();
+    final ResponseInfo responseError = new ResponseInfo();
     responseError.getRepresentations().add(representationInfo);
     responseError.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
     responseError.setDocumentation("This error may happen when the response is being writting or when the name resolver is unknown");
 
-    ResponseInfo responseNotFound = new ResponseInfo();
+    final ResponseInfo responseNotFound = new ResponseInfo();
     responseNotFound.getRepresentations().add(representationInfo);
     responseNotFound.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
     responseNotFound.setDocumentation("No data found");
 
     // Set responses
-    List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
+    final List<ResponseInfo> responseInfo = new ArrayList<ResponseInfo>();
     responseInfo.add(responseOK);
     responseInfo.add(responseError);
     responseInfo.add(responseNotFound);

@@ -75,11 +75,11 @@ public class ExportVOResource extends SitoolsParameterizedResource {
   /**
    * Name of the dictionary that has been used to map VO concepts with dataset's attributes.
    */
-  private String dictionaryName = null;
+  private transient String dictionaryName = null;
   /**
    * Description that is displayed in the VOTable.
    */
-  private String description = null;
+  private transient String description = null;
 
     /**
      * Initialize dictionary name and description.
@@ -98,7 +98,7 @@ public class ExportVOResource extends SitoolsParameterizedResource {
      */
     @Override
   protected final Representation head(final Variant variant) {
-    Representation repr = super.head();
+    final Representation repr = super.head();
     repr.setMediaType(MediaType.TEXT_XML);
     return repr;
   }
@@ -111,32 +111,32 @@ public class ExportVOResource extends SitoolsParameterizedResource {
   public final Representation getVoExport() {
 
     // Get the datasetApplication
-    DataSetApplication datasetApp = (DataSetApplication) getApplication();
+    final DataSetApplication datasetApp = (DataSetApplication) getApplication();
 
     // Get the pipeline to convert the information
-    ConverterChained converterChained = datasetApp.getConverterChained();
+    final ConverterChained converterChained = datasetApp.getConverterChained();
 
     // Create the data model for the template and add a description for the resource
-    Map dataModel = new HashMap();
+    final Map dataModel = new HashMap();
     dataModel.put("description", this.description);
 
     // Get the dataset
-    DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(),
+    final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(),
         getContext());
 
     // Get the concepts from the dictionary
-    List<ColumnConceptMappingDTO> mappingList = getDicoFromConfiguration((DataSetApplication) getApplication(),
+    final List<ColumnConceptMappingDTO> mappingList = getDicoFromConfiguration((DataSetApplication) getApplication(),
         this.dictionaryName);
 
     // Get column list that have been mapped with VOTable concepts
-    List<Column> columnListHavingConcept = getColumnList((DataSetApplication) getApplication(), mappingList);
+    final List<Column> columnListHavingConcept = getColumnList((DataSetApplication) getApplication(), mappingList);
     if (columnListHavingConcept.isEmpty()) {
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
           "VO semantic is not associated to data, please contact the administrator");
     }
 
     // Get query parameters
-    DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
+    final DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
     dbParams.setPaginationExtend(datasetApp.getDataSet().getNbRecords());
 
     // Get columns that have ben queried and having a concept
@@ -156,7 +156,7 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     }
 
     // Fine : query must have the primary key
-    List<Column> columnListToQuery = dbParams.getSqlVisibleColumns();
+    final List<Column> columnListToQuery = dbParams.getSqlVisibleColumns();
 
     // Keep all column having a VOTable concept
     columnListToDisplay.retainAll(columnListHavingConcept);
@@ -169,11 +169,11 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     // After, we will remove the primary key. For the moment,
     // we need the primary key for the query
     dbParams.setSqlVisibleColumns(columnListToQuery);
-    DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(dbParams);
+    final DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(dbParams);
 
     // complete data model with fields
-    List<Field> fieldList = new ArrayList<Field>();
-    List<String> columnList = new ArrayList<String>();
+    final List<Field> fieldList = new ArrayList<Field>();
+    final List<String> columnList = new ArrayList<String>();
     setFields(fieldList, columnList, mappingList, columnListToDisplay);
     dataModel.put("fields", fieldList);
     dataModel.put("sqlColAlias", columnList);
@@ -197,13 +197,13 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     }
 
     // Complete data model
-    TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
+    final TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
     dataModel.put("rows", rows);
 
     // Return the response
-    Representation rep =  new VOTableRepresentation(dataModel);
+    final Representation rep =  new VOTableRepresentation(dataModel);
     if (fileName != null && !"".equals(fileName)) {
-      Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+      final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
       disp.setFilename(fileName);
       rep.setDisposition(disp);
     }
@@ -229,19 +229,19 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     info.setIdentifier("ExportVO");
     info.setDocumentation("Export data as a VOTable format");
 
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("colModel", true, "String", ParameterStyle.QUERY,
         "List of columnName as colModel=\"col1,col2,...\""));
     info.getRequest().setParameters(parametersInfo);
 
     info.getResponse().getStatuses().add(Status.SUCCESS_OK);
 
-    DocumentationInfo documentation = new DocumentationInfo();
+    final DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("VOTable");
     documentation.setTextContent("VOTable format for interoperability");
 
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
     representationInfo.setDocumentation(documentation);
     representationsInfo.add(representationInfo);
     info.getResponse().setRepresentations(representationsInfo);
@@ -258,11 +258,11 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     List<ColumnConceptMappingDTO> colConceptMappingDTOList = null;
 
     // Get the list of dictionnaries related to the datasetApplication
-    List<DictionaryMappingDTO> dicoMappingList = datasetApp.getDictionaryMappings();
+    final List<DictionaryMappingDTO> dicoMappingList = datasetApp.getDictionaryMappings();
 
     // For each dictionary, find the interesting one and return the mapping SQLcolumn/concept
     for (DictionaryMappingDTO dicoMappingIter : dicoMappingList) {
-      String dicoName = dicoMappingIter.getDictionaryName();
+      final String dicoName = dicoMappingIter.getDictionaryName();
       if (dicoToFind.equals(dicoName)) {
         colConceptMappingDTOList = dicoMappingIter.getMapping();
         break;
@@ -279,10 +279,10 @@ public class ExportVOResource extends SitoolsParameterizedResource {
    * @return the list of Columns
    */
   private List<Column> getColumnList(final DataSetApplication datasetApp, final List<ColumnConceptMappingDTO> mappingList) {
-    List<Column> columnList = new ArrayList<Column>();
+    final List<Column> columnList = new ArrayList<Column>();
     for (ColumnConceptMappingDTO mappingIter : mappingList) {
-      String sqlColumnAlias = mappingIter.getColumnAlias();
-      Column column = datasetApp.getDataSet().findByColumnAlias(sqlColumnAlias);
+      final String sqlColumnAlias = mappingIter.getColumnAlias();
+      final Column column = datasetApp.getDataSet().findByColumnAlias(sqlColumnAlias);
       columnList.add(column);
     }
     return columnList;
@@ -296,8 +296,8 @@ public class ExportVOResource extends SitoolsParameterizedResource {
    * @return the columns from the list of columns name
    */
   private List<Column> getColumnsFromName(final DataSetApplication datasetApp, final String[] columnsName) {
-    List<Column> columnsKey = new ArrayList<Column>();
-    List<Column> columns = datasetApp.getDataSet().getColumnModel();
+    final List<Column> columnsKey = new ArrayList<Column>();
+    final List<Column> columns = datasetApp.getDataSet().getColumnModel();
     for (Column columnIter : columns) {
       for (int i = 0; i < columnsName.length; i++) {
         if (columnIter.getColumnAlias().equals(columnsName[i])) {
@@ -374,7 +374,7 @@ public class ExportVOResource extends SitoolsParameterizedResource {
           if (concept.getDescription() != null) {
             descriptionValue = concept.getDescription();
           }
-          Field field = new Field();
+          final Field field = new Field();
           field.setID(id);
           field.setName(name);
           field.setUcd(ucd);
@@ -389,7 +389,7 @@ public class ExportVOResource extends SitoolsParameterizedResource {
           field.setType(type);
           field.setXtype(xtype);
           field.setArraysize(arraysize);
-          AnyTEXT anyText = new AnyTEXT();
+          final AnyTEXT anyText = new AnyTEXT();
           anyText.getContent().add(descriptionValue);
           field.setDESCRIPTION(anyText);
           fieldList.add(field);

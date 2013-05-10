@@ -22,6 +22,7 @@ package fr.cnes.sitools.astro.representation;
 import cds.moc.HealpixMoc;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
@@ -32,7 +33,7 @@ import org.restlet.representation.OutputRepresentation;
  * 
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class FitsRepresentation extends OutputRepresentation {
+public class FitsMocRepresentation extends OutputRepresentation {
 
     static {
         MediaType.register("image/fits", "FITS image");
@@ -40,7 +41,7 @@ public class FitsRepresentation extends OutputRepresentation {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FitsRepresentation.class.getName());
+    private static final Logger LOG = Logger.getLogger(FitsMocRepresentation.class.getName());
     /**
      * output filename.
      */
@@ -54,7 +55,7 @@ public class FitsRepresentation extends OutputRepresentation {
      * Constructs a new FITS representation with MOC.
      * @param mocVal healpix MOC
      */
-    public FitsRepresentation(final HealpixMoc mocVal) {
+    public FitsMocRepresentation(final HealpixMoc mocVal) {
         super(MediaType.valueOf("image/fits"));
         setMoc(mocVal);
     }
@@ -65,18 +66,19 @@ public class FitsRepresentation extends OutputRepresentation {
      * @param filenameVal FITS filename
      * @param mocVal healpix MOC
      */
-    public FitsRepresentation(final String filenameVal, final HealpixMoc mocVal) {
+    public FitsMocRepresentation(final String filenameVal, final HealpixMoc mocVal) {
         this(mocVal);
         setFilename(filenameVal);
-        Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+        final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
         disp.setFilename(filenameVal);
         this.setDisposition(disp);
     }
 
     @Override
     public final void write(final OutputStream out) throws IOException {
-        try {
+        try {            
             getMoc().writeFits(out);
+            LOG.log(Level.FINEST, filename, out);
         } catch (Exception ex) {
             throw new IOException(ex);
         }

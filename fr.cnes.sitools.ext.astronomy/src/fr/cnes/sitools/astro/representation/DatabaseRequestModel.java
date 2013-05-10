@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * Example usage:
  *
  * in your Java source: 
- * <code>TemplateSequenceModel rows = new DatabaseRequestModel(rs); 
+ * <code>TemplateSequenceModel rows = new DatabaseRequestModel(resultSet); 
  * root.put("rows",rows);</code>
  *
  * in your .ftl 
@@ -61,15 +61,15 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
     /**
      * DB Result set.
      */
-    private DatabaseRequest rs = null;
+    private transient DatabaseRequest rs = null;
     /**
      * SITools2 converters.
      */
-    private ConverterChained converterChained = null;
+    private transient ConverterChained converterChained = null;
     /**
      * Number of rows.
      */
-    private int size;
+    private transient int size;
 
     /**
      * Creates a DatabaseRequest Model instance.
@@ -154,15 +154,15 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         /**
          * Database result set.
          */
-        private DatabaseRequest rs = null;
+        private transient DatabaseRequest resultSet = null;
         /**
          * Mapping with database columns.
          */
-        private Map map = null;
+        private transient Map map = null;
         /**
          * SITools2 converter.
          */
-        private ConverterChained converterChained = null;
+        private transient ConverterChained converterChained = null;
 
         /**
          * Contructs a new row.
@@ -171,7 +171,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          * @throws SitoolsException Exception
          */
         public Row(final DatabaseRequest rsVal, final ConverterChained converterChainedVal) throws SitoolsException {
-            this.rs = rsVal;
+            this.resultSet = rsVal;
             this.converterChained = converterChainedVal;
             this.map = new HashMap();
             init();
@@ -186,11 +186,11 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          * @throws SitoolsException Exception
          */
         private void init() throws SitoolsException {
-            Record record = this.rs.getRecord();
+            Record record = this.resultSet.getRecord();
             if (Util.isSet(converterChained)) {
                 record = converterChained.getConversionOf(record);
             }
-            List<AttributeValue> attValueList = record.getAttributeValues();
+            final List<AttributeValue> attValueList = record.getAttributeValues();
             for (AttributeValue iter : attValueList) {
                 this.map.put(iter.getName(), iter.getValue());
             }
@@ -204,7 +204,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final TemplateModel get(final String columnAlias) throws TemplateModelException {
-            TemplateModel model = new SimpleScalar(String.valueOf(this.map.get(columnAlias)));
+            final TemplateModel model = new SimpleScalar(String.valueOf(this.map.get(columnAlias)));
             return model;
         }
 
@@ -216,10 +216,10 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         @Override
         public final boolean isEmpty() throws TemplateModelException {
             boolean isEmpty = false;
-            if (this.rs == null) {
+            if (this.resultSet == null) {
                 isEmpty = true;
                 try {
-                    this.rs.close();
+                    this.resultSet.close();
                 } catch (SitoolsException ex) {
                     LOG.log(Level.WARNING, null, ex);
                 }

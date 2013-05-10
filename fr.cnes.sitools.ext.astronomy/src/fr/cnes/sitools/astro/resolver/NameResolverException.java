@@ -33,6 +33,13 @@ public class NameResolverException extends Exception {
    * Status of the Exception.
    */
   private Status status;
+  
+  /**
+   * Constructs a new NameResolverException with a Status.
+   */
+  public NameResolverException() {
+    this.status = Status.SUCCESS_OK;
+  }
 
   /**
    * Constructs a new NameResolverException with a Status.
@@ -80,4 +87,12 @@ public class NameResolverException extends Exception {
   public final Status getStatus() {
     return this.status;
   }   
+
+    /**
+     * Sets the status.
+     * @param statusVal the status to set
+     */
+    public final void setStatus(final Status statusVal) {
+        this.status = statusVal;
+    }
 }
