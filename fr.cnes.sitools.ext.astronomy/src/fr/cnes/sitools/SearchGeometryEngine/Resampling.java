@@ -188,12 +188,13 @@ public class Resampling {
     int step = (int) ((stopInit - startInit) / stepValue);
     int stepSign = (int) Math.signum(step);
     int stepAbsoluteValue = Math.abs(step);
-    double[] listPoints = new double[stepAbsoluteValue + 1];
-    for (int i = 0; i < stepAbsoluteValue; i++) {
-      listPoints[i] = current;
+    double[] listPoints = new double[stepAbsoluteValue + 2];
+    listPoints[0] = current;
+    for (int i = 1; i < stepAbsoluteValue; i++) {      
       current = current + stepSign * stepValue;
+      listPoints[i] = current;
     }
-    listPoints[stepAbsoluteValue] = stopInit;
+    listPoints[listPoints.length - 1] = stopInit;
     return listPoints;
   }
 
