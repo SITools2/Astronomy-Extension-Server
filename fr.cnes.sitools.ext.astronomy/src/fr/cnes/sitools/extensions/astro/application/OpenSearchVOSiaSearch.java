@@ -22,7 +22,7 @@ import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.AbstractUtility;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
@@ -241,7 +241,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
      */
     public static ReservedWords find(final String keyword) {
       ReservedWords response = ReservedWords.NONE;
-      if (AbstractUtility.isSet(keyword)) {
+      if (Utility.isSet(keyword)) {
         final ReservedWords[] words = ReservedWords.values();
         for (int i = 0; i < words.length; i++) {
           final ReservedWords word = words[i];
@@ -301,30 +301,30 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
       final String value = row.get(field);
 
-      if (AbstractUtility.isSet(value) && !value.isEmpty()) {
+      if (Utility.isSet(value) && !value.isEmpty()) {
         Object response;
         final ReservedWords ucdWord = ReservedWords.find(ucd);
         switch (ucdWord) {
           case POS_EQ_RA_MAIN:
-            raValue = AbstractUtility.parseRaVO(row, field);
+            raValue = Utility.parseRaVO(row, field);
             break;
           case POS_EQ_DEC_MAIN:
-            decValue = AbstractUtility.parseDecVO(row, field);
+            decValue = Utility.parseDecVO(row, field);
             break;
           case IMAGE_TITLE:
-            response = AbstractUtility.getDataType(dataType, value);
+            response = Utility.getDataType(dataType, value);
             properties.put("identifier", response);
             break;
           case IMAGE_MJDATEOBS:
-            response = AbstractUtility.getDataType(dataType, value);
-            properties.put("date-obs", AbstractUtility.modifiedJulianDateToISO(Double.valueOf(String.valueOf(response))));
+            response = Utility.getDataType(dataType, value);
+            properties.put("date-obs", Utility.modifiedJulianDateToISO(Double.valueOf(String.valueOf(response))));
             break;
           case IMAGE_ACCESS_REFERENCE:
-            response = AbstractUtility.getDataType(dataType, value);
+            response = Utility.getDataType(dataType, value);
             download = String.valueOf(response);
             break;
           case IMAGE_FORMAT:
-            response = AbstractUtility.getDataType(dataType, value);
+            response = Utility.getDataType(dataType, value);
             format = String.valueOf(response);
             break;
           case WCS_COORD_REF_PIXEL:
@@ -341,7 +341,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             break;
           default:
             try {
-              response = AbstractUtility.getDataType(dataType, value);
+              response = Utility.getDataType(dataType, value);
               properties.put(field.getName(), response);
             } catch (NumberFormatException ex) {
               properties.put(field.getName(), value);

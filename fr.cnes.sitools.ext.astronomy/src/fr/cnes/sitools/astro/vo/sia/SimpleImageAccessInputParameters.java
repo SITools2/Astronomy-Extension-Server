@@ -16,6 +16,11 @@
 package fr.cnes.sitools.astro.vo.sia;
 
 import fr.cnes.sitools.dataset.DataSetApplication;
+import fr.cnes.sitools.extensions.common.InputsValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.SpatialGeoValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.util.Util;
 import java.util.ArrayList;
@@ -23,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.AnyTEXT;
@@ -185,92 +191,42 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
    */
   private void checkInputParameters(final String posInput, final String sizeInput) {
     final List<Info> infos = new ArrayList<Info>();
-
-    if (!Util.isSet(posInput)) {
-      final Info info = new Info();
-      info.setID("POS");
-      info.setName("Error in POS");
-      info.setValueAttribute("POS must be set");
-      infos.add(info);
-      this.datasetApp.getLogger().log(Level.WARNING, "POS must be set");
-    } else {
-      final String[] coord = posInput.split(",");
-
-      try {
-        if (coord.length != 2) {
-          throw new SimpleImageAccessException("Wrong argument number for POS");
-        }
-      } catch (SimpleImageAccessException ex) {
-        final Info info = new Info();
-        info.setID("POS");
-        info.setName("Error in POS");
-        info.setValueAttribute("Error in input POS: " + ex.getMessage());
-        infos.add(info);
-        this.datasetApp.getLogger().log(Level.WARNING, "Error POS: {0}", ex.getMessage());
-      }
-
-      try {
-        this.ra = Double.valueOf(coord[0]);
-        if (this.ra > SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_RIGHT_ASCENSION || this.ra < SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_RIGHT_ASCENSION) {
-          throw new SimpleImageAccessException(this.ra + " for RA parameter is not allowed. RA must be in [0,360]");
-        }
-        this.datasetApp.getLogger().log(Level.FINEST, "RA: {0}", coord[0]);
-      } catch (SimpleImageAccessException ex) {
-        final Info info = new Info();
-        info.setID("RA");
-        info.setName("Error in RA");
-        info.setValueAttribute("Error in input RA: " + ex.getMessage());
-        infos.add(info);
-        this.datasetApp.getLogger().log(Level.WARNING, "Error RA: {0}", ex.getMessage());
-      }
-
-      try {
-        this.dec = Double.valueOf(coord[1]);
-        if (this.dec > SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_DECLINATION || this.dec < SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_DECLINATION) {
-          throw new SimpleImageAccessException(this.dec + " for DEC parameter is not allowed. DEC must be in [-90,90]");
-        }
-        this.datasetApp.getLogger().log(Level.FINEST, "DEC: {0}", coord[1]);
-      } catch (SimpleImageAccessException ex) {
-        final Info info = new Info();
-        info.setID("DEC");
-        info.setName("Error in DEC");
-        info.setValueAttribute("Error in input DEC: " + ex.getMessage());
-        infos.add(info);
-        this.datasetApp.getLogger().log(Level.WARNING, "Error DEC: {0}", ex.getMessage());
-      }
-    }
-
-    if (!Util.isSet(sizeInput)) {
-      final Info info = new Info();
-      info.setID("SIZE");
-      info.setName("Error in SIZE");
-      info.setValueAttribute("SIZE must be set");
-      infos.add(info);
-      this.datasetApp.getLogger().log(Level.WARNING, "SIZE must be set");
-    } else {
-
-      try {
-        final String[] sizeBbox = sizeInput.split(",");
-        if (sizeBbox.length != 1 && sizeBbox.length != 2) {
-          throw new SimpleImageAccessException("Wrong argument number for SIZE ");
-        } else if (sizeBbox.length == 1) {
-          this.size = new double[1];
-          this.size[0] = Double.valueOf(sizeBbox[0]);
+    final Map<String, String> validationMap = new HashMap<String, String>();
+    validationMap.put(SimpleImageAccessProtocolLibrary.POS, posInput);
+    validationMap.put(SimpleImageAccessProtocolLibrary.SIZE, sizeInput);    
+    Validation validation = new InputsValidation(validationMap);
+    validation = new NotNullAndNotEmptyValidation(validation, SimpleImageAccessProtocolLibrary.POS);
+    validation = new NotNullAndNotEmptyValidation(validation, SimpleImageAccessProtocolLibrary.SIZE);
+    validation = new SpatialGeoValidation(validation, SimpleImageAccessProtocolLibrary.POS, 0, 1, new double[]{0.0, 360.0}, new double[]{-90.0, 90.0});
+    StatusValidation status = validation.validate();
+    if (status.isValid()) {
+        final String pos = validation.getMap().get(SimpleImageAccessProtocolLibrary.POS);
+        final String[] arrayPos = pos.split(",");
+        this.ra = Double.valueOf(arrayPos[0]);
+        this.dec = Double.valueOf(arrayPos[1]);
+        final String size = validation.getMap().get(SimpleImageAccessProtocolLibrary.SIZE);
+        final String[] arraySize = size.split(",");
+        if(arraySize.length == 1) {
+            this.size = new double[1];
+            this.size[0] = Double.valueOf(arraySize[0]);
         } else {
-          this.size = new double[2];
-          this.size[0] = Double.valueOf(sizeBbox[0]);
-          this.size[1] = Double.valueOf(sizeBbox[1]);
-        }
-      } catch (SimpleImageAccessException ex) {
-        final Info info = new Info();
-        info.setID("SIZE");
-        info.setName("Error in SIZE");
-        info.setValueAttribute("Error in input SIZE: " + ex.getMessage());
-        infos.add(info);
-        this.datasetApp.getLogger().log(Level.WARNING, "Error SIZE: {0}", ex.getMessage());
-      }
+            this.size = new double[2];
+            this.size[0] = Double.valueOf(arraySize[0]);
+            this.size[1] = Double.valueOf(arraySize[1]);
+        }        
+    } else {
+        final Map<String, String> errors = status.getMessages();
+        final Set<Map.Entry<String, String>> entries = errors.entrySet();        
+        for (Map.Entry<String, String> entry : entries) {
+            final Info info = new Info();
+            info.setID(entry.getKey());
+            info.setName("Error in " + entry.getKey());
+            info.setValueAttribute("Error in input " + entry.getKey() + ": " + entry.getValue());
+            infos.add(info);
+            LOG.log(Level.FINEST, "{0}: {1}", new Object[]{entry.getKey(), entry.getValue()});            
+        }        
     }
-
+    
     if (!infos.isEmpty()) {
       this.dataModel.put("infos", infos);
     }

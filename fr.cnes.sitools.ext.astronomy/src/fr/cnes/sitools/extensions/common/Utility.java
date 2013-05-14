@@ -28,15 +28,15 @@ import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
 
 /**
- * AbstractUtility class.
+ * Utility class.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public abstract class AbstractUtility {
+public abstract class Utility {
   
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(AbstractUtility.class.getName());
+  private static final Logger LOG = Logger.getLogger(Utility.class.getName());
   
 
   /**
@@ -95,7 +95,7 @@ public abstract class AbstractUtility {
   public static double parseRaVO(final Map<Field, String> iterDoc, final Field field) {
     final String valRa = iterDoc.get(field);
     double raValue;
-    if (AbstractUtility.isSet(field.getUnit()) && field.getUnit().contains("h:m:s")) {
+    if (Utility.isSet(field.getUnit()) && field.getUnit().contains("h:m:s")) {
       raValue = AstroCoordinate.parseRa(valRa);
     } else {
       raValue = Double.valueOf(valRa);
@@ -114,7 +114,7 @@ public abstract class AbstractUtility {
   public static double parseDecVO(final Map<Field, String> iterDoc, final Field field) {
     final String valDec = iterDoc.get(field);
     double decValue;
-    if (AbstractUtility.isSet(field.getUnit()) && field.getUnit().contains("d:m:s")) {
+    if (Utility.isSet(field.getUnit()) && field.getUnit().contains("d:m:s")) {
       decValue = AstroCoordinate.parseDec(valDec);
     } else {
       decValue = Double.valueOf(valDec);

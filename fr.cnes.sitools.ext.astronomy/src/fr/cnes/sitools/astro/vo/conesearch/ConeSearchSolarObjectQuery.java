@@ -20,7 +20,7 @@ package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.AbstractUtility;
+import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
@@ -255,8 +255,8 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
       final String ucd = field.getUcd();
       final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
       final String value = record.get(field);
-      if (AbstractUtility.isSet(ucd) && AbstractUtility.isSet(value) && !value.isEmpty()) {
-        final Object response = AbstractUtility.getDataType(dataType, value);
+      if (Utility.isSet(ucd) && Utility.isSet(value) && !value.isEmpty()) {
+        final Object response = Utility.getDataType(dataType, value);
         final ReservedWords ucdWord = ReservedWords.find(ucd);
         switch (ucdWord) {
           case POS_EQ_RA_MAIN:
@@ -279,7 +279,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
             break;
         }
       } else {
-        final Object response = AbstractUtility.getDataType(dataType, value);
+        final Object response = Utility.getDataType(dataType, value);
         properties.put(field.getName(), response);
       }
     }

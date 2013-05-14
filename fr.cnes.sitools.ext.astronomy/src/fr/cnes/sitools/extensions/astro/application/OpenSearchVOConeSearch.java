@@ -22,7 +22,7 @@ import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.AbstractUtility;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
@@ -205,15 +205,15 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
         final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
         final String ucd = field.getUcd();
         final String value = iterDoc.get(field);
-        if (AbstractUtility.isSet(value) && !value.isEmpty()) {
-          final Object responseDataType = AbstractUtility.getDataType(dataType, value);
+        if (Utility.isSet(value) && !value.isEmpty()) {
+          final Object responseDataType = Utility.getDataType(dataType, value);
           final OpenSearchVOConeSearch.ReservedWords ucdWord = OpenSearchVOConeSearch.ReservedWords.find(ucd);
           switch (ucdWord) {
             case POS_EQ_RA_MAIN:
-              raResponse = AbstractUtility.parseRaVO(iterDoc, field);
+              raResponse = Utility.parseRaVO(iterDoc, field);
               break;
             case POS_EQ_DEC_MAIN:
-              decResponse = AbstractUtility.parseDecVO(iterDoc, field);
+              decResponse = Utility.parseDecVO(iterDoc, field);
               break;
             case ID_MAIN:
               properties.put("identifier", iterDoc.get(field));

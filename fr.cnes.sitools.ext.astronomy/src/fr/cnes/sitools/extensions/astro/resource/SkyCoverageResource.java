@@ -1,7 +1,7 @@
 /*
  * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file inputStream part of SITools2
+ * This file is a part of SITools2
  * 
  * This program inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

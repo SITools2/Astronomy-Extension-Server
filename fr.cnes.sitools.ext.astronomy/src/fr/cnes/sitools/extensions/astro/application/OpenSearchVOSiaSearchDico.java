@@ -20,7 +20,7 @@ package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
-import fr.cnes.sitools.extensions.common.AbstractUtility;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +74,7 @@ public class OpenSearchVOSiaSearchDico extends SitoolsParameterizedResource {
    */
   @Get  
   public final Representation getDico() {
-    if (!AbstractUtility.isSet(this.name)) {
+    if (!Utility.isSet(this.name)) {
       LOG.log(Level.SEVERE, "name must be set as parameter.");
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "name must be set as parameter");
     }

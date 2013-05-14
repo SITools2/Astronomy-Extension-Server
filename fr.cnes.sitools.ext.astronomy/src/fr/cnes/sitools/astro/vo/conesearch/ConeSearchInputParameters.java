@@ -16,11 +16,18 @@
 package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.dataset.DataSetApplication;
+import fr.cnes.sitools.extensions.common.InputsValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.RangeValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Info;
@@ -111,69 +118,36 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
   private void checkInputParameters(final String raInput, final String decInput, final String srInput, final double maxSr,
           final String verbInput, final boolean verbosity, final int verbVal) {
     final List<Info> infos = new ArrayList<Info>();
-
-    try {
-      this.rightAscension = Double.valueOf(raInput);
-      if (this.rightAscension > ConeSearchProtocolLibrary.RA_MAX || this.rightAscension < ConeSearchProtocolLibrary.RA_MIN) {
-        throw new ConeSearchException(this.rightAscension + " for RA parameter is not allowed. RA must be in [0,360]");
-      }
-      this.datasetApp.getLogger().log(Level.FINEST, "RA: {0}", raInput);
-    } catch (ConeSearchException ex) {
-      final Info info = new Info();
-      info.setID("RA");
-      info.setName("Error in RA");
-      info.setValueAttribute("Error in input RA: " + ex.getMessage());
-      infos.add(info);
-      this.datasetApp.getLogger().log(Level.FINEST, "Error RA: {0}", ex.getMessage());
-    }
-
-    try {
-      this.declination = Double.valueOf(decInput);
-      if (this.declination > ConeSearchProtocolLibrary.DEC_MAX || this.declination < ConeSearchProtocolLibrary.DEC_MIN) {
-        throw new ConeSearchException(this.declination + " for DEC parameter is not allowed. DEC must be in [-90,90]");
-      }
-      this.datasetApp.getLogger().log(Level.FINEST, "DEC: {0}", decInput);
-    } catch (ConeSearchException ex) {
-      final Info info = new Info();
-      info.setID("DEC");
-      info.setName("Error in DEC");
-      info.setValueAttribute("Error in input DEC: " + ex.getMessage());
-      infos.add(info);
-      this.datasetApp.getLogger().log(Level.FINEST, "Error DEC: {0}", ex.getMessage());
-    }
-
-    try {
-      this.radius = Double.valueOf(srInput);
-      if (this.radius <= 0.0) {
-        throw new ConeSearchException(this.radius + " for SR parameter is not allowed. SR must be a positive value");
-      } else if (this.radius > maxSr) {
-        throw new ConeSearchException(this.radius
-                + " for SR parameter is not allowed. SR must be a positive value inferior or equal to " + maxSr);
-      }
-      this.datasetApp.getLogger().log(Level.FINEST, "SR: {0}", srInput);
-    } catch (ConeSearchException ex) {
-      final Info info = new Info();
-      info.setID("SR");
-      info.setName("Error in SR");
-      info.setValueAttribute("Error in input SR: " + ex.getMessage());
-      infos.add(info);
-      this.datasetApp.getLogger().log(Level.FINEST, "Error Sr: {0}", ex.getMessage());
-    }
-
-    try {
-      if (verbosity) {
-        if (verbInput == null) {
-          this.verb = verbVal;
-        } else {
-          this.verb = Integer.valueOf(verbInput);
-        }
-      } else {
-        this.verb = verbVal;
-      }
-      this.datasetApp.getLogger().log(Level.FINEST, "VERB: {0}", this.verb);
-    } catch (Exception ex) {
-      this.verb = verbVal;
-      this.datasetApp.getLogger().log(Level.FINEST, "Error VERB: {0}", ex.getMessage());
+    final Map<String, String> validationMap = new HashMap<String, String>();
+    validationMap.put(ConeSearchProtocolLibrary.RA, raInput);
+    validationMap.put(ConeSearchProtocolLibrary.DEC, decInput);
+    validationMap.put(ConeSearchProtocolLibrary.SR, srInput);
+    validationMap.put(ConeSearchProtocolLibrary.VERB, verbInput);
+    validationMap.put(ConeSearchProtocolLibrary.VERBOSITY, String.valueOf(verbosity));
+    Validation validation = new InputsValidation(validationMap);
+    validation = new RangeValidation(validation, ConeSearchProtocolLibrary.RA, ConeSearchProtocolLibrary.RA_MIN, ConeSearchProtocolLibrary.RA_MAX);
+    validation = new RangeValidation(validation, ConeSearchProtocolLibrary.DEC, ConeSearchProtocolLibrary.DEC_MIN, ConeSearchProtocolLibrary.DEC_MAX);
+    validation = new RangeValidation(validation, ConeSearchProtocolLibrary.SR, 0, maxSr);
+    validation = new NotNullAndNotEmptyValidation(validation, ConeSearchProtocolLibrary.VERBOSITY);
+    validation = new NotNullAndNotEmptyValidation(validation, ConeSearchProtocolLibrary.VERB, String.valueOf(verbVal));
+    final StatusValidation status = validation.validate();
+    if (status.isValid()) {
+        final Map<String, String> input = validation.getMap();
+        this.rightAscension = Double.valueOf(input.get(ConeSearchProtocolLibrary.RA));
+        this.declination = Double.valueOf(input.get(ConeSearchProtocolLibrary.DEC));
+        this.radius = Double.valueOf(input.get(ConeSearchProtocolLibrary.SR));
+        this.verb = Integer.valueOf(input.get(ConeSearchProtocolLibrary.VERB));        
+    } else {       
+        final Map<String, String> errors = status.getMessages();
+        final Set<Entry<String, String>> entries = errors.entrySet();        
+        for (Entry<String, String> entry : entries) {
+            final Info info = new Info();
+            info.setID(entry.getKey());
+            info.setName("Error in " + entry.getKey());
+            info.setValueAttribute("Error in input " + entry.getKey() + ": " + entry.getValue());
+            infos.add(info);
+            LOG.log(Level.FINEST, "{0}: {1}", new Object[]{entry.getKey(), entry.getValue()});            
+        }        
     }
     if (!infos.isEmpty()) {
       this.dataModel.put("infos", infos);

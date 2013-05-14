@@ -23,7 +23,7 @@ import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
-import fr.cnes.sitools.extensions.common.AbstractUtility;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
@@ -107,7 +107,7 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     super(context, model);
     try {
       final Category category = Category.valueOf(getParameter("category").getValue());
-      if (!AbstractUtility.isSet(model.getCategory())) {
+      if (!Utility.isSet(model.getCategory())) {
         model.setCategory(category);
       }
       setCategory(category);

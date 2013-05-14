@@ -85,7 +85,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
 
     // Category parameter of ProxyApp
     try {
-      final Category category = (Category.valueOf(getParameter(PARAM_CATEGORY).getValue()));
+      final Category category = Category.valueOf(getParameter(PARAM_CATEGORY).getValue());
 
       if (null == model.getCategory()) {
         model.setCategory(category);
@@ -164,7 +164,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
    */
   @Override
   public void handle(final Request request, final Response response) {
-    Response cachedRep = response;
+    final Response cachedRep = response;
     final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
     final Cache cache = cacheManager.getCache("healpixImage");
     final String uniqueId = request.getOriginalRef().toString();
@@ -188,7 +188,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
         final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
         ApplicationPluginParameter param = item.getParameter(PARAM_URLCLIENT);
         String value = param.getValue();
-        if (value.equals("")) {
+        if (value.isEmpty()) {
           final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("This parameter must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
@@ -199,7 +199,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
 
         param = item.getParameter(PARAM_USEPROXY);
         value = param.getValue();
-        if (!value.equals("TRUE") && !value.equals("FALSE")) {
+        if (!"TRUE".equals(value) && !"FALSE".equals(value)) {
           final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("This parameter must be either TRUE or FALSE");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
@@ -210,7 +210,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
 
         param = item.getParameter(PARAM_CATEGORY);
         value = param.getValue();
-        if (value.equals("")) {
+        if (value.isEmpty()) {
           final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("This parameter should be set");
           constraint.setLevel(ConstraintViolationLevel.WARNING);

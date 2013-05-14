@@ -60,6 +60,10 @@ public class CutOffResourcePlugin extends ResourceModel {
    */
   public static final String RADIUS_INPUT_PARAMETER = "Radius";
   /**
+   * DataStorageName keyword.
+   */
+  public static final String DATA_STORAGE_NAME_PARAMETER = "DataStorageName";  
+  /**
    * Hdu number input parameter.
    */
   public static final String HDU_NUMBER_INPUT_PARAMETER = "hduNumber";
@@ -81,16 +85,19 @@ public class CutOffResourcePlugin extends ResourceModel {
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.SINGLE);
     this.getParameterByName("methods").setValue("GET");
-    final ResourceParameter rightAscension = new ResourceParameter("RA", "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
-    final ResourceParameter declination = new ResourceParameter("DEC", "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
-    final ResourceParameter radius = new ResourceParameter("Radius", "Radius in which the image will be cut", ResourceParameterType.PARAMETER_USER_INPUT);
-    final ResourceParameter fitsFile = new ResourceParameter("FitsFile", "Fits file to cut", ResourceParameterType.PARAMETER_INTERN);
+    final ResourceParameter rightAscension = new ResourceParameter(RA_INPUT_PARAMETER, "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter declination = new ResourceParameter(DEC_INPUT_PARAMETER, "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter radius = new ResourceParameter(RADIUS_INPUT_PARAMETER, "Radius in which the image will be cut", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter dataStorage = new ResourceParameter(DATA_STORAGE_NAME_PARAMETER, "If data storage is set,"
+            + " then FitsFile is an identifier in this data storage", ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter fitsFile = new ResourceParameter(FITS_FILE_INPUT_PARAMETER, "Fits file to cut", ResourceParameterType.PARAMETER_INTERN);
     fitsFile.setValueType("xs:dataset.columnAlias");
-    final ResourceParameter hduNumber = new ResourceParameter("hduNumber", "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
+    final ResourceParameter hduNumber = new ResourceParameter(HDU_NUMBER_INPUT_PARAMETER, "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
     addParam(rightAscension);
     addParam(declination);
     addParam(radius);
-    addParam(fitsFile);
+    addParam(dataStorage);
+    addParam(fitsFile);    
     addParam(hduNumber);
     this.completeAttachUrlWith("/cutoff");
   }

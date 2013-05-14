@@ -14,9 +14,12 @@
 package fr.cnes.sitools.extensions.astro.application;
 
 import cds.moc.HealpixMoc;
+import fr.cnes.sitools.extensions.common.ApplicationPluginParameterValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.util.ClientResourceProxy;
-import fr.cnes.sitools.util.Util;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -93,16 +96,19 @@ public class VoMocDescription extends MocDescription {
   @Override
   protected final void computeMoc() throws Exception {
     final ApplicationPluginModel model = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel();
-    final String mocUrl = model.getParametersMap().get("mocdescribe").getValue();
-    if (Util.isNotEmpty(mocUrl)) {
+    Validation configurationValidation = new ApplicationPluginParameterValidation(model.getParametersMap());
+    configurationValidation = new NotNullAndNotEmptyValidation(configurationValidation, "mocdescribe");
+    final StatusValidation status = configurationValidation.validate();
+    if (status.isValid()) {
+      final String mocUrl = configurationValidation.getMap().get("mocdescribe");
       final ClientResourceProxy proxy = new ClientResourceProxy(mocUrl, Method.GET);
       final ClientResource client = proxy.getClientResource();
       final InputStream inputStream = client.get().getStream();
       final BufferedInputStream bufferInputStream = new BufferedInputStream(inputStream, BUFFER_FITS);
-      this.setMoc(new HealpixMoc(bufferInputStream, HealpixMoc.FITS));
+      this.setMoc(new HealpixMoc(bufferInputStream, HealpixMoc.FITS));        
     } else {
-      LOG.log(Level.SEVERE, "mocdescribe parameter must be set.");
-      throw new IllegalArgumentException("mocdescribe parameter must be set.");
+      LOG.log(Level.SEVERE, status.toString());
+      throw new IllegalArgumentException(status.toString());        
     }
   }
 

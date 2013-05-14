@@ -103,7 +103,7 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
             final String key = (String) iter.next();
             final JSONObject node = fields.getJSONObject(key);
             // parse index
-            boolean isIndexField = node.has("index");
+            final boolean isIndexField = node.has("index");
             if (isIndexField && node.getString("index").contains("S")) {
                 final String indexType = node.getString("type");
                 final JSONArray topTermsArray = node.getJSONArray("topTerms");
