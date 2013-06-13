@@ -21,6 +21,7 @@ package fr.cnes.sitools.extensions.astro.resource;
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchSolarObjectQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.InputsValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
@@ -95,6 +96,10 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
      */
     private transient String time;
     /**
+     * Coordinates system of both input and response.
+     */
+    private transient CoordinateSystem coordinatesSystem;
+    /**
      * The IMCCE Object.
      */
     private transient ConeSearchSolarObjectQuery query;
@@ -115,12 +120,17 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
                 this.healpix = inputParameters.get("healpix");
                 this.order = inputParameters.get("order");
                 this.time = inputParameters.get("EPOCH");
+                try {
+                    this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(this.getRequestAttributes().get("coordSystem")));
+                } catch (IllegalArgumentException ex) {
+                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
+                }
             } else {
                 LOG.log(Level.FINEST, status.toString());
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, status.toString());
             }
             try {
-                query = new ConeSearchSolarObjectQuery(Long.valueOf(healpix), Integer.valueOf(order), time);
+                query = new ConeSearchSolarObjectQuery(Long.valueOf(healpix), Integer.valueOf(order), time, this.coordinatesSystem);
             } catch (Exception ex) {
                 LOG.log(Level.SEVERE, null, ex);
                 throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

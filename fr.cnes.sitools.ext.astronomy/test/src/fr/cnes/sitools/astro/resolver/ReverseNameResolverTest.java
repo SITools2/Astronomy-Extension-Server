@@ -35,7 +35,7 @@ public class ReverseNameResolverTest {
     @Test
     public void testGetJsonResponse() throws NameResolverException {
         System.out.println("getJsonResponse");
-        ReverseNameResolver instance = new ReverseNameResolver("00:42:44.32 +41:16:07.5", 13);
+        ReverseNameResolver instance = new ReverseNameResolver("00:42:44.32 +41:16:07.5", 13, fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem.EQUATORIAL);
         String expResult = "M  31 ";
         Map result = instance.getJsonResponse();
         List<Map> features = (List<Map>) result.get("features");

@@ -18,6 +18,8 @@ import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import healpix.core.HealpixIndex;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +68,11 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
    * Positional region where the request must be done.
    */
   private transient String[] coordinates;
+  
+  /**
+   * Coordinates system.
+   */
+  private transient CoordinateSystem coordinatesSystem;
   /**
    * Radius in degree of the cone seach.
    */
@@ -113,6 +120,13 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
         } else {
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Bad input parameter: " + coordinatesInput);
         }
+        
+        try {
+            this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(this.getRequestAttributes().get("coordSystem")));
+        } catch (IllegalArgumentException ex) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
+        }
+          
       } else {
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "missing input : coordinates-order");
       }
@@ -130,7 +144,7 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
   public final Representation getReverseNameResolverResponse() {
     try {
       LOG.finest(String.format("ReverseNameResolver (ra=%s,dec=%s,radius=%s)", coordinates[0], coordinates[1], radius));
-      final ReverseNameResolver reverseNameResolver = new ReverseNameResolver(coordinates[0] + " " + coordinates[1], radius);
+      final ReverseNameResolver reverseNameResolver = new ReverseNameResolver(coordinates[0] + " " + coordinates[1], radius, this.coordinatesSystem);
       final Map response = reverseNameResolver.getJsonResponse();
       LOG.finest(String.format("Result of the reverse name resolver:%s", response.toString()));      
       Representation rep = new GeoJsonRepresentation(response);

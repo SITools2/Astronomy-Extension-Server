@@ -54,11 +54,16 @@ public class ReverseNameResolver {
     /**
      * input parameter : sky position.
      */
-    private final transient String coordinates;
+    private transient String coordinates;
     /**
      * input parameter : radius.
      */
     private final transient double radius;
+    
+    /**
+     * Coordinates system of both inputs and response.
+     */    
+    private final transient CoordinateSystem coordinatesSystem;
     /**
      * Init the data model.
      */
@@ -79,11 +84,13 @@ public class ReverseNameResolver {
      *
      * @param coordinatesVal coordinates
      * @param radiusVal radius in degree of the cone search
+     * @param coordinateSystemVal coordinate reference system of both inputs and response
      * @throws NameResolverException  
      */
-    public ReverseNameResolver(final String coordinatesVal, final double radiusVal) throws NameResolverException {
+    public ReverseNameResolver(final String coordinatesVal, final double radiusVal, final CoordinateSystem coordinateSystemVal) throws NameResolverException {
         this.coordinates = coordinatesVal;
         this.radius = (radiusVal > MAX_RADIUS) ? MAX_RADIUS : radiusVal;
+        this.coordinatesSystem = coordinateSystemVal;
         process();
     }
 
@@ -93,6 +100,14 @@ public class ReverseNameResolver {
      * @throws NameResolverException
      */
     private void process() throws NameResolverException {
+        // we convert in galactic because the service only accept equatorial
+        if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
+            String[] coordinatesStr = coordinates.split(" ");
+            AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesStr[0], coordinatesStr[1]);            
+            astroCoordinate.transformTo(CoordinateSystem.EQUATORIAL);
+            this.coordinates = astroCoordinate.getRaAsSexagesimal() + " " + astroCoordinate.getDecAsSexagesimal();
+        }
+        
         // building the query
         String serviceToQuery = TEMPLATE_REVERSE_NAME_RESOLVER.replace("<coordinates>", coordinates);
         serviceToQuery = serviceToQuery.replace("<radius>", String.valueOf(radius));
@@ -155,7 +170,7 @@ public class ReverseNameResolver {
                     geometry.put("type", "Point");
                     final AstroCoordinate astroCoordinate = new AstroCoordinate(hms.toString(true), dms.toString(true));
                     geometry.put("coordinates", String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()));
-                    geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+                    geometry.put("crs", this.coordinatesSystem.getCrs());
                     feature.put("geometry", geometry);
 
                     dataModel.put("features", Arrays.asList(feature));

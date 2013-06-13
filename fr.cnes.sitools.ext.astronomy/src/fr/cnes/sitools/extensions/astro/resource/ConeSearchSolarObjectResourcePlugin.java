@@ -54,6 +54,6 @@ public class ConeSearchSolarObjectResourcePlugin extends ResourceModel {
     setDescription("This service provides access to solar objects from IMCCE");
     setDataSetSelection(DataSetSelectionType.NONE);
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResource.class.getName());
-    this.completeAttachUrlWith("/solarObjects");
+    this.completeAttachUrlWith("/solarObjects/{coordSystem}");
   }
 }

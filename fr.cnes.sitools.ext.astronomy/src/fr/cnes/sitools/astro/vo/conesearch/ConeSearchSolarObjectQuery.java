@@ -20,6 +20,7 @@ package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
@@ -37,7 +38,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
 /**
- * This object contains methods to search solar objects.
+ * This object contains methods to search solar objects in both Equatorial or galactic reference frame.
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -50,7 +51,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * Query.
    */
-  private transient ConeSearchQuery query;
+  private final transient ConeSearchQuery query;
   /**
    * Right ascension.
    */
@@ -62,7 +63,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * Radius in decimal degree.
    */
-  private transient double radius;
+  private final transient double radius;
   /**
    * URL to query the WS.
    */
@@ -90,7 +91,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * True when Healpix mode is used.
    */
-  private transient boolean isHealpixMode;
+  private final transient boolean isHealpixMode;
   /**
    * Healpix is not defined.
    */
@@ -98,11 +99,16 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * Pixel to check.
    */
-  private transient long pixelToCheck;
+  private final transient long pixelToCheck;
   /**
    * Healpix index.
    */
-  private transient HealpixIndex healpixIndex;
+  private transient HealpixIndex healpixIndex = null;
+  
+  /**
+   * Coordinate system in which the input is given and response is returned.
+   */
+  private final transient CoordinateSystem coordSystem;
 
   /**
    * keywords.
@@ -132,7 +138,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     /**
      * ucd name.
      */
-    private final String name;
+    private final String name;   
 
     /**
      * Constructor.
@@ -175,31 +181,40 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
 
   /**
    * Constructs a query.
+   * 
+   * When the reference frame is in galactic, the inputs are transformed in equatorial frame
+   * to query the external web service that takes coordinates in equatorial frame.
    *
    * @param raVal right ascension
    * @param decVal declination
    * @param radiusVal radius in degree
    * @param timeVal time
+   * @param coordSystemVal coordinates system of (raVal, decVal)
    */
-  public ConeSearchSolarObjectQuery(final double raVal, final double decVal, final double radiusVal, final String timeVal) {
+  public ConeSearchSolarObjectQuery(final double raVal, final double decVal, final double radiusVal, final String timeVal, final CoordinateSystem coordSystemVal) {
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", timeVal));
     this.rightAscension = raVal;
     this.declination = decVal;
     this.radius = radiusVal;
     this.isHealpixMode = false;
     this.pixelToCheck = NOT_DEFINED;
-    this.healpixIndex = null;
+    this.coordSystem = coordSystemVal;
+    transformToCelestialCoordinates();
   }
 
   /**
    * Constructs a query.
+   * 
+   * When the reference frame is in galactic, the inputs are transformed in equatorial frame
+   * to query the external web service that takes coordinates in equatorial frame.
    *
    * @param healpix healpix
    * @param order helapix order
    * @param time time
+   * @param coordSystemVal Coordinate system of the Healpix pixel.
    * @throws Exception Exception
    */
-  public ConeSearchSolarObjectQuery(final long healpix, final int order, final String time) throws Exception {
+  public ConeSearchSolarObjectQuery(final long healpix, final int order, final String time, final CoordinateSystem coordSystemVal) throws Exception {
     final int nside = (int) Math.pow(2, order);
     final double pixRes = HealpixIndex.getPixRes(nside);
     this.healpixIndex = new HealpixIndex(nside, Scheme.NESTED);
@@ -210,6 +225,20 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     this.radius = pixRes * ARCSEC_2_DEG * MULT_FACT;
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", time));
     this.isHealpixMode = true;
+    this.coordSystem = coordSystemVal;    
+    transformToCelestialCoordinates();    
+  } 
+  
+  /**
+   * Transforms coordinates in Equatorial when the reference frame is in Galactic.
+   */
+  private void transformToCelestialCoordinates() {
+      if (this.coordSystem == CoordinateSystem.GALACTIC) {
+        final AstroCoordinate astroCoordinates = new AstroCoordinate(this.rightAscension, this.declination);
+        astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
+        this.rightAscension = astroCoordinates.getRaAsDecimal();
+        this.declination = astroCoordinates.getDecAsDecimal();          
+      }      
   }
 
   @Override
@@ -284,9 +313,14 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
       }
     }
     final AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesRa, coordinatesDec);
+    // if we ask the calactic fram, we need to convert because the webservice returns coordinates
+    // in equatorial frame.
+    if (this.coordSystem == CoordinateSystem.GALACTIC) {
+        astroCoordinate.transformTo(CoordinateSystem.GALACTIC);
+    }
     geometry.put("coordinates", String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()));
-    geometry.put("type", "Point");
-    geometry.put("crs", "equatorial.ICRS");
+    geometry.put("type", "Point");   
+    geometry.put("crs", this.coordSystem.getCrs());
     feature.put("geometry", geometry);
     feature.put("properties", properties);
     if (isValid(feature)) {

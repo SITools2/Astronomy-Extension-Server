@@ -69,11 +69,33 @@ public class AstroCoordinate {
     /**
      * Galactic coordinates.
      */
-    GALACTIC,
+    GALACTIC("galactic"),
     /**
      * Equatorial coordinates.
      */
-    EQUATORIAL
+    EQUATORIAL("equatorial.ICRS");
+    
+    /**
+     * Coordinates reference system.
+     */
+    private final String crs;
+
+    /**
+     * Constructor.
+     * @param crsVal Coordinates reference system.
+     */
+    CoordinateSystem(final String crsVal) {
+        this.crs = crsVal;
+    }
+    
+    /**
+     * Returns the coordinates reference system.
+     * @return crs
+     */
+    public String getCrs() {
+        return this.crs;
+    }
+    
   }
 
   /**
@@ -83,7 +105,7 @@ public class AstroCoordinate {
   protected AstroCoordinate(final AstroCoordinate astro) {
     this.ra = astro.getRaAsDecimal();
     this.dec = astro.getDecAsDecimal();
-    this.coordSystem = astro.getCoordinateSystem();
+    this.coordSystem = astro.getCoordinateSystem();    
   }
 
   /**

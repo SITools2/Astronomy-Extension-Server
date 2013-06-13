@@ -44,9 +44,9 @@ public class ReverseNameResolverResourcePlugin extends ResourceModel {
     setClassOwner("CNES");
     setClassVersion("1.0");
     setName("Reverse Name Resolver service");
-    setDescription("This service provides a resource (/reverseNameResolver/{coordinates-order}) to reverse the query name resolver service.");
+    setDescription("This service provides a resource (/reverseNameResolver/{coordSystem}/{coordinates-order}) to reverse the query name resolver service.");
     setDataSetSelection(DataSetSelectionType.NONE);
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.ReverseNameResolverResource.class.getName());
-    this.completeAttachUrlWith("/reverseNameResolver/{coordinates-order}");
+    this.completeAttachUrlWith("/reverseNameResolver/{coordSystem}/{coordinates-order}");
   }
 }
