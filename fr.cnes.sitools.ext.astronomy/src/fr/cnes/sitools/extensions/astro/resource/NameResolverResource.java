@@ -138,8 +138,8 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         //final String coordinatesSystem = String.valueOf(this.getRequestAttributes().get("coordSystem"));
         if (!getRequest().getMethod().equals(Method.OPTIONS)) {
             Validation validationAttributes = new InputsAttributesValidation(getRequestAttributes());
-            validationAttributes = new NotNullAndNotEmptyValidation(validationForm, "objectName");
-            validationAttributes = new NotNullAndNotEmptyValidation(validationForm, "coordSystem");
+            validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "objectName");
+            validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "coordSystem");
             StatusValidation status = validationAttributes.validate();
             if (status.isValid()) {
                 final Map<String, String> requestInputs = validationAttributes.getMap();

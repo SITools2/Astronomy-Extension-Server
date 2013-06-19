@@ -49,7 +49,7 @@ public class ConeSearchSolarObjectResourcePlugin extends ResourceModel {
     super();
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
-    setClassVersion("1.0");
+    setClassVersion("1.1");
     setName("Solar object service");
     setDescription("This service provides access to solar objects from IMCCE");
     setDataSetSelection(DataSetSelectionType.NONE);

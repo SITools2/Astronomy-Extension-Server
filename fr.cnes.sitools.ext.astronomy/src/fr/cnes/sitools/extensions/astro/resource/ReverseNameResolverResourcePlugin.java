@@ -42,7 +42,7 @@ public class ReverseNameResolverResourcePlugin extends ResourceModel {
     super();
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
-    setClassVersion("1.0");
+    setClassVersion("1.1");
     setName("Reverse Name Resolver service");
     setDescription("This service provides a resource (/reverseNameResolver/{coordSystem}/{coordinates-order}) to reverse the query name resolver service.");
     setDataSetSelection(DataSetSelectionType.NONE);

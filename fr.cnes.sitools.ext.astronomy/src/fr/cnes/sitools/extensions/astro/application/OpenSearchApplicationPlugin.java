@@ -276,7 +276,8 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
         this.getModel().setClassAuthor("J-C Malapert");
         this.getModel().setClassName("OpenSearch Application");
         this.getModel().setClassOwner("CNES");
-        this.getModel().setClassVersion("1.0");
+        this.getModel().setClassVersion("1.1");
+        //this.getModel().setUrlAttach("/sitools/apps/opensearch/{coordSystem}");        
 
         ApplicationPluginParameter param = new ApplicationPluginParameter();
         param.setName("category");

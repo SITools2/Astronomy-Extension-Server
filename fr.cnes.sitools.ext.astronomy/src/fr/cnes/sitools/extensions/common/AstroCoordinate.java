@@ -119,6 +119,13 @@ public class AstroCoordinate {
     this.dec = decVal;
     this.coordSystem = CoordinateSystem.EQUATORIAL;
   }
+  
+  /**
+   * Empty constructor.
+   */
+  public AstroCoordinate() {
+      this.coordSystem = CoordinateSystem.EQUATORIAL;
+  }
 
   /**
    * Creates a point on the sphere.

@@ -21,6 +21,7 @@ import fr.cnes.sitools.astro.vo.conesearch.ConeSearchQuery;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
@@ -67,6 +68,10 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
    */
   private static final Logger LOG = Logger.getLogger(OpenSearchVOConeSearch.class.getName());
   /**
+   * Coordinate system for both inputs and result.
+   */
+  private CoordinateSystem coordinatesSystem;  
+  /**
    * Query.
    */
   private transient ConeSearchQuery query;
@@ -86,6 +91,11 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       final String url = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel().getParametersMap().get("coneSearchURL").getValue();
       this.query = new ConeSearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
+        if (getRequestAttributes().containsKey("coordSystem")) {
+            this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(getRequestAttributes().get("coordSystem")));                    
+        } else {
+            throw new Exception("coordSystem attribute must exist.");
+        }           
         this.userParameters = new UserParameters(getRequest().getResourceRef().getQueryAsForm());
         this.dico = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getDico();
       }
@@ -168,8 +178,14 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
   @Get
   public final Representation getJsonResponse() {
     try {
-      final double rightAscension = userParameters.getRa();
-      final double declination = userParameters.getDec();
+      double rightAscension = userParameters.getRa();
+      double declination = userParameters.getDec();
+      if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
+          AstroCoordinate astroCoordinates = new AstroCoordinate(rightAscension, declination);
+          astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
+          rightAscension = astroCoordinates.getRaAsDecimal();
+          declination = astroCoordinates.getDecAsDecimal();
+      }         
       final double radius = userParameters.getSr();
       final List<Map<Field, String>> response = useCacheHealpix(query, rightAscension, declination, radius, true);
       final Map dataModel = createGeoJsonDataModel(response);
@@ -190,6 +206,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
   private Map createGeoJsonDataModel(final List<Map<Field, String>> response) {
     final Map dataModel = new HashMap();
     final List features = new ArrayList();
+    final AstroCoordinate astroCoordinates = new AstroCoordinate();
     final Set<Field> fields = getFields(response);
     fillDictionary(fields);
     for (Map<Field, String> iterDoc : response) {
@@ -224,9 +241,16 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
           }
         }
       }
+      if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {          
+          astroCoordinates.setRaAsDecimal(raResponse);
+          astroCoordinates.setDecAsDecimal(decResponse);
+          astroCoordinates.processTo(CoordinateSystem.GALACTIC);
+          raResponse = astroCoordinates.getRaAsDecimal();
+          decResponse = astroCoordinates.getDecAsDecimal();
+      }
       geometry.put("coordinates", String.format("[%s,%s]", raResponse, decResponse));
       geometry.put("type", "Point");
-      geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+      geometry.put("crs", this.coordinatesSystem.getCrs());
       feature.put("geometry", geometry);
       feature.put("properties", properties);
       spatialFilter(feature, raResponse, decResponse);

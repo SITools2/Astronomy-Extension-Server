@@ -196,7 +196,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     param.setDescription("Set to true when the result can be cached");
     param.setValueType("xs:enum[True,False]");
     param.setValue("False");
-    this.addParameter(param);
+    this.addParameter(param);    
     SingletonCacheHealpixDataAccess.create();
   }
   
@@ -215,7 +215,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeDescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
-      router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearch.class);
+      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearch.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchDico.class);
       router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);
       attachParameterizedResources(router);

@@ -21,6 +21,7 @@ import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
@@ -70,6 +71,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(OpenSearchVOSiaSearch.class.getName());
+  /**
+   * Coordinate system for both inputs and result.
+   */
+  private CoordinateSystem coordinatesSystem;
+  
   /**
    * Index in polygonCelest array of the X coordinate of the first point of the polygon.
    */
@@ -267,12 +273,17 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       final String url = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getModel().getParametersMap().get("siaSearchURL").getValue();
       this.query = new SIASearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
+        if (getRequestAttributes().containsKey("coordSystem")) {
+            this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(getRequestAttributes().get("coordSystem")));                    
+        } else {
+            throw new Exception("coordSystem attribute must exist.");
+        }          
         this.userParameters = new OpenSearchVOSiaSearch.UserParameters(getRequest().getResourceRef().getQueryAsForm());
         this.dico = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getDico();
       }
     } catch (Exception ex) {
       LOG.log(Level.WARNING, null, ex);
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
+      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
     }
   }
 
@@ -285,6 +296,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    */
   protected final void parseRow(final List features, final Map<Field, String> row) {
     final Map geometry = new HashMap();
+    final AstroCoordinate astroCoordinates = new AstroCoordinate();
     final WCSTransform wcs = new WCSTransform(this);
     String format = null;
     String download = null;
@@ -352,7 +364,16 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     }
 
     if (wcs.isWCS()) {
-      final double[] polygonCelest = computeWcsCorner(wcs);
+      double[] polygonCelest = computeWcsCorner(wcs);
+      if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {          
+          for (int i=0 ; i<polygonCelest.length ; i = i +2) {
+              astroCoordinates.setRaAsDecimal(polygonCelest[i]);
+              astroCoordinates.setDecAsDecimal(polygonCelest[i+1]);              
+              astroCoordinates.processTo(CoordinateSystem.GALACTIC);
+              polygonCelest[i] = astroCoordinates.getRaAsDecimal();
+              polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();              
+          }
+      }
       final String pattern = "[[[%s,%s],[%s,%s],[%s,%s],[%s,%s],[%s,%s]]]";
       final String output = String.format(pattern, polygonCelest[P1_X], polygonCelest[P1_Y],
               polygonCelest[P2_X], polygonCelest[P2_Y],
@@ -362,12 +383,12 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       LOG.log(Level.FINEST, "Geometry: {0}", output);
       geometry.put("coordinates", output);
       geometry.put("type", "Polygon");
-      geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+      geometry.put("crs", this.coordinatesSystem.getCrs());
     } else {
       // No WCS, then we have only the central position of the FOV
       geometry.put("coordinates", String.format("[%s,%s]", raValue, decValue));
       geometry.put("type", "Point");
-      geometry.put("crs", CoordinateSystem.EQUATORIAL.name().concat(".ICRS"));
+      geometry.put("crs", this.coordinatesSystem.getCrs());
     }
     feature.put("geometry", geometry);
     feature.put("properties", properties);
@@ -542,8 +563,14 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   @Get
   public final Representation getJsonResponse() {
     try {
-      final double rightAscension = userParameters.getRa();
-      final double declination = userParameters.getDec();
+      double rightAscension = userParameters.getRa();
+      double declination = userParameters.getDec();
+      if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
+          AstroCoordinate astroCoordinates = new AstroCoordinate(rightAscension, declination);
+          astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
+          rightAscension = astroCoordinates.getRaAsDecimal();
+          declination = astroCoordinates.getDecAsDecimal();
+      }      
       final double size = userParameters.getSize();
       final List<Map<Field, String>> response = useCacheHealpix(query, rightAscension, declination, size, true);
       final Map dataModel = createGeoJsonDataModel(response);

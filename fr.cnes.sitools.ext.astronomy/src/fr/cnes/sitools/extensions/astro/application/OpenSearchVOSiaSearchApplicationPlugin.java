@@ -124,7 +124,7 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     this.getModel().setClassAuthor("J-C Malapert");
     this.getModel().setClassName("VO OpenSearch Application for SIA");
     this.getModel().setClassOwner("CNES");
-    this.getModel().setClassVersion("1.0");
+    this.getModel().setClassVersion("1.1");
 
     ApplicationPluginParameter param = new ApplicationPluginParameter();
     param.setName("category");
@@ -196,7 +196,7 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     param.setValueType("xs:enum[True,False]");
     param.setValue("False");
     this.addParameter(param);     
-    SingletonCacheHealpixDataAccess.create();
+    SingletonCacheHealpixDataAccess.create();    
   }
 
   @Override
@@ -215,7 +215,7 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearchDico.class);
-      router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearch.class);
+      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearch.class);
       attachParameterizedResources(router);
     }
     return router;
