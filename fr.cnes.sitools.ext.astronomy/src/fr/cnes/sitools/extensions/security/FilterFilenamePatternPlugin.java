@@ -35,12 +35,21 @@ import java.util.regex.PatternSyntaxException;
  * Filters the access by a pattern.
  *
  * <p>
- * This service answers to the following scenario:<br/> As administrator, I want to make accessible some filenames through a pattern 
+ * A data storage is a directory from the file system that is put online on the web.
+ * 
+ * When the administrator configures a data storage, all files in this data storage are
+ * available. This extension allows to configure the file to access by the use of a pattern.
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FilterFilenamePatternPlugin extends FilterModel {
+    
+    /**
+     * Input keyword that checks the pattern.
+     */
+    public static final String PATTERN_KEYWORD = "pattern";
+    
 
   /**
    * Constructs a filter.
@@ -55,10 +64,7 @@ public class FilterFilenamePatternPlugin extends FilterModel {
     setClassName(fr.cnes.sitools.extensions.security.FilterFilenamePatternPlugin.class.getName());
     setFilterClassName(fr.cnes.sitools.extensions.security.FilterFilenamePattern.class.getName());
 
-    /**
-     * Parameter for the log directory
-     */
-    final FilterParameter pattern = new FilterParameter("pattern", "pattern to match", FilterParameterType.PARAMETER_INTERN);
+    final FilterParameter pattern = new FilterParameter(FilterFilenamePatternPlugin.PATTERN_KEYWORD, "pattern to match", FilterParameterType.PARAMETER_INTERN);
     pattern.setValue("(.*\\.fits)|(.*\\.txt)");
     pattern.setValueType("xs:string");
     addParam(pattern);
@@ -71,12 +77,12 @@ public class FilterFilenamePatternPlugin extends FilterModel {
       public Set<ConstraintViolation> validate(final FilterModel item) {
         final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
         final Map<String, FilterParameter> params = item.getParametersMap();
-        final String value = params.get("pattern").getValue();
-        if (!Util.isNotEmpty(value)) {
+        final String value = params.get(PATTERN_KEYWORD).getValue();
+        if (Util.isEmpty(value)) {
           final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A pattern must be set");
-          constraint.setValueName("pattern");
+          constraint.setValueName(FilterFilenamePatternPlugin.PATTERN_KEYWORD);
           constraintList.add(constraint);
         } else {
           try {
@@ -85,7 +91,7 @@ public class FilterFilenamePatternPlugin extends FilterModel {
             final ConstraintViolation constraint = new ConstraintViolation();
             constraint.setLevel(ConstraintViolationLevel.CRITICAL);
             constraint.setMessage("the pattern is not valid.");
-            constraint.setValueName("pattern");
+            constraint.setValueName(FilterFilenamePatternPlugin.PATTERN_KEYWORD);
             constraintList.add(constraint);
           }
         }

@@ -25,13 +25,20 @@ import org.restlet.Response;
 import org.restlet.security.Authorizer;
 
 /**
- * Authorizes the file access in a datastorage when the url matches the pattern of the file.
+ * Authorizes the file access to a datastorage when the url matches the pattern of the file.
+ * 
+ * <p>
+ * A data storage is a directory from the file system that is put online on the web.
+ * 
+ * When the administrator configures a data storage, all files in this data storage are
+ * available. This extension allows to configure the file to access by the use of a pattern.
+ * </p>
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FilterFilenamePattern extends Authorizer {
   
   /**
-   * configuration parameters.
+   * Application data model.
    */
   private final transient FilterModel filterModel;
   
@@ -46,7 +53,7 @@ public class FilterFilenamePattern extends Authorizer {
   @Override
   public final boolean authorize(final Request request, final Response response) {
     final String urlStr = request.getResourceRef().getIdentifier(true);
-    final String pattern = this.filterModel.getParameterByName("pattern").getValue();
+    final String pattern = this.filterModel.getParameterByName(FilterFilenamePatternPlugin.PATTERN_KEYWORD).getValue();   
     return urlStr.matches(pattern);
   }
 }
