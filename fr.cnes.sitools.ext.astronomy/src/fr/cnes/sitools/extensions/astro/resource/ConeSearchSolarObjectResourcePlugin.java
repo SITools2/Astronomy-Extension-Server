@@ -31,9 +31,39 @@ import java.util.logging.Logger;
  * <p>This service answers to the following scenario:<br/>
  * As user, I want to know if one of my image can contain a system solar object 
  * at the acquisition time of my image in order to detect or analyse system solar objects.
+ * <br/>
+ * <img src="../../../../../../images/ConeSearchSolarObjectResolver-usecase.png"/>
+ * <br/>
+ * </p>
+ * <p>
+ * In addition, the service has some dependancies with external services
+ * <br/>
+ * <img src="../../../../../../images/ConeSearchSolarObjectResolverResourcePlugin.png"/>
+ * <br/>
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml ConeSearchSolarObjectResolver-usecase.png
+ * title Name Resolver
+ * User --> (ConeSearch Solar Object Resolver) : requests
+ * Admin --> (ConeSearch Solar Object Resolver) : adds and configures the Name Resolver.
+ * (ConeSearch Solar Object Resolver) .. (project) : uses
+ * @enduml
+ * @startuml
+ * package "Services" {
+ *  HTTP - [ConeSearchSolarObjectResolverResourcePlugin]
+ *  [Cache]
+ * }
+ * cloud {
+ * [IMCCE]
+ * }
+ * package "Project/Dataset" {
+ *  HTTP - [Project/Dataset]
+ * }
+ * [ConeSearchSolarObjectResolverResourcePlugin] --> [Project/Dataset] : "attached to"
+ * [ConeSearchSolarObjectResolverResourcePlugin] --> [IMCCE] : "uses"
+ * [ConeSearchSolarObjectResolverResourcePlugin] .. [Cache]
+ * @enduml
  */
 public class ConeSearchSolarObjectResourcePlugin extends ResourceModel {
 

@@ -28,12 +28,22 @@ import org.restlet.security.Authorizer;
  * Authorizes the file access to a datastorage when the url matches the pattern of the file.
  * 
  * <p>
- * A data storage is a directory from the file system that is put online on the web.
- * 
- * When the administrator configures a data storage, all files in this data storage are
- * available. This extension allows to configure the file to access by the use of a pattern.
+ * Business class implementing the FilterFilenamePattern plugin.
  * </p>
+ * 
+ * <br/>
+ * <img src="../../../../../images/FilterFilenamePattern.png"/>
+ * <br/>
+ * @see FilterFilenamePatternPlugin The plugin that calls this class.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml
+ * FilterFilenamePatternPlugin o-- FilterFilenamePattern : attachs
+ * 
+ * FilterFilenamePattern : boolean authorize(final Request request, final Response response)
+ * 
+ * FilterFilenamePatternPlugin : setConfigurationParameters()
+ * FilterFilenamePatternPlugin : Validator<FilterModel> getValidator()
+ * @enduml
  */
 public class FilterFilenamePattern extends Authorizer {
   

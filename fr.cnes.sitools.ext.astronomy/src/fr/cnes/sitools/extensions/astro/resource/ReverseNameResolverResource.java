@@ -1,16 +1,21 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/*
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file is part of SITools2.
+ * This file is a part of SITools2
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program inputStream distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * *****************************************************************************/
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
@@ -18,7 +23,6 @@ import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import healpix.core.HealpixIndex;
 import java.util.ArrayList;
@@ -43,8 +47,9 @@ import org.restlet.resource.ResourceException;
  * Finds the object's name based on a cone search.
  *
  * <p>This service uses the CDS web service</p>
- *
- * @author Jean-Christophe Malapert
+ * @see ReverseNameResolverResourcePlugin the plugin
+ * @see ReverseNameResolver library for reverse name resolver
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ReverseNameResolverResource extends SitoolsParameterizedResource {
 
@@ -182,11 +187,12 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
     info.setIdentifier("ReverseNameResolver");
     info.setDocumentation("Gets the object information based on its coordinates.");
 
-    // coordinates/order parameter
+    // coordinates/order parameter and coordSystem
     final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("coordinates-order", true, "String", ParameterStyle.TEMPLATE,
             "coordinates and the Healpix order separated by ; (e.g.00:42:44.31 +41:16:09.4;12)"));
-
+    parametersInfo.add(new ParameterInfo("coordSystem", true, "String", ParameterStyle.TEMPLATE,
+            "Coordinate system in which the output is formated"));    
     // Set all parameters
     info.getRequest().setParameters(parametersInfo);
 

@@ -1,9 +1,9 @@
 /*
  * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file inputStream part of SITools2
+ * This file is part of SITools2
  * 
- * This program inputStream free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * Concrete component providing the inputs to validate.
+ * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class InputsValidation extends Validation {    

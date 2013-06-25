@@ -1,17 +1,20 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
+/*
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file is part of SITools2.
+ * This file is a part of SITools2
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program inputStream distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.cnes.sitools.extensions.astro.resource;
 
@@ -33,9 +36,46 @@ import java.util.logging.Logger;
 /**
  * Plugin for publishing a dataset through the Simple Image Access Protocol.
  *
- * <p> This plugin allows a data provider to publish his images in the Virtual Observatory. </p>
+ * <p> 
+ * The plugin answers to the need of the following user story:<br/>
+ * As administrator, I publish my data through SIAP so that the users
+ * can request my images by the use of an interoperability standard.
+ * <br/>
+ * <img src="../../../../../../images/SIAP-usecase.png"/>
+ * <br/>
+ * In addition, this plugin has several dependencies with different components:<br/>
+ * <img src="../../../../../../images/SimpleImageAccessResourcePlugin.png"/>
+ * <br/> 
+ * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml SIAP-usecase.png
+ * title Publishing data through SIAP
+ * User --> (SIAP service) : requests
+ * Admin --> (SIAP service) : adds and configures the SIAP service from the dataset.
+ * (SIAP service) .. (dataset) : uses
+ * @enduml
+ * @startuml
+ * package "Services" {
+ *  HTTP - [SimpleImageAccessResourcePlugin]
+ * }
+ * database "Database" {
+ *   frame "Data" {
+ *     [myData]
+ *   }
+ * }
+ * package "Dataset" {
+ *  HTTP - [Dataset]
+ *  [VODictionary]
+ * }
+ * folder "DataStorage" {
+ *   HTTP - [directory]
+ * }
+ * [SimpleImageAccessResourcePlugin] --> [Dataset]
+ * [Dataset] --> [directory]
+ * [Dataset] --> [myData]
+ * [Dataset] --> [VODictionary]
+ * @enduml
  */
 public class SimpleImageAccessResourcePlugin extends ResourceModel {
 
@@ -52,7 +92,7 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     super();
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
-    setClassVersion("0.2");
+    setClassVersion("1.0");
     setName("Simple Image Access Protocol");
     setDescription("This plugin provides an access to your data through the Simple Image Access Protocol");
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.SimpleImageAccessResource.class.getName());
@@ -62,7 +102,13 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     //we set to NONE because this is a web service for Virtual Observatory
     // and we do not want to see it in the web user interface
     this.setDataSetSelection(DataSetSelectionType.NONE);
-
+    setConfiguration();
+  }
+  
+  /**
+   * Sets the configuration for the administrator.
+   */
+  private void setConfiguration() {
     final ResourceParameter dictionary = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.DICTIONARY,
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
@@ -149,8 +195,7 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     final ResourceParameter maxRecords = new ResourceParameter(fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary.MAX_RECORDS,
             "The largest number of records that the service will return", ResourceParameterType.PARAMETER_INTERN);
     maxRecords.setValue("-1");
-    addParam(maxRecords);
-
+    addParam(maxRecords);      
   }
 
   /**
@@ -182,13 +227,13 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT + " must be defined when OVERLAPS mode is used.");
           constraint.setValueName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
-          constraintList.add(constraint);          
+          constraintList.add(constraint);
         } else if (!intersect.getValue().equals("OVERLAPS") && Util.isNotEmpty(geoAttribut.getValue())) {
           final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.WARNING);
           constraint.setMessage(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT + " is useless when OVERLAPS mode is not used.");
           constraint.setValueName(SimpleImageAccessProtocolLibrary.GEO_ATTRIBUT);
-          constraintList.add(constraint);          
+          constraintList.add(constraint);
         }
         return constraintList;
       }

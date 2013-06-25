@@ -46,18 +46,22 @@ import org.restlet.security.Role;
  * Filters the access by delegating the responsability to an extrernal database.
  * 
  * <p>
- * The access right table must be composed of filename columns and 
- * an array of roles.<br/>
- * Here is an example on how to insert data in the access right table:
- * <pre>
- * <code>
- * INSERT INTO "accessRight"( filename, profile) VALUES
- * ('Images/Webcam/2012-12-29-193736.jpg', '{"Administrator"}');
- * </code>
- * </pre>
+ * Business class implementing the FineGrainedAccessRight plugin.
  * </p>
- *
+ * 
+ * <br/>
+ * <img src="../../../../../images/FineGrainedAccessRight.png"/>
+ * <br/>
+ * @see FineGrainedAccessRightPlugin The plugin that calls this class.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml
+ * FineGrainedAccessRightPlugin o-- FineGrainedAccessRight : attachs
+ * 
+ * FineGrainedAccessRight : boolean authorize(final Request request, final Response response)
+ * 
+ * FineGrainedAccessRightPlugin : setConfigurationParameters()
+ * FineGrainedAccessRightPlugin : Validator<FilterModel> getValidator()
+ * @enduml
  */
 public class FineGrainedAccessRight extends Authorizer {
 
@@ -126,7 +130,7 @@ public class FineGrainedAccessRight extends Authorizer {
      * @return the filename
      */
     private String getFilename(final Request request) {
-        String filename = request.getResourceRef().getRemainingPart(true);
+        final String filename = request.getResourceRef().getRemainingPart(true);
         return filename.substring(1, filename.length()); // remove the "/"        
     }
     
@@ -144,7 +148,7 @@ public class FineGrainedAccessRight extends Authorizer {
             stmt.setString(sqlParameterIndex++, role.getName());
         }        
     }
-    
+
     @Override
     public final boolean authorize(final Request request, final Response response) {
         boolean responseAuthorize = false;
@@ -176,7 +180,7 @@ public class FineGrainedAccessRight extends Authorizer {
                 responseAuthorize = true;
             } else {
                 responseAuthorize = false;
-            }            
+            }
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
             responseAuthorize = false;

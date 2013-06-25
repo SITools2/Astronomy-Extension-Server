@@ -41,10 +41,30 @@ import java.util.logging.Logger;
  * 
  * <p>This service answers to the following scenario:<br/>
  * As user, I want to know the sky coverage of my survey and its representation in the sky
- * in order to give me an idea where I can find data.
+ * in order to give me an idea where data are located.
+ * <br/>
+ * <img src="../../../../../../images/SkyCoverageResourcePlugin.png"/>
+ * <br/>
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml
+ * (*) --> "Parses moc parameter"
+ * if "moc parameter exists and has value" then
+ * -->[true] "downloads MOC" as download
+ * else
+ * -->[false] "Returns Server Internal Error"
+ * -->(*)
+ * endif
+ * download --> if "download is success" then
+ * -->[true] "computes MOC coverage"
+ * --> "Returns the representation according to the mediaType"
+ * -->(*)
+ * else
+ * -->[false] "Returns Server Internal Error"
+ * -->(*)
+ * endif
+ * @enduml
  */
 public class SkyCoverageResourcePlugin extends ResourceModel { 
 
@@ -65,9 +85,9 @@ public class SkyCoverageResourcePlugin extends ResourceModel {
     super();
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
-    setClassVersion("0.1");
+    setClassVersion("1.0");
     setName("Coverage service");
-    setDescription("Computes coverage based on Healpix MOC.");
+    setDescription("Computes the coverage based on Healpix MOC.");
 
     //we set to NONE because this is a web service for Virtual Observatory
     // and we do not want to see it in the web user interface
@@ -75,5 +95,5 @@ public class SkyCoverageResourcePlugin extends ResourceModel {
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.SkyCoverageResource.class.getName());
 
     this.completeAttachUrlWith("/coverage");
-  }  
+  }
 }

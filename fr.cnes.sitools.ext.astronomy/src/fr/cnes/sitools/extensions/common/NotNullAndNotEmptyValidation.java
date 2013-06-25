@@ -27,7 +27,7 @@ import java.util.Set;
 
 /**
  * Specific decorator to validate if keywords value is not null and not empty.
- *
+ * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class NotNullAndNotEmptyValidation extends ValidationDecorator {
@@ -169,16 +169,18 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
     }
 
     /**
+     * Returns the keyword to test.
      * @return the keywordToTest
      */
-    protected String getKeywordToTest() {
+    protected final String getKeywordToTest() {
         return keywordToTest;
     }
 
     /**
-     * @param keywordToTest the keywordToTest to set
+     * Sets the keyword to test.
+     * @param keywordToTestVal the keywordToTest to set
      */
-    protected void setKeywordToTest(String keywordToTest) {
-        this.keywordToTest = keywordToTest;
+    protected final void setKeywordToTest(final String keywordToTestVal) {
+        this.keywordToTest = keywordToTestVal;
     }
 }

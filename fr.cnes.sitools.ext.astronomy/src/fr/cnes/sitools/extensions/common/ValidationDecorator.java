@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * Docorates the validation process by a specific test.
+ * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class ValidationDecorator extends Validation {
@@ -68,6 +69,6 @@ public abstract class ValidationDecorator extends Validation {
      * @return <code>True</code> when an error is detected otherwise <code>False</code>
      */
     private boolean hasErrorInValidation(final Map<String, String> validation) {
-        return (validation.isEmpty()) ? false : true;
+        return validation.isEmpty();
     }
 }

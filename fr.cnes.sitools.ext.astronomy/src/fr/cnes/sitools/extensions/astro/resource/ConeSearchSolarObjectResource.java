@@ -198,6 +198,10 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
                 "Search at a time");
         epoch.setDefaultValue("now");
         parametersInfo.add(epoch);
+        // reference frame parameter
+        parametersInfo.add(new ParameterInfo("coordSystem", true, "String", ParameterStyle.TEMPLATE,
+                "Coordinate system in which the output is formated"));
+        
 
         // Set all parameters
         info.getRequest().setParameters(parametersInfo);

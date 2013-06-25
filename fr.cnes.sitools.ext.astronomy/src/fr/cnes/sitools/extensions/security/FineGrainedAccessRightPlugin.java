@@ -32,20 +32,47 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Filters the access by delegating the responsability to an extrernal database
+ * Filters the access by delegating the responsability to an external database
  * <p>
  * A data storage is a directory from the file system that is put online on the web.
  * 
  * When the administrator configures a data storage, all files in this data storage are
  * available. This extension allows to configure the file to access by delegating
- * the access configuration to a SQL database.
+ * the access configuration to a SQL database.<br/>
  * 
  * To make it works, the database must contain two columns at least :<br/>
- *  - one for filename<br/>
- *  - another for the profiles.<br/>
+ * <ul>
+ * <li>one for filename</li>
+ * <li>another for the profiles.</li>
+ * </ul>
  * The profiles must be an array of string.
+ * <br/>
+ * <img src="../../../../../images/FineGrainedAccessRightPlugin.png"/>
+ * <br/>
+ * Here is an example on how to insert data in the access right table:
+ * <pre>
+ * <code>
+ * INSERT INTO "accessRight"( filename, profile) VALUES
+ * ('Images/Webcam/2012-12-29-193736.jpg', '{"Administrator"}');
+ * </code>
+ * </pre>
  * </p>
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml
+ * title Access to files by delegating\n the logic to the database
+ * (use a data storage) as (datastorage)
+ * (check access rights) as (accessRight)
+ * (configure the\n datastorage filter) as (filter)
+ * User -> (datastorage)
+ * (datastorage) ..> (accessRight)
+ * Admin -> (datastorage)
+ * Admin -> (filter)
+ * note "The data source, schema name,\n table name, columns name\n are configured." as Note
+ * (filter) .. Note
+ * Note .. (accessRight)
+ * note "database with two columns :\n filename and profile[]" as Note1
+ * (accessRight) .. Note1
+ * @enduml
  */
 public class FineGrainedAccessRightPlugin extends FilterModel {
     
@@ -83,10 +110,16 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
         setDescription("Provides a customizable datastorage directory authorizer by setting the responsibility of the access to an external database.");
         setClassAuthor("Jean-Christophe Malapert");
         setClassOwner("CNES");
-        setClassVersion("0.1");
+        setClassVersion("1.0");
         setClassName(fr.cnes.sitools.extensions.security.FineGrainedAccessRightPlugin.class.getName());
         setFilterClassName(fr.cnes.sitools.extensions.security.FineGrainedAccessRight.class.getName());
-
+        setConfigurationParameters();
+    }
+    
+    /**
+     * Sets the configuration parameters for the administrator.
+     */
+    private void setConfigurationParameters() {
         final FilterParameter dataSource = new FilterParameter(
                 DATASOURCE, 
                 "Data source name where the table that contains access right is located",
@@ -95,8 +128,8 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
         addParam(dataSource);
         
         final FilterParameter table = new FilterParameter(
-                TABLE, 
-                "Table name that contains the access rights.", 
+                TABLE,
+                "Table name that contains the access rights.",
                 FilterParameterType.PARAMETER_INTERN);
         table.setValueType("xs:string");
         addParam(table);
@@ -105,7 +138,7 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
                 SCHEMA,
                 "Sets the schema name if PostGreSQL is used.",
                 FilterParameterType.PARAMETER_INTERN);
-        schema.setValueType("xs:string");        
+        schema.setValueType("xs:string");
         addParam(schema);
 
         final FilterParameter filenameColumn = new FilterParameter(
@@ -120,7 +153,7 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
                 "Sets the profiles column name that contains the profiles.",
                 FilterParameterType.PARAMETER_INTERN);
         profilesColumn.setValueType("xs:string");
-        addParam(profilesColumn);
+        addParam(profilesColumn);        
     }
 
     @Override
@@ -161,7 +194,7 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
                   constraint.setMessage("A profiles column name must be set");
                   constraint.setValueName(PROFILES);
                   constraintList.add(constraint);
-                }                
+                }
                 return constraintList;
             }
         };

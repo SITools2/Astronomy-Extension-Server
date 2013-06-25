@@ -18,7 +18,6 @@
  *************************************************************************/
 package fr.cnes.sitools.extensions.common;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -26,6 +25,7 @@ import java.util.Map;
  * <p>
  * The decorator are a set of classes that localValidation the inputs.
  * </p>
+ * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class Validation {
