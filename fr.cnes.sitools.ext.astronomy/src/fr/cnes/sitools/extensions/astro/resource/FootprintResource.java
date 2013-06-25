@@ -53,14 +53,17 @@ import org.restlet.resource.ResourceException;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FootprintResource extends SitoolsParameterizedResource {
-
-  private String featureType;
-  private String search;
-  private File directory;
+  /**
+   * Logger.
+   */  
+  private static final Logger LOG = Logger.getLogger(FootprintResource.class.getName());
+  private transient String featureType;
+  private transient String search;
+  private transient File directory;
   private static String filename = "Mox.txt";
 
     /**
-     * Initialize
+     * Initialize.
      */
     @Override
   public void doInit() {
@@ -71,18 +74,18 @@ public class FootprintResource extends SitoolsParameterizedResource {
   }
 
     /**
-     * Returns the footprint
+     * Returns the footprint.
      * @return the representation
      */
     @Get
-  public Representation getFootprintResponse() {
+  public final Representation getFootprintResponse() {
     try {
-      HealpixMoc moc = new HealpixMoc(new FileInputStream(directory + File.separator + filename), HealpixMoc.ASCII);
+      final HealpixMoc moc = new HealpixMoc(new FileInputStream(directory + File.separator + filename), HealpixMoc.ASCII);
       if (this.featureType.isEmpty()) {
         return new FileRepresentation(directory + File.separator + filename, MediaType.APPLICATION_JSON);
       }
       else if (this.featureType.equals("coverage")) {
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
         jsonObject.put("moc_coverage", pourcent(moc.getCoverage()));
         jsonObject.put("moc_resolution", (int) (moc.getAngularRes() * 6000) / 100. + " arcmin");
         return JSONRepresentation(jsonObject.toString());
@@ -91,37 +94,36 @@ public class FootprintResource extends SitoolsParameterizedResource {
         // TO DO : search with query disc and box
         return new EmptyRepresentation();
       }
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
     }
     throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
   }
 
     /**
-     * Creates a cache
+     * Creates a cache.
      */
     @Put
   public void processCache() {
     // Get the datasetApplication
-    DataSetApplication datasetApp = (DataSetApplication) getApplication();
+    final DataSetApplication datasetApp = (DataSetApplication) getApplication();
 
     // Get the pipeline to convert the information
-    ConverterChained converterChained = datasetApp.getConverterChained();
+    final ConverterChained converterChained = datasetApp.getConverterChained();
 
     // Get the dataset
-    DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(),
+    final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(),
         getContext());
 
     // Get query parameters and build the request
-    DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
+    final DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
     dbParams.setPaginationExtend(datasetApp.getDataSet().getNbRecords());
     final String raCol = this.getModel().getParameterByName("RA").getValue();
     final String decCol = this.getModel().getParameterByName("DEC").getValue();
-    List<Column> columnsToQuery = getColumnsFromName(datasetApp, new String[] {raCol, decCol});
+    final List<Column> columnsToQuery = getColumnsFromName(datasetApp, new String[] {raCol, decCol});
     columnsToQuery.addAll(getPrimaryKeys(datasetApp));
     dbParams.setSqlVisibleColumns(columnsToQuery);
-    DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(dbParams);
+    final DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(dbParams);
 
     try {
       if (dbParams.getDistinct()) {
@@ -132,26 +134,24 @@ public class FootprintResource extends SitoolsParameterizedResource {
       }
 
       while (databaseRequest.nextResult()) {
-        Record record = databaseRequest.getRecord();
-        String ra = String.valueOf(getValueFromKey(record, raCol));
-        String dec = String.valueOf(getValueFromKey(record, decCol));
+        final Record record = databaseRequest.getRecord();
+        String rightAscension = String.valueOf(getValueFromKey(record, raCol));
+        String declination = String.valueOf(getValueFromKey(record, decCol));
       }
 
-    }
-    catch (Exception ex) {
-    }
-    finally {
+    } catch (Exception ex) {
+        LOG.log(Level.FINER, null, ex);
+    } finally {
       try {
         databaseRequest.close();
-      }
-      catch (SitoolsException ex) {
-        Logger.getLogger(FootprintResource.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (SitoolsException ex) {
+        LOG.log(Level.FINER, null, ex);
       }
     }
   }
 
     /**
-     * Delete a cache
+     * Deletes a cache.
      */
     @Delete
   public void deleteCache() {
@@ -162,7 +162,7 @@ public class FootprintResource extends SitoolsParameterizedResource {
   }
 
   /**
-   * Get columns from a list of column name
+   * Gets columns from a list of column name.
    * 
    * @param datasetApp
    *          dataset Application
@@ -170,9 +170,9 @@ public class FootprintResource extends SitoolsParameterizedResource {
    *          columns name
    * @return Returns the columns from the list of columns name
    */
-  private List<Column> getColumnsFromName(DataSetApplication datasetApp, String[] columnsName) {
-    List<Column> columnsKey = new ArrayList<Column>();
-    List<Column> columns = datasetApp.getDataSet().getColumnModel();
+  private List<Column> getColumnsFromName(final DataSetApplication datasetApp, final String[] columnsName) {
+    final List<Column> columnsKey = new ArrayList<Column>();
+    final List<Column> columns = datasetApp.getDataSet().getColumnModel();
     for (Column columnIter : columns) {
       for (int i = 0; i < columnsName.length; i++) {
         if (columnIter.getColumnAlias().equals(columnsName[i])) {
@@ -183,9 +183,9 @@ public class FootprintResource extends SitoolsParameterizedResource {
     return columnsKey;
   }
 
-  private List<Column> getPrimaryKeys(DataSetApplication datasetApp) {
-    List<Column> columnsKey = new ArrayList<Column>();
-    List<Column> columns = datasetApp.getDataSet().getColumnModel();
+  private List<Column> getPrimaryKeys(final DataSetApplication datasetApp) {
+    final List<Column> columnsKey = new ArrayList<Column>();
+    final List<Column> columns = datasetApp.getDataSet().getColumnModel();
     for (Column columnIter : columns) {
       if (columnIter.isPrimaryKey()) {
         columnsKey.add(columnIter);
@@ -194,9 +194,9 @@ public class FootprintResource extends SitoolsParameterizedResource {
     return columnsKey;
   }
 
-  private Object getValueFromKey(Record record, String key) {
+  private Object getValueFromKey(final Record record, final String key) {
     Object value = null;
-    List<AttributeValue> attributes = record.getAttributeValues();
+    final List<AttributeValue> attributes = record.getAttributeValues();
     for (AttributeValue attributeIter : attributes) {
       if (attributeIter.getName().equals(key)) {
         value = attributeIter.getValue();
@@ -206,8 +206,7 @@ public class FootprintResource extends SitoolsParameterizedResource {
     return value;
   }
 
-  private Representation JSONRepresentation(String content) {
+  private Representation JSONRepresentation(final String content) {
     return new StringRepresentation(content, MediaType.APPLICATION_JSON);
-  }
-    private static final Logger LOG = Logger.getLogger(FootprintResource.class.getName());
+  }    
 }

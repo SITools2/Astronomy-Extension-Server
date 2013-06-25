@@ -19,11 +19,8 @@
 package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import healpix.core.AngularPosition;
-import healpix.tools.CoordTransform;
 import java.util.ArrayList;
 import java.util.List;
-import org.restlet.data.Status;
 
 /**
  * Provides the response of the server.
@@ -38,11 +35,11 @@ public class NameResolverResponse {
    * List of astroCoordinates for an object name. Two different objects can have the same name.
    * That's why we could have several AstroCoordinate for a given object name
    */
-  private List<AstroCoordinate> astroCoordinates;
+  private transient List<AstroCoordinate> astroCoordinates;
   /**
    * Service's exception.
    */
-  private NameResolverException exception;
+  private transient NameResolverException exception;
   
   /**
    * Constructs a new NameResolverRsponse with credits.
@@ -94,11 +91,11 @@ public class NameResolverResponse {
   
   /**
    * Adds a AstroCoordinate with the right ascension and declination.
-   * @param ra right ascension
-   * @param dec declination
+   * @param rightAscension right ascension
+   * @param declination declination
    */
-  public final void addAstroCoordinate(final double ra, final double dec) {
-    this.astroCoordinates.add(new AstroCoordinate(ra, dec));
+  public final void addAstroCoordinate(final double rightAscension, final double declination) {
+    this.astroCoordinates.add(new AstroCoordinate(rightAscension, declination));
   }
   
   /**
@@ -111,10 +108,10 @@ public class NameResolverResponse {
   
   /**
    * Sets the error.
-   * @param ex exception
+   * @param exceptionVal exception
    */
-  public final void setError(final NameResolverException ex) {
-    this.exception = ex;
+  public final void setError(final NameResolverException exceptionVal) {
+    this.exception = exceptionVal;
   }
   
   /**
@@ -131,40 +128,5 @@ public class NameResolverResponse {
    */
   public final boolean hasResult() {
     return (this.getError() == null) ? true : false;
-  }
-
-
-  /**
-   * Converts the sky position of an object from a Equatorial reference frame to galactic frame when neeeded.
-   *
-   * <p> if the coordinates of
-   * <code>astroCoord</code> are not in Equatorial frame, then a IllegalArgumentException is thrown. </p>
-   *
-   * @param astroCoord Sky object position in Equatorial reference frame
-   * @param coordinateSystem final reference frame
-   * @throws NameResolverException if the transformation Equatorial to galactic failed
-   */
-  private void processTransformation(final AstroCoordinate astroCoord, final AstroCoordinate.CoordinateSystem coordinateSystem) throws NameResolverException {
-    assert astroCoord != null;
-    assert coordinateSystem != null;
-    if (!AstroCoordinate.CoordinateSystem.EQUATORIAL.equals(astroCoord.getCoordinateSystem())) {
-      throw new IllegalArgumentException("astroCoord parameter cannot be null and must be in equatorial reference frame");
-    }
-    switch (coordinateSystem) {
-      case EQUATORIAL:
-        break;
-      case GALACTIC:
-        AngularPosition angularPosition = new AngularPosition(astroCoord.getDecAsDecimal(), astroCoord.getRaAsDecimal());
-        try {
-          angularPosition = CoordTransform.transformInDeg(angularPosition, CoordTransform.EQ2GAL);
-        } catch (Exception ex) {
-          throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
-        }
-        astroCoord.setRaAsDecimal(angularPosition.phi());
-        astroCoord.setDecAsDecimal(angularPosition.theta());
-        break;
-      default:
-        throw new NameResolverException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "The coordinate system " + coordinateSystem.name() + " is not supported");
-    }
   }
 }

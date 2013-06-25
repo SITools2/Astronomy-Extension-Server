@@ -1,5 +1,4 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -11,8 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
 import com.jhlabs.map.proj.Projection;
@@ -134,7 +132,7 @@ public abstract class Graph extends JApplet {
   /**
    * Maximum value of the right ascension / 2.
    */
-  public static final double RA_PI = 180.;
+  public static final double RA_PI = 180.; 
 
   /**
    * Supported projections.
@@ -539,25 +537,36 @@ public abstract class Graph extends JApplet {
   protected final void setRange(final double[] rangeVal) {
     this.range = rangeVal;
   }
+  
+  /**
+   * Setup the width of the image based on the height and the ratio.
+   */
+  public final void setupRatioImageSize() {
+    final double deltaX = getRange()[X_MAX] - getRange()[X_MIN];
+    final double deltaY = getRange()[Y_MAX] - getRange()[Y_MIN];
+    final double ratio = Math.abs(deltaX / deltaY);
+    final int height = getPixelHeight();
+    setPixelWidth((int) Math.ceil(height * ratio));  
+  }
 
   /**
    * Scale projected pixel along X axis.
    *
-   * @param o projected pixel
+   * @param xPixel projected pixel
    * @return scaled pixel
    */
-  protected final double scaleX(final double o) {
-    return (o * getPixelWidth() / (getRange()[X_MAX] - getRange()[X_MIN]) + getPixelWidth() / 2.0D);
+  protected final double scaleX(final double xPixel) {
+    return (xPixel * getPixelWidth() / (getRange()[X_MAX] - getRange()[X_MIN]) + getPixelWidth() / 2.0D);
   }
 
   /**
-   * Scale projected pixel along Y axis.
+   * Scale projected yPixel along Y axis.
    *
-   * @param o projected pixel
-   * @return the scaled pixel
+   * @param yPixel projected yPixel
+   * @return the scaled yPixel
    */
-  protected final double scaleY(final double o) {
-    return ((getRange()[Y_MAX] - o) * this.getPixelHeight() / (getRange()[Y_MAX] - getRange()[Y_MIN]));
+  protected final double scaleY(final double yPixel) {
+    return ((getRange()[Y_MAX] - yPixel) * this.getPixelHeight() / (getRange()[Y_MAX] - getRange()[Y_MIN]));
   }
 
   /**
@@ -567,7 +576,7 @@ public abstract class Graph extends JApplet {
    * @return the alpha composite
    */
   protected final AlphaComposite makeComposite(final float alpha) {
-    int type = AlphaComposite.SRC_OVER;
+    final int type = AlphaComposite.SRC_OVER;
     return AlphaComposite.getInstance(type, alpha);
   }
 
@@ -576,7 +585,7 @@ public abstract class Graph extends JApplet {
    *
    * @return Returns the number of pixels along X axis
    */
-  public int getPixelWidth() {
+  public final int getPixelWidth() {
     return this.pixelWidth;
   }
 
@@ -585,7 +594,7 @@ public abstract class Graph extends JApplet {
    *
    * @return Returns the number of pixels along Y axis
    */
-  public int getPixelHeight() {
+  public final int getPixelHeight() {
     return this.pixelHeight;
   }
 
@@ -604,7 +613,7 @@ public abstract class Graph extends JApplet {
    * @param pixelHeightVal number of pixels along Y axis
    */
   public final void setPixelHeight(final int pixelHeightVal) {
-    this.pixelHeight = pixelHeightVal;
+    this.pixelHeight = pixelHeightVal;   
   }
 
   /**
@@ -628,13 +637,13 @@ public abstract class Graph extends JApplet {
   }
 
   @Override
-  public void paint(final Graphics g) {
-    Graphics2D g2 = (Graphics2D) g;
-    Map map = new HashMap();
+  public void paint(final Graphics graphic) {    
+    final Graphics2D graphic2D = (Graphics2D) graphic;
+    final Map map = new HashMap();
     map.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     map.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
     map.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
     map.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
-    g2.setRenderingHints(map);
+    graphic2D.setRenderingHints(map);
   }
 }

@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,7 @@ import org.w3c.dom.Element;
     "linkAndTABLEOrRESOURCE",
     "any"
 })
-public class Resource {
+public class Resource implements Serializable {
 
     @XmlElement(name = "DESCRIPTION")
     protected AnyTEXT description;

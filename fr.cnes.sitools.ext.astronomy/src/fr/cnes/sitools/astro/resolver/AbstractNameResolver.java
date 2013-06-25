@@ -32,14 +32,14 @@ public abstract class AbstractNameResolver {
   /**
    * The next element in the chain of responsibility.
    */
-  protected AbstractNameResolver successor;    
+  private AbstractNameResolver successor;    
 
   /**
    * Sets the next element of the chain of responsability.
    * @param successorVal the next element of the chain of responsability
    */
   public final void setNext(final AbstractNameResolver successorVal) {
-        this.successor = successorVal;
+        this.setSuccessor(successorVal);
   }
 
   /**
@@ -47,5 +47,21 @@ public abstract class AbstractNameResolver {
    * @return the response of the name resolver
    */
   public abstract NameResolverResponse getResponse();  
+
+    /**
+     * Returns the successor.
+     * @return the successor
+     */
+    public final AbstractNameResolver getSuccessor() {
+        return successor;
+    }
+
+    /**
+     * Sets the successor.
+     * @param successorVal the successor to set
+     */
+    public final void setSuccessor(final AbstractNameResolver successorVal) {
+        this.successor = successorVal;
+    }
 
 }

@@ -46,7 +46,7 @@ public class OpenSearchDescription extends OpenSearchBase {
   /**
    * Data model.
    */
-  private Map dataModel = new HashMap();
+  private final transient Map dataModel = new HashMap();
 
   @Override
   public final void doInit() {
@@ -63,7 +63,7 @@ public class OpenSearchDescription extends OpenSearchBase {
   private String buildTemplateURL() throws JSONException, IOException {
     final String description = "%s/search?q={searchTerms}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;count={count?}&amp;%s&amp;format=json%s";
     String fields = "";
-    List<Index> indexedFields = getIndexedFields();
+    final List<Index> indexedFields = getIndexedFields();
     for (Index indexedField : indexedFields) {
       if (!indexedField.getTopTerms().isEmpty()) {
         fields = fields.concat("&amp;");
@@ -73,9 +73,9 @@ public class OpenSearchDescription extends OpenSearchBase {
         fields = fields.concat("?}");
       }
     }
-    String coordsystem = "ICRS".equals(getPluginParameters().get("referenceSystem").getValue()) ? "astro" : "geo";
-    String queryShape = getPluginParameters().get("queryShape").getValue();
-    OpenSearchApplicationPlugin.GeometryShape geometryShape = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(queryShape);
+    final String coordsystem = "ICRS".equals(getPluginParameters().get("referenceSystem").getValue()) ? "astro" : "geo";
+    final String queryShape = getPluginParameters().get("queryShape").getValue();
+    final OpenSearchApplicationPlugin.GeometryShape geometryShape = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(queryShape);
     return String.format(description,
             getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + getPluginModel().getUrlAttach(),
             geometryShape.getOpenSearchDescription(coordsystem),
@@ -92,7 +92,7 @@ public class OpenSearchDescription extends OpenSearchBase {
   private String buildClusterTemplateURL() throws JSONException, IOException {
     final String description = "%s/cluster/search?q={searchTerms}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;count={count?}&amp;%s&amp;format=json%s";
     String fields = "";
-    List<Index> indexedFields = getIndexedFields();
+    final List<Index> indexedFields = getIndexedFields();
     for (Index indexedField : indexedFields) {
       if (!indexedField.getTopTerms().isEmpty()) {
         fields = fields.concat("&amp;");
@@ -102,9 +102,9 @@ public class OpenSearchDescription extends OpenSearchBase {
         fields = fields.concat("?}");
       }
     }
-    String coordsystem = "ICRS".equals(getPluginParameters().get("referenceSystem").getValue()) ? "astro" : "geo";
-    String queryShape = getPluginParameters().get("queryShape").getValue();
-    OpenSearchApplicationPlugin.GeometryShape geometryShape = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(queryShape);
+    final String coordsystem = "ICRS".equals(getPluginParameters().get("referenceSystem").getValue()) ? "astro" : "geo";
+    final String queryShape = getPluginParameters().get("queryShape").getValue();
+    final OpenSearchApplicationPlugin.GeometryShape geometryShape = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(queryShape);
     return String.format(description,
             getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + getPluginModel().getUrlAttach(),
             geometryShape.getOpenSearchDescription(coordsystem),
@@ -121,7 +121,7 @@ public class OpenSearchDescription extends OpenSearchBase {
   private String buildTemplateMOC() throws JSONException, IOException {
     final String description = "%s/moc?q={searchTerms}&amp;%s&amp;format=json%s";
     String fields = "";
-    List<Index> indexedFields = getIndexedFields();
+    final List<Index> indexedFields = getIndexedFields();
     for (Index indexedField : indexedFields) {
       if (!indexedField.getTopTerms().isEmpty()) {
         fields = fields.concat("&amp;");
@@ -131,9 +131,9 @@ public class OpenSearchDescription extends OpenSearchBase {
         fields = fields.concat("?}");
       }
     }
-    String coordsystem = "ICRS".equals(getPluginParameters().get("referenceSystem").getValue()) ? "astro" : "geo";
-    String queryShape = getPluginParameters().get("queryShape").getValue();
-    OpenSearchApplicationPlugin.GeometryShape geometryShape = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(queryShape);
+    final String coordsystem = "ICRS".equals(getPluginParameters().get("referenceSystem").getValue()) ? "astro" : "geo";
+    final String queryShape = getPluginParameters().get("queryShape").getValue();
+    final OpenSearchApplicationPlugin.GeometryShape geometryShape = OpenSearchApplicationPlugin.GeometryShape.getGeometryShapeFrom(queryShape);
     return String.format(description,
             getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + getPluginModel().getUrlAttach(),
             geometryShape.getOpenSearchDescription(coordsystem),
@@ -209,30 +209,30 @@ public class OpenSearchDescription extends OpenSearchBase {
     info.setIdentifier("OpenSearchSimpleImageAccessProtocol");
     info.setDocumentation("OpenSearch description for the Simple Image Access Protocol");
     
-    DocumentationInfo documentationXml = new DocumentationInfo();
+    final DocumentationInfo documentationXml = new DocumentationInfo();
     documentationXml.setTitle("XML");
     documentationXml.setTextContent("Opensearch description.");
 
-    DocumentationInfo documentationHTML = new DocumentationInfo();
+    final DocumentationInfo documentationHTML = new DocumentationInfo();
     documentationHTML.setTitle("Error");
     documentationHTML.setTextContent("Returns the error.");    
     
-    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
+    final RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
     representationInfoError.setDocumentation(documentationHTML);
 
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.TEXT_XML);
     representationInfo.setDocumentation(documentationXml);
 
     // represensation when the response is fine
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
     responseOK.setStatuses(Arrays.asList(Status.SUCCESS_OK));
     responseOK.getRepresentations().add(representationInfo);
 
     // represensation when the response is not fine
-    ResponseInfo responseNOK = new ResponseInfo();
+    final ResponseInfo responseNOK = new ResponseInfo();
     responseNOK.setStatuses(Arrays.asList(Status.SERVER_ERROR_INTERNAL, Status.CLIENT_ERROR_BAD_REQUEST));
     responseNOK.getRepresentations().add(representationInfoError);
 
     info.setResponses(Arrays.asList(responseOK, responseNOK));
-  }  
+  }
 }

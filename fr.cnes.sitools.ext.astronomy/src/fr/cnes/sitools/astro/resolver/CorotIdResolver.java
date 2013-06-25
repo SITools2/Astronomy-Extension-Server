@@ -95,8 +95,8 @@ public class CorotIdResolver extends AbstractNameResolver {
       double dec = Double.valueOf(coordinates[1]);      
       response.addAstroCoordinate(ra, dec);
     } catch (NameResolverException ex) {
-      if (this.successor != null) {
-        response = this.successor.getResponse();
+      if (getSuccessor() != null) {
+        response = getSuccessor().getResponse();
       } else {
         response.setError(ex);
       }

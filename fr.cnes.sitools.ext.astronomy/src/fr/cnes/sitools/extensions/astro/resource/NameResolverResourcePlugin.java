@@ -1,16 +1,21 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/*
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file is part of SITools2.
+ * This file is a part of SITools2
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program inputStream distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
@@ -27,10 +32,45 @@ import java.util.logging.Logger;
  *
  * <p>This service answers to the following scenario:<br/> As user, I want to set the name and the service returns its coordinates in order
  * to integrate this service in a tool. Moreover several output can be supported. This means it is possible to get several coordinates for
- * on single name. </p>
+ * on single name. 
+ * <br/>
+ * <img src="../../../../../../images/NameResolver-usecase.png"/>
+ * <br/>
+ * </p>
+ * <p>
+ * In addition, the service has some dependancies with external services
+ * <br/>
+ * <img src="../../../../../../images/NameResolverResourcePlugin.png"/>
+ * <br/>
+ * </p>
  *
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml NameResolver-usecase.png
+ * title Name Resolver
+ * User --> (Name Resolver) : requests
+ * Admin --> (Name Resolver) : adds and configures the Name Resolver.
+ * (Name Resolver) .. (project) : uses
+ * @enduml
+ * @startuml
+ * package "Services" {
+ *  HTTP - [NameResolverResourcePlugin]
+ *  [Cache]
+ * }
+ * cloud {
+ * [CDS]
+ * [IMCCE]
+ * [IAS]
+ * }
+ * package "Project/Dataset" {
+ *  HTTP - [Project/Dataset]
+ * }
+ * [NameResolverResourcePlugin] --> [Project/Dataset] : "attached to"
+ * [NameResolverResourcePlugin] --> [CDS] : "uses"
+ * [NameResolverResourcePlugin] --> [IMCCE] : "uses"
+ * [NameResolverResourcePlugin] --> [IAS] : "uses"
+ * [NameResolverResourcePlugin] .. [Cache]
+ * @enduml
  */
 public class NameResolverResourcePlugin extends ResourceModel {
 
@@ -52,18 +92,24 @@ public class NameResolverResourcePlugin extends ResourceModel {
             + " to query name resolver services. coordSystem variable is either GALACTIC or EQUATORIAL");
     setDataSetSelection(DataSetSelectionType.NONE);
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.NameResolverResource.class.getName());
-    ResourceParameter xsEnumEditable = new ResourceParameter("nameResolver",
+    setConfiguration();
+    this.completeAttachUrlWith("/nameResolver/{objectName}/{coordSystem}");    
+  }
+  
+  /**
+   * Sets the configuration for the administrator.
+   */
+  private void setConfiguration() {
+    final ResourceParameter xsEnumEditable = new ResourceParameter("nameResolver",
             "Select your resolver name service for avoiding to add resolverName as URL parameter",
             ResourceParameterType.PARAMETER_USER_INPUT);
     xsEnumEditable.setValue("CDS"); // default value
-    String valueTypexsEnumEditable = "xs:enum-multiple[IMCCE,CDS,IAS,ALL]";
-    xsEnumEditable.setValueType(valueTypexsEnumEditable);
+    xsEnumEditable.setValueType("xs:enum-multiple[IMCCE,CDS,IAS,ALL]");
     this.addParam(xsEnumEditable);
-    ResourceParameter epoch = new ResourceParameter("epoch", "Set an epoch for avoiding to add epoch as URL parameter",
+    final ResourceParameter epoch = new ResourceParameter("epoch", "Set an epoch for avoiding to add epoch as URL parameter",
             ResourceParameterType.PARAMETER_USER_INPUT);
     epoch.setValueType("String");
     epoch.setValue("now");
-    this.addParam(epoch);
-    this.completeAttachUrlWith("/nameResolver/{objectName}/{coordSystem}");
-  }
+    this.addParam(epoch);      
+  }  
 }

@@ -43,22 +43,12 @@ public abstract class AbstractGraphDecorator extends Graph {
   }
 
   @Override
-  public final int getPixelWidth() {
-    return getGraph().getPixelWidth();
-  }
-
-  @Override
-  public final int getPixelHeight() {
-    return getGraph().getPixelHeight();
-  }
-
-  @Override
   public final double[] getRange() {
     return getGraph().getRange();
   }
 
   @Override
-  public abstract void paint(Graphics g);
+  public abstract void paint(Graphics graphic);
 
   /**
    * Returns the graph.
@@ -66,7 +56,7 @@ public abstract class AbstractGraphDecorator extends Graph {
    * @return the graph
    */
   protected final Graph getGraph() {
-    return graph;
+    return this.graph;
   }
 
   /**

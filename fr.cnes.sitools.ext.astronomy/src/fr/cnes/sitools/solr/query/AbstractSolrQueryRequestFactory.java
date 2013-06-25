@@ -196,7 +196,7 @@ public abstract class AbstractSolrQueryRequestFactory {
     protected final String searchTermsConstraint(Map<String, Object> queryParameters) {
         String result = "";
         if (Util.isSet(queryParameters.get("q"))) {
-            result = "searchTerms:" + String.valueOf(queryParameters.get("q"));
+            result = "searchTerms:" + queryParameters.get("q");
             queryParameters.remove("q");
         }
         return result;

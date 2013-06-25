@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -45,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "Definitions", propOrder = {
     "coosysOrPARAM"
 })
-public class Definitions {
+public class Definitions implements Serializable {
 
     @XmlElements({
         @XmlElement(name = "COOSYS", type = CoordinateSystem.class),

@@ -1,17 +1,18 @@
-/******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
-
+ * ***************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.model.Category;
@@ -19,6 +20,7 @@ import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
@@ -38,12 +40,9 @@ import org.restlet.routing.Template;
 
 /**
  * Plugin to access to the Simple Cone Search service.
- * 
- * <p>
- * Application for AstroGlobWeb Module. This application queries a Simple Cone Search service 
- * by the use of (Healpix,order) parameters and it returns a GeoJson file.<br/>
- * The cache directive is set to FOREVER
- * </p>
+ *
+ * <p> Application for AstroGlobWeb Module. This application queries a Simple Cone Search service by the use of (Healpix,order) parameters
+ * and it returns a GeoJson file.<br/> The cache directive is set to FOREVER </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -69,11 +68,10 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    * Maximum of characters that is allowed for the longname by the open search standard.
    */
   private static final int MAX_LENGTH_LONGNAME = 48;
-  
   /**
    * Dictionary.
    */
-  private Map<String, VoDictionary> dico = new HashMap<String, VoDictionary>();
+  private final transient Map<String, VoDictionary> dico = new HashMap<String, VoDictionary>();
 
   /**
    * Constructor.
@@ -90,7 +88,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    */
   public OpenSearchVOConeSearchApplicationPlugin(final Context context) {
     super(context);
-    constructor();
+    constructor();    
   }
 
   /**
@@ -102,7 +100,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
   public OpenSearchVOConeSearchApplicationPlugin(final Context context, final ApplicationPluginModel model) {
     super(context, model);
     try {
-      Category category = Category.valueOf(getParameter("category").getValue());
+      final Category category = Category.valueOf(getParameter("category").getValue());
       if (model.getCategory() == null) {
         model.setCategory(category);
       }
@@ -192,8 +190,16 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     param.setValueType("String");
     param.setValue("http://alasky.u-strasbg.fr/footprints/tables/vizier/II_306_sdss8/MOC");
     this.addParameter(param);
-  }
 
+    param = new ApplicationPluginParameter();
+    param.setName("cacheable");
+    param.setDescription("Set to true when the result can be cached");
+    param.setValueType("xs:enum[True,False]");
+    param.setValue("False");
+    this.addParameter(param);    
+    SingletonCacheHealpixDataAccess.create();
+  }
+  
   @Override
   public final void sitoolsDescribe() {
     this.setName("VO OpenSearch Application for Cone Search");
@@ -203,22 +209,23 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
   }
 
   @Override
-  public final Restlet createInboundRoot() {
-    Router router = new Router(getContext());
+  public final Restlet createInboundRoot() {    
+    final Router router = new Router(getContext());
     router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
     router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeDescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
-      router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearch.class);
+      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearch.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchDico.class);
-      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);      
+      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.VoMocDescription.class);
       attachParameterizedResources(router);
     }
     return router;
   }
-  
+
   /**
    * Returns the dictionary.
+   *
    * @return the dictonary
    */
   public final Map<String, VoDictionary> getDico() {
@@ -230,87 +237,87 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     return new Validator<AbstractApplicationPlugin>() {
       @Override
       public final Set<ConstraintViolation> validate(final AbstractApplicationPlugin item) {
-        Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-        Map<String, ApplicationPluginParameter> params = item.getModel().getParametersMap();
-        ApplicationPluginParameter shortName = params.get("shortName");
+        final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+        final Map<String, ApplicationPluginParameter> params = item.getModel().getParametersMap();
+        final ApplicationPluginParameter shortName = params.get("shortName");
         if (!shortName.getValue().isEmpty() && (shortName.getValue().length() > MAX_LENGTH_SHORTNAME || shortName.getValue().contains("<") || shortName.getValue().contains(">"))) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("shortName");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 16 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter description = params.get("description");
-        if (!description.getValue().isEmpty() && (description.getValue().length() > MAX_LENGTH_DESCRIPTION 
+        final ApplicationPluginParameter description = params.get("description");
+        if (!description.getValue().isEmpty() && (description.getValue().length() > MAX_LENGTH_DESCRIPTION
                 || description.getValue().contains("<") || description.getValue().contains(">"))) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("description");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 1024 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter contact = params.get("contact");
+        final ApplicationPluginParameter contact = params.get("contact");
         if (contact.getValue().contains("@") && contact.getValue().contains(".")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("contact");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must be an email address");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter tags = params.get("tags");
+        final ApplicationPluginParameter tags = params.get("tags");
         if (tags.getValue().length() > MAX_LENGTH_TAGS || tags.getValue().contains("<")
                 || tags.getValue().contains(">")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("tags");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 256 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter longName = params.get("longName");
+        final ApplicationPluginParameter longName = params.get("longName");
         if (longName.getValue().length() > MAX_LENGTH_LONGNAME || longName.getValue().contains("<")
                 || longName.getValue().contains(">")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("longName");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("The value must contain 48 of fewer characters of plain text. The value must not contain HTML or other markup");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter imagePng = params.get("imagePng");
+        final ApplicationPluginParameter imagePng = params.get("imagePng");
         try {
           if (!imagePng.getValue().isEmpty()) {
-            URL url = new URL(imagePng.getValue());
+            final URL url = new URL(imagePng.getValue());
           }
         } catch (MalformedURLException ex) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("imagePng");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage(ex.getMessage());
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter imageIcon = params.get("imageIcon");
+        final ApplicationPluginParameter imageIcon = params.get("imageIcon");
         try {
           if (!imageIcon.getValue().isEmpty()) {
-            URL url = new URL(imageIcon.getValue());
+            final URL url = new URL(imageIcon.getValue());
           }
         } catch (MalformedURLException ex) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("imageIcon");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage(ex.getMessage());
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter syndicationRight = params.get("syndicationRight");
+        final ApplicationPluginParameter syndicationRight = params.get("syndicationRight");
         if (!syndicationRight.getValue().equals("open") && !syndicationRight.getValue().equals("closed") && !syndicationRight.getValue().equals("private")
                 && !syndicationRight.getValue().equals("limited")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("syndicationRight");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("syndicationRight must take one of the following values : open, private, limited, closed");
           constraintList.add(constraint);
         }
-        ApplicationPluginParameter coneSearchURL = params.get("coneSearchURL");
+        final ApplicationPluginParameter coneSearchURL = params.get("coneSearchURL");
         if (coneSearchURL.getValue().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setValueName("coneSearchURL");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setMessage("A cone search URL must be set.");

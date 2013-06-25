@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -29,7 +30,7 @@ import javax.xml.namespace.QName;
  * 
  */
 @XmlRegistry
-public class VotableFactory {
+public class VotableFactory implements Serializable {
 
     private final static QName _TableLINK_QNAME = new QName("http://www.ivoa.net/xml/VOTable/v1.2", "LINK");
     private final static QName _TableDESCRIPTION_QNAME = new QName("http://www.ivoa.net/xml/VOTable/v1.2", "DESCRIPTION");

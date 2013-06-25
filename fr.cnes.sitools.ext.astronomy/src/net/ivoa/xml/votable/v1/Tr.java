@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,7 +52,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "Tr", propOrder = {
     "td"
 })
-public class Tr {
+public class Tr implements Serializable {
 
     @XmlElement(name = "TD", required = true)
     protected List<Td> td;

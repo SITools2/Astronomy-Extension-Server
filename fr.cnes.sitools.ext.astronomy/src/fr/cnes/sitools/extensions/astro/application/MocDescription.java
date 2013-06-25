@@ -21,7 +21,7 @@ import fr.cnes.sitools.astro.graph.GenericProjection;
 import fr.cnes.sitools.astro.graph.Graph;
 import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation;
 import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
-import fr.cnes.sitools.astro.representation.FitsRepresentation;
+import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
 import fr.cnes.sitools.astro.representation.PngRepresentation;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
@@ -113,7 +113,7 @@ public class MocDescription extends OpenSearchBase {
   /**
    * Stores user query parameters.
    */
-  private Map<String, Object> queryParameters;
+  private transient Map<String, Object> queryParameters;
 
   @Override
   public void doInit() {
@@ -139,12 +139,12 @@ public class MocDescription extends OpenSearchBase {
    */
   private void setQueryParameters() {
     final Form form = this.getRequest().getResourceRef().getQueryAsForm();
-    Set<String> parameters = form.getNames();
+    final Set<String> parameters = form.getNames();
 
     this.queryParameters = new HashMap<String, Object>(parameters.size());
 
     for (String parameterIter : parameters) {
-      Object value = form.getFirstValue(parameterIter);
+      final Object value = form.getFirstValue(parameterIter);
       this.queryParameters.put(parameterIter, value);
     }
     if (!this.queryParameters.containsKey("count")) {
@@ -164,21 +164,21 @@ public class MocDescription extends OpenSearchBase {
    * @throws Exception Error while processing MOC
    */
   protected void computeMoc() throws Exception {
-    AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(queryParameters, CoordSystem.EQUATORIAL, getSolrBaseUrl(), Scheme.NESTED);
+    final AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(queryParameters, CoordSystem.EQUATORIAL, getSolrBaseUrl(), Scheme.NESTED);
     querySolr.createQueryBuilder();
     String query = querySolr.getSolrQueryRequest();
     query = query.concat("&rows=0&facet=true&facet.field=order13&facet.limit=-1&facet.mincount=1");
     //ClientResource client = new ClientResource(getSolrBaseUrl() + "/select/?q=*:*&rows=0&facet=true&facet.field=order13&facet.limit=-1&facet.mincount=1&wt=json");
-    ClientResource client = new ClientResource(query);
-    String text = client.get().getText();
+    final ClientResource client = new ClientResource(query);
+    final String text = client.get().getText();
     JSONObject json = new JSONObject(text);
     json = json.getJSONObject("facet_counts");
     json = json.getJSONObject("facet_fields");
-    JSONArray array = json.getJSONArray("order13");
+    final JSONArray array = json.getJSONArray("order13");
 
     setMoc(new HealpixMoc());
     for (int i = 0; i < array.length(); i++) {
-      MocCell mocCell = new MocCell();
+      final MocCell mocCell = new MocCell();
       mocCell.set(ORDER_MAX, array.getLong(i));
       getMoc().add(mocCell);
     }
@@ -217,7 +217,7 @@ public class MocDescription extends OpenSearchBase {
    */
   @Get("fits")
   public final Representation getFitsResult() {
-    return new FitsRepresentation("moc.fits", getMoc());
+    return new FitsMocRepresentation("moc.fits", getMoc());
   }
 
   /**
@@ -241,7 +241,7 @@ public class MocDescription extends OpenSearchBase {
       }
     }
 
-    return new PngRepresentation(graph, DEFAULT_PNG_WIDTH, DEFAULT_PNG_HEIGHT);
+    return new PngRepresentation(graph, DEFAULT_PNG_HEIGHT);
   }
 
   /**
@@ -259,27 +259,27 @@ public class MocDescription extends OpenSearchBase {
     info.setIdentifier("Sky coverage service");
     info.setDocumentation("Sky coverage service is based on the MOC library from CDS.");
 
-    DocumentationInfo documentationFits = new DocumentationInfo();
+    final DocumentationInfo documentationFits = new DocumentationInfo();
     documentationFits.setTitle("Sky coverage");
     documentationFits.setTextContent("Returns the sky coverage as a FITS");    
     
-    DocumentationInfo documentationJson = new DocumentationInfo();
+    final DocumentationInfo documentationJson = new DocumentationInfo();
     documentationJson.setTitle("Sky coverage");
     documentationJson.setTextContent("Returns the sky coverage as a MOC");
 
-    DocumentationInfo documentationPng = new DocumentationInfo();
+    final DocumentationInfo documentationPng = new DocumentationInfo();
     documentationPng.setTitle("Sky coverage");
     documentationPng.setTextContent("Returns the sky coverage as a PNG file");
 
-    DocumentationInfo documentationTxt = new DocumentationInfo();
+    final DocumentationInfo documentationTxt = new DocumentationInfo();
     documentationTxt.setTitle("Sky coverage");
     documentationTxt.setTextContent("Returns the sky coverage as a percent of the full sky");
     
-    DocumentationInfo documentationHTML = new DocumentationInfo();
+    final DocumentationInfo documentationHTML = new DocumentationInfo();
     documentationHTML.setTitle("Error");
     documentationHTML.setTextContent("Returns the error");    
 
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
     representationInfo.setDocumentation(documentationJson);
     representationsInfo.add(representationInfo);
@@ -293,14 +293,14 @@ public class MocDescription extends OpenSearchBase {
     representationInfo.setDocumentation(documentationFits);
     representationsInfo.add(representationInfo);    
 
-    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
+    final RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
     representationInfoError.setDocumentation(documentationHTML);
 
-    ResponseInfo responseOK = new ResponseInfo();
+    final ResponseInfo responseOK = new ResponseInfo();
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);
 
-    ResponseInfo responseNOK = new ResponseInfo();
+    final ResponseInfo responseNOK = new ResponseInfo();
     responseNOK.getRepresentations().add(representationInfoError);
     responseNOK.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
 

@@ -38,21 +38,7 @@ public abstract class Utility {
    */
   private static final Logger LOG = Logger.getLogger(Utility.class.getName());
   
-  /**
-   * Full Right ascension range in degree.
-   */
-  private static final double RANGE_RA_DEG = 360.0;
-  
-  /**
-   * Full Right ascension range in hours.
-   */
-  private static final double RANGE_RA_HOURS = 24;  
-  
-  /**
-   * Converts hours in degree.
-   */
-  private static final double HOURSTODEG = RANGE_RA_DEG / RANGE_RA_HOURS;
-  
+
   /**
    * Checks if an object is not null.
    * @param obj object to test
@@ -71,7 +57,7 @@ public abstract class Utility {
    */
   public static Object getDataType(final net.ivoa.xml.votable.v1.DataType dataType, final String value) { 
     Object response;
-    String valueTrim = value.trim();
+    final String valueTrim = value.trim();
     switch (dataType) {
       case DOUBLE:
         response = Double.valueOf(valueTrim);
@@ -107,7 +93,7 @@ public abstract class Utility {
    * @return the right ascension in degree.
    */
   public static double parseRaVO(final Map<Field, String> iterDoc, final Field field) {
-    String valRa = iterDoc.get(field);
+    final String valRa = iterDoc.get(field);
     double raValue;
     if (Utility.isSet(field.getUnit()) && field.getUnit().contains("h:m:s")) {
       raValue = AstroCoordinate.parseRa(valRa);
@@ -126,7 +112,7 @@ public abstract class Utility {
    * @return the right ascension in degree.
    */
   public static double parseDecVO(final Map<Field, String> iterDoc, final Field field) {
-    String valDec = iterDoc.get(field);
+    final String valDec = iterDoc.get(field);
     double decValue;
     if (Utility.isSet(field.getUnit()) && field.getUnit().contains("d:m:s")) {
       decValue = AstroCoordinate.parseDec(valDec);
@@ -139,12 +125,12 @@ public abstract class Utility {
   /**
    * Converts a MJD to ISO date.
    *
-   * @param mjd modified julian date
+   * @param modifiedJulianDate modified julian date
    * @return ISO date
    */
-  public static String modifiedJulianDateToISO(final double mjd) {
-    double jd = mjd + 2400000.5;
-    return julianDateToISO(jd);
+  public static String modifiedJulianDateToISO(final double modifiedJulianDate) {
+    final double julianDate = modifiedJulianDate + 2400000.5;
+    return julianDateToISO(julianDate);
   }
 
   /**

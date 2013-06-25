@@ -99,8 +99,8 @@ public class IMCCESsoResolver extends AbstractNameResolver {
       List<AstroCoordinate> astrocoordinates = processResponse(json);      
       response.addAstoCoordinates(astrocoordinates);
     } catch (NameResolverException ex) {
-      if (this.successor != null) {
-        response = this.successor.getResponse();
+      if (getSuccessor() != null) {
+        response = getSuccessor().getResponse();
       } else {
         response.setError(ex);       
       }

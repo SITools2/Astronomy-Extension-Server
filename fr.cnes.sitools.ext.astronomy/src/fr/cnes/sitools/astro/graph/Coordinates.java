@@ -39,11 +39,11 @@ public class Coordinates {
   /**
    * List of points along X.
    */
-  private List<Double> xList;
+  private final transient List<Double> xList;
   /**
    * List of points along Y.
    */
-  private List<Double> yList;
+  private final transient List<Double> yList;
 
 
   /**
@@ -57,12 +57,12 @@ public class Coordinates {
   /**
    * Adds a point to a shape.
    *
-   * @param x x value
-   * @param y y value
+   * @param xVal xVal value
+   * @param yVal yVal value
    */
-  public final void addCoordinate(final double x, final double y) {
-    this.xList.add(x);
-    this.yList.add(y);
+  public final void addCoordinate(final double xVal, final double yVal) {
+    this.xList.add(xVal);
+    this.yList.add(yVal);
   }
 
   /**
@@ -98,14 +98,14 @@ public class Coordinates {
   /**
    * Returns a point from a shape.
    *
-   * @param i index of the point in the shape
+   * @param index index of the point in the shape
    * @return a point
    */
-  public final Point2D.Double getCoordinate(final int i) {
-    if (i > xList.size()) {
+  public final Point2D.Double getCoordinate(final int index) {
+    if (index > xList.size()) {
       throw new ArrayIndexOutOfBoundsException("The coordinate index does not exist");
     }
-    return new Point2D.Double(xList.get(i), yList.get(i));
+    return new Point2D.Double(xList.get(index), yList.get(index));
   }
 
   /**
@@ -128,15 +128,14 @@ public class Coordinates {
    */
   public final List<Point2D.Double> getPixelsFromProjection(final Projection proj, final double[] range, final double pixelWidth, final double pixelHeight) {
     assert (proj != null && range.length == Graph.NUMBER_VALUES_RANGE);
-    List<Point2D.Double> listPixels = new ArrayList<Point2D.Double>();
+    final List<Point2D.Double> listPixels = new ArrayList<Point2D.Double>();
     for (int i = 0; i < this.xList.size(); i++) {
-      Point2D.Double point2D = new Point2D.Double();
-      double ra = this.xList.get(i);
-      double dec = this.yList.get(i);
-      ra = (ra >= Graph.RA_MIN && ra <= Graph.RA_PI) ? -ra : Graph.RA_MAX - ra;
+      final Point2D.Double point2D = new Point2D.Double();
+      final double rightAscension = (this.xList.get(i) >= Graph.RA_MIN && this.xList.get(i) <= Graph.RA_PI) ? -this.xList.get(i) : Graph.RA_MAX - this.xList.get(i);
+      final double declination = this.yList.get(i);
       try {
-        if (proj.inside(MapMath.degToRad(ra), MapMath.degToRad(dec))) {
-          proj.project(MapMath.degToRad(ra), MapMath.degToRad(dec), point2D);
+        if (proj.inside(MapMath.degToRad(rightAscension), MapMath.degToRad(declination))) {
+          proj.project(MapMath.degToRad(rightAscension), MapMath.degToRad(declination), point2D);
           point2D.x = scaleX(point2D.getX(), range, pixelWidth);
           point2D.y = scaleY(point2D.getY(), range, pixelHeight);
           listPixels.add(point2D);
@@ -151,25 +150,25 @@ public class Coordinates {
   /**
    * Scales along X axis.
    *
-   * @param o coordinate to scale
+   * @param xPixel coordinate to scale
    * @param range range
    * @param pixelWidth number of pixels along X axis
    * @return projected point along X axis
    */
-  private double scaleX(final double o, final double[] range, final double pixelWidth) {
-    return (-1 * o * pixelWidth / (range[Graph.X_MAX] - range[Graph.X_MIN]) + pixelWidth / 2.0D);
+  private double scaleX(final double xPixel, final double[] range, final double pixelWidth) {
+    return (-1 * xPixel * pixelWidth / (range[Graph.X_MAX] - range[Graph.X_MIN]) + pixelWidth / 2.0D);
   }
 
   /**
    * Scales along Y axis.
    *
-   * @param o coordinate to scale
+   * @param yPixel coordinate to scale
    * @param range range
    * @param pixelHeight number of pixels along Y axis
    * @return projected point along Y axis
    */
-  private double scaleY(final double o, final double[] range, final double pixelHeight) {
-    return ((range[Graph.Y_MAX] - o) * pixelHeight / (range[Graph.Y_MAX] - range[Graph.Y_MIN]));
+  private double scaleY(final double yPixel, final double[] range, final double pixelHeight) {
+    return ((range[Graph.Y_MAX] - yPixel) * pixelHeight / (range[Graph.Y_MAX] - range[Graph.Y_MIN]));
   }
 
   /**
@@ -178,7 +177,7 @@ public class Coordinates {
    * @return center of the shape
    */
   public final SpatialVector getCenter() {
-    Point2D.Double vec = this.getCoordinate(0);
+    final Point2D.Double vec = this.getCoordinate(0);
     SpatialVector center = new SpatialVector(vec.x, vec.y);
     for (int i = 1; i < this.xList.size(); i++) {
       center = center.add(new SpatialVector(xList.get(i), yList.get(i)));
@@ -198,14 +197,13 @@ public class Coordinates {
    */
   public final Point2D.Double getPixelCenterFromProjection(final Projection proj, final double[] range, final double pixelWidth, final double pixelHeight) {
     assert (proj != null && range.length == Graph.NUMBER_VALUES_RANGE);
-    Point2D.Double point2D = new Point2D.Double();
-    SpatialVector sv = this.getCenter();
-    double ra = sv.ra();
-    double dec = sv.dec();
-    ra = (ra >= Graph.RA_MIN && ra <= Graph.RA_PI) ? -ra : Graph.RA_MAX - ra;
+    final Point2D.Double point2D = new Point2D.Double();
+    final SpatialVector spatialVector = this.getCenter();
+    final double rightAscension = (spatialVector.ra() >= Graph.RA_MIN && spatialVector.ra() <= Graph.RA_PI) ? -spatialVector.ra() : Graph.RA_MAX - spatialVector.ra();
+    final double declination = spatialVector.dec();
     try {
-      if (proj.inside(MapMath.degToRad(ra), MapMath.degToRad(dec))) {
-        proj.project(MapMath.degToRad(ra), MapMath.degToRad(dec), point2D);
+      if (proj.inside(MapMath.degToRad(rightAscension), MapMath.degToRad(declination))) {
+        proj.project(MapMath.degToRad(rightAscension), MapMath.degToRad(declination), point2D);
         point2D.x = scaleX(point2D.getX(), range, pixelWidth);
         point2D.y = scaleY(point2D.getY(), range, pixelHeight);
       }

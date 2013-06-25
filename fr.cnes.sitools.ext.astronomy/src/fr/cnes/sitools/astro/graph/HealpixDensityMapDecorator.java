@@ -65,7 +65,7 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   /**
    * Map that stores the density map.
    */
-  private final HealpixMapDouble healpixMapDouble;
+  private final transient HealpixMapDouble healpixMapDouble;
   /**
    * Initialize value for the max density.
    */
@@ -82,11 +82,16 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
    * @param nside Healpix nside
    * @param scheme Healpix scheme
    * @param alpha transparency
-   * @throws Exception if a Healpix Exception happens.
+   * @throws GraphException if a Healpix Exception happens.
    */
-  public HealpixDensityMapDecorator(final Graph graph, final int nside, final Scheme scheme, final float alpha) throws Exception {
+  public HealpixDensityMapDecorator(final Graph graph, final int nside, final Scheme scheme, final float alpha) throws GraphException  {
     super(graph, nside, scheme, null, alpha);
-    this.healpixMapDouble = new HealpixMapDouble(nside, scheme);
+      try {
+          this.healpixMapDouble = new HealpixMapDouble(nside, scheme);
+      } catch (Exception ex) {
+          LOG.log(Level.FINER, null, ex);
+          throw new GraphException(ex);
+      }
   }
 
   /**
@@ -112,7 +117,7 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   public final void importHealpixMap(final HealpixMapDouble healpixMapDoubleVal, final CoordinateTransformation coordinateTransformation) throws Exception {
     this.setCoordinateTransformation(coordinateTransformation);
     this.getHealpixMapDouble().importGeneral(healpixMapDoubleVal, false);
-    double[] data = this.healpixMapDouble.getData();
+    final double[] data = this.healpixMapDouble.getData();
     setMinValue(data[0]);
     for (int i = 0; i < data.length; i++) {
       setMaxValue(Math.max(getMaxValue(), data[i]));
@@ -168,28 +173,29 @@ public class HealpixDensityMapDecorator extends HealpixGridDecorator {
   /**
    * Draws a Healpix polygon.
    *
-   * @param g2 graphic to decorate
+   * @param graphic2D graphic to decorate
    * @param healpix Healpix index
    * @param pix Healpix pixel to draw
    * @param coordinateTransformation Coordinate Transformation to apply
    */
   @Override
-  protected void drawHealpixPolygon(Graphics2D g2, final HealpixIndex healpix, long pix, final CoordinateTransformation coordinateTransformation) {
+  protected void drawHealpixPolygon(final Graphics2D graphic2D, final HealpixIndex healpix, final long pix, final CoordinateTransformation coordinateTransformation) {
     try {
-      int numberOfVectors = computeNumberPointsForPixel(getHealpixMapDouble().getNside(), pix);
-      Vec3[] vectors = getHealpixMapDouble().boundaries(pix, numberOfVectors);
+      final int numberOfVectors = computeNumberPointsForPixel(getHealpixMapDouble().getNside(), pix);
+      final Vec3[] vectors = getHealpixMapDouble().boundaries(pix, numberOfVectors);
       computeReferenceFrameTransformation(vectors, coordinateTransformation);
-      Coordinates[] coordinates = splitHealpixPixelForDetectedBorder(vectors);
+      final Coordinates[] coordinates = splitHealpixPixelForDetectedBorder(vectors);
+      final Polygon2D poly = new Polygon2D();
       for (int i = 0; i < coordinates.length; i++) {
-        Coordinates coordinate = coordinates[i];
-        List<Point2D.Double> pixels = coordinate.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
-        double numberOfObjectsInCurrentPixel = getHealpixMapDouble().getPixel(pix);
-        Color color = colorGradient(numberOfObjectsInCurrentPixel, getMinValue(), getMaxValue());
+        final Coordinates coordinate = coordinates[i];
+        final List<Point2D.Double> pixels = coordinate.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
+        final double numberOfObjectsInCurrentPixel = getHealpixMapDouble().getPixel(pix);
+        final Color color = colorGradient(numberOfObjectsInCurrentPixel, getMinValue(), getMaxValue());
         if (color != null) {
-          g2.setPaint(color);
-          Polygon2D poly = new Polygon2D(pixels);
-          g2.draw(poly);
-          g2.fill(poly);
+          graphic2D.setPaint(color);
+          poly.setPoints(pixels);
+          graphic2D.draw(poly);
+          graphic2D.fill(poly);
         }
       }
     } catch (Exception ex) {

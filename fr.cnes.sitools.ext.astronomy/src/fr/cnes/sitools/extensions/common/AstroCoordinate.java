@@ -25,7 +25,8 @@ import jsky.coords.DMS;
 import jsky.coords.HMS;
 
 /**
- * Contains utility methods to store astronomical coordinates.<br/> An AstroCoordinate allows you to store information about a sky position
+ * Contains utility methods to store astronomical coordinates.<br/>
+ * An AstroCoordinate allows you to store information about a sky position
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -46,20 +47,20 @@ public class AstroCoordinate {
   /**
    * Right ascension in degree.
    */
-  private double ra;
+  private transient double ra;
   /**
    * Declination in degree.
    */
-  private double dec;
+  private transient double dec;
   /**
    * Coordinate system.
    */
-  private CoordinateSystem coordSystem;
+  private transient CoordinateSystem coordSystem;
   
   /**
    * Provides complementary metadata.
    */
-  private Map<String, String> metadata = new HashMap<String, String>(); 
+  private transient Map<String, String> metadata = new HashMap<String, String>(); 
 
   /**
    * List of supported coordinate system.
@@ -69,11 +70,33 @@ public class AstroCoordinate {
     /**
      * Galactic coordinates.
      */
-    GALACTIC,
+    GALACTIC("galactic"),
     /**
      * Equatorial coordinates.
      */
-    EQUATORIAL
+    EQUATORIAL("equatorial.ICRS");
+    
+    /**
+     * Coordinates reference system.
+     */
+    private final String crs;
+
+    /**
+     * Constructor.
+     * @param crsVal Coordinates reference system.
+     */
+    CoordinateSystem(final String crsVal) {
+        this.crs = crsVal;
+    }
+    
+    /**
+     * Returns the coordinates reference system.
+     * @return crs
+     */
+    public String getCrs() {
+        return this.crs;
+    }
+    
   }
 
   /**
@@ -83,7 +106,7 @@ public class AstroCoordinate {
   protected AstroCoordinate(final AstroCoordinate astro) {
     this.ra = astro.getRaAsDecimal();
     this.dec = astro.getDecAsDecimal();
-    this.coordSystem = astro.getCoordinateSystem();
+    this.coordSystem = astro.getCoordinateSystem();    
   }
 
   /**
@@ -96,6 +119,13 @@ public class AstroCoordinate {
     this.ra = raVal;
     this.dec = decVal;
     this.coordSystem = CoordinateSystem.EQUATORIAL;
+  }
+  
+  /**
+   * Empty constructor.
+   */
+  public AstroCoordinate() {
+      this.coordSystem = CoordinateSystem.EQUATORIAL;
   }
 
   /**
@@ -163,7 +193,7 @@ public class AstroCoordinate {
    * @RuntimeException - if coordinate format is not valid
    */
   public final String getRaAsSexagesimal() {
-    HMS hms = new HMS(this.ra * DEG_TO_HOUR);
+    final HMS hms = new HMS(this.ra * DEG_TO_HOUR);
     return hms.toString(true);
   }
 
@@ -174,7 +204,7 @@ public class AstroCoordinate {
    * @RuntimeException - if coordinate format is not valid
    */
   public final String getDecAsSexagesimal() {
-    DMS dms = new DMS(this.dec);
+    final DMS dms = new DMS(this.dec);
     return dms.toString(true);
   }
 
@@ -213,7 +243,7 @@ public class AstroCoordinate {
    * @see The conversion from sexagesimal to decimal coordinates is done by the use of <a href="http://jsky.sourceforge.net/">jsky</a>.
    */
   public final void setRaAsSexagesimal(final String raStr) {
-    HMS hms = new HMS(raStr);
+    final HMS hms = new HMS(raStr);
     this.ra = hms.getVal() * HOUR_TO_DEG;
   }
 
@@ -234,7 +264,7 @@ public class AstroCoordinate {
    * @see The conversion from sexagesimal to decimal coordinates is done by the use of <a href="http://jsky.sourceforge.net/">jsky</a>.
    */
   public final void setDecAsSexagesimal(final String decStr) {
-    DMS dms = new DMS(decStr);
+    final DMS dms = new DMS(decStr);
     this.dec = dms.getVal();
   }
 
@@ -313,13 +343,13 @@ public class AstroCoordinate {
           } catch (Exception ex) {
             throw new RuntimeException(ex);
           }
-        } 
+        }
         break;
       default:
         throw new RuntimeException(coordSystemVal + " is not supported.");
-    }   
+    }
   }
-  
+
   /**
    * Provides read-only access to the map.
    * @return complementary information
@@ -327,15 +357,15 @@ public class AstroCoordinate {
   public final Map<String, String> getMatadata() {
     return Collections.unmodifiableMap(this.metadata);
   }
-  
+
   /**
    * Checks if some complementary metadata has been defined.
    * @return <code>True</code> if come complementaty is defined otherwise <code>false</code>
    */
   public final boolean hasMetadata() {
-    return (getMatadata().isEmpty()) ? false : true;
+    return !(getMatadata().isEmpty());
   }
-  
+
   /**
    * Sets metadata.
    * @param metadataMap metadata to set

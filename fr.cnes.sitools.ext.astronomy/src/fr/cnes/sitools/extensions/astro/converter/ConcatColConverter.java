@@ -49,13 +49,13 @@ public class ConcatColConverter extends AbstractConverter {
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
     setClassVersion("1.0");
-    ConverterParameter colIn1 = new ConverterParameter("ColIn1", "Column on which the string will be concat",
+    final ConverterParameter colIn1 = new ConverterParameter("ColIn1", "Column on which the string will be concat",
             ConverterParameterType.CONVERTER_PARAMETER_IN);
-    ConverterParameter colIn2 = new ConverterParameter("ColIn2", "Column on which the string will be concat",
+    final ConverterParameter colIn2 = new ConverterParameter("ColIn2", "Column on which the string will be concat",
             ConverterParameterType.CONVERTER_PARAMETER_IN);
-    ConverterParameter colOut = new ConverterParameter("ColOut", "Column where the result of this converter is set",
+    final ConverterParameter colOut = new ConverterParameter("ColOut", "Column where the result of this converter is set",
             ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter pattern = new ConverterParameter("Pattern",
+    final ConverterParameter pattern = new ConverterParameter("Pattern",
             "pattern of the concatenation.", ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     pattern.setValue("%s %s");
     pattern.setValueType("String");
@@ -68,17 +68,17 @@ public class ConcatColConverter extends AbstractConverter {
   @Override
   public final Record getConversionOf(final Record record) throws Exception {
     Record out = record;
-    Object attrIn1 = getInParam("ColIn1", record).getValue();
-    Object attrIn2 = getInParam("ColIn2", record).getValue();
-    AttributeValue attrOut = getOutParam("ColOut", record);
+    final Object attrIn1 = getInParam("ColIn1", record).getValue();
+    final Object attrIn2 = getInParam("ColIn2", record).getValue();
+    final AttributeValue attrOut = getOutParam("ColOut", record);
     if (Util.isSet(attrIn1) && Util.isSet(attrIn2)) {
-      String conversionResult = String.format(getInternParam("Pattern").getValue(), attrIn1, attrIn2);
+      final String conversionResult = String.format(getInternParam("Pattern").getValue(), attrIn1, attrIn2);
       attrOut.setValue(conversionResult);
     } else if (Util.isSet(attrIn1) && !Util.isSet(attrIn2)) {
-      String conversionResult = String.format(getInternParam("Pattern").getValue(), attrIn1);
+      final String conversionResult = String.format(getInternParam("Pattern").getValue(), attrIn1);
       attrOut.setValue(conversionResult);
     } else if (!Util.isSet(attrIn1) && Util.isSet(attrIn2)) {
-      String conversionResult = String.format(getInternParam("Pattern").getValue(), attrIn2);
+      final String conversionResult = String.format(getInternParam("Pattern").getValue(), attrIn2);
       attrOut.setValue(conversionResult);
     }
     LOG.log(Level.FINEST, "Conversion of record into {0}", out);
@@ -90,11 +90,11 @@ public class ConcatColConverter extends AbstractConverter {
     return new Validator<AbstractConverter>() {
       @Override
       public final Set<ConstraintViolation> validate(final AbstractConverter item) {
-        Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-        Map<String, ConverterParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+        final Map<String, ConverterParameter> params = item.getParametersMap();
         ConverterParameter param = params.get("Pattern");
         if (Util.isEmpty(param.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("A pattern must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -103,7 +103,7 @@ public class ConcatColConverter extends AbstractConverter {
         }
         param = params.get("ColIn1");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("ColIn1 must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -111,7 +111,7 @@ public class ConcatColConverter extends AbstractConverter {
         }
         param = params.get("ColIn2");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("ColIn2 must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -119,7 +119,7 @@ public class ConcatColConverter extends AbstractConverter {
         }
         param = params.get("ColOut");
         if (param.getAttachedColumn().isEmpty()) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("ColOut must be set");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());

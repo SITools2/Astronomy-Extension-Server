@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "FITS", propOrder = {
     "stream"
 })
-public class FITS {
+public class FITS implements Serializable {
 
     @XmlElement(name = "STREAM", required = true)
     protected Stream stream;

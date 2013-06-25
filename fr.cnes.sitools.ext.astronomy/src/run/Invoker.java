@@ -37,7 +37,6 @@ import fr.cnes.sitools.astro.resolver.CDSNameResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
 import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
-import fr.cnes.sitools.astro.vo.conesearch.USNO_B1Query;
 import fr.cnes.sitools.common.SitoolsSettings;
 import healpix.core.Healpix;
 import healpix.essentials.HealpixBase;
@@ -113,9 +112,17 @@ public class Invoker {
     //mocA.add(mocJson);
 //        int order = 3;
 //    Graph graph = new GenericProjection(Graph.ProjectionType.AITOFF); 
-//    graph = new ImageBackGroundDecorator(graph, new File("/home/malapert/Documents/Equirectangular-projection.jpg"));
+//    graph = new HealpixGridDecorator(graph, Scheme.RING, 4);
+//    ((HealpixGridDecorator)graph).setColor(Color.RED);
+    //graph = new CoordinateDecorator(graph);
+    //graph = new CircleDecorator(graph, 0, 0, 10, Scheme.RING, 4);
+    //((CircleDecorator)graph).setColor(Color.BLUE);
+    // graph = new CircleDecorator(graph, 0, 80, 20, Scheme.RING, 4);
+    //((CircleDecorator)graph).setColor(Color.gray);     
+//    Utility.createJFrame(graph, 200);
+    //graph = new ImageBackGroundDecorator(graph, new File("/home/malapert/Documents/Equirectangular-projection.jpg"));
 
-    //graph = new HealpixDensityMapDecorator(graph, Scheme.RING, 6, 0.5f);    
+    //graph = new HealpixDensityMapDecorator(graph, Scheme.RING, 4, 0.5f);    
     //map.fill(0.0);
    // Polygon polygon = new Polygon(new Point(-118.95597, -36.1787, CoordSystem.GEOCENTRIC), new Point(106.04403, 73.68463, CoordSystem.GEOCENTRIC));
     //Polygon polygon = new Polygon(new Point(80, 30, CoordSystem.GEOCENTRIC), new Point(100, 70, CoordSystem.GEOCENTRIC));
@@ -168,7 +175,7 @@ public class Invoker {
 //            graph = new HealpixFootprint(graph, Scheme.NESTED, order, (float)0.8);
 //            ((HealpixDensityMapDecorator)graph).importHealpixMap(mapDouble, CoordinateTransformation.EQ2GAL);                       
 //        }
- //   Utility.createJFrame(graph, 900, 500);
+//    Utility.createJFrame(graph, 900, 500);
 //
 //        Shape point = new Point(-86.921 ,74.464 , CoordSystem.GEOCENTRIC);
 //        Index index = GeometryIndex.createIndex(point, Scheme.RING);

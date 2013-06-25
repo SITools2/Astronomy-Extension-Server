@@ -57,10 +57,10 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
   public final Representation getJsonResponse() {
     try {
       final String referenceSystem = getPluginParameters().get("referenceSystem").getValue();
-      CoordSystem coordSystem = referenceSystem.equals("geocentric") ? CoordSystem.GEOCENTRIC : CoordSystem.EQUATORIAL;
+      final CoordSystem coordSystem = referenceSystem.equals("geocentric") ? CoordSystem.GEOCENTRIC : CoordSystem.EQUATORIAL;
       final String healpixSchemeParam = getPluginParameters().get("healpixScheme").getValue();
-      Scheme healpixScheme = Scheme.valueOf(healpixSchemeParam);
-      AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(this.getQueryParameters(), coordSystem, getSolrBaseUrl(), healpixScheme);
+      final Scheme healpixScheme = Scheme.valueOf(healpixSchemeParam);
+      final AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(this.getQueryParameters(), coordSystem, getSolrBaseUrl(), healpixScheme);
       querySolr.createQueryBuilder();
       String query = querySolr.getSolrQueryRequest();
       query = query.concat("&rows=0&facet=true&facet.limit=-1&facet.mincount=1&wt=json"
@@ -69,9 +69,9 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
               + "&facet.field=order8&facet.field=order9&facet.field=order10"
               + "&facet.field=order11&facet.field=order12&facet.field=order13");
       LOG.log(Level.INFO, query);
-      ClientResource client = new ClientResource(query);
-      Representation rep = client.get();
-      JsonRepresentation json = new JsonRepresentation(rep.getText());
+      final ClientResource client = new ClientResource(query);
+      final Representation rep = client.get();
+      final JsonRepresentation json = new JsonRepresentation(rep.getText());
       json.setIndenting(true);
       return json;
     } catch (Exception ex) {
@@ -99,35 +99,35 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
     info.setIdentifier("ObservationsJSON");
     info.setDocumentation("Service to distribute observations from SOLR");
 
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("healpix", true, "long", ParameterStyle.QUERY,
             "Healpix number"));
     parametersInfo.add(new ParameterInfo("order", true, "integer", ParameterStyle.QUERY,
             "Healpix order"));
-    ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
+    final ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
     json.setFixed("json");
     parametersInfo.add(json);
 
     info.getRequest().setParameters(parametersInfo);
     
     // represensation when the response is fine
-    ResponseInfo responseOK = new ResponseInfo();    
+    final ResponseInfo responseOK = new ResponseInfo();    
 
-    DocumentationInfo documentation = new DocumentationInfo();
+    final DocumentationInfo documentation = new DocumentationInfo();
     documentation.setTitle("Observations service");
     documentation.setTextContent("Services on observations as JSON");
 
-    List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
-    RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
+    final RepresentationInfo representationInfo = new RepresentationInfo(MediaType.APPLICATION_JSON);
     representationInfo.setDocumentation(documentation);    
     representationsInfo.add(representationInfo);
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);
 
     // represensation when the response is not fine
-    ResponseInfo responseNOK = new ResponseInfo();
-    RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
-    DocumentationInfo documentationHTML = new DocumentationInfo();
+    final ResponseInfo responseNOK = new ResponseInfo();
+    final RepresentationInfo representationInfoError = new RepresentationInfo(MediaType.TEXT_HTML);
+    final DocumentationInfo documentationHTML = new DocumentationInfo();
     documentationHTML.setTitle("Error");
     documentationHTML.setTextContent("Returns the error.");
     representationInfoError.setDocumentation(documentationHTML);

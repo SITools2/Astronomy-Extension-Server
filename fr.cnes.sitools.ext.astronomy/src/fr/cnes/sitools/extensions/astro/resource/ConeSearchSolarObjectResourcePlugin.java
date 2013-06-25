@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -31,9 +31,39 @@ import java.util.logging.Logger;
  * <p>This service answers to the following scenario:<br/>
  * As user, I want to know if one of my image can contain a system solar object 
  * at the acquisition time of my image in order to detect or analyse system solar objects.
+ * <br/>
+ * <img src="../../../../../../images/ConeSearchSolarObjectResolver-usecase.png"/>
+ * <br/>
+ * </p>
+ * <p>
+ * In addition, the service has some dependancies with external services
+ * <br/>
+ * <img src="../../../../../../images/ConeSearchSolarObjectResolverResourcePlugin.png"/>
+ * <br/>
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml ConeSearchSolarObjectResolver-usecase.png
+ * title Name Resolver
+ * User --> (ConeSearch Solar Object Resolver) : requests
+ * Admin --> (ConeSearch Solar Object Resolver) : adds and configures the Name Resolver.
+ * (ConeSearch Solar Object Resolver) .. (project) : uses
+ * @enduml
+ * @startuml
+ * package "Services" {
+ *  HTTP - [ConeSearchSolarObjectResolverResourcePlugin]
+ *  [Cache]
+ * }
+ * cloud {
+ * [IMCCE]
+ * }
+ * package "Project/Dataset" {
+ *  HTTP - [Project/Dataset]
+ * }
+ * [ConeSearchSolarObjectResolverResourcePlugin] --> [Project/Dataset] : "attached to"
+ * [ConeSearchSolarObjectResolverResourcePlugin] --> [IMCCE] : "uses"
+ * [ConeSearchSolarObjectResolverResourcePlugin] .. [Cache]
+ * @enduml
  */
 public class ConeSearchSolarObjectResourcePlugin extends ResourceModel {
 
@@ -49,11 +79,11 @@ public class ConeSearchSolarObjectResourcePlugin extends ResourceModel {
     super();
     setClassAuthor("J-C Malapert");
     setClassOwner("CNES");
-    setClassVersion("1.0");
+    setClassVersion("1.1");
     setName("Solar object service");
     setDescription("This service provides access to solar objects from IMCCE");
     setDataSetSelection(DataSetSelectionType.NONE);
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResource.class.getName());
-    this.completeAttachUrlWith("/solarObjects");
+    this.completeAttachUrlWith("/solarObjects/{coordSystem}");
   }
 }

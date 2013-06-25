@@ -5,3 +5,4 @@ fr.cnes.sitools.extensions.astro.converter.PolygonConverter
 fr.cnes.sitools.extensions.astro.converter.CenterPositionConverter
 fr.cnes.sitools.extensions.astro.converter.ConcatConverter
 fr.cnes.sitools.extensions.astro.converter.ConcatColConverter
+fr.cnes.sitools.extensions.astro.converter.ImageNotFoundConverter

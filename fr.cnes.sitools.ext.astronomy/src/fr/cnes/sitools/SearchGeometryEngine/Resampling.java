@@ -18,9 +18,7 @@
  */
 package fr.cnes.sitools.SearchGeometryEngine;
 
-import healpix.essentials.Pointing;
-import healpix.essentials.Vec3;
-import healpix.tools.SpatialVector;
+import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -137,6 +135,67 @@ public class Resampling {
     double delta2 = Math.abs(start - current);
     double answer = delta1 < delta2 ? end : current;
     return answer;
+  }
+  
+  /**
+   * Resamples Right ascension along the hour great circle 
+   * given the start and the stop of Right ascension axis
+   * 
+   * <p>
+   * Some examples with a step of 10
+   * 340 -> 40 returns 340, 350, 0, 10, 20, 30
+   * 40 -> 340 return 40, 50, ..., 330
+   * </p>
+   * 
+   * @param startInit the starting right ascension
+   * @param stopInit the stoping right ascension
+   * @param stepValue resampling value
+   * @return Set of right ascension value [startInit, stopInit]
+   */
+  public static double[] hourCircle(final double startInit, final double stopInit, final double stepValue) {    
+    double current = startInit;
+    double desired = (startInit > stopInit) ? stopInit + SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_RIGHT_ASCENSION : stopInit;
+    double[] listPointsMax = new double[(int) (SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_RIGHT_ASCENSION / stepValue) + 1];
+    int i = 0;
+    while (current < desired) {
+      listPointsMax[i] = (current + SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_RIGHT_ASCENSION) % SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_RIGHT_ASCENSION;
+      i++;
+      current += stepValue;
+    }
+    double[] listPoints = new double[i + 1];
+    System.arraycopy(listPointsMax, 0, listPoints, 0, i);
+    listPoints[i] = stopInit;
+    return listPoints;
+  }
+  
+  /**
+   * Resamples declination along the declination axis 
+   * given the start and the stop of declination axis
+   *
+   * <p>
+   * Some examples with a step of 10
+   * 40 -> -40 returns 40, 30, ... , -30
+   * -40 -> 40 return -40, -30, ..., 30
+   * </p>
+   *
+   * @param startInit the starting declination
+   * @param stopInit the stoping dclination
+   * @param stepValue resampling value
+   * @return Set of declination values [startInit, stopInit]
+   */
+  public static double[] decCircle(final double startInit, final double stopInit, final double stepValue) {
+    double current = startInit;
+    int step = (int) ((stopInit - startInit) / stepValue);
+    int stepSign = (int) Math.signum(step);
+    int stepAbsoluteValue = Math.abs(step);
+    double[] listPoints = new double[stepAbsoluteValue + 2];
+    listPoints[0] = current;
+    for (int i = 1; i < stepAbsoluteValue; i++) {      
+      current = current + stepSign * stepValue;
+      listPoints[i] = current;
+    }
+    listPoints[listPoints.length - 1] = stopInit;
+    return listPoints;
   }
 
   /**

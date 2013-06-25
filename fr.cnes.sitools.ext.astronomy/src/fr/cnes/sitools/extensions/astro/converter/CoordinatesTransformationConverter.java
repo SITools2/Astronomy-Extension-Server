@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
  * This file is part of SITools2.
  *
@@ -61,19 +61,19 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
     setClassAuthor("J-C Malapert");
     setClassVersion("1.0");
     setClassOwner("CNES");
-    ConverterParameter longitude = new ConverterParameter("longitude",
+    final ConverterParameter longitude = new ConverterParameter("longitude",
             "Longitude (Ra, galactic longitude) in decimal degree", ConverterParameterType.CONVERTER_PARAMETER_IN);
-    ConverterParameter latitude = new ConverterParameter("latitude",
+    final ConverterParameter latitude = new ConverterParameter("latitude",
             "Latitude (Dec, galactic latitude) in decimal degree", ConverterParameterType.CONVERTER_PARAMETER_IN);
-    ConverterParameter longitudeConverted = new ConverterParameter("converted longitude",
+    final ConverterParameter longitudeConverted = new ConverterParameter("converted longitude",
             "Longitude (Ra, galactic longitude) in decimal degree", ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter latitudeConverted = new ConverterParameter("converted latitude",
+    final ConverterParameter latitudeConverted = new ConverterParameter("converted latitude",
             "Latitude (Dec, galactic latitude) in decimal degree", ConverterParameterType.CONVERTER_PARAMETER_OUT);
-    ConverterParameter precision = new ConverterParameter("precision", "result precision for double (#0.00)",
+    final ConverterParameter precision = new ConverterParameter("precision", "result precision for double (#0.00)",
             ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     precision.setValue("#0.00");
     precision.setValueType("String");
-    ConverterParameter transformation = new ConverterParameter("conversionType",
+    final ConverterParameter transformation = new ConverterParameter("conversionType",
             "one of the following values: ECL2EQ, ECL2GAL, EQ2ECL, EQ2GAL, GAL2ECL, GAL2EQ",
             ConverterParameterType.CONVERTER_PARAMETER_INTERN);
     transformation.setValue("EQ2GAL");
@@ -90,16 +90,16 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
   public final Record getConversionOf(final Record record) throws Exception {
     Record out = record;
 
-    Object attrLongitude = getInParam("longitude", record).getValue();
-    Object attrLatitude = getInParam("latitude", record).getValue();
+    final Object attrLongitude = getInParam("longitude", record).getValue();
+    final Object attrLatitude = getInParam("latitude", record).getValue();
     if (Util.isSet(attrLongitude) && Util.isSet(attrLatitude)) {
-      AttributeValue attrConvertedLongitude = getOutParam("converted longitude", record);
-      AttributeValue attrConvertedLatitude = getOutParam("converted latitude", record);
-      String conversionType = getInternParam("conversionType").getValue();
+      final AttributeValue attrConvertedLongitude = getOutParam("converted longitude", record);
+      final AttributeValue attrConvertedLatitude = getOutParam("converted latitude", record);
+      final String conversionType = getInternParam("conversionType").getValue();
 
-      double latitude = Double.valueOf(String.valueOf(attrLatitude));
-      double longitude = Double.valueOf(String.valueOf(attrLongitude));
-      AngularPosition angularPosition = new AngularPosition(latitude, longitude);
+      final double latitude = Double.valueOf(String.valueOf(attrLatitude));
+      final double longitude = Double.valueOf(String.valueOf(attrLongitude));
+      final AngularPosition angularPosition = new AngularPosition(latitude, longitude);
 
       int transformationType = 0;
       if (conversionType.equals("ECL2EQ")) {
@@ -118,10 +118,10 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
         throw new IllegalArgumentException("Transformation type is not recognized");
       }
       // convert the coordinates
-      AngularPosition newPosition = CoordTransform.transformInDeg(angularPosition, transformationType);
+      final AngularPosition newPosition = CoordTransform.transformInDeg(angularPosition, transformationType);
 
-      String latitudeStr = roundNumber(newPosition.theta());
-      String longitudeStr = roundNumber(newPosition.phi());
+      final String latitudeStr = roundNumber(newPosition.theta());
+      final String longitudeStr = roundNumber(newPosition.phi());
 
       LOG.log(Level.FINEST, "conversion {0} : ({1},{2}) to ({3},{4})",
               new Object[]{conversionType, longitude, latitude, longitudeStr, latitudeStr});
@@ -130,7 +130,7 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
       attrConvertedLongitude.setValue(longitudeStr);
       attrConvertedLatitude.setValue(latitudeStr);
 
-      Logger.getLogger(CoordinatesTransformationConverter.class.getName()).log(Level.FINEST, "Conversion of record into {0},{1}", new Object[]{longitudeStr, latitudeStr});
+      LOG.log(Level.FINEST, "Conversion of record into {0},{1}", new Object[]{longitudeStr, latitudeStr});
     }
     return out;
   }
@@ -140,14 +140,14 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
     return new Validator<AbstractConverter>() {
       @Override
       public final Set<ConstraintViolation> validate(final AbstractConverter item) {
-        Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-        Map<String, ConverterParameter> params = item.getParametersMap();
+        final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+        final Map<String, ConverterParameter> params = item.getParametersMap();
 
         // Check if the transformation is a part of the supported transformations
         ConverterParameter param = params.get("conversionType");
-        List listReferenceFrameConv = Arrays.asList("ECL2EQ", "ECL2GAL", "EQ2ECL", "EQ2GAL", "GAL2ECL", "GAL2EQ");
+        final List listReferenceFrameConv = Arrays.asList("ECL2EQ", "ECL2GAL", "EQ2ECL", "EQ2GAL", "GAL2ECL", "GAL2EQ");
         if (!listReferenceFrameConv.contains(param.getValue())) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("A value from " + listReferenceFrameConv.toString() + " must be choosen");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -158,7 +158,7 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
         // Check quickly if the procecision is set and correct
         param = params.get("precision");
         if (!param.getValue().startsWith("#")) {
-          ConstraintViolation constraint = new ConstraintViolation();
+          final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setMessage("Precision must start by #");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(param.getName());
@@ -177,7 +177,7 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
    * @return the rounded number
    */
   public final String roundNumber(final double d) {
-    NumberFormat formatter = new DecimalFormat(this.getInternParam("precision").getValue(),
+    final NumberFormat formatter = new DecimalFormat(this.getInternParam("precision").getValue(),
             DecimalFormatSymbols.getInstance(Locale.ENGLISH));
     return formatter.format(d);
   }

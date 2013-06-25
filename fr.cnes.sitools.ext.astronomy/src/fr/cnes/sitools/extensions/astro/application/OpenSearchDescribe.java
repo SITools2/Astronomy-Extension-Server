@@ -43,23 +43,23 @@ public class OpenSearchDescribe extends OpenSearchBase {
 
   @Get
   public final Representation describeQueryParameters() {
-    JSONObject filters = new JSONObject();
-    List<Index> indexes = getIndexedFields();
-    JSONArray filterArray = new JSONArray();
+    final JSONObject filters = new JSONObject();
+    final List<Index> indexes = getIndexedFields();
+    final JSONArray filterArray = new JSONArray();
     for (Index index : indexes) {
       try {
-        JSONObject filter = new JSONObject();
+        final JSONObject filter = new JSONObject();
         filter.put("id", index.getName());
         filter.put("title", index.getName());
         if (index.isCanBeCategorized()) {
           filter.put("type", "enumeration");
           filter.put("unique", "false");
           filter.put("population", index.getPopulation());
-          JSONArray son = new JSONArray();
+          final JSONArray son = new JSONArray();
           filter.put("son", son);
-          Map<String, Long> topTerms = index.getTopTerms();
+          final Map<String, Long> topTerms = index.getTopTerms();
           for (String term : topTerms.keySet()) {
-            JSONObject termEnum = new JSONObject();
+            final JSONObject termEnum = new JSONObject();
             termEnum.put("id", term);
             termEnum.put("title", term);
             termEnum.put("value", term);
@@ -80,7 +80,7 @@ public class OpenSearchDescribe extends OpenSearchBase {
         Logger.getLogger(OpenSearchDescribe.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-    JsonRepresentation jsonRep = new JsonRepresentation(filters);
+    final JsonRepresentation jsonRep = new JsonRepresentation(filters);
     jsonRep.setIndenting(true);
     return jsonRep;
   }

@@ -106,6 +106,15 @@
         <valueType>xs:string</valueType>
       </ApplicationPluginParameter>
     </entry>
+    <entry>
+      <string>cacheable</string>
+      <ApplicationPluginParameter>
+        <name>cacheable</name>
+        <description>Set to true when the result can be cached</description>
+        <value>False</value>
+        <valueType>xs:enum[True,False]</valueType>
+      </ApplicationPluginParameter>
+    </entry>    
   </parametersMap>
   <label>SIA</label>
   <urlAttach>/sia</urlAttach>
