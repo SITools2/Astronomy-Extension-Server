@@ -3,7 +3,7 @@
  *
  * This file is a part of SITools2
  * 
- * This program inputStream free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -42,6 +42,8 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
 import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
@@ -52,7 +54,8 @@ import org.restlet.resource.ResourceException;
 
 /**
  * Computes a sky coverage based on Healpix MOCs as input parameters.
- *
+ * 
+ * @see SkyCoverageResourcePlugin the sky coverage plugin.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SkyCoverageResource extends SitoolsParameterizedResource {
@@ -357,6 +360,11 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
     this.addInfo(info);
     info.setIdentifier("skyCoverage");
     info.setDocumentation("Retrieves the sky coverage.");
+    
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    parametersInfo.add(new ParameterInfo(SkyCoverageResourcePlugin.INPUT_PARAMETER, true, "string", ParameterStyle.QUERY,
+            "list of MOC resources separated by a ;"));
+    info.getRequest().setParameters(parametersInfo);
 
     info.getResponse().getStatuses().add(Status.SUCCESS_OK);
 

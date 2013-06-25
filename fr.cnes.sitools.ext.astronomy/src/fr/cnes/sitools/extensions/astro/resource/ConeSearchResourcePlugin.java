@@ -1,16 +1,21 @@
 /******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * *****************************************************************************/
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
@@ -41,9 +46,38 @@ import java.util.logging.Logger;
  * As user, I want to search on my data using ConeSearch Protocol standard
  * in order to retrieve the result as a VOTable and to use it in
  * Virtual Observatory tool.
+ * <br/>
+ * <img src="../../../../../../images/CSP-usecase.png"/>
+ * <br/>
+ * In addition, this plugin has several dependencies with different components:<br/>
+ * <img src="../../../../../../images/ConeSearchResourcePlugin.png"/>
+ * <br/> 
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml CSP-usecase.png
+ * title Publishing data through CSP
+ * User --> (CSP service) : requests
+ * Admin --> (CSP service) : adds and configures the CSP service from the dataset.
+ * (CSP service) .. (dataset) : uses
+ * @enduml
+ * @startuml
+ * package "Services" {
+ *  HTTP - [ConeSearchResourcePlugin]
+ * }
+ * database "Database" {
+ *   frame "Data" {
+ *     [myData]
+ *   }
+ * }
+ * package "Dataset" {
+ *  HTTP - [Dataset]
+ *  [VODictionary]
+ * }
+ * [ConeSearchResourcePlugin] --> [Dataset]
+ * [Dataset] --> [myData]
+ * [Dataset] --> [VODictionary]
+ * @enduml
  */
 public class ConeSearchResourcePlugin extends ResourceModel {
   /**
@@ -69,7 +103,14 @@ public class ConeSearchResourcePlugin extends ResourceModel {
 
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.NONE);
-
+    setConfiguration();
+    this.completeAttachUrlWith("/conesearch");
+  }
+  
+  /**
+   * Sets the configuration for the administrator.
+   */
+  private void setConfiguration() {
     final ResourceParameter dictionary = new ResourceParameter(ConeSearchProtocolLibrary.DICTIONARY,
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
@@ -148,11 +189,9 @@ public class ConeSearchResourcePlugin extends ResourceModel {
             ResourceParameterType.PARAMETER_INTERN);
     verbosity.setValueType("xs:enum[True, False]");
     verbosity.setValue("True");
-    addParam(verbosity);
-
-    this.completeAttachUrlWith("/conesearch");
+    addParam(verbosity);      
   }
-
+  
   /**
    * Validates.
    *

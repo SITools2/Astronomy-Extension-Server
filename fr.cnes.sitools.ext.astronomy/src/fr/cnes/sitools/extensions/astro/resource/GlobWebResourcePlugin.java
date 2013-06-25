@@ -64,12 +64,19 @@ public class GlobWebResourcePlugin extends ResourceModel {
         setDescription("Provides the configuration file of the Globweb module");
         setDataSetSelection(DataSetSelectionType.NONE);
         setResourceClassName(fr.cnes.sitools.extensions.astro.resource.GlobWebResource.class.getName());
+        setConfiguration();
+        this.completeAttachUrlWith("/globWeb");
+    }
+    
+    /**
+     * Sets the configuration for the administrator.
+     */
+    private void setConfiguration() {
         final ResourceParameter configurationFile = new ResourceParameter(CONF_ADM, "Filename located in <root>/data/freemarker", 
                 ResourceParameterType.PARAMETER_USER_INPUT);
         configurationFile.setValueType("String");
-        this.addParam(configurationFile);
-        this.completeAttachUrlWith("/globWeb");
-    }
+        this.addParam(configurationFile);      
+    }    
 
     /**
      * Validates.

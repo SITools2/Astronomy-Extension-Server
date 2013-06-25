@@ -1,21 +1,20 @@
-/**
- * ****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/*
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
  *
- * This file is part of SITools2.
+ * This file is a part of SITools2
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This program inputStream distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ***************************************************************************
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.cnes.sitools.extensions.astro.resource;
 
@@ -34,7 +33,6 @@ import fr.cnes.sitools.extensions.common.InputsValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
 import fr.cnes.sitools.extensions.common.Validation;
-import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +42,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONException;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -75,7 +72,10 @@ import org.restlet.resource.ResourceException;
  * - /plugin/nameResolver/mars/GALACTIC?nameResolver=IMCCE : Get Mars coordinates in GALACTIC frame
  * - /plugin/nameResolver/m31/EQUATORIAL?nameResolver=CDS : Get M31 coordinates in EQUATORIAL frame
  * </pre> </p>
- *
+ * @see NameResolverResourcePlugin the plugin
+ * @see CDSNameResolver CDS name resolver
+ * @see IMCCESsoResolver IMCCE resolver
+ * @see CorotIdResolver IAS resolver
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class NameResolverResource extends SitoolsParameterizedResource {

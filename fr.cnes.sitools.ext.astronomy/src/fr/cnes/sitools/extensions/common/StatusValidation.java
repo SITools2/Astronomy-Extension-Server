@@ -20,17 +20,14 @@
  */
 package fr.cnes.sitools.extensions.common;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 /**
  * Status validation of the validation decorator pattern.
+ * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class StatusValidation {
@@ -61,7 +58,7 @@ public class StatusValidation {
      * @return <code>True</code> when there is no error message otherwide <code>False</code>
      */
     public final boolean isValid() {
-        return (this.messages.isEmpty()) ? true : false;
+        return this.messages.isEmpty();
     }
     
     /**

@@ -1,22 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES.
+/******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.dataset.DataSetApplication;
@@ -50,7 +49,13 @@ public class FootprintResourcePlugin extends ResourceModel {
         this.setApplicationClassName(DataSetApplication.class.getName());
         this.setDataSetSelection(DataSetSelectionType.NONE);        
         this.completeAttachUrlWith("/footprint/{featureType}");
-
+        setConfiguration();
+    }
+    
+    /**
+     * Sets the configuration for the administrator.
+     */
+    private void setConfiguration() {
         final ResourceParameter raParam = new ResourceParameter("RA", "Right ascension in decimal degree",
                 ResourceParameterType.PARAMETER_INTERN);
         raParam.setValueType("xs:dataset.columnAlias");
@@ -70,5 +75,5 @@ public class FootprintResourcePlugin extends ResourceModel {
                 "Specify a directory where MOC will be computed and cached", ResourceParameterType.PARAMETER_INTERN);
         cacheDirectory.setValueType("String");
         this.addParam(cacheDirectory);
-    }    
+    }
 }

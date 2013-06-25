@@ -1,1 +1,2 @@
 fr.cnes.sitools.extensions.security.FilterFilenamePatternPlugin
+fr.cnes.sitools.extensions.security.FineGrainedAccessRightPlugin

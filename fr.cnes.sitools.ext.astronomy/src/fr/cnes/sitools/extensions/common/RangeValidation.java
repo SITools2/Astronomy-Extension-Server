@@ -23,16 +23,29 @@ package fr.cnes.sitools.extensions.common;
 import java.util.Map;
 
 /**
- *
- * @author malapert
+ * Specific decorator to validate that the <code>keyword</code> is a range, which
+ * is included in [min, max].
+ * @see Package Decorator pattern
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class RangeValidation extends NumberValidation {
-    
-    private double minValue;
-    
+    /**
+     * Minimum value that is allowed in the range.
+     */
+    private double minValue;    
+    /**
+     * Maximum value that is allowed in the range.
+     */
     private double maxValue;
     
-    public RangeValidation(final Validation validation, final String keyword, double min, double max) {
+    /**
+     * Constructs a new Range validator decorator.
+     * @param validation validation
+     * @param keyword range to check
+     * @param min min value that is allowed
+     * @param max max value that is allowed
+     */
+    public RangeValidation(final Validation validation, final String keyword, final double min, final double max) {
         super(validation, keyword);
         if (max < min) {
             throw new IllegalArgumentException("min cannot be superior to max");
@@ -54,6 +67,7 @@ public class RangeValidation extends NumberValidation {
     }
 
     /**
+     * Returns the min value that is allowed.
      * @return the minValue
      */
     protected final double getMinValue() {
@@ -61,13 +75,15 @@ public class RangeValidation extends NumberValidation {
     }
 
     /**
-     * @param minValue the minValue to set
+     * Sets the min value that is allowed.
+     * @param minValueVal the minValue to set
      */
-    protected final void setMinValue(final double minValue) {
-        this.minValue = minValue;
+    protected final void setMinValue(final double minValueVal) {
+        this.minValue = minValueVal;
     }
 
     /**
+     * Returns the max value that is allowed.
      * @return the maxValue
      */
     protected final double getMaxValue() {
@@ -75,12 +91,10 @@ public class RangeValidation extends NumberValidation {
     }
 
     /**
-     * @param maxValue the maxValue to set
+     * Sets the max value that is allowed.
+     * @param maxValueVal the maxValue to set
      */
-    protected final void setMaxValue(final double maxValue) {
-        this.maxValue = maxValue;
-    }
-    
-    
-    
+    protected final void setMaxValue(final double maxValueVal) {
+        this.maxValue = maxValueVal;
+    }            
 }

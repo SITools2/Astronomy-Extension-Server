@@ -73,7 +73,7 @@ public class ConeSearchVOTest extends AbstractSitoolsServiceTestCase {
   @Test
   public void testSearch() throws IOException, JSONException {
     System.out.println("getVOConeSearch results");
-    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/search?healpix=10&order=13&format=json");
+    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/EQUATORIAL/search?healpix=10&order=13&format=json");
     String result = clientResource.get().getText();
     JSONObject json = new JSONObject(result);
     long numberResult = json.getLong("totalResults");

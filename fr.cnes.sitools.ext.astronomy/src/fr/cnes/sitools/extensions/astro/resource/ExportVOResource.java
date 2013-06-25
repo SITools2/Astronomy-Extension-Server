@@ -63,7 +63,7 @@ import org.restlet.resource.ResourceException;
  * This resource exports column that have been asked by the query but also
  * having a VOTable concept
  * </p>
- * 
+ * @see ExportVOResourcePlugin the plugin
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ExportVOResource extends SitoolsParameterizedResource {

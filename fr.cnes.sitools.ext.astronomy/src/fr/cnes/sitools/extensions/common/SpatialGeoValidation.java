@@ -1,30 +1,75 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * **********************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+ *
+ * This file is part of SITools2.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ * ***********************************************************************
  */
 package fr.cnes.sitools.extensions.common;
 
 import java.util.Map;
 
 /**
- *
- * @author malapert
+ * Validates a geospatial keyword.
+ * @see Package Decorator pattern
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SpatialGeoValidation extends NumberArrayValidation {
     
+    /**
+     * Index of the longitude coord in a polygon.
+     */
     private int indexLong;
+    /**
+     * Index of the latitude coord in a polygon.
+     */
     private int indexLat;
+    /**
+     * Ra range to check.
+     */
     private double[] raRange;
+    /**
+     * Dec range to check.
+     */
     private double[] decRange;
+    /**
+     * First element of the range.
+     */
     private static final int MIN = 0;
+    /**
+     * Last element of the range.
+     */
     private static final int MAX = 1;
     
-    public SpatialGeoValidation(final Validation validation, final String keyword, final int indexLong, final int indexLat, final double[] raRange, final double[] decRange) {
+    /**
+     * Create a geospatial validation decorator.
+     * @param validation validation
+     * @param keyword keyword that contains the polygon
+     * @param indexLongVal index in the polygon for longitude coord
+     * @param indexLatVal index in the polygon for Latitude coord
+     * @param raRangeVal RA range validity
+     * @param decRangeVal DEC range validity
+     */
+    public SpatialGeoValidation(final Validation validation, final String keyword, final int indexLongVal, final int indexLatVal, 
+                                final double[] raRangeVal, final double[] decRangeVal) {
         super(validation, keyword, ",", 2);
-        setIndexLat(indexLat);
-        setIndexLong(indexLong);
-        setRaRange(raRange);
-        setDecRange(decRange);
+        setIndexLat(indexLatVal);
+        setIndexLong(indexLongVal);
+        setRaRange(raRangeVal);
+        setDecRange(decRangeVal);
     }
 
     @Override
@@ -46,61 +91,66 @@ public class SpatialGeoValidation extends NumberArrayValidation {
     }
 
     /**
+     * Returns the indexLong.
      * @return the indexLong
      */
-    protected int getIndexLong() {
+    protected final int getIndexLong() {
         return indexLong;
     }
 
     /**
+     * Sets the indexLong.
      * @param indexLong the indexLong to set
      */
-    protected void setIndexLong(int indexLong) {
+    protected final void setIndexLong(final int indexLong) {
         this.indexLong = indexLong;
     }
 
     /**
+     * Sets the indexLat.
      * @return the indexLat
      */
-    protected int getIndexLat() {
+    protected final int getIndexLat() {
         return indexLat;
     }
 
     /**
-     * @param indexLat the indexLat to set
+     * Sets the indexLat.
+     * @param indexLatVal the indexLat to set
      */
-    protected void setIndexLat(int indexLat) {
-        this.indexLat = indexLat;
+    protected final void setIndexLat(final int indexLatVal) {
+        this.indexLat = indexLatVal;
     }
 
     /**
+     * Returns the RA range.
      * @return the raRange
      */
-    protected double[] getRaRange() {
+    protected final double[] getRaRange() {
         return raRange;
     }
 
     /**
-     * @param raRange the raRange to set
+     * Returns the ra range.
+     * @param raRangeVal the raRange to set
      */
-    protected void setRaRange(double[] raRange) {
-        this.raRange = raRange;
+    protected final void setRaRange(final double[] raRangeVal) {
+        this.raRange = raRangeVal;
     }
 
     /**
+     * Returns the dec range.
      * @return the decRange
      */
-    protected double[] getDecRange() {
+    protected final double[] getDecRange() {
         return decRange;
     }
 
     /**
+     * Sets the dec range.
      * @param decRange the decRange to set
      */
-    protected void setDecRange(double[] decRange) {
+    protected final void setDecRange(final double[] decRange) {
         this.decRange = decRange;
-    }
-    
-    
-    
+    }         
 }

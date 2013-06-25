@@ -25,13 +25,30 @@ import org.restlet.Response;
 import org.restlet.security.Authorizer;
 
 /**
- * Authorizes the file access in a datastorage when the url matches the pattern of the file.
+ * Authorizes the file access to a datastorage when the url matches the pattern of the file.
+ * 
+ * <p>
+ * Business class implementing the FilterFilenamePattern plugin.
+ * </p>
+ * 
+ * <br/>
+ * <img src="../../../../../images/FilterFilenamePattern.png"/>
+ * <br/>
+ * @see FilterFilenamePatternPlugin The plugin that calls this class.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml
+ * FilterFilenamePatternPlugin o-- FilterFilenamePattern : attachs
+ * 
+ * FilterFilenamePattern : boolean authorize(final Request request, final Response response)
+ * 
+ * FilterFilenamePatternPlugin : setConfigurationParameters()
+ * FilterFilenamePatternPlugin : Validator<FilterModel> getValidator()
+ * @enduml
  */
 public class FilterFilenamePattern extends Authorizer {
   
   /**
-   * configuration parameters.
+   * Application data model.
    */
   private final transient FilterModel filterModel;
   
@@ -46,7 +63,7 @@ public class FilterFilenamePattern extends Authorizer {
   @Override
   public final boolean authorize(final Request request, final Response response) {
     final String urlStr = request.getResourceRef().getIdentifier(true);
-    final String pattern = this.filterModel.getParameterByName("pattern").getValue();
+    final String pattern = this.filterModel.getParameterByName(FilterFilenamePatternPlugin.PATTERN_KEYWORD).getValue();   
     return urlStr.matches(pattern);
   }
 }

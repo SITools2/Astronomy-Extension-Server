@@ -1,28 +1,68 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+ *
+ * This file is part of SITools2.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *************************************************************************/
 package fr.cnes.sitools.extensions.common;
 
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 /**
- *
- * @author malapert
+ * Specific decorator to validate that the length of an array represented by a <code>keyword</code> .
+ * @see Package Decorator pattern
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class NumberArrayValidation extends NotNullAndNotEmptyValidation {
 
+    /**
+     * Characters to use to create the array.
+     */
     private String splitChar;
+    /**
+     * Init the length of th array to 0.
+     */
     private int lengthArray = 0;
+    /**
+     * Init the minimum length of the array to 0.
+     */
     private int minArray = 0;
+    /**
+     * Init the maximum length of the array to 0.
+     */
     private int maxArray = 0;
 
+    /**
+     * Constructs an array validation.
+     * @param validation validation
+     * @param keyword keyword to validate
+     * @param splitChars chars to use to split the array
+     */
     public NumberArrayValidation(final Validation validation, final String keyword, final String splitChars) {
         super(validation, keyword);
         setSplitChar(splitChars);
     }
 
+    /**
+     * Constructs an array validation based on the specify length of element in the array.
+     * @param validation validation
+     * @param keyword keyword to validate
+     * @param splitChars chars to use to split the array
+     * @param length length to check in the array
+     */
     public NumberArrayValidation(final Validation validation, final String keyword, final String splitChars, final int length) {
         this(validation, keyword, splitChars);
         if (length < 0) {
@@ -31,6 +71,15 @@ public class NumberArrayValidation extends NotNullAndNotEmptyValidation {
         setLengthArray(length);
     }
 
+    /**
+     * Constructs an array validation based on the specify length 
+     * that must be included in [minLength, maxLength].
+     * @param validation validation
+     * @param keyword keyword to validate
+     * @param splitChars chars to use to split the array
+     * @param minLength minimum length that must have the array
+     * @param maxLength maximum length that must have the array
+     */
     public NumberArrayValidation(final Validation validation, final String keyword, final String splitChars, final int minLength, final int maxLength) {
         this(validation, keyword, splitChars);
         if (maxLength <= minLength) {
@@ -42,7 +91,7 @@ public class NumberArrayValidation extends NotNullAndNotEmptyValidation {
 
     @Override
     protected Map<String, String> localValidation() {
-        Map<String, String> error = super.localValidation();
+        final Map<String, String> error = super.localValidation();
         if (error.isEmpty()) {
             final String value = getMap().get(this.getKeywordToTest());
             try {
@@ -75,69 +124,80 @@ public class NumberArrayValidation extends NotNullAndNotEmptyValidation {
         return error;
     }
     
- 
-
-    private boolean isArrayOfNumber(String[] elts) {
+    /**
+     * Returns True when the array is only composed of numbers.
+     * @param elts array to test
+     * @return True when the array is only composed of numbers otherwise False
+     */
+    private boolean isArrayOfNumber(final String[] elts) {
         boolean isNumber = true;
-        for (int i = 0; i < elts.length; i++) {
-            isNumber = isNumber && NumberValidation.isANumber(elts[i]);
+        for (String elt : elts) {
+            isNumber = isNumber && NumberValidation.isANumber(elt);
         }
         return isNumber;
     }
 
     /**
+     * Returns the length of the array.
      * @return the lengthArray
      */
-    protected int getLengthArray() {
+    protected final int getLengthArray() {
         return lengthArray;
     }
 
     /**
-     * @param lengthArray the lengthArray to set
+     * Sets the length of the array.
+     * @param lengthArrayVal the lengthArray to set
      */
-    protected void setLengthArray(int lengthArray) {
-        this.lengthArray = lengthArray;
+    protected final void setLengthArray(final int lengthArrayVal) {
+        this.lengthArray = lengthArrayVal;
     }
 
     /**
-     * @return the minArray
+     * Returns the minimum length that has been specified.
+     * @return the minimum length that has been specified
      */
-    protected int getMinArray() {
+    protected final int getMinArray() {
         return minArray;
     }
 
     /**
-     * @param minArray the minArray to set
+     * Sets the minimum length that has been specified.
+     * @param minArrayVal the minArray to set
      */
-    protected void setMinArray(int minArray) {
-        this.minArray = minArray;
+    protected final void setMinArray(final int minArrayVal) {
+        this.minArray = minArrayVal;
     }
 
     /**
-     * @return the maxArray
+     * Returns the maximum length that has been specified.
+     * @return the maximum length that has been specified
      */
-    protected int getMaxArray() {
+    protected final int getMaxArray() {
         return maxArray;
     }
 
     /**
-     * @param maxArray the maxArray to set
+     * Sets the maximum length that has been specified.
+     * @param maxArrayVal the maxArray to set
      */
-    protected void setMaxArray(int maxArray) {
-        this.maxArray = maxArray;
+    protected final void setMaxArray(final int maxArrayVal) {
+        this.maxArray = maxArrayVal;
     }
 
     /**
-     * @return the splitChar
+     * Returns the chars that have been specified to split the array.
+     * @return the chars that have been specified to split the array
      */
-    protected String getSplitChar() {
+    protected final String getSplitChar() {
         return splitChar;
     }
 
     /**
-     * @param splitChar the splitChar to set
+     * Sets the chars that have been specified to split the array.
+     * @param splitCharVal the splitChar to set
      */
-    protected void setSplitChar(String splitChar) {
-        this.splitChar = splitChar;
+    protected final void setSplitChar(final String splitCharVal) {
+        this.splitChar = splitCharVal;
     }
 }

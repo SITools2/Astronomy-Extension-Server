@@ -1,3 +1,4 @@
+TooManyMethods
 LongVariable
-SignatureDeclareThrowsException
 CallSuperInConstructor
+SignatureDeclareThrowsException

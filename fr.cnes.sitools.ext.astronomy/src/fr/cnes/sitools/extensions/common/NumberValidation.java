@@ -23,14 +23,10 @@ import java.util.Map;
 
 /**
  * Specific decorator to validate that the <code>keyword</code> is a number.
+ * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class NumberValidation extends NotNullAndNotEmptyValidation {
-    
-    /**
-     * The keyword to test.
-     */
-    private String keywordToTest;
+public class NumberValidation extends NotNullAndNotEmptyValidation {    
     
     /**
      * Indicates if the keyword is required.
@@ -46,7 +42,7 @@ public class NumberValidation extends NotNullAndNotEmptyValidation {
      * @param keyword keyword to test
      */
     public NumberValidation(final Validation validation, final String keyword) {
-        super(validation,keyword);;
+        super(validation, keyword);
         setRequiredKeyword(true);
     }
     
@@ -97,9 +93,10 @@ public class NumberValidation extends NotNullAndNotEmptyValidation {
     }
 
     /**
-     * @param requiredKeyword the requiredKeyword to set
+     * Sets if the keyword is required.
+     * @param isRequiredKeywordVal the requiredKeyword to set
      */
-    protected final void setRequiredKeyword(final boolean isRequiredKeyword) {
-        this.requiredKeyword = isRequiredKeyword;
+    protected final void setRequiredKeyword(final boolean isRequiredKeywordVal) {
+        this.requiredKeyword = isRequiredKeywordVal;
     }
 }

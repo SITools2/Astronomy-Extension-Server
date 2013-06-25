@@ -1,15 +1,20 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+/******************************************************************************
+ * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
@@ -35,9 +40,38 @@ import java.util.logging.Logger;
  * <p>This service answers to the following scenario:<br/> 
  * As user, I want to select rows in my dataset and export them as a VOTable file
  * in order to use my exported data in a Virtual Obervatory tool.
+ * <br/>
+ * <img src="../../../../../../images/VOExport-usecase.png"/>
+ * <br/>
+ * In addition, this plugin has several dependencies with different components:<br/>
+ * <img src="../../../../../../images/ExportVOResourcePlugin.png"/>
+ * <br/> 
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ * @startuml VOExport-usecase.png
+ * title Exporting data through VOTable
+ * User --> (VO export service) : requests
+ * Admin --> (VO export service) : adds and configures the VO export service from the dataset.
+ * (VO export service) .. (dataset) : uses
+ * @enduml
+ * @startuml
+ * package "Services" {
+ *  HTTP - [ExportVOResourcePlugin]
+ * }
+ * database "Database" {
+ *   frame "Data" {
+ *     [myData]
+ *   }
+ * }
+ * package "Dataset" {
+ *  HTTP - [Dataset]
+ *  [VODictionary]
+ * }
+ * [ExportVOResourcePlugin] --> [Dataset]
+ * [Dataset] --> [myData]
+ * [Dataset] --> [VODictionary]
+ * @enduml
  */
 public class ExportVOResourcePlugin extends ResourceModel {
 
@@ -68,14 +102,21 @@ public class ExportVOResourcePlugin extends ResourceModel {
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.MULTIPLE);
     // this.getParameterByName("methods").setValue("GET");
+    this.completeAttachUrlWith("/voexport");
+    setConfiguration();
+  }
+
+  /**
+   * Sets the configuration for the administrator.
+   */
+  private void setConfiguration() {
     final ResourceParameter dictionary = new ResourceParameter(ExportVOResourcePlugin.DICTIONARY,
             "Dictionary name that sets up the service", ResourceParameterType.PARAMETER_INTERN);
     dictionary.setValueType("xs:dictionary");
     addParam(dictionary);
     final ResourceParameter description = new ResourceParameter(ExportVOResourcePlugin.DESCRIPTION,
             "Description name in the VOTable", ResourceParameterType.PARAMETER_INTERN);
-    addParam(description);
-    this.completeAttachUrlWith("/voexport");
+    addParam(description);      
   }
 
   /**
