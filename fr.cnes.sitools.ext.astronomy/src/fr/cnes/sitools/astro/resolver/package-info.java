@@ -13,7 +13,7 @@ Three name resolvers are currently implemented:
  <li>COROT ID name resolver for Corot objects</li>
 </ul> 
  
-<img src="doc-files/NameResolver.png"/>
+<img src="../../../../../images/Resolver.png"/>
 <br/><br/><br/>
 
 Here is an example how to use the CDS name resolver:<br/><br/>
@@ -29,7 +29,7 @@ One reverse name resolver is currently implemented:
  <li>Reverse name resolver from CDS</li>
 </ul>
 
-<img src="doc-files/ReverseNameResolver.png"/>
+<img src="../../../../../images/ReverseResolver.png"/>
 <br/><br/><br/>
 
 Here is an example how to use the CDS reverse name resolver:<br/><br/>
@@ -59,8 +59,59 @@ features=[{<br/>
 </pre>
 @copyright 2011-2013 CNES
 @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+@startuml Resolver.png
+abstract class AbstractNameResolver {
+  void setNext(AbstractNameResolver successorVal)
+  {abstract} getResponse() : NameResolverResponse
+  getSuccessor() : AbstractNameResolver
+  void setSuccessor(AbstractNameResolver successorVal)
+}
+
+class CDSNameResolver {
+  CDSNameResolver(String objectNameVal, NameResolverService service)
+  getResponse() : NameResolverResponse  
+}
+
+enum NameResolverService {
+  ned
+  simbad
+  vizier
+  all
+}
+
+class ConstellationNameResolver {
+  ConstellationNameResolver(String constellationName)
+  getResponse() : NameResolverResponse
+}
+
+class CorotIdResolver {
+  CorotIdResolver(String corotIdVal)
+  getResponse() : NameResolverResponse
+}
+
+class IMCCESsoResolver {
+  IMCCESsoResolver(String objectNameVal, String epochVal)
+  getResponse() : NameResolverResponse
+}
+ 
+AbstractNameResolver o-- NameResolverResponse
+CDSNameResolver ..> ConstellationNameResolver
+ConstellationNameResolver ..> IMCCESsoResolver
+IMCCESsoResolver ..> CorotIdResolver
+CDSNameResolver --|> AbstractNameResolver
+IMCCESsoResolver --|> AbstractNameResolver
+CorotIdResolver --|> AbstractNameResolver
+ConstellationNameResolver --|> AbstractNameResolver
+CDSNameResolver *-- NameResolverService
+
+class NameResolverException
+@enduml
+
+@startuml ReverseResolver.png
+class NameResolverException
+
+class ReverseNameResolver
+@enduml
 */
 package fr.cnes.sitools.astro.resolver;
-
-import java.util.List;
 

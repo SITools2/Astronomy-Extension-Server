@@ -21,6 +21,7 @@ package fr.cnes.sitools.extensions.astro.resource;
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
 import fr.cnes.sitools.astro.resolver.CDSNameResolver;
+import fr.cnes.sitools.astro.resolver.ConstellationNameResolver;
 import fr.cnes.sitools.astro.resolver.CorotIdResolver;
 import fr.cnes.sitools.astro.resolver.IMCCESsoResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverResponse;
@@ -76,6 +77,7 @@ import org.restlet.resource.ResourceException;
  * @see CDSNameResolver CDS name resolver
  * @see IMCCESsoResolver IMCCE resolver
  * @see CorotIdResolver IAS resolver
+ * @see ConstellationNameResolver SITools2 resolver
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class NameResolverResource extends SitoolsParameterizedResource {
@@ -119,23 +121,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             this.nameResolver = getParameterValue("nameResolver");
             this.epoch = getParameterValue("epoch");
         }
-
-//    // Get nameResolverInterface parameter from URL
-//    this.nameResolver = getRequest().getResourceRef().getQueryAsForm().getFirstValue("nameResolver");
-//    if (this.nameResolver == null || "".equals(this.nameResolver)) {
-//      final ResourceParameter nameResolverParam = this.getModel().getParameterByName("nameResolver");
-//      this.nameResolver = nameResolverParam.getValue();
-//    }
-//    // Get epoch parameter from URL
-//    this.epoch = getRequest().getResourceRef().getQueryAsForm().getFirstValue("epoch");
-//    if (this.epoch == null || "".equals(this.epoch)) {
-//      final ResourceParameter epochParam = this.getModel().getParameterByName("epoch");
-//      this.epoch = epochParam.getValue();
-//    }
-        // Get object name
-        //this.objectName = Reference.decode(String.valueOf(this.getRequestAttributes().get("objectName")));
-        // Get and check coordinate system
-        //final String coordinatesSystem = String.valueOf(this.getRequestAttributes().get("coordSystem"));
+        
         if (!getRequest().getMethod().equals(Method.OPTIONS)) {
             Validation validationAttributes = new InputsAttributesValidation(getRequestAttributes());
             validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "objectName");
@@ -247,6 +233,34 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     }
 
     /**
+     * Returns the representation based on SITools2 db response.
+     *
+     * @return the representation
+     */    
+    private Representation resolveConstellation() {
+        final AbstractNameResolver sitools2 = new ConstellationNameResolver(objectName);
+        final NameResolverResponse response = sitools2.getResponse();
+        if (response.hasResult()) {
+            LOG.log(Level.INFO, "Constellation name resolver is selected for {0}", objectName);
+            getResponse().setStatus(Status.SUCCESS_OK);
+            final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+            for (AstroCoordinate iter : coordinates) {
+                iter.processTo(coordSystem);
+            }
+            final String credits = response.getCredits();
+            final Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
+            Representation rep = new GeoJsonRepresentation(dataModel);
+            final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+            rep = cache.getRepresentation();
+            getResponse().setCacheDirectives(cache.getCacheDirectives());
+            return rep;
+        } else {
+            LOG.log(Level.WARNING, null, response.getError());
+            throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
+        }        
+    }
+
+    /**
      * Returns the GeoJSON of the object name after calling all resolvers until
      * an object is found or all resolvers have been called.
      *
@@ -257,7 +271,9 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         final AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
         final AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
         final AbstractNameResolver corot = new CorotIdResolver(objectName);
-        cds.setNext(imcce);
+        final AbstractNameResolver sitools2 = new ConstellationNameResolver(objectName);
+        cds.setNext(sitools2);
+        sitools2.setNext(imcce);
         imcce.setNext(corot);
         final NameResolverResponse response = cds.getResponse();
         if (!response.hasResult()) {
@@ -294,9 +310,11 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             rep = resolveIMCCE();
         } else if (this.nameResolver.equals("IAS")) {
             rep = resolveIAS();
+        } else if (this.nameResolver.equals("SITools2")) {
+            rep = resolveConstellation();
         } else if (this.nameResolver.equals("ALL")) {
             rep = callChainedResolver();
-        }
+        } 
         if (fileName != null && !"".equals(fileName)) {
             final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
             disp.setFilename(fileName);

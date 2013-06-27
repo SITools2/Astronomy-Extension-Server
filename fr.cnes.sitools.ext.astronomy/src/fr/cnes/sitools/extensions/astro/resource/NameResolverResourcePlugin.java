@@ -104,7 +104,7 @@ public class NameResolverResourcePlugin extends ResourceModel {
             "Select your resolver name service for avoiding to add resolverName as URL parameter",
             ResourceParameterType.PARAMETER_USER_INPUT);
     xsEnumEditable.setValue("CDS"); // default value
-    xsEnumEditable.setValueType("xs:enum-multiple[IMCCE,CDS,IAS,ALL]");
+    xsEnumEditable.setValueType("xs:enum-multiple[IMCCE,CDS,IAS,SITools2,ALL]");
     this.addParam(xsEnumEditable);
     final ResourceParameter epoch = new ResourceParameter("epoch", "Set an epoch for avoiding to add epoch as URL parameter",
             ResourceParameterType.PARAMETER_USER_INPUT);

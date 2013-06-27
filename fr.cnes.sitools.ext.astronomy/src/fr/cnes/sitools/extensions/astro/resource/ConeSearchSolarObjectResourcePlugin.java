@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * <p>
  * In addition, the service has some dependancies with external services
  * <br/>
- * <img src="../../../../../../images/ConeSearchSolarObjectResolverResourcePlugin.png"/>
+ * <img src="../../../../../../images/ConeSearchSolarObjectResourcePlugin.png"/>
  * <br/>
  * </p>
  *

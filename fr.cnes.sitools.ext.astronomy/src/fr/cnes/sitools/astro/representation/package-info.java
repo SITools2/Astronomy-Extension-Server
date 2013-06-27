@@ -8,6 +8,8 @@
  * <li>the PNG representation</li>
  * <li>the FITS representation</li>
  * <li>the CutOff representation</li>
+ * <li>the FitsMoc representation</li>
+  * <li>the DatabaseRequestModel</li>
  * </ul>
  */
 package fr.cnes.sitools.astro.representation;
