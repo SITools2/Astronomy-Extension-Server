@@ -92,13 +92,13 @@ public class CutOffResourcePlugin extends ResourceModel {
             + " then FitsFile is an identifier in this data storage", ResourceParameterType.PARAMETER_USER_INPUT);
     final ResourceParameter fitsFile = new ResourceParameter(FITS_FILE_INPUT_PARAMETER, "Fits file to cut", ResourceParameterType.PARAMETER_INTERN);
     fitsFile.setValueType("xs:dataset.columnAlias");
-    final ResourceParameter hduNumber = new ResourceParameter(HDU_NUMBER_INPUT_PARAMETER, "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
+//    final ResourceParameter hduNumber = new ResourceParameter(HDU_NUMBER_INPUT_PARAMETER, "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
     addParam(rightAscension);
     addParam(declination);
     addParam(radius);
     addParam(dataStorage);
     addParam(fitsFile);    
-    addParam(hduNumber);
+//    addParam(hduNumber);
     this.completeAttachUrlWith("/cutoff");
   }
 
@@ -136,32 +136,32 @@ public class CutOffResourcePlugin extends ResourceModel {
           constraintList.add(constraint);
         }
 
-        if (!isSet(hduNumber)) {
-          final ConstraintViolation constraint = new ConstraintViolation();
-          constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-          constraint.setValueName(hduNumber.getName());
-          constraint.setMessage("HDU number must be set");
-          constraintList.add(constraint);
-        } else {
-          try {
-            final int number = Integer.parseInt(hduNumber.getValue());
-            if (number < 0) {
-              final ConstraintViolation constraint = new ConstraintViolation();
-              constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-              constraint.setValueName(hduNumber.getName());
-              constraint.setMessage("HDU number must be >= 0");
-              constraint.setInvalidValue(hduNumber.getValue());
-              constraintList.add(constraint);
-            }
-          } catch (NumberFormatException ex) {
-            final ConstraintViolation constraint = new ConstraintViolation();
-            constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-            constraint.setValueName(hduNumber.getName());
-            constraint.setMessage("HDU number must be an integer");
-            constraint.setInvalidValue(hduNumber.getValue());
-            constraintList.add(constraint);
-          }
-        }
+//        if (!isSet(hduNumber)) {
+//          final ConstraintViolation constraint = new ConstraintViolation();
+//          constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+//          constraint.setValueName(hduNumber.getName());
+//          constraint.setMessage("HDU number must be set");
+//          constraintList.add(constraint);
+//        } else {
+//          try {
+//            final int number = Integer.parseInt(hduNumber.getValue());
+//            if (number < 0) {
+//              final ConstraintViolation constraint = new ConstraintViolation();
+//              constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+//              constraint.setValueName(hduNumber.getName());
+//              constraint.setMessage("HDU number must be >= 0");
+//              constraint.setInvalidValue(hduNumber.getValue());
+//              constraintList.add(constraint);
+//            }
+//          } catch (NumberFormatException ex) {
+//            final ConstraintViolation constraint = new ConstraintViolation();
+//            constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+//            constraint.setValueName(hduNumber.getName());
+//            constraint.setMessage("HDU number must be an integer");
+//            constraint.setInvalidValue(hduNumber.getValue());
+//            constraintList.add(constraint);
+//          }
+//        }
         return constraintList;
       }
     };
