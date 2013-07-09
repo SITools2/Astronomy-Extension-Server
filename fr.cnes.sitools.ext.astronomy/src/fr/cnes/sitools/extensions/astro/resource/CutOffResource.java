@@ -22,6 +22,7 @@ package fr.cnes.sitools.extensions.astro.resource;
 import fr.cnes.sitools.astro.cutoff.CutOffException;
 import fr.cnes.sitools.astro.cutoff.CutOffInterface;
 import fr.cnes.sitools.astro.cutoff.CutOffSITools2;
+import fr.cnes.sitools.astro.cutoff.CutOffSITools2Bis;
 import fr.cnes.sitools.astro.representation.CutOffRepresentation;
 import fr.cnes.sitools.common.exception.SitoolsException;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
@@ -72,7 +73,7 @@ public class CutOffResource extends SitoolsParameterizedResource {
     private transient double rightAscension;
     private transient double declination;
     private transient double radius;
-    private transient int hduNumber;
+//    private transient int hduNumber;
     private transient String dataSorageName;
 
     /**
@@ -100,11 +101,11 @@ public class CutOffResource extends SitoolsParameterizedResource {
         }
         this.radius = Double.valueOf(radiusString);
 
-        String hduNumberString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
-        if (hduNumberString == null || "".equals(hduNumberString)) {
-            hduNumberString = getParameterValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
-        }
-        this.hduNumber = Integer.parseInt(hduNumberString);
+//        String hduNumberString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
+//        if (hduNumberString == null || "".equals(hduNumberString)) {
+//            hduNumberString = getParameterValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
+//        }
+//        this.hduNumber = Integer.parseInt(hduNumberString);
         this.dataSorageName = getParameterValue(CutOffResourcePlugin.DATA_STORAGE_NAME_PARAMETER);
     }
 
@@ -153,7 +154,7 @@ public class CutOffResource extends SitoolsParameterizedResource {
                 final String filename = storageDirectory.getLocalPath() + File.separator + attributeValue.getValue();
                 fits = new Fits(filename);
             }
-            cutOff = new CutOffSITools2(fits, rightAscension, declination, radius, hduNumber);
+            cutOff = new CutOffSITools2Bis(fits, rightAscension, declination, radius);
 
         } catch (FitsException ex) {
             LOG.log(Level.SEVERE, null, ex);

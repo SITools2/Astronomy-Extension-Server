@@ -24,8 +24,8 @@ public class FITSTest
     frame.getContentPane().add(createImagePanel(image));
 
     frame.setSize(300, 300);
-    frame.show();
-
+    frame.show(); 
+    
     if(image instanceof FITSImage)
     {
       FITSImage fimage = (FITSImage)image;

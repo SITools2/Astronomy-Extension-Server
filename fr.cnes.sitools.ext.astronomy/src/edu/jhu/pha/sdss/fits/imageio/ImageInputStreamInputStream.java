@@ -6,98 +6,82 @@ import java.io.PushbackInputStream;
 import java.util.zip.GZIPInputStream;
 import javax.imageio.stream.ImageInputStream;
 
+public class ImageInputStreamInputStream extends PushbackInputStream {
 
-public class ImageInputStreamInputStream extends PushbackInputStream
-{
-  public ImageInputStreamInputStream(ImageInputStream in) throws IOException
-  {
-    super(gunzipIfNecessary(new PushbackInputStream(new ImageInputStreamWrap(in),
-                                                    2)), 100);
-  }
-
-  protected static InputStream gunzipIfNecessary(PushbackInputStream in)
-    throws IOException
-  {
-    InputStream result = in;
-
-    // check for gzip stream
-    byte[] buf = new byte[2];
-    result.read(buf, 0, 2);
-    ((PushbackInputStream)result).unread(buf);
-
-    // see http://www.ietf.org/rfc/rfc1952.txt
-    if(buf[0] == (byte)31 && buf[1] == (byte)139)
-    {
-      result = new GZIPInputStream(result);
+    public ImageInputStreamInputStream(ImageInputStream in) throws IOException {
+        super(gunzipIfNecessary(new PushbackInputStream(new ImageInputStreamWrap(in),
+                2)), 100);
     }
 
-    return result;
-  }
+    protected static InputStream gunzipIfNecessary(PushbackInputStream in)
+            throws IOException {
+        InputStream result = in;
 
-  protected static class ImageInputStreamWrap extends InputStream
-  {
-    public ImageInputStreamWrap(ImageInputStream in)
-    {
-      _in = in;
-    }
+        // check for gzip stream
+        byte[] buf = new byte[2];
+        result.read(buf, 0, 2);
+        ((PushbackInputStream) result).unread(buf);
 
-    public int available() throws IOException
-    {
-      long avail = _in.length();
-
-      if(avail == -1L)
-        {
-          return 0;
+        // see http://www.ietf.org/rfc/rfc1952.txt
+        if (buf[0] == (byte) 31 && buf[1] == (byte) 139) {
+            result = new GZIPInputStream(result);
         }
 
-      if(avail > (long)Integer.MAX_VALUE)
-        {
-          return Integer.MAX_VALUE;
+        return result;
+    }
+
+    protected static class ImageInputStreamWrap extends InputStream {
+
+        public ImageInputStreamWrap(ImageInputStream in) {
+            _in = in;
         }
 
-      return (int)avail;
-    }
+        public int available() throws IOException {
+            long avail = _in.length();
 
-    public void close() throws IOException
-    {
-      _in.close();
-    }
+            if (avail == -1L) {
+                return 0;
+            }
 
-    public void mark(int readlimit)
-    {
-      _in.mark();
-    }
+            if (avail > (long) Integer.MAX_VALUE) {
+                return Integer.MAX_VALUE;
+            }
 
-    public boolean markSupported()
-    {
-      return false;
-    }
+            return (int) avail;
+        }
 
-    public int read() throws IOException
-    {
-      return _in.read();
-    }
+        public void close() throws IOException {
+            _in.close();
+        }
 
-    public int read(byte[] b) throws IOException
-    {
-      return _in.read(b);
-    }
+        public void mark(int readlimit) {
+            _in.mark();
+        }
 
-    public int read(byte[] b, int off, int len) throws IOException
-    {
-      return _in.read(b, off, len);
-    }
+        public boolean markSupported() {
+            return false;
+        }
 
-    public void reset() throws IOException
-    {
-      _in.reset();
-    }
+        public int read() throws IOException {
+            return _in.read();
+        }
 
-    public long skip(long n) throws IOException
-    {
-      return _in.skipBytes(n);
-    }
+        public int read(byte[] b) throws IOException {
+            return _in.read(b);
+        }
 
-    protected ImageInputStream _in;
-  }
+        public int read(byte[] b, int off, int len) throws IOException {
+            return _in.read(b, off, len);
+        }
+
+        public void reset() throws IOException {
+            _in.reset();
+        }
+
+        public long skip(long n) throws IOException {
+            return _in.skipBytes(n);
+        }
+
+        protected ImageInputStream _in;
+    }
 }

@@ -332,8 +332,8 @@ public class WCSTransform implements WorldCoordinateConverter {
                 }
                 if (wcstempLength > 4) {
                     // Chris S. changed this -- is it a zero- or one-based issue?
-                    //this.ptype = wcstemp.substring(4, 8);
-                    this.ptype = wcstemp.substring(3, 7);
+                    this.ptype = wcstemp.substring(4, 8);
+                    //this.ptype = wcstemp.substring(3, 7);
                 }
                 //  Find projection type
                 this.pcode = 0;  // default type is linear

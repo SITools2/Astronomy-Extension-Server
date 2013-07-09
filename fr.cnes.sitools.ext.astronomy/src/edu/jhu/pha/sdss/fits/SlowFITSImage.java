@@ -514,16 +514,16 @@ public class SlowFITSImage extends FITSImage
   protected static ImageHDU findFirstImageHDU(Fits fits)
     throws FitsException, IOException
   {
-    ImageHDU result = null;
-    int i = 0;
-
-    for(BasicHDU hdu = fits.getHDU(i); hdu != null && result == null; ++i)
-    {
-      if(hdu instanceof ImageHDU)
-      {
-        result = (ImageHDU)hdu;
-      }
-    }
+    ImageHDU result = null;    
+    BasicHDU basicHDU = fits.readHDU();    
+    while (basicHDU != null) {
+        if (basicHDU instanceof ImageHDU && basicHDU.getData().getSize() != 0) {
+            result = (ImageHDU) basicHDU;
+            break;
+        } else {
+            basicHDU = fits.readHDU();
+        }
+    }    
 
     return result;
   }
