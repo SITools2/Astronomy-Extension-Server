@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.operator.TransposeDescriptor;
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
 import nom.tam.fits.Fits;
@@ -45,6 +46,10 @@ import nom.tam.fits.ImageHDU;
  * @author malapert
  */
 public class CutOffSITools2Bis implements CutOffInterface {
+    
+    static {
+        System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+    }
     /**
      * Fits image.
      */
@@ -115,7 +120,7 @@ public class CutOffSITools2Bis implements CutOffInterface {
      */
     public CutOffSITools2Bis(final Fits fitsObj, final double rightAscension, final double declination, final double radius) throws CutOffException  {
         try {
-            this.fits = new FITSImage(fitsObj);
+            this.fits = new FITSImage(fitsObj, FITSImage.SCALE_SQUARE);
             this.ra = rightAscension;
             this.dec = declination;
             this.sr = radius;
@@ -344,12 +349,26 @@ public class CutOffSITools2Bis implements CutOffInterface {
         pb.add((float) this.corners[HEIGHT]);
         pb.add((float) this.lengths[WIDTH]);
         pb.add((float) this.lengths[HEIGHT]);
-        final PlanarImage pI = JAI.create("crop", pb);
+        PlanarImage pI = JAI.create("crop", pb);
+        pI = flip(pI);       
         try {
             ImageIO.write(pI, "jpg", os);
         } catch (IOException ex) {
             throw new CutOffException(ex);
         }
+    }
+    /**
+    * Performs the 'flip' or 'flipy' operation:
+    * Flip an image across an imaginary vertical line that runs through the center of the image.
+    * @param inImg the image to transform
+    * @return the transformed image
+    */
+    protected static PlanarImage flip(PlanarImage inImg) {
+        ParameterBlock params = new ParameterBlock();
+        params.addSource(inImg);
+        params.add(TransposeDescriptor.FLIP_VERTICAL); // flip over Y
+        PlanarImage outImg = JAI.create("transpose", params);
+        return outImg;
     }
 
     @Override

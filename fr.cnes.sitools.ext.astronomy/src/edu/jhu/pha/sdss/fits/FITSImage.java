@@ -1,10 +1,22 @@
 package edu.jhu.pha.sdss.fits;
 
-import java.awt.*;
-
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferUShort;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 
-import java.awt.image.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -507,10 +519,56 @@ public class FITSImage extends BufferedImage {
             default:
                 throw new DataTypeNotSupportedException(bitpix);
         }
-
+        double[] extrema = computeZscale(hist);
         return createScaledImages(hdu, hist,
-                hist.getMin(), hist.getMax(),
+                extrema[0], extrema[1],
                 hist.estimateSigma());
+    }
+    
+    /**
+     * Test of Zscale implementation (jcmalapert)
+     * @param hist
+     * @return 
+     */
+    public static double[] computeZscale(Histogram hist) {
+        double min = hist.getMin();
+        double max = hist.getMax();
+        double nBins = Math.pow(2.0, 16.0) - 1.0;
+        double binCenter = (nBins + 1) / 2.0d;
+        int[] countsVector = hist.getCounts();
+        // median of an odd histogram
+        double median = countsVector[(int) binCenter - 1];
+        double slope = hist.estimateSigma();//256 / (max - min);
+        double contrast = 0.25;
+        // compute the limits
+        double z1 = median - (binCenter - 1) * (slope / contrast);
+        double z2 = median + (nBins - binCenter) * (slope / contrast);
+        
+        double zmin;
+        if (z1 > min) {
+            zmin = z1;
+        } else {
+            zmin = min;
+        }
+        
+        double zmax;
+        if (z2 < max) {
+            zmax = z2;
+        } else {
+            zmax = max;
+        }
+
+        //last ditch sanity check
+        if (zmin >= zmax) {
+            zmin = min;
+            zmax = max;    
+        }
+        
+        if (zmin < 0) {
+            zmin = 0;
+            zmax = zmax;
+        }
+        return new double[]{zmin, zmax};
     }
 
     public static BufferedImage[] createScaledImages(ImageHDU hdu, Histogram hist,
