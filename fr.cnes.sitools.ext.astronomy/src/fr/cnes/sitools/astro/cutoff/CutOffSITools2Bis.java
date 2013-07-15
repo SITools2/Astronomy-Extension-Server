@@ -18,6 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutoff;
 
+
 import edu.jhu.pha.sdss.fits.FITSImage;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -120,7 +121,7 @@ public class CutOffSITools2Bis implements CutOffInterface {
      */
     public CutOffSITools2Bis(final Fits fitsObj, final double rightAscension, final double declination, final double radius) throws CutOffException  {
         try {
-            this.fits = new FITSImage(fitsObj, FITSImage.SCALE_SQUARE);
+            this.fits = new FITSImage(fitsObj, FITSImage.SCALE_LINEAR);
             this.ra = rightAscension;
             this.dec = declination;
             this.sr = radius;
@@ -352,11 +353,51 @@ public class CutOffSITools2Bis implements CutOffInterface {
         PlanarImage pI = JAI.create("crop", pb);
         pI = flip(pI);       
         try {
-            ImageIO.write(pI, "jpg", os);
+            ImageIO.write(pI, "jpeg", os);
         } catch (IOException ex) {
             throw new CutOffException(ex);
         }
+//        for (Iterator<ImageWriter> iw =ImageIO.getImageWritersByFormatName("png");w.hasNext();) {
+//            ImageWriter writer = iw.next();
+//            ImageWriteParam writeParam = writer.getDefaultWriteParam();
+//            ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
+//            IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier, writeParam);
+//            //final ImageOutputStream stream = ImageIO.createImageOutputStream(os);
+//            
+//            try {
+//                writer.setOutput(os);
+//                writer.write(metadata, new IIOImage(sourceImage, null, metadata), writeParam);
+//            } finally {
+//                
+//            }
+//            //throw new CutOffException(ex);
+//        }        
     }
+    
+//public static void setDPI(IIOMetadata metadata, int DPI)
+//            throws IIOInvalidTreeException {
+//
+//        double INCH_2_CM = 2.54;
+//
+//        // for PNG, it's dots per millimeter
+//        double dotsPerMilli = 1.0 * DPI / 10 / INCH_2_CM;
+//
+//        IIOMetadataNode horiz = new IIOMetadataNode("HorizontalPixelSize");
+//        horiz.setAttribute("value", Double.toString(dotsPerMilli));
+//
+//        IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
+//        vert.setAttribute("value", Double.toString(dotsPerMilli));
+//
+//        IIOMetadataNode dim = new IIOMetadataNode("Dimension");
+//        dim.appendChild(horiz);
+//        dim.appendChild(vert);
+//
+//        IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
+//        root.appendChild(dim);
+//
+//        metadata.mergeTree("javax_imageio_1.0", root);
+//    }    
+    
     /**
     * Performs the 'flip' or 'flipy' operation:
     * Flip an image across an imaginary vertical line that runs through the center of the image.

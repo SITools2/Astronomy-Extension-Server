@@ -24,6 +24,8 @@ import fr.cnes.sitools.astro.cutoff.CutOffInterface;
 import fr.cnes.sitools.astro.cutoff.CutOffSITools2;
 import fr.cnes.sitools.astro.cutoff.CutOffSITools2Bis;
 import fr.cnes.sitools.astro.representation.CutOffRepresentation;
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.application.ContextAttributes;
 import fr.cnes.sitools.common.exception.SitoolsException;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.dataset.DataSetApplication;
@@ -149,8 +151,14 @@ public class CutOffResource extends SitoolsParameterizedResource {
                 final Representation file = CutOffResource.getFile(String.valueOf(attributeValue.getValue()), Request.getCurrent().getClientInfo(), getContext());
                 fits = new Fits(file.getStream());                
             } else {                
-                final String dataStorageUrl = getSitoolsSetting(Consts.APP_DATASTORAGE_ADMIN_URL);
-                final StorageDirectory storageDirectory = RIAPUtils.getObject("436191bc-6cea-46fc-92a7-ac996775b097", dataStorageUrl, getContext());
+                final SitoolsSettings sitoolsSettings = (SitoolsSettings) getContext().getAttributes().get(ContextAttributes.SETTINGS);
+                final String dataStorageUrl = sitoolsSettings.getString(Consts.APP_DATASTORAGE_ADMIN_URL) + "/directories";
+                final String dataStorageRelativePart = sitoolsSettings.getString(Consts.APP_DATASTORAGE_URL);
+                final String sitoolsUrl = sitoolsSettings.getString(Consts.APP_URL);                
+                final StorageDirectory storageDirectory = RIAPUtils.getObjectFromName(dataStorageUrl, this.dataSorageName, getContext());
+                final String dataStorageAttachUrl = sitoolsUrl + dataStorageRelativePart + storageDirectory.getAttachUrl();
+                LOG.log(Level.FINER, "dataStorageAttachUrl: {0}", dataStorageAttachUrl);
+                final String dataStorageLocalPath = storageDirectory.getLocalPath();                
                 final String filename = storageDirectory.getLocalPath() + File.separator + attributeValue.getValue();
                 fits = new Fits(filename);
             }
@@ -194,14 +202,14 @@ public class CutOffResource extends SitoolsParameterizedResource {
             }
         }
 
-        final boolean fitsAvaialble = cutOff.isFitsAvailable();
+        final boolean fitsAvailable = cutOff.isFitsAvailable();
         Representation rep = null;
-        if (fitsAvaialble) {
+        if (fitsAvailable) {
             rep = new CutOffRepresentation(MediaType.ALL, cutOff);
-        } else if (cutOff.getIsDataCube()) {
-            rep = new CutOffRepresentation(MediaType.IMAGE_GIF, cutOff);
+        //} else if (cutOff.getIsDataCube()) {
+        //    rep = new CutOffRepresentation(MediaType.IMAGE_GIF, cutOff);
         } else {
-            rep = new CutOffRepresentation(MediaType.IMAGE_PNG, cutOff);
+            rep = new CutOffRepresentation(MediaType.IMAGE_JPEG, cutOff);
         }
         if (fileName != null && !"".equals(fileName)) {
             final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);

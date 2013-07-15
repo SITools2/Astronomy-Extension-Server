@@ -18,6 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutoff;
 
+
 import edu.jhu.pha.sdss.fits.FITSImage;
 import edu.jhu.pha.sdss.fits.FITSImage.DataTypeNotSupportedException;
 import edu.jhu.pha.sdss.fits.FITSImage.NoImageDataFoundException;

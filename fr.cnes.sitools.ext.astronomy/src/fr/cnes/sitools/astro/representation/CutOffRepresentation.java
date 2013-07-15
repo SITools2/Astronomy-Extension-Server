@@ -67,7 +67,13 @@ public class CutOffRepresentation extends OutputRepresentation {
     @Override
     public final void write(final OutputStream out) throws IOException {
         try {
-            this.cutout.createCutoutFits(out);
+            if (getMediaType().equals(MediaType.IMAGE_PNG) || 
+                getMediaType().equals(MediaType.IMAGE_JPEG) ||
+                getMediaType().equals(MediaType.IMAGE_GIF)){
+                this.cutout.createCutoutPreview(out);
+            } else {
+                this.cutout.createCutoutFits(out);
+            }
         } catch (CutOffException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new RepresentationRuntimeException(ex);

@@ -452,24 +452,27 @@ public class ScaleUtils
     short[] sqrtResult = new short[arraySize];
     short[] squareResult = new short[arraySize];
     short[] histEqResult = new short[arraySize];
-    short[] asinhResult = new short[arraySize];
-
-    double nBins = Math.pow(2.0, 16.0) - 1.0;
-    double offset = bZero - min;
+    short[] asinhResult = new short[arraySize];    
+    double nBinsForGrahic = 256;//Bug fixes by JCM - number of values of PNG, JPEG.
+    double offset = bZero - min; 
     double log10 = Math.log(10.0);
 
-    double linearScaleFactor = nBins / (max - min);
-    double sqrtScaleFactor = nBins / Math.sqrt(max - min);
-    double squareScaleFactor = nBins / Math.pow(max - min, 2.0);
-    double logScaleFactor = nBins / (Math.log(nBins) / log10);
-    double asinhScaleFactor = nBins / arcsinh((max - min) / sigma);
-
+    double linearScaleFactor = nBinsForGrahic / (max - min);
+    double sqrtScaleFactor = nBinsForGrahic / Math.sqrt(max - min);
+    double squareScaleFactor = nBinsForGrahic / Math.pow(max - min, 2.0);
+    double logScaleFactor = nBinsForGrahic / (Math.log(nBinsForGrahic) / log10);
+    double asinhScaleFactor = nBinsForGrahic / arcsinh((max - min) / sigma);
+    
     for(int y = 0; y < height; ++y)
     {
       for(int x = 0; x < width; ++x)
-      {
+      {                                       
         int bandedIndex = (y * width + x) * 3;
         double val = offset + bScale * (double)data[y][x];
+        if (val > max)
+            val = max;
+        if (val < min)
+            val = min;
         val = Math.max(0.0, Math.min(val, max - min));
 
         linearResult[bandedIndex] =
@@ -733,7 +736,7 @@ public class ScaleUtils
       for(int j = 0; j < data[i].length; ++j)
       {
         double val = bZero + bScale * data[i][j];
-
+        
         if(val > max)
         {
           max = val;

@@ -80,7 +80,7 @@ public class CutOffResourcePlugin extends ResourceModel {
     setClassOwner("CNES");
     setClassVersion("1.0");
     setName("Cut off service");
-    setDescription("This service can extract a part of a FITS as a FITS or graphic files (PNG, GIF). For this, the FITS image must contain valid WCS.");
+    setDescription("This service can extract a part of a FITS as a FITS or graphic files (JPEG). For this, the FITS image must contain valid WCS.");
     setResourceClassName(fr.cnes.sitools.extensions.astro.resource.CutOffResource.class.getName());
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.SINGLE);

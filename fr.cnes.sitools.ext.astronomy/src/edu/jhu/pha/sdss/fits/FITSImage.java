@@ -1,5 +1,7 @@
 package edu.jhu.pha.sdss.fits;
 
+
+import fr.cnes.sitools.astro.image.ZScale;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -29,6 +31,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
+import nom.tam.util.ArrayFuncs;
 
 /**
  * <PRE>
@@ -479,13 +482,58 @@ public class FITSImage extends BufferedImage {
         ImageHDU imageHDU = findFirstImageHDU(fits);
 
         if (imageHDU != null) {
-            result = createScaledImages(imageHDU);
+            result = createScaledImagesPatch(imageHDU);
         } else {
             throw new NoImageDataFoundException();
         }
 
         return result;
     }
+    
+    /**
+     * @return An array of BufferedImages from hdu with intensity values scaled
+     * to short range using linear, log, square root, and square scales, in that
+     * order.
+     */
+    public static BufferedImage[] createScaledImagesPatch(ImageHDU hdu)
+            throws FitsException, DataTypeNotSupportedException {
+        int bitpix = hdu.getBitPix();
+        double bZero = hdu.getBZero();
+        double bScale = hdu.getBScale();
+        Object data = hdu.getData().getData();
+        Histogram hist = null;
+
+        switch (bitpix) {
+            case 8:
+                hist = ScaleUtils.computeHistogram((byte[][]) data, bZero, bScale);
+                break;
+            case 16:
+                hist = ScaleUtils.computeHistogram((short[][]) data, bZero, bScale);
+                break;
+            case 32:
+                hist = ScaleUtils.computeHistogram((int[][]) data, bZero, bScale);
+                break;
+            case -32:
+                hist = ScaleUtils.computeHistogram((float[][]) data, bZero, bScale);
+                break;
+            case -64:
+                hist = ScaleUtils.computeHistogram((double[][]) data, bZero, bScale);
+                break;
+            default:
+                throw new DataTypeNotSupportedException(bitpix);
+        }
+        double contrast = 0.25;
+        int opt_size = 600;    /* desired number of pixels in sample   */
+
+        int len_stdline = 120;  /* optimal number of pixels per line    */
+
+        Object onedimdata = ArrayFuncs.flatten(data);
+        ZScale zscale = new ZScale(hdu, contrast, opt_size, len_stdline);
+        ZScale.ZscaleResult retval = zscale.compute();
+        return createScaledImages(hdu, hist,
+                retval.getZ1(), retval.getZ2(),
+                hist.estimateSigma());
+    }    
 
     /**
      * @return An array of BufferedImages from hdu with intensity values scaled
@@ -519,57 +567,10 @@ public class FITSImage extends BufferedImage {
             default:
                 throw new DataTypeNotSupportedException(bitpix);
         }
-        double[] extrema = computeZscale(hist);
-        return createScaledImages(hdu, hist,
-                extrema[0], extrema[1],
-                hist.estimateSigma());
-    }
-    
-    /**
-     * Test of Zscale implementation (jcmalapert)
-     * @param hist
-     * @return 
-     */
-    public static double[] computeZscale(Histogram hist) {
-        double min = hist.getMin();
-        double max = hist.getMax();
-        double nBins = Math.pow(2.0, 16.0) - 1.0;
-        double binCenter = (nBins + 1) / 2.0d;
-        int[] countsVector = hist.getCounts();
-        // median of an odd histogram
-        double median = countsVector[(int) binCenter - 1];
-        double slope = hist.estimateSigma();//256 / (max - min);
-        double contrast = 0.25;
-        // compute the limits
-        double z1 = median - (binCenter - 1) * (slope / contrast);
-        double z2 = median + (nBins - binCenter) * (slope / contrast);
-        
-        double zmin;
-        if (z1 > min) {
-            zmin = z1;
-        } else {
-            zmin = min;
-        }
-        
-        double zmax;
-        if (z2 < max) {
-            zmax = z2;
-        } else {
-            zmax = max;
-        }
-
-        //last ditch sanity check
-        if (zmin >= zmax) {
-            zmin = min;
-            zmax = max;    
-        }
-        
-        if (zmin < 0) {
-            zmin = 0;
-            zmax = zmax;
-        }
-        return new double[]{zmin, zmax};
-    }
+    return createScaledImages(hdu, hist,
+                              hist.getMin(), hist.getMax(),
+                              hist.estimateSigma());
+    }    
 
     public static BufferedImage[] createScaledImages(ImageHDU hdu, Histogram hist,
             double min, double max,
