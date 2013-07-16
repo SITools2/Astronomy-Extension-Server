@@ -22,7 +22,6 @@ package fr.cnes.sitools.extensions.astro.resource;
 import fr.cnes.sitools.astro.cutoff.CutOffException;
 import fr.cnes.sitools.astro.cutoff.CutOffInterface;
 import fr.cnes.sitools.astro.cutoff.CutOffSITools2;
-import fr.cnes.sitools.astro.cutoff.CutOffSITools2Bis;
 import fr.cnes.sitools.astro.representation.CutOffRepresentation;
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.application.ContextAttributes;
@@ -36,6 +35,7 @@ import fr.cnes.sitools.dataset.database.DatabaseRequestParameters;
 import fr.cnes.sitools.dataset.database.common.DataSetExplorerUtil;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
+import static fr.cnes.sitools.extensions.common.Utility.isSet;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.proxy.ProxySettings;
 import fr.cnes.sitools.server.Consts;
@@ -43,7 +43,8 @@ import fr.cnes.sitools.service.storage.model.StorageDirectory;
 import fr.cnes.sitools.util.RIAPUtils;
 import fr.cnes.sitools.util.Util;
 import java.io.File;
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -59,6 +60,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -75,8 +77,10 @@ public class CutOffResource extends SitoolsParameterizedResource {
     private transient double rightAscension;
     private transient double declination;
     private transient double radius;
-//    private transient int hduNumber;
+    private transient int hduNumber;
+    private transient int cubeIndex;
     private transient String dataSorageName;
+    private transient String outputFormat;
 
     /**
      * Initialize.
@@ -84,6 +88,10 @@ public class CutOffResource extends SitoolsParameterizedResource {
     @Override
     public final void doInit() {
         super.doInit();
+        MediaType.register("image/fits", "FITS image");
+        getMetadataService().addExtension("fits", MediaType.valueOf("image/fits"));
+        getVariants().add(new Variant(MediaType.valueOf("image/fits")));
+
         // Retrieve param from model
         String raString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.RA_INPUT_PARAMETER);
         if (raString == null || "".equals(raString)) {
@@ -103,12 +111,85 @@ public class CutOffResource extends SitoolsParameterizedResource {
         }
         this.radius = Double.valueOf(radiusString);
 
-//        String hduNumberString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
-//        if (hduNumberString == null || "".equals(hduNumberString)) {
-//            hduNumberString = getParameterValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
-//        }
-//        this.hduNumber = Integer.parseInt(hduNumberString);
-        this.dataSorageName = getParameterValue(CutOffResourcePlugin.DATA_STORAGE_NAME_PARAMETER);
+        String hduNumberString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
+        if (hduNumberString == null || "".equals(hduNumberString)) {
+            hduNumberString = getParameterValue(CutOffResourcePlugin.HDU_NUMBER_INPUT_PARAMETER);
+        }
+        this.hduNumber = Integer.parseInt(hduNumberString);
+
+        String cubeIndexString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.FITS_CUBE_DEEP_INPUT_PARAMETER);
+        if (cubeIndexString == null || "".equals(cubeIndexString)) {
+            cubeIndexString = getParameterValue(CutOffResourcePlugin.FITS_CUBE_DEEP_INPUT_PARAMETER);
+        }
+        this.cubeIndex = Integer.parseInt(cubeIndexString);
+
+        String dataStorageString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.DATA_STORAGE_NAME_PARAMETER);
+        if (dataStorageString == null || "".equals(dataStorageString)) {
+            dataStorageString = getParameterValue(CutOffResourcePlugin.DATA_STORAGE_NAME_PARAMETER);
+        }
+        this.dataSorageName = dataStorageString;
+
+        String outputFormatString = getRequest().getResourceRef().getQueryAsForm().getFirstValue(CutOffResourcePlugin.IMAGE_FORMAT);
+        if (outputFormatString == null || "".equals(outputFormatString)) {
+            outputFormatString = getParameterValue(CutOffResourcePlugin.IMAGE_FORMAT);
+        }
+        this.outputFormat = outputFormatString;
+    }
+
+    /**
+     * Retrieves the fileIdentifier.
+     * <p>
+     * It could be either a URI or the fileIdentifier of the data storage.
+     * </p>
+     *
+     * @return the fileIdentifier
+     */
+    private String retrieveFileIdentifier() {
+        String fileIdentifier = null;
+        // Get the datasetApplication
+        final DataSetApplication datasetApp = (DataSetApplication) getApplication();
+        //Get the pipeline to convert the information
+        final ConverterChained converterChained = datasetApp.getConverterChained();
+        final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(), getContext());
+        // Get DatabaseRequestParameters
+        final DatabaseRequestParameters params = dsExplorerUtil.getDatabaseParams();
+        final DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(params);
+
+        try {
+            if (params.getDistinct()) {
+                databaseRequest.createDistinctRequest();
+            } else {
+                databaseRequest.createRequest();
+            }
+            databaseRequest.nextResult();
+
+            Record record = databaseRequest.getRecord();
+            if (Util.isSet(converterChained)) {
+                record = converterChained.getConversionOf(record);
+            }
+            final AttributeValue attributeValue = this.getInParam(this.getModel().getParameterByName(CutOffResourcePlugin.FITS_FILE_INPUT_PARAMETER), record);
+            fileIdentifier = String.valueOf(attributeValue.getValue());
+        } catch (SitoolsException ex) {
+            Logger.getLogger(CutOffResource.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                databaseRequest.close();
+            } catch (SitoolsException ex) {
+                Logger.getLogger(CutOffResource.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return fileIdentifier;
+    }
+
+    @Override
+    protected final Representation head() throws ResourceException {
+        final Representation repr = super.head();
+        if (this.outputFormat.equals("FITS")) {
+            repr.setMediaType(MediaType.valueOf("image/fits"));
+        } else {
+            repr.setMediaType(MediaType.TEXT_XML); // must set this mediaType to display 
+        }                                           // the result in the client
+        return repr;
     }
 
     /**
@@ -119,97 +200,44 @@ public class CutOffResource extends SitoolsParameterizedResource {
     @Override
     public final Representation get() {
         CutOffInterface cutOff = null;
-
-        // Get the datasetApplication
-        final DataSetApplication datasetApp = (DataSetApplication) getApplication();
-
-        //Get the pipeline to convert the information
-        final ConverterChained converterChained = datasetApp.getConverterChained();
-
-        final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil((DataSetApplication) getApplication(), getRequest(), getContext());
-
-        // Get DatabaseRequestParameters
-        final DatabaseRequestParameters params = dsExplorerUtil.getDatabaseParams();
-
-        final DatabaseRequest databaseRequest = DatabaseRequestFactory.getDatabaseRequest(params);
+        Fits fits;
         try {
-            if (params.getDistinct()) {
-                databaseRequest.createDistinctRequest();
-            } else {
-                databaseRequest.createRequest();
-            }
-
-            databaseRequest.nextResult();
-
-            Record record = databaseRequest.getRecord();
-            if (Util.isSet(converterChained)) {
-                record = converterChained.getConversionOf(record);
-            }
-            final AttributeValue attributeValue = this.getInParam(this.getModel().getParameterByName(CutOffResourcePlugin.FITS_FILE_INPUT_PARAMETER), record);
-            final Fits fits;
-            if (this.dataSorageName == null || "".equals(this.dataSorageName)) {
-                final Representation file = CutOffResource.getFile(String.valueOf(attributeValue.getValue()), Request.getCurrent().getClientInfo(), getContext());
-                fits = new Fits(file.getStream());                
-            } else {                
+            String fileIdentifier = retrieveFileIdentifier();
+            if (isSet(this.dataSorageName) && !this.dataSorageName.isEmpty()) {
                 final SitoolsSettings sitoolsSettings = (SitoolsSettings) getContext().getAttributes().get(ContextAttributes.SETTINGS);
                 final String dataStorageUrl = sitoolsSettings.getString(Consts.APP_DATASTORAGE_ADMIN_URL) + "/directories";
                 final String dataStorageRelativePart = sitoolsSettings.getString(Consts.APP_DATASTORAGE_URL);
-                final String sitoolsUrl = sitoolsSettings.getString(Consts.APP_URL);                
+                final String sitoolsUrl = sitoolsSettings.getString(Consts.APP_URL);
                 final StorageDirectory storageDirectory = RIAPUtils.getObjectFromName(dataStorageUrl, this.dataSorageName, getContext());
                 final String dataStorageAttachUrl = sitoolsUrl + dataStorageRelativePart + storageDirectory.getAttachUrl();
                 LOG.log(Level.FINER, "dataStorageAttachUrl: {0}", dataStorageAttachUrl);
-                final String dataStorageLocalPath = storageDirectory.getLocalPath();                
-                final String filename = storageDirectory.getLocalPath() + File.separator + attributeValue.getValue();
+                final String filename = storageDirectory.getLocalPath() + File.separator + fileIdentifier;
                 fits = new Fits(filename);
-            }
-            cutOff = new CutOffSITools2Bis(fits, rightAscension, declination, radius);
-
+            } else {
+                final SitoolsSettings sitoolsSettings = (SitoolsSettings) getContext().getAttributes().get(ContextAttributes.SETTINGS);
+                final String rootURL = sitoolsSettings.getPublicHostDomain();
+                final URL url = (fileIdentifier.startsWith("http://")) ? new URL(fileIdentifier) : new URL(rootURL + fileIdentifier);
+                fits = new Fits(url);
+            }            
+            cutOff = new CutOffSITools2(fits, rightAscension, declination, radius, hduNumber, cubeIndex);
         } catch (FitsException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            try {
-                databaseRequest.close();
-            } catch (SitoolsException ex1) {
-                LOG.log(Level.SEVERE, null, ex1);
-            } finally {
-                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-            }
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            try {
-                databaseRequest.close();
-            } catch (SitoolsException ex1) {
-                LOG.log(Level.SEVERE, null, ex1);
-            } finally {
-                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-            }
+            Logger.getLogger(CutOffResource.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (CutOffException ex) {
             Logger.getLogger(CutOffResource.class.getName()).log(Level.SEVERE, null, ex);
-            try {
-                databaseRequest.close();
-            } catch (SitoolsException ex1) {
-                LOG.log(Level.SEVERE, null, ex1);
-            } finally {
-                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-            }
-        } catch (SitoolsException ex) {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
+        } catch (MalformedURLException ex) {
             Logger.getLogger(CutOffResource.class.getName()).log(Level.SEVERE, null, ex);
-            try {
-                databaseRequest.close();
-            } catch (SitoolsException ex1) {
-                LOG.log(Level.SEVERE, null, ex1);
-            } finally {
-                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-            }
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         }
 
-        final boolean fitsAvailable = cutOff.isFitsAvailable();
         Representation rep = null;
-        if (fitsAvailable) {
-            rep = new CutOffRepresentation(MediaType.ALL, cutOff);
-        //} else if (cutOff.getIsDataCube()) {
-        //    rep = new CutOffRepresentation(MediaType.IMAGE_GIF, cutOff);
-        } else {
+        if (this.outputFormat.equals("FITS")) {
+            rep = new CutOffRepresentation(MediaType.valueOf("image/fits"), cutOff);
+        } else if (this.outputFormat.equals("JPEG")) {
             rep = new CutOffRepresentation(MediaType.IMAGE_JPEG, cutOff);
+        } else {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "JPEG or FITS must be selected");
         }
         if (fileName != null && !"".equals(fileName)) {
             final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);

@@ -42,6 +42,10 @@ public interface CutOffInterface {
          */
         PNG,
         /**
+         * JPEG format.
+         */
+        JPEG,        
+        /**
          * Not defined format.
          */
         NOT_DEFINED

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 
@@ -43,6 +44,8 @@ public class CutOffRepresentation extends OutputRepresentation {
    */
     private final transient CutOffInterface cutout;
     
+    private String filename = "cutoff.fits";
+    
     /**
      * Constructs a new cutoff representation.
      * 
@@ -52,6 +55,14 @@ public class CutOffRepresentation extends OutputRepresentation {
     public CutOffRepresentation(final MediaType media, final CutOffInterface cutoff) {
         super(media);
         this.cutout = cutoff;
+    }
+    
+    public final void setFilename(final String filename) {
+        this.filename = filename;
+    }
+    
+    public final String getFilename() {
+        return this.filename;
     }
 
     /**
@@ -65,13 +76,16 @@ public class CutOffRepresentation extends OutputRepresentation {
      * @throws IOException IO Exception
      */
     @Override
-    public final void write(final OutputStream out) throws IOException {
+    public final void write(final OutputStream out) throws IOException {        
         try {
             if (getMediaType().equals(MediaType.IMAGE_PNG) || 
                 getMediaType().equals(MediaType.IMAGE_JPEG) ||
                 getMediaType().equals(MediaType.IMAGE_GIF)){
                 this.cutout.createCutoutPreview(out);
             } else {
+                final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
+                disp.setFilename(getFilename());
+                this.setDisposition(disp);                
                 this.cutout.createCutoutFits(out);
             }
         } catch (CutOffException ex) {

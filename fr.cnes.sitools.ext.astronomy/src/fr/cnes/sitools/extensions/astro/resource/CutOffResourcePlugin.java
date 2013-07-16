@@ -66,11 +66,23 @@ public class CutOffResourcePlugin extends ResourceModel {
   /**
    * Hdu number input parameter.
    */
-  public static final String HDU_NUMBER_INPUT_PARAMETER = "hduNumber";
+  public static final String HDU_NUMBER_INPUT_PARAMETER = "hduImageNumber";
   /**
    * FITS file input parameter.
    */
-  public static final String FITS_FILE_INPUT_PARAMETER = "FitsFile";  
+  public static final String FITS_FILE_INPUT_PARAMETER = "FileIdentifier";
+  /**
+   * Cube index.
+   */
+  public static final String FITS_CUBE_DEEP_INPUT_PARAMETER = "CubeIndex";
+  /**
+   * Output format.
+   */
+  public static final String IMAGE_FORMAT = "OutputFormat";
+  /**
+   * URI or URL of the FITS file.
+   */
+  public static final String URI_INPUT_FORMAT = "FitsURI";
   /**
    * Constructs the administration panel.
    */
@@ -85,20 +97,37 @@ public class CutOffResourcePlugin extends ResourceModel {
     this.setApplicationClassName(DataSetApplication.class.getName());
     this.setDataSetSelection(DataSetSelectionType.SINGLE);
     this.getParameterByName("methods").setValue("GET");
+    
+    
     final ResourceParameter rightAscension = new ResourceParameter(RA_INPUT_PARAMETER, "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
+    rightAscension.setUserUpdatable(Boolean.TRUE);
     final ResourceParameter declination = new ResourceParameter(DEC_INPUT_PARAMETER, "Central point of the cut off", ResourceParameterType.PARAMETER_USER_INPUT);
+    declination.setUserUpdatable(Boolean.TRUE);    
     final ResourceParameter radius = new ResourceParameter(RADIUS_INPUT_PARAMETER, "Radius in which the image will be cut", ResourceParameterType.PARAMETER_USER_INPUT);
+    radius.setUserUpdatable(Boolean.TRUE);
     final ResourceParameter dataStorage = new ResourceParameter(DATA_STORAGE_NAME_PARAMETER, "If data storage is set,"
-            + " then FitsFile is an identifier in this data storage", ResourceParameterType.PARAMETER_USER_INPUT);
-    final ResourceParameter fitsFile = new ResourceParameter(FITS_FILE_INPUT_PARAMETER, "Fits file to cut", ResourceParameterType.PARAMETER_INTERN);
+            + " then FitsFile is an identifier in this data storage", ResourceParameterType.PARAMETER_INTERN);
+    final ResourceParameter fitsFile = new ResourceParameter(FITS_FILE_INPUT_PARAMETER, "Fits file to cut. This must be the file identifier if you "
+            + "use a datasotrage otherwise, this is the URI or the URL of the FITS file", ResourceParameterType.PARAMETER_INTERN);
     fitsFile.setValueType("xs:dataset.columnAlias");
-//    final ResourceParameter hduNumber = new ResourceParameter(HDU_NUMBER_INPUT_PARAMETER, "HDU number to cut", ResourceParameterType.PARAMETER_INTERN);
+    final ResourceParameter hduNumber = new ResourceParameter(HDU_NUMBER_INPUT_PARAMETER, "HDU Image number to cut (start=1)", ResourceParameterType.PARAMETER_USER_INPUT);
+    hduNumber.setValueType("xs:int");
+    hduNumber.setValue("1");
+    final ResourceParameter cubeIndex = new ResourceParameter(FITS_CUBE_DEEP_INPUT_PARAMETER, "Cube Index to extract (start=0)",ResourceParameterType.PARAMETER_USER_INPUT);
+    cubeIndex.setValueType("xs:int");
+    cubeIndex.setValue("0");
+    final ResourceParameter outputFormat = new ResourceParameter(IMAGE_FORMAT, "Output format", ResourceParameterType.PARAMETER_USER_INPUT);
+    outputFormat.setValue("FITS");
+    outputFormat.setValueType("xs:enum-multiple[FITS,JPEG]");
+    outputFormat.setUserUpdatable(Boolean.TRUE);
     addParam(rightAscension);
     addParam(declination);
     addParam(radius);
     addParam(dataStorage);
-    addParam(fitsFile);    
-//    addParam(hduNumber);
+    addParam(fitsFile);
+    addParam(hduNumber);
+    addParam(cubeIndex); 
+    addParam(outputFormat);
     this.completeAttachUrlWith("/cutoff");
   }
 
@@ -125,42 +154,51 @@ public class CutOffResourcePlugin extends ResourceModel {
       public final Set<ConstraintViolation> validate(final ResourceModel item) {
         final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
         final Map<String, ResourceParameter> params = item.getParametersMap();
-        final ResourceParameter fitsFile = params.get("FitsFile");
-        final ResourceParameter hduNumber = params.get("hduNumber");
+        final ResourceParameter fitsFile = params.get(FITS_FILE_INPUT_PARAMETER);
+        final ResourceParameter hduNumber = params.get(HDU_NUMBER_INPUT_PARAMETER);
+        final ResourceParameter dataStorage = params.get(DATA_STORAGE_NAME_PARAMETER);
 
-        if (!isSet(fitsFile)) {
+        if (!isSet(fitsFile.getValue())) {
           final ConstraintViolation constraint = new ConstraintViolation();
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
           constraint.setValueName(fitsFile.getName());
           constraint.setMessage("Fits file must be set");
           constraintList.add(constraint);
         }
-
-//        if (!isSet(hduNumber)) {
-//          final ConstraintViolation constraint = new ConstraintViolation();
-//          constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-//          constraint.setValueName(hduNumber.getName());
-//          constraint.setMessage("HDU number must be set");
-//          constraintList.add(constraint);
-//        } else {
-//          try {
-//            final int number = Integer.parseInt(hduNumber.getValue());
-//            if (number < 0) {
-//              final ConstraintViolation constraint = new ConstraintViolation();
-//              constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-//              constraint.setValueName(hduNumber.getName());
-//              constraint.setMessage("HDU number must be >= 0");
-//              constraint.setInvalidValue(hduNumber.getValue());
-//              constraintList.add(constraint);
-//            }
-//          } catch (NumberFormatException ex) {
+        
+        if(!isSet(hduNumber.getValue())) {
+            final ConstraintViolation constraint = new ConstraintViolation();
+            constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+            constraint.setValueName(hduNumber.getName());
+            constraint.setMessage("HDU number must be set");
+            constraintList.add(constraint);
+        } else {
+            try {
+                final int number = Integer.parseInt(hduNumber.getValue());
+                if (number < 0) {
+                    final ConstraintViolation constraint = new ConstraintViolation();
+                    constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+                    constraint.setValueName(hduNumber.getName());
+                    constraint.setMessage("HDU number must be >= 0");
+                    constraint.setInvalidValue(hduNumber.getValue());
+                    constraintList.add(constraint);
+                }
+            } catch (NumberFormatException ex) {
+                final ConstraintViolation constraint = new ConstraintViolation();
+                constraint.setLevel(ConstraintViolationLevel.CRITICAL);
+                constraint.setValueName(hduNumber.getName());
+                constraint.setMessage("HDU number must be an integer");
+                constraint.setInvalidValue(hduNumber.getValue());
+                constraintList.add(constraint);
+            }            
+        }
+        
+//        if(!isSet(dataStorage.getValue())) {
 //            final ConstraintViolation constraint = new ConstraintViolation();
-//            constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-//            constraint.setValueName(hduNumber.getName());
-//            constraint.setMessage("HDU number must be an integer");
-//            constraint.setInvalidValue(hduNumber.getValue());
+//            constraint.setLevel(ConstraintViolationLevel.WARNING);
+//            constraint.setValueName(dataStorage.getName());
+//            constraint.setMessage("You do not use the datastorage, then check that "+FITS_FILE_INPUT_PARAMETER+" is either a URL or a URI");
 //            constraintList.add(constraint);
-//          }
 //        }
         return constraintList;
       }

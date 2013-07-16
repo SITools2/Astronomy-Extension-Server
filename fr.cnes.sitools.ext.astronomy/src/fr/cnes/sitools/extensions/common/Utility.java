@@ -203,4 +203,63 @@ public abstract class Utility {
     }
     return null;
   }
+  
+  public static Object array1DTo2D(Object data, int bitpix, int width, int height) {
+      Object obj = null;      
+      switch (bitpix) {
+          case 8:
+              byte[] dataB = (byte[])data;
+              byte[][] resultB = new byte[height][width];
+              for (int i = 0; i<height; i++) {
+                for (int j=0 ; j<width; j++) {
+                    resultB[i][j] = dataB[i*width+j];
+                }
+              }
+              obj = resultB;
+              break;
+          case 16:
+              short[] dataS = (short[])data;
+              short[][] resultS = new short[height][width];
+              for (int i = 0; i<height; i++) {
+                for (int j=0 ; j<width; j++) {
+                    resultS[i][j] = dataS[i*width+j];
+                }
+              }
+              obj = resultS;
+              break;
+          case 32:
+              int[] dataI = (int[])data;
+              int[][] resultI = new int[height][width];
+              for (int i = 0; i<height; i++) {
+                for (int j=0 ; j<width; j++) {
+                    resultI[i][j] = dataI[i*width+j];
+                }
+              }
+              obj = resultI;
+              break;       
+          case -32:
+              float[] dataF = (float[])data;
+              float[][] resultF = new float[height][width];
+              for (int i = 0; i<height; i++) {
+                for (int j=0 ; j<width; j++) {
+                    resultF[i][j] = dataF[i*width+j];
+                }
+              }
+              obj = resultF;
+              break;              
+          case -64:
+              double[] dataD = (double[])data;
+              double[][] resultD = new double[height][width];
+              for (int i = 0; i<height; i++) {
+                for (int j=0 ; j<width; j++) {
+                    resultD[i][j] = dataD[i*width+j];
+                }
+              }
+              obj = resultD;
+              break;
+          default:
+              break;           
+      }
+      return obj;              
+  }
 }
