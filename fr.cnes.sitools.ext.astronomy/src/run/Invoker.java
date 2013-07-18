@@ -19,7 +19,7 @@ import fr.cnes.sitools.SearchGeometryEngine.Point;
 import fr.cnes.sitools.SearchGeometryEngine.Polygon;
 import fr.cnes.sitools.SearchGeometryEngine.RingIndex;
 import fr.cnes.sitools.SearchGeometryEngine.Shape;
-import fr.cnes.sitools.astro.cutoff.FitsHeader;
+import fr.cnes.sitools.astro.cutout.FitsHeader;
 import fr.cnes.sitools.astro.graph.CircleDecorator;
 import fr.cnes.sitools.astro.graph.CoordinateDecorator;
 import fr.cnes.sitools.astro.graph.GenericProjection;

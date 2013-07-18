@@ -10,7 +10,7 @@
   <li>ReverNameResolver plugin</li>
   <li>NameResolver plugin</li>  
   <li>Export VOTable</li>
-  <li>CutOff plugin</li>
+  <li>cutOut plugin</li>
   <li>Sky coverage plugin</li>
  </ul>
  */
