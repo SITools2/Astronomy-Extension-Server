@@ -44,7 +44,10 @@ public class BaseJobResource extends SitoolsParameterizedResource {
         super.doInit();
         this.app = (UwsApplicationPlugin) getApplication();
         this.requestedJobId = (String) getRequestAttributes().get("job-id");
-        this.setAutoDescribing(false);        
+        this.setAutoDescribing(false);
+        if (!this.app.isLoadPersistence()) {
+            this.app.loadPersistence();
+        }        
     }
 
     /**

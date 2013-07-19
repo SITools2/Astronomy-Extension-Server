@@ -163,7 +163,7 @@ public class JobTaskManager {
         if (Util.isSet(jobTask)) {
             try {
                 this.tasksMap.remove(jobTask.getJobTaskId());
-                jobTask.deleteUserSpace(this.context);
+                jobTask.deleteUserSpace();
                 this.save();
             } catch (IOException ex) {
                 throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, "Cannot save the result");

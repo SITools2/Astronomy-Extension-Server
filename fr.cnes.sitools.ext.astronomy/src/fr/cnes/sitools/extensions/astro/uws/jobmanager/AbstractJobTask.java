@@ -79,7 +79,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     private XMLGregorianCalendar startTime;
     private XMLGregorianCalendar endTime;
     private String ownerId;
-    //private String storageMgtPath;
+    private String storagePath;
     private JobInfo jobInfo;
     private String storagePublic;    
     
@@ -122,6 +122,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         SitoolsSettings settings = (SitoolsSettings) context.getAttributes().get(ContextAttributes.SETTINGS);
         String uwsAttachUrl = (String) context.getAttributes().get(UwsApplicationPlugin.APP_URL_UWS_SERVICE);
         this.storagePublic = settings.getPublicHostDomain() + uwsAttachUrl;
+        this.storagePath = ((UwsApplicationPlugin)context.getAttributes().get(UwsApplicationPlugin.APP_UWS)).getStorageDirectory();
         this.jobTaskId = jobTaskId;
         this.executionDuration = 0;
         try {
@@ -143,7 +144,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
             throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
         }
         this.ownerId = Constants.NO_OWNER;
-        createUserSpace(context);
+        createUserSpace();
         Form form = computeForm(entity);
         this.phase = setPhaseAtCreation(form);
         this.parameters = createParametersForJob(form, true);
@@ -746,23 +747,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         client.release();
     }
 
-    /**
-     * Create a user disk space for the processing
-     *
-     * @param jobTaskId Job task identifier
-     * @throws UniversalWorkerException Returns a client bad request
-     */
-    protected void createUserSpace(Context context) throws UniversalWorkerException {
-        //final SitoolsSettings sitoolsSettings = (SitoolsSettings) context.getAttributes().get(ContextAttributes.SETTINGS);
-        //final String dataStorageUrl = sitoolsSettings.getString(Consts.APP_DATASTORAGE_ADMIN_URL) + "/directories";        
-        //final StorageDirectory storageDirectory = RIAPUtils.getObjectFromName(dataStorageUrl, "Tmp", context);
-        //String directory = storageDirectory.getLocalPath();
-        //directory = directory.replaceFirst("file://", "");
-        //File fb = new File(directory + File.separator + "jobCache");
-        //File fb = new File("/tmp/storage/jobCache" + File.separator + jobTaskId);
-        //fb.mkdir();
-        //String uri = RIAPUtils.getRiapBase() + "/uws/jobCache";
-        //String uri = "riap://component" + this.storageMgtPath + "/jobCache";
+    private void createUserSpace() throws UniversalWorkerException {
         String uri = "riap://application/jobCache";
         ClientResource client = new ClientResource(uri);
         client.post(jobTaskId);
@@ -775,15 +760,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      * @param jobTaskId
      * @throws UniversalWorkerException Returns an CLIENT_ERROR_BAD_REQUEST
      */
-    protected void deleteUserSpace(Context context) throws UniversalWorkerException {
-        //final SitoolsSettings sitoolsSettings = (SitoolsSettings) context.getAttributes().get(ContextAttributes.SETTINGS);
-        //final String dataStorageUrl = sitoolsSettings.getString(Consts.APP_DATASTORAGE_ADMIN_URL) + "/directories";        
-        //final StorageDirectory storageDirectory = RIAPUtils.getObjectFromName(dataStorageUrl, "Tmp", context);
-        //String directory = storageDirectory.getLocalPath();
-        //directory = directory.replaceFirst("file://", "");
-        //File file = new File(directory + File.separator + "jobCache" + File.separator + jobTaskId);
-        //File file = new File("/tmp/jobCache" + File.separator + jobTaskId);
-        //file.delete();
+    protected void deleteUserSpace() throws UniversalWorkerException {
         String uri = "riap://application/jobCache/" + jobTaskId;
         ClientResource client = new ClientResource(uri);
         client.delete();
@@ -794,5 +771,9 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         //final SitoolsSettings sitoolsSettings = (SitoolsSettings) Context.getCurrent().getAttributes().get(ContextAttributes.SETTINGS);
         //return sitoolsSettings.getString(Consts.APP_CLIENT_PUBLIC_URL) + "/storage"; 
         return this.storagePublic + "/storage";
+    }
+    
+    protected String getStoragePathJob() {
+        return this.storagePath + File.separator + getJobTaskId();
     }
 }

@@ -1,18 +1,18 @@
 /**
  * *****************************************************************************
  * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
- * This file is part of SITools2. 
- * 
+ *
+ * This file is part of SITools2.
+ *
  * SITools2 is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * SITools2. If not, see <http://www.gnu.org/licenses/>.
  * ****************************************************************************
@@ -56,11 +56,13 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.ext.wadl.ApplicationInfo;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.GrammarsInfo;
 import org.restlet.ext.wadl.IncludeInfo;
 import org.restlet.resource.Directory;
+import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 
@@ -69,17 +71,18 @@ import org.restlet.routing.Template;
  * @author malapert
  */
 public class UwsApplicationPlugin extends AbstractApplicationPlugin {
-    
+
     private boolean isAllowedDestructionTimePostMethod = true;
     private boolean isAllowedExecutionTimePostMethod = true;
     private boolean isAllowedParameterNamePutMethod = true;
-    public static final String APP_URL_UWS_SERVICE="uwsService";
-    public static final String APP_DESTRUCTION_DELAY="604800000";
-    public static final String APP_UWS_TITLE="UWS application";
-    public static final String APP_UWS="UWS";
-    public static final String JOB_TASK_IMPLEMENTATION="fr.cnes.sitools.extensions.astro.uws.test.CutOut";
+    public static final String APP_URL_UWS_SERVICE = "uwsService";
+    public static final String APP_DESTRUCTION_DELAY = "604800000";
+    public static final String APP_UWS_TITLE = "UWS application";
+    public static final String APP_UWS = "UWS";
+    public static final String JOB_TASK_IMPLEMENTATION = "fr.cnes.sitools.extensions.astro.uws.test.CutOut";
     private String storageDirectory = null;
-            
+    private boolean isLoadPersistence = false;
+
     /**
      * Constructor.
      */
@@ -96,7 +99,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     public UwsApplicationPlugin(final Context context) {
         super(context);
         constructor();
-        
+
     }
 
     /**
@@ -115,7 +118,6 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
             setCategory(category);
         } catch (Exception ex) {
         }
-        loadPersistence();
         //this.isAllowedDestructionTimePostMethod = Boolean.parseBoolean(String.valueOf(getContext().getAttributes().get(ContextAttributes.DESTRUCTION_TIME_ALLOWED_METHOD_POST)));
         //this.isAllowedExecutionTimePostMethod = Boolean.parseBoolean(String.valueOf(getContext().getAttributes().get(ContextAttributes.EXECUTION_DURATION_ALLOWED_METHOD_POST)));
         //this.isAllowedParameterNamePutMethod = Boolean.parseBoolean(String.valueOf(getContext().getAttributes().get(ContextAttributes.PARAMETER_NAME_ALLOWED_METHOD_PUT)));
@@ -123,15 +125,16 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
 //        try {
 //            destructionDelay = Long.parseLong(String.valueOf(context.getAttributes().get(ContextAttributes.APP_DESTRUCTION_DELAY)));
 //        } catch (NumberFormatException nfe) {
-            destructionDelay = Constants.DESTRUCTION_DELAY;
+        destructionDelay = Constants.DESTRUCTION_DELAY;
 //        }
         // TODO check
         getContext().getAttributes().put(APP_URL_UWS_SERVICE, model.getUrlAttach());
         getContext().getAttributes().put(APP_DESTRUCTION_DELAY, destructionDelay);
         getContext().getAttributes().put(APP_UWS, this);
-        JobTaskManager.getInstance().init(getContext());         
+        setStorage();
+        JobTaskManager.getInstance().init(getContext());
         register();
-    }    
+    }
 
     @Override
     public void sitoolsDescribe() {
@@ -141,31 +144,49 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         this.setDescription("UWS application");
     }
 
-    private void constructor() {       
+    private void constructor() {
         this.getModel().setClassAuthor("J-C Malapert");
         this.getModel().setClassName("UWS Application");
         this.getModel().setClassOwner("CNES");
-        this.getModel().setClassVersion("0.1");                
+        this.getModel().setClassVersion("0.1");
 
         ApplicationPluginParameter param = new ApplicationPluginParameter();
         param.setName("storageDirectory");
-        param.setDescription("File path for the storage directory (must start with file://");        
+        param.setDescription("File path for the storage directory (must start with file://");
         this.addParameter(param);
+    }
+
+    private void setStorage() {
+        String directory = this.getParameter("storageDirectory").getValue();
+        if (directory.endsWith(File.separator)) {
+            this.storageDirectory = directory.substring(directory.length() - 1, directory.length());
+        } else {
+            this.storageDirectory = directory;
+        }
+        this.storageDirectory = this.storageDirectory.substring(6, this.storageDirectory.length());
     }
 
     /**
      * Load persistance when the server starts
      */
-    private void loadPersistence() {
-        //File file = new File(Messages.getString("Starter.ROOT_DIRECTORY") + Messages.getString("Starter.APP_STORE_DIR") + "/save.xml");
-        String directory = this.getParameter("storageDirectory").getValue();
-        if (directory.endsWith(File.separator)) {
-            this.storageDirectory = directory.substring(directory.length() - 1, directory.length());           
-        } else {
-            this.storageDirectory = directory;
+    public void loadPersistence() {
+        if (isLoadPersistence()) {
+            return;
         }
-        this.storageDirectory = this.storageDirectory.substring(6, this.storageDirectory.length());
-        File file = new File(this.storageDirectory + File.separator + "save.xml");        
+        //File file = new File(Messages.getString("Starter.ROOT_DIRECTORY") + Messages.getString("Starter.APP_STORE_DIR") + "/save.xml");
+
+        final File storageDirectoryObj = new File(this.storageDirectory);
+        if (!storageDirectoryObj.exists()) {
+            boolean status = storageDirectoryObj.mkdir();
+            if (!status) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot create the " + this.storageDirectory + "directory");
+            }
+        } else {
+            if (!storageDirectoryObj.canRead() || !storageDirectoryObj.canWrite()) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot read or write on " + this.storageDirectory + "directory");
+            }
+        }
+        File file = new File(this.storageDirectory + File.separator + "save.xml");
         if (file.exists()) {
             FileInputStream fis = null;
             try {
@@ -187,6 +208,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
             } catch (IOException ex) {
                 Logger.getLogger(UwsApplicationPlugin.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
+                setLoadPersistence(true);
                 try {
                     fis.close();
                 } catch (IOException ex) {
@@ -195,9 +217,10 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
             }
         }
     }
-    
+
     /**
      * Load or not the POST methode for the ExecutionTime resource
+     *
      * @return Returns true when POST method can be used otherwise false
      */
     public boolean isAllowedExecutionTimePostMethod() {
@@ -206,6 +229,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
 
     /**
      * Load or not the POST methode for the DestructionTime resource
+     *
      * @return Returns true when POST method can be used otherwise false
      */
     public boolean isAllowedDestructionTimePostMethod() {
@@ -215,11 +239,19 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     public boolean isAllowedParameterNamePutMethod() {
         return this.isAllowedParameterNamePutMethod;
     }
-    
+
     public String getStorageDirectory() {
         return this.storageDirectory;
     }
-    
+
+    public boolean isLoadPersistence() {
+        return this.isLoadPersistence;
+    }
+
+    private void setLoadPersistence(final boolean loadPersistence) {
+        this.isLoadPersistence = loadPersistence;
+    }
+
     @Override
     public final Restlet createInboundRoot() {
         final Router router = new Router(getContext());
@@ -227,12 +259,12 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         router.attachDefault(JobsResource.class);
         Directory appStorage = new Directory(getContext(), "file://" + getStorageDirectory());
         appStorage.setListingAllowed(true);
-        appStorage.setDeeplyAccessible(true) ;       
-        router.attach("/storage",appStorage);
-        router.attach("/jobCache/{job-id}/{file-id}",JobIdDirectory.class);
-        router.attach("/jobCache/{job-id}",JobIdDirectory.class);
-        router.attach("/jobCache",JobIdDirectory.class);
-        router.attach("/cache",StoreObject.class);        
+        appStorage.setDeeplyAccessible(true);
+        router.attach("/storage", appStorage);
+        router.attach("/jobCache/{job-id}/{file-id}", JobIdDirectory.class);
+        router.attach("/jobCache/{job-id}", JobIdDirectory.class);
+        router.attach("/jobCache", JobIdDirectory.class);
+        router.attach("/cache", StoreObject.class);
         router.attach("/{job-id}/phase", PhaseResource.class);
         router.attach("/{job-id}/executionduration", ExecutiondurationResource.class);
         router.attach("/{job-id}/destruction", DestructionResource.class);
@@ -241,7 +273,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         router.attach("/{job-id}/results", ResultsResource.class);
         router.attach("/{job-id}/parameters", ParametersResource.class);
         router.attach("/{job-id}/parameters/{parameter-name}", ParameterNameResource.class);
-        router.attach("/{job-id}/owner", OwnerResource.class);        
+        router.attach("/{job-id}/owner", OwnerResource.class);
         router.attach("/{job-id}", JobResource.class);
         attachParameterizedResources(router);
         return router;
@@ -269,5 +301,5 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         grammar.getIncludes().add(include);
         result.setGrammars(grammar);
         return result;
-    }    
+    }
 }
