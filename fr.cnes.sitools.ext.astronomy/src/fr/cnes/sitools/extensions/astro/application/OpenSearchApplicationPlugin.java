@@ -1,22 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
- * This file is part of SITools2. 
- * 
- * SITools2 is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- * 
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of SITools2.
+ *
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
 import fr.cnes.sitools.common.model.Category;
@@ -369,12 +368,12 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
     public final Restlet createInboundRoot() {
         final Router router = new Router(getContext());
         router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-        router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchDescription.class);
+        router.attachDefault(fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchDescription.class);
         if (!getParameter("syndicationRight").getValue().equals("closed")) {
-            router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
-            router.attach("/search", fr.cnes.sitools.extensions.astro.application.OpenSearchSearch.class);
-            router.attach("/cluster/search", fr.cnes.sitools.extensions.astro.application.OpenSearchClusterSearch.class);
-            router.attach("/moc", fr.cnes.sitools.extensions.astro.application.MocDescription.class);
+            router.attach("/describe", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchDescribe.class);
+            router.attach("/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchSearch.class);
+            router.attach("/cluster/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchClusterSearch.class);
+            router.attach("/moc", fr.cnes.sitools.extensions.astro.application.opensearch.MocDescription.class);
             attachParameterizedResources(router);
         }
         attachParameterizedResources(router);

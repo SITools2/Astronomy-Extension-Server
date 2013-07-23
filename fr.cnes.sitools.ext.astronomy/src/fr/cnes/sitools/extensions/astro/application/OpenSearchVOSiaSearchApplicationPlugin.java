@@ -1,20 +1,20 @@
-/******************************************************************************
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
- * 
- * This program is free software: you can redistribute it and/or modify
+ *
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
@@ -211,11 +211,11 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
   public final Restlet createInboundRoot() {
     final Router router = new Router(getContext());
     router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-    router.attachDefault(fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaDescription.class);
+    router.attachDefault(fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSiaDescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
-      router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearchDico.class);
-      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearch.class);
+      router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSiaSearchDico.class);
+      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSiaSearch.class);
       attachParameterizedResources(router);
     }
     return router;

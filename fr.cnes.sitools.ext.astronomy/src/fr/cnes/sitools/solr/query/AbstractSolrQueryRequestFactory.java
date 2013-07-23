@@ -1,18 +1,18 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -21,7 +21,7 @@ package fr.cnes.sitools.solr.query;
 import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
 import fr.cnes.sitools.SearchGeometryEngine.Shape;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchSearch;
+import fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchSearch;
 import fr.cnes.sitools.util.Util;
 import healpix.essentials.Scheme;
 import java.util.Map;

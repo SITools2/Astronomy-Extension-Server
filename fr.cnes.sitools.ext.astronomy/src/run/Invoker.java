@@ -32,7 +32,7 @@ import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
 import fr.cnes.sitools.astro.graph.ImageBackGroundDecorator;
 import fr.cnes.sitools.astro.graph.Utility;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.astro.resolver.CDSFactory;
+import fr.cnes.sitools.astro.resolver.cds.CDSFactory;
 import fr.cnes.sitools.astro.resolver.CDSNameResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverException;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;

@@ -11,8 +11,6 @@
  */
 package fr.cnes.sitools.astro.image;
 
-import edu.jhu.pha.sdss.fits.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
