@@ -54,11 +54,23 @@ public class ResultsResource extends BaseJobResource {
      * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
-    @Get
-    public Representation getResults() {
+    @Get("xml")
+    public Representation getResultsToXML() {
         setStatus(Status.SUCCESS_OK);
         return new JobResultsRepresentation(getJobTask(),true);
     }
+    
+    /**
+     * Get results
+     * @return Returns results representation
+     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown
+     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     */
+    @Get("json")
+    public Representation getResultsToJSON() {
+        setStatus(Status.SUCCESS_OK);
+        return new JobResultsRepresentation(getJobTask(),true, MediaType.APPLICATION_JSON);
+    }    
 
     @Override
     protected Representation describe() {

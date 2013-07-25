@@ -27,7 +27,7 @@ import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import fr.cnes.sitools.extensions.astro.application.uws.representation.GetCapabilitiesRepresentation;
+import fr.cnes.sitools.extensions.astro.application.uws.representation.CapabilitiesRepresentation;
 import fr.cnes.sitools.extensions.astro.application.uws.services.DestructionResource;
 import fr.cnes.sitools.extensions.astro.application.uws.services.ErrorResource;
 import fr.cnes.sitools.extensions.astro.application.uws.services.ExecutiondurationResource;
@@ -449,7 +449,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
                         constraints.add(constraint);
                     } else {
                         try {
-                            final Representation rep = new GetCapabilitiesRepresentation(job);
+                            final Representation rep = new CapabilitiesRepresentation(job);
                             final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
                             final URL xsdSchema = Job.class.getResource("UwsGetCapabilities.xsd");
                             final Schema schema = schemaFactory.newSchema(xsdSchema);

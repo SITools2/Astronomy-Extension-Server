@@ -25,6 +25,7 @@ import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerEx
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
 import net.ivoa.xml.uws.v1.Parameters;
+import org.restlet.data.MediaType;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -34,8 +35,12 @@ import org.restlet.resource.ResourceException;
  */
 public class JobParametersRepresentation extends JobRepresentation {
 
+    public JobParametersRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate, MediaType mediaType) {
+        super(jobTask, isUsedDestructionDate, mediaType);
+    }
+    
     public JobParametersRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
-        super(jobTask, isUsedDestructionDate);
+        this(jobTask, isUsedDestructionDate, MediaType.TEXT_XML);
     }
 
     public JobParametersRepresentation(AbstractJobTask jobTask) {
@@ -63,10 +68,5 @@ public class JobParametersRepresentation extends JobRepresentation {
         xstream.addImplicitCollection(net.ivoa.xml.uws.v1.Parameters.class, "parameter", net.ivoa.xml.uws.v1.Parameter.class);
         xstream.registerConverter(new ContentConverter());
         return xstream;
-    }
-
-    @Override
-    protected String fixXStreamBug(String representation) {
-        return representation.replaceFirst("uws:parameters xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\"", "uws:parameters xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/UWS/v1.0 http://ivoa.net/xml/UWS/UWS-v1.0.xsd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
     }
 }

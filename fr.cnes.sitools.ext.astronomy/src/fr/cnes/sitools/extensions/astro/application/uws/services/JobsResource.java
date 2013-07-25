@@ -61,23 +61,28 @@ public class JobsResource extends BaseJobResource {
      */
     @Override
     public final void doInit() throws ResourceException {
-
-        super.doInit();
+        super.doInit();         
         this.app = (UwsApplicationPlugin) getApplication();
         setName("Jobs Resource");
         setDescription("This resource contains the whole list of job for which the current date is inferior to destruction date");
     }
-
+    
+    @Get("json")
+    public final Representation getJobsToJSON() throws ResourceException {
+        setStatus(Status.SUCCESS_OK);
+        return new JobsRepresentation(getReference().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true, MediaType.APPLICATION_JSON);
+    } 
+    
     /**
      * Returns the list of jobs.
      * @return the JobSummary representation
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Get("xml")
-    public final Representation getJobs() throws ResourceException {
+    public final Representation getJobsToXML() throws ResourceException {
         setStatus(Status.SUCCESS_OK);
         return new JobsRepresentation(getReference().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true);
-    }
+    }       
 
     /**
      * Creates a Job.

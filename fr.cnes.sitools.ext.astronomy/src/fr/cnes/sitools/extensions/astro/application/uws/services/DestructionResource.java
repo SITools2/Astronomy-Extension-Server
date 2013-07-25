@@ -50,15 +50,15 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle destruction time
- * @author Jean-Christophe Malapert
+ * Resource to handle the destruction time.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class DestructionResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
-        CopyOnWriteArraySet<Method> allowedMethods = new CopyOnWriteArraySet<Method>();
+        final CopyOnWriteArraySet<Method> allowedMethods = new CopyOnWriteArraySet<Method>();
         allowedMethods.add(Method.GET);
         if (((UwsApplicationPlugin) getApplication()).isAllowedExecutionTimePostMethod()) {
             allowedMethods.add(Method.POST);
@@ -69,19 +69,19 @@ public class DestructionResource extends BaseJobResource {
     }
 
     /**
-     * Get the destruction Time.
+     * Returns the destruction Time.
      * In the case where a call is done after the destruction time, the job is destroyed.
      * @return Return the destruction as ISO8601 format
      * @exception ResourceException Returns a HTTP Status 404 when job-id is unknown
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Get("plain")
-    public Representation getDestructionTime() throws ResourceException {
+    public final Representation getDestructionTime() throws ResourceException {
         return new JobDestructionTimeRepresentation(getJobTask(), true);
     }
 
     /**
-     * Set the destruction time. The destruction must have a ISO8601 format.
+     * Sets the destruction time. The destruction must have a ISO8601 format.
      * @param form The form contains must only contain a DESTRUCTION element
      * The server returns a HTTP Status 303 (/{job-id}) when the operation is completed
      * @exception ResourceException Returns a HTTP Status 400 when the Form is not valid
@@ -89,14 +89,14 @@ public class DestructionResource extends BaseJobResource {
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Post("form")
-    public void acceptDestructionTime(Form form) throws ResourceException {
-        Set<Method> methods = getAllowedMethods();
+    public final void acceptDestructionTime(final Form form) throws ResourceException {
+        final Set<Method> methods = getAllowedMethods();
         if (!methods.contains(Method.POST)) {
             throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
         if (isValidAction(form)) {
-            Parameter parameter = form.get(0);
-            String val = parameter.getValue();
+            final Parameter parameter = form.get(0);
+            final String val = parameter.getValue();
             XMLGregorianCalendar calendar = null;
             try {
                 calendar = Util.convertIntoXMLGregorian(val);
@@ -121,21 +121,21 @@ public class DestructionResource extends BaseJobResource {
     }
 
     /**
-     * Check whether an action occurs when the server state is PENDING
-     * @return Returns true when the server state is pending otherwise false
+     * Checks if an action occurs when the server state is PENDING.
+     * @return true when the server state is pending otherwise false
      * @exception UniversalWorkerException
      */
     protected final boolean isValidAction() throws UniversalWorkerException {
-        ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
-        return (phase.equals(phase.PENDING)) ? true : false;
+        final ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
+        return phase.equals(ExecutionPhase.PENDING);
     }
 
     /**
-     * Check whether the form is valid.
+     * Checks if the form is valid.
      * @param form Form
-     * @return Returns true when both destruction time is set and the action is during a PENDING phase
+     * @return true when both destruction time is set and the action is during a PENDING phase
      */
-    protected boolean isValidAction(Form form) {
+    protected final boolean isValidAction(final Form form) {
         try {
             boolean isValid = false;
             if (!isValidAction()) {
@@ -144,8 +144,8 @@ public class DestructionResource extends BaseJobResource {
                 if (form == null || form.size() > 1) {
                     isValid = false;
                 } else {
-                    Parameter param = form.get(0);
-                    isValid = (param.getName().equals(Constants.DESTRUCTION)) ? true : false;
+                    final Parameter param = form.get(0);
+                    isValid = param.getName().equals(Constants.DESTRUCTION);
                 }
             }
             return isValid;
@@ -155,23 +155,23 @@ public class DestructionResource extends BaseJobResource {
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Destruction Resource");
         setDescription("This resource handles the destruction time of the job");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get the destruction time as ISO8601 format");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("xs:dateTime");
         repInfo.setMediaType(MediaType.TEXT_PLAIN);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("Destruction");
         docInfo.setTextContent("The time at which the whole job + records + results will be destroyed.");
         repInfo.setDocumentation(docInfo);
@@ -187,8 +187,8 @@ public class DestructionResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");
@@ -199,7 +199,7 @@ public class DestructionResource extends BaseJobResource {
     }
 
     @Override
-    protected void describePost(MethodInfo info) {
+    protected final void describePost(final MethodInfo info) {
         info.setName(Method.POST);
         info.setDocumentation("Changing the Destruction Time");
 

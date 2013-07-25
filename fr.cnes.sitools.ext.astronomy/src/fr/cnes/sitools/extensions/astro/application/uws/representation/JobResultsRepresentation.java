@@ -25,6 +25,7 @@ import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerEx
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
 import net.ivoa.xml.uws.v1.Results;
+import org.restlet.data.MediaType;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -33,9 +34,13 @@ import org.restlet.resource.ResourceException;
  * @see Results
  */
 public class JobResultsRepresentation extends JobRepresentation {
+    
+    public JobResultsRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate, MediaType mediaType) {
+        super(jobTask, isUsedDestructionDate, mediaType);
+    }    
 
     public JobResultsRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
-        super(jobTask, isUsedDestructionDate);
+        this(jobTask, isUsedDestructionDate, MediaType.TEXT_XML);
     }
 
     public JobResultsRepresentation(AbstractJobTask jobTask) {
@@ -57,7 +62,8 @@ public class JobResultsRepresentation extends JobRepresentation {
         QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
         qnm.setDefaultPrefix("uws");
-        XStream xstream = new XStream(new StaxDriver(qnm));
+        createXstream(getMediaType(), qnm);
+        XStream xstream = getXstream();
         xstream.alias("results", net.ivoa.xml.uws.v1.Results.class);
         xstream.addImplicitCollection(net.ivoa.xml.uws.v1.Results.class, "result", net.ivoa.xml.uws.v1.ResultReference.class);
         xstream.alias("result", net.ivoa.xml.uws.v1.ResultReference.class);
@@ -65,8 +71,4 @@ public class JobResultsRepresentation extends JobRepresentation {
         return xstream;
     }
 
-    @Override
-    protected String fixXStreamBug(String representation) {
-        return representation.replaceFirst("uws:results xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\"", "uws:results xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/UWS/v1.0 http://ivoa.net/xml/UWS/UWS-v1.0.xsd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
-    }
 }

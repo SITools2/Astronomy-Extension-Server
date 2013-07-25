@@ -18,22 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
-import fr.cnes.sitools.extensions.astro.application.uws.representation.JobRepresentation;
+import fr.cnes.sitools.extensions.astro.application.uws.representation.CapabilitiesRepresentation;
 import fr.cnes.sitools.xml.uws.v1.Job;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
@@ -51,29 +42,12 @@ public class JobApi extends BaseJobResource {
     }
 
     @Get("xml")
-    public final Representation getJob() throws ResourceException {
+    public final Representation getJobToXML() throws ResourceException {
         try {
-
             final Job job = AbstractJobTask.getCapabilities(this.app.getJobTaskImplementation());
             Representation rep = null;
             setStatus(Status.SUCCESS_OK);
-            rep = new OutputRepresentation(MediaType.TEXT_XML) {
-
-                @Override
-                public void write(OutputStream out) throws IOException {
-                    try {
-                        JAXBContext jaxbContext = JAXBContext.newInstance("fr.cnes.sitools.xml.uws.v1");
-                        Marshaller marshaller = jaxbContext.createMarshaller();
-                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
-                        marshaller.marshal(job, out);
-                    } catch (JAXBException ex) {
-                        Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
-                        throw new IOException(ex);
-                    }
-                }
-            };
-
-            return rep;
+            return new CapabilitiesRepresentation(job);
         } catch (SecurityException ex) {
             Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -82,5 +56,21 @@ public class JobApi extends BaseJobResource {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         }
     }
+    
+    @Get("json")
+    public final Representation getJobToJSON() throws ResourceException {
+        try {
+            final Job job = AbstractJobTask.getCapabilities(this.app.getJobTaskImplementation());
+            Representation rep = null;
+            setStatus(Status.SUCCESS_OK);
+            return new CapabilitiesRepresentation(job, MediaType.APPLICATION_JSON);
+        } catch (SecurityException ex) {
+            Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
+        }
+    }    
 
 }

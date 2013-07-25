@@ -64,9 +64,20 @@ public class ParametersResource extends BaseJobResource {
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Get("xml")
-    public Representation getParameters() {
+    public Representation getParametersToXML() {
         return new JobParametersRepresentation(this.getJobTask(),true);
     }
+    
+    /**
+     * Get parameters
+     * @return Returns Parameters representation
+     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown
+     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     */
+    @Get("json")
+    public Representation getParametersToJSON() {
+        return new JobParametersRepresentation(this.getJobTask(),true, MediaType.APPLICATION_JSON);
+    }    
 
     /**
      * Set Parameters

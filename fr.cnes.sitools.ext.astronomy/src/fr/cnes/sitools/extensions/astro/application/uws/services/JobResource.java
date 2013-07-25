@@ -62,13 +62,26 @@ public class JobResource extends BaseJobResource {
      * @exception Returns a HTTP Status 404 when the jobId is not found
      */
     @Get("xml")
-    public final Representation getJob() throws ResourceException {
+    public final Representation getJobToXML() throws ResourceException {
         Representation rep = null;
         setStatus(Status.SUCCESS_OK);
         rep = new JobRepresentation(this.getJobTask(), true);
         return rep;
     }
 
+    /**
+     * Get a Job
+     * The server returns a HTTP Status 200 when the operation is completed
+     * @return Returns a JobSummary representation
+     * @exception Returns a HTTP Status 404 when the jobId is not found
+     */
+    @Get("json")
+    public final Representation getJobToJSON() throws ResourceException {
+        Representation rep = null;
+        setStatus(Status.SUCCESS_OK);        
+        return new JobRepresentation(this.getJobTask(), true, MediaType.APPLICATION_JSON);
+    }
+    
     /**
      * Delete a job:
      *  - when ACTION=DELETE.

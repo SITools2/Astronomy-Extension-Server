@@ -20,7 +20,6 @@ package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.QNameMap;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
@@ -35,15 +34,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import net.ivoa.xml.uws.v1.JobSummary;
 import net.ivoa.xml.uws.v1.Jobs;
 import net.ivoa.xml.uws.v1.ShortJobDescription;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for ShortJobDescription object
+ * Representation for ShortJobDescription object.
  * @author Jean-Christophe Malapert
  * @see ShortJobDescription
  */
-public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.application.uws.representation.XstreamRepresentation {
+public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.application.uws.representation.AbstractXstreamRepresentation {
 
     /**
      * Jobs representation
@@ -56,6 +56,11 @@ public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.applica
         super();
         init(referenceIdentifier, jobTasks, isUsedDestructionDate);
     }
+    
+    public JobsRepresentation(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks, boolean isUsedDestructionDate, MediaType mediaType) throws ResourceException {
+        super(mediaType, null);
+        init(referenceIdentifier, jobTasks, isUsedDestructionDate);
+    }    
 
     /**
      *
@@ -66,6 +71,10 @@ public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.applica
     public JobsRepresentation(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks) throws ResourceException{
         this(referenceIdentifier, jobTasks, false);
     }
+    
+    public JobsRepresentation(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks, MediaType mediaType) throws ResourceException{
+        this(referenceIdentifier, jobTasks, false, mediaType);
+    }    
 
     private void init(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks, boolean isUsedDestructionDate) {
         Date currentDate = new Date();
@@ -108,19 +117,15 @@ public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.applica
     protected XStream configureXStream() {
         QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
-        qnm.setDefaultPrefix("uws");
-        XStream xstream = new XStream(new StaxDriver(qnm));
+        qnm.setDefaultPrefix("uws");        
+        createXstream(getMediaType(), qnm);
+        XStream xstream = getXstream();
         xstream.alias("jobs", Jobs.class);
         xstream.alias("jobref", ShortJobDescription.class);
         xstream.useAttributeFor(ShortJobDescription.class, "id");
         xstream.useAttributeFor(ShortJobDescription.class, "href");
         xstream.addImplicitCollection(Jobs.class, "jobref", ShortJobDescription.class);
         return xstream;
-    }
-
-    protected String fixXStreamBug(String representation) {
-        representation = representation.replaceFirst("uws:jobs xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\"", "uws:jobs xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/UWS/v1.0 http://ivoa.net/xml/UWS/UWS-v1.0.xsd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
-        return representation.replaceAll("href=", "xlink:href=");
     }
 
     private void addJobDescription(String referenceIdentifier, JobSummary jobSummary, List<ShortJobDescription> shortJobsDescription) {

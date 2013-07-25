@@ -25,7 +25,6 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.QNameMap;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
@@ -42,6 +41,7 @@ import net.ivoa.xml.uws.v1.ErrorType;
 import net.ivoa.xml.uws.v1.JobSummary;
 import net.ivoa.xml.uws.v1.Parameter;
 import net.ivoa.xml.uws.v1.ResultReference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
@@ -50,10 +50,10 @@ import org.restlet.resource.ResourceException;
  * @author Jean-Christophe Malapert
  * @see JobSummary
  */
-public class JobRepresentation extends XstreamRepresentation {
+public class JobRepresentation extends AbstractXstreamRepresentation {
 
-    public JobRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
-        super();
+    public JobRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate, MediaType mediaType) {
+        super(mediaType, null);
         this.setObject(checkExistingJobTask(jobTask));
         if (isUsedDestructionDate) {
             try {
@@ -73,6 +73,10 @@ public class JobRepresentation extends XstreamRepresentation {
             }
         }
         init();
+    }
+    
+    public JobRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {    
+        this(jobTask, isUsedDestructionDate, MediaType.TEXT_XML);
     }
 
     public JobRepresentation(AbstractJobTask jobTask) {
@@ -98,7 +102,8 @@ public class JobRepresentation extends XstreamRepresentation {
         QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
         qnm.setDefaultPrefix("uws");
-        XStream xstream = new XStream(new StaxDriver(qnm));
+        createXstream(getMediaType(), qnm);
+        XStream xstream = getXstream();
         xstream.addDefaultImplementation(XMLGregorianCalendar.class, XMLGregorianCalendar.class);
         xstream.alias("job", JobSummary.class);
         xstream.aliasField("destruction", XMLGregorianCalendar.class, "destruction");
@@ -117,11 +122,6 @@ public class JobRepresentation extends XstreamRepresentation {
         xstream.registerConverter(new ErrorSummaryConverter());
         xstream.registerConverter(new JobResultsConverter());
         return xstream;
-    }
-
-    @Override
-    protected String fixXStreamBug(String representation) {
-        return representation.replaceFirst("uws:job xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\"", "uws:job xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/UWS/v1.0 http://ivoa.net/xml/UWS/UWS-v1.0.xsd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
     }
 
     public class ContentConverter implements Converter {
@@ -149,7 +149,7 @@ public class JobRepresentation extends XstreamRepresentation {
 
         public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
             XMLGregorianCalendar calendar =  (XMLGregorianCalendar) o;
-            try {
+            try {               
                 writer.setValue(calendar.toXMLFormat());
             } catch (IllegalStateException e) {
                 writer.addAttribute("xsi:nil", "true");
