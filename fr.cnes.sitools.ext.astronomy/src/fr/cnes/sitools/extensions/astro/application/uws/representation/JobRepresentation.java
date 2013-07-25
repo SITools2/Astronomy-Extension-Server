@@ -236,6 +236,10 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
             } else {
                 writer.addAttribute("id", UUID.randomUUID().toString());
             }
+            String type = result.getType();
+            if (Util.isSet(type)) {
+                writer.addAttribute("type", type);
+            }
             String href = result.getHref();
             if(Util.isSet(href)) {
                 writer.addAttribute("xlink:href", href);
