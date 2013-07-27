@@ -62,7 +62,7 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
          xsi:noNamespaceSchemaLocation="ehcache.xsd"
          updateCheck="true" monitoring="autodetect"
          dynamicConfig="true"
-         maxBytesLocalDisk="500M"
+         maxBytesLocalDisk="1G"
          maxBytesLocalHeap="256M">
 
     <!--
@@ -95,7 +95,7 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
     Subdirectories can be specified below the property e.g. java.io.tmpdir/one
 
     -->
-    <diskStore path="java.io.tmpdir"/>
+   <diskStore path="java.io.tmpdir"/>
 
 
     <!--
@@ -638,5 +638,24 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
            transactionalMode="off">
         <persistence strategy="localTempSwap"/>
     </cache>         
-         
+
+    <!--
+    shortner URI
+    
+    Converts decimal to alphanumeric values
+    62 possibles per letter, counting from 1.
+    With 1 letter,  61 URLS
+    With 2 letters, 3,843 URLS
+    With 3 letters, 238,327 URLS
+    With 4 letters, 15,252,991 URLS
+ 
+    This cache contains a maximum of 238,327 URLS    
+    -->
+    <cache name="ShortenerUrl"
+            maxBytesLocalDisk="250M"
+            maxBytesLocalHeap="25M"
+            eternal="true">
+        <persistence strategy="localTempSwap"/>
+    </cache>
+                      
 </ehcache>
