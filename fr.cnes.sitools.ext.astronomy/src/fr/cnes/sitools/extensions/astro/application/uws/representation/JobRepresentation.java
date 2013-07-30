@@ -46,13 +46,19 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for JobSummary object
- * @author Jean-Christophe Malapert
+ * Representation for JobSummary object.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @see JobSummary
  */
 public class JobRepresentation extends AbstractXstreamRepresentation {
 
-    public JobRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate, MediaType mediaType) {
+    /**
+     * Constructor.
+     * @param jobTask job task
+     * @param isUsedDestructionDate the destruction date is set
+     * @param mediaType media type
+     */
+    public JobRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate, final MediaType mediaType) {
         super(mediaType, null);
         this.setObject(checkExistingJobTask(jobTask));
         if (isUsedDestructionDate) {
@@ -63,47 +69,67 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
                 } catch (DatatypeConfigurationException ex) {
                     throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot convert current into XML Gregorian date");
                 }
-                int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
+                final int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
                 if (val == DatatypeConstants.GREATER) {
                     JobTaskManager.getInstance().deleteTask(jobTask);
                     this.setObject(null);
                 }
             } catch (UniversalWorkerException ex) {
-                throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+                throw new ResourceException(ex);
             }
         }
         init();
     }
     
-    public JobRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {    
+    /**
+     * Constructor.
+     * @param jobTask job task
+     * @param isUsedDestructionDate the destruction time is set
+     */
+    public JobRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {    
         this(jobTask, isUsedDestructionDate, MediaType.TEXT_XML);
     }
 
-    public JobRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Constructor.
+     * @param jobTask job task
+     */
+    public JobRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
-        Object obj = null;
+    /**
+     * Returns the job summary. 
+     * @param jobTask job task
+     * @return the job summary
+     * @throws ResourceException 
+     */
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {      
         if (Util.isSet(jobTask)) {
-            obj = (Object) jobTask.getJobSummary();
+            return (Object) jobTask.getJobSummary();
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Job does not exist");
         }
-        return obj;
     }
 
+    /**
+     * Init xstream.
+     */
     private void init() {
-        XStream xstream = configureXStream();
+        final XStream xstream = configureXStream();
         this.setXstream(xstream);
     }
 
+    /**
+     * Returns the xstream configuration.
+     * @return the xstream configuration
+     */
     protected XStream configureXStream() {
-        QNameMap qnm = new QNameMap();
+        final QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
         qnm.setDefaultPrefix("uws");
         createXstream(getMediaType(), qnm);
-        XStream xstream = getXstream();
+        final XStream xstream = getXstream();
         xstream.addDefaultImplementation(XMLGregorianCalendar.class, XMLGregorianCalendar.class);
         xstream.alias("job", JobSummary.class);
         xstream.aliasField("destruction", XMLGregorianCalendar.class, "destruction");
@@ -124,10 +150,19 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
         return xstream;
     }
 
-    public class ContentConverter implements Converter {
-
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            net.ivoa.xml.uws.v1.Parameter parameter = (Parameter) o;
+    /**
+     * Converter for Parameter.
+     */
+    protected static class ContentConverter implements Converter {
+        /**
+         * Transforms the output of parameter.
+         * @param o Parameter object
+         * @param writer the output
+         * @param mc the context
+         */
+        @Override
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final net.ivoa.xml.uws.v1.Parameter parameter = (Parameter) o;
             writer.addAttribute("id", parameter.getId());
             writer.addAttribute("byReference", String.valueOf(parameter.isByReference()));
             if (parameter.isIsPost() != null) {
@@ -136,39 +171,91 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
             writer.setValue(parameter.getContent());
         }
 
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        /**
+         * Inverse transformation of marshal.
+         * 
+         * <p>
+         * This method is not supported because we do not need in our case.
+         * </p>
+         * @param reader the reader
+         * @param uc context
+         * @return an Exception
+         */
+        @Override
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean canConvert(Class type) {
+        /**
+         * Returns <code>True</code> when type is compatible with Parameter otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Parameter otherwise <code>False</code>
+         */
+        @Override
+        public final boolean canConvert(final Class type) {
             return net.ivoa.xml.uws.v1.Parameter.class == type;
         }
     }
 
-    public class DateConverter implements Converter {
-
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            XMLGregorianCalendar calendar =  (XMLGregorianCalendar) o;
+    /**
+     * Date converter.
+     */
+    protected static class DateConverter implements Converter {
+        /**
+         * Transforms the output of XMLGregorianCalendar.
+         * @param o Parameter object
+         * @param writer the output
+         * @param mc the context
+         */
+        @Override
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final XMLGregorianCalendar calendar =  (XMLGregorianCalendar) o;
             try {               
                 writer.setValue(calendar.toXMLFormat());
             } catch (IllegalStateException e) {
                 writer.addAttribute("xsi:nil", "true");
             }
         }
-
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        /**
+         * Inverse transformation of marshal.
+         * 
+         * <p>
+         * This method is not supported because we do not need in our case.
+         * </p>
+         * @param reader the reader
+         * @param uc context
+         * @return an Exception
+         */
+        @Override
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean canConvert(Class type) {
+        /**
+         * Returns <code>True</code> when type is compatible with XMLGregorianCalendar otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with XMLGregorianCalendar otherwise <code>False</code>
+         */        
+        @Override
+        public final boolean canConvert(final Class type) {
             return XMLGregorianCalendar.class.isAssignableFrom(type);            
         }
     }
 
-    public class OwnerConverter implements Converter {
+    /**
+     * Owner converter.
+     */
+    protected static class OwnerConverter implements Converter {
 
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            String val = (String) o;
+        /**
+         * Transforms the output of String.
+         * @param o Parameter object
+         * @param writer the output
+         * @param mc the context
+         */        
+        @Override
+        public void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final String val = (String) o;
             if (val.equals(Constants.NO_OWNER)) {
                 writer.addAttribute("xsi:nil", "true");
             } else {
@@ -176,36 +263,87 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
             }
         }
 
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        /**
+         * Inverse transformation of marshal.
+         * 
+         * <p>
+         * This method is not supported because we do not need in our case.
+         * </p>
+         * @param reader the reader
+         * @param uc context
+         * @return an Exception
+         */
+        @Override
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean canConvert(Class type) {
+        /**
+         * Returns <code>True</code> when type is compatible with String otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with String otherwise <code>False</code>
+         */
+        @Override
+        public final boolean canConvert(final Class type) {
             return String.class == type;
         }
     }
 
-    public class QuoteConverter implements Converter {
-
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            JAXBElement<XMLGregorianCalendar> jaxbCalendar = (JAXBElement<XMLGregorianCalendar>) o;
+    /**
+     * Quote converter.
+     */
+    protected static class QuoteConverter implements Converter {
+        /**
+         * Transforms the output of Quote.
+         * @param o Parameter object
+         * @param writer the output
+         * @param mc the context
+         */
+        @Override
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final JAXBElement<XMLGregorianCalendar> jaxbCalendar = (JAXBElement<XMLGregorianCalendar>) o;
             writer.setValue(jaxbCalendar.getValue().toXMLFormat());
         }
-
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        /**
+         * Inverse transformation of marshal.
+         *
+         * <p>
+         * This method is not supported because we do not need in our case.
+         * </p>
+         * @param reader the reader
+         * @param uc context
+         * @return an Exception
+         */
+        @Override
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean canConvert(Class type) {
+        /**
+         * Returns <code>True</code> when type is compatible with JAXBElement otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with JAXBElement otherwise <code>False</code>
+         */
+        @Override
+        public final boolean canConvert(final Class type) {
             return JAXBElement.class == type;
         }
     }
 
-    public class ErrorSummaryConverter implements Converter {
-
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            net.ivoa.xml.uws.v1.ErrorSummary errorSummary = (ErrorSummary) o;
-            ErrorType errorType = errorSummary.getType();
+    /**
+     * Error summary converter.
+     */
+    protected static class ErrorSummaryConverter implements Converter {
+        /**
+         * Transforms the output of ErrorSummary.
+         * @param o Parameter object
+         * @param writer the output
+         * @param mc the context
+         */
+        @Override
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final net.ivoa.xml.uws.v1.ErrorSummary errorSummary = (ErrorSummary) o;
+            final ErrorType errorType = errorSummary.getType();
             if (Util.isSet(errorType)) {
                 writer.addAttribute("type", errorType.value());
             } else {
@@ -217,40 +355,82 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
             writer.endNode();
         }
 
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        /**
+         * Inverse transformation of marshal.
+         *
+         * <p>
+         * This method is not supported because we do not need in our case.
+         * </p>
+         * @param reader the reader
+         * @param uc context
+         * @return an Exception
+         */
+        @Override
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public boolean canConvert(Class type) {
+        /**
+         * Returns <code>True</code> when type is compatible with ErrorSummary otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with ErrorSummary otherwise <code>False</code>
+         */
+        @Override
+        public final boolean canConvert(final Class type) {
             return net.ivoa.xml.uws.v1.ErrorSummary.class == type;
         }
     }
 
-    public class JobResultsConverter implements Converter {
-
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            net.ivoa.xml.uws.v1.ResultReference result = (ResultReference) o;
-            String id = result.getId();
+    /**
+     * Job Results converter.
+     */
+    protected static class JobResultsConverter implements Converter {
+        /**
+         * Transforms the output of JobResults.
+         * @param o Parameter object
+         * @param writer the output
+         * @param mc the context
+         */
+        @Override
+        public void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final net.ivoa.xml.uws.v1.ResultReference result = (ResultReference) o;
+            final String id = result.getId();
             if (Util.isSet(id)) {
                 writer.addAttribute("id", id);
             } else {
                 writer.addAttribute("id", UUID.randomUUID().toString());
             }
-            String type = result.getType();
+            final String type = result.getType();
             if (Util.isSet(type)) {
                 writer.addAttribute("type", type);
             }
-            String href = result.getHref();
-            if(Util.isSet(href)) {
+            final String href = result.getHref();
+            if (Util.isSet(href)) {
                 writer.addAttribute("xlink:href", href);
             }
         }
 
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        /**
+         * Inverse transformation of marshal.
+         *
+         * <p>
+         * This method is not supported because we do not need in our case.
+         * </p>
+         * @param reader the reader
+         * @param uc context
+         * @return an Exception
+         */
+        @Override
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
-
-        public boolean canConvert(Class type) {
+        /**
+         * Returns <code>True</code> when type is compatible with ResultReference otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with ResultReference otherwise <code>False</code>
+         */
+        @Override
+        public final boolean canConvert(final Class type) {
             return net.ivoa.xml.uws.v1.ResultReference.class == type;
         }
     }

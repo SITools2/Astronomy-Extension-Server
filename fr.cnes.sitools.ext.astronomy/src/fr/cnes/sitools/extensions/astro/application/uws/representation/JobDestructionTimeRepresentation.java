@@ -25,28 +25,35 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for DestructionTime Object
- *
- * @author Jean-Christophe Malapert
+ * Representation for DestructionTime Object.
+ * @see JobDestructionTime
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobDestructionTimeRepresentation extends JobQuoteRepresentation {
 
-
-    public JobDestructionTimeRepresentation (AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    /**
+     * Creates a new instance of JobDestructionTime representation.
+     * @param jobTask job 
+     * @param isUsedDestructionDate Defines if a destruction has been set
+     */
+    public JobDestructionTimeRepresentation (final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         super(jobTask, isUsedDestructionDate);
     }
-
-    public JobDestructionTimeRepresentation (AbstractJobTask jobTask) {
+    /**
+     * Creates a new instance of JobDestructionTime representation.
+     * @param jobTask job 
+     */
+    public JobDestructionTimeRepresentation (final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
     @Override
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
         try {
-            XMLGregorianCalendar obj = JobTaskManager.getInstance().getDestructionTime(jobTask);
+            final XMLGregorianCalendar obj = JobTaskManager.getInstance().getDestructionTime(jobTask);
             return obj.toXMLFormat();
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 }

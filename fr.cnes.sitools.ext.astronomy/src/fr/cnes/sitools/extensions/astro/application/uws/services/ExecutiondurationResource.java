@@ -45,15 +45,15 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle Execution Duration
- * @author Jean-Christophe Malapert
+ * Resource to handle Execution Duration.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ExecutiondurationResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
-        CopyOnWriteArraySet<Method> allowedMethods = new CopyOnWriteArraySet<Method>();
+        final CopyOnWriteArraySet<Method> allowedMethods = new CopyOnWriteArraySet<Method>();
         allowedMethods.add(Method.GET);
         if (((UwsApplicationPlugin) getApplication()).isAllowedExecutionTimePostMethod()) {
             allowedMethods.add(Method.POST);
@@ -64,11 +64,13 @@ public class ExecutiondurationResource extends BaseJobResource {
     }
 
     /**
-     * Get a the expected execution duration as an integer
-     * The server returns a HTTP Status 200 when the operation is completed
-     * @return Returns the execution duration as an integer
-     * @exception ResourceException Returns a HTTP Status 404 when job-id is unknown
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Returns a the expected execution duration as an integer.
+     * <p>
+     * The server returns a HTTP Status 200 when the operation is completed.
+     * a HTTP Status 404 when job-id is unknown.
+     * a HTTP Status 500 for an Internal Server Error.
+     * </p>
+     * @return the execution duration as an integer 
      */
     @Get("plain")
     public Representation getExecutionDuration() {
@@ -77,24 +79,27 @@ public class ExecutiondurationResource extends BaseJobResource {
     }
 
     /**
-     * Accept an execution duration
-     * @param form form that contains only EXECUDTIONDURATION parameter
-     * Redirects to /{jobId}
+     * Accepts an execution duration.
+     * <p>
+     * Redirects to /{jobId}.     
+     * </p>
+     * @param form form that contains only EXECUDTIONDURATION parameter     
+     * 
      * @exception ResourceException Returns a HTTP Status 400 when the Form is not valid
      * @exception ResourceException Returns a HTTP Status 403 when the job is not PENDING or operation is undefined
      * @exception ResourceException Returns a HTTP Status 404 when job-id is unknown
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Post("form")
-    public void acceptExecutionDuration(Form form) throws ResourceException {
+    public final void acceptExecutionDuration(final Form form) throws ResourceException {
         try {
-            Set<Method> methods = getAllowedMethods();
+            final Set<Method> methods = getAllowedMethods();
             if (!methods.contains(Method.POST)) {
                 throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             }
             if (isValidAction()) {
                 if (isValidAction(form)) {
-                    Parameter parameter = form.get(0);
+                    final Parameter parameter = form.get(0);
                     JobTaskManager.getInstance().setExecutionTime(getJobTask(), Integer.valueOf(parameter.getValue()));
                     this.redirectToJobID();
                 } else {
@@ -104,7 +109,7 @@ public class ExecutiondurationResource extends BaseJobResource {
                 throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Destruction time can only be set during PENDING phase");
             }
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex.getStatus(), ex);
         }
     }
 
@@ -116,7 +121,7 @@ public class ExecutiondurationResource extends BaseJobResource {
      */
     protected final boolean isValidAction() throws UniversalWorkerException {
         ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
-        return (phase.equals(phase.PENDING)) ? true : false;
+        return (phase.equals(phase.PENDING));
     }
 
     /**
@@ -127,22 +132,22 @@ public class ExecutiondurationResource extends BaseJobResource {
      * @param form Form send by a user
      * @return Returns True when the Form object is valid otherwhise False
      */
-    protected boolean isValidAction(Form form) {
+    protected final boolean isValidAction(final Form form) {
         boolean isValid = false;
 
         if (form == null || form.size() > 1) {
             isValid = false;
         } else {
-            Parameter param = form.get(0);
+            final Parameter param = form.get(0);
             isValid = (param.getName().equals(fr.cnes.sitools.extensions.astro.application.uws.common.Constants.EXECUTIONDURATION)
                     && isParsableToInt(param.getValue())
-                    && Integer.valueOf(param.getValue()) >= 0) ? true : false;
+                    && Integer.valueOf(param.getValue()) >= 0);
         }
 
         return isValid;
     }
 
-    protected final boolean isParsableToInt(String i) {
+    protected final boolean isParsableToInt(final String i) {
         try {
             Integer.parseInt(i);
             return true;
@@ -152,23 +157,23 @@ public class ExecutiondurationResource extends BaseJobResource {
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Execution duration Resource");
         setDescription("This resource handles execution time");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get the execution duration");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("xs:int");
         repInfo.setMediaType(MediaType.TEXT_PLAIN);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("ExecutionDuration");
         docInfo.setTextContent("The duration (in seconds) for which the job should be allowed to run - a value of 0 is intended to mean unlimited - returned at /(jobs)/(jobid)/executionduration");
         repInfo.setDocumentation(docInfo);
@@ -186,8 +191,8 @@ public class ExecutiondurationResource extends BaseJobResource {
         responseInfo.setDocumentation("Job does not exist");
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");
@@ -198,7 +203,7 @@ public class ExecutiondurationResource extends BaseJobResource {
     }
 
     @Override
-    protected void describePost(MethodInfo info) {
+    protected void describePost(final MethodInfo info) {
         info.setName(Method.POST);
         info.setDocumentation("Changing the Execution Duration");
 
@@ -229,7 +234,7 @@ public class ExecutiondurationResource extends BaseJobResource {
             responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
             info.getResponses().add(responseInfo);
 
-            RequestInfo request = new RequestInfo();
+            final RequestInfo request = new RequestInfo();
             ParameterInfo param = new ParameterInfo();
             param.setName("EXECUTIONTIME");
             param.setStyle(ParameterStyle.QUERY);

@@ -36,7 +36,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle errors
+ * Resource to handle errors.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ErrorResource extends BaseJobResource {
@@ -49,10 +49,12 @@ public class ErrorResource extends BaseJobResource {
     }
 
     /**
-     * Returns the errors.
+     * Returns the errors as a XML format.
+     * <p>
+     * a HTTP Status 404 when jobId is unknown or error is undefined.
+     * a HTTP Status 500 for an Internal Server Error
+     * </p>
      * @return error representation
-     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown or error is undefined
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Get("xml")
     public final Representation getErrorToXML() {

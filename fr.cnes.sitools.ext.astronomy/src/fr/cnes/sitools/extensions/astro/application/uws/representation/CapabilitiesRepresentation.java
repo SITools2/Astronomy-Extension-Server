@@ -31,35 +31,52 @@ import fr.cnes.sitools.xml.uws.v1.Job;
 import org.restlet.data.MediaType;
 
 /**
- *
- * @author malapert
+ * Representation for the service capabilities.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
     
-    private final Job job;
+    /**
+     * Capabilities of the job.
+     */
+    private Job job;
     
-    public CapabilitiesRepresentation(final Job job, MediaType mediaType) {
+    /**
+     * Constructor.
+     * @param job job
+     * @param mediaType media type
+     */
+    public CapabilitiesRepresentation(final Job job, final MediaType mediaType) {
         super(mediaType, null);
-        this.job = job;
+        setJob(job);
         init();
     }     
-    
+    /**
+     * Constructor.
+     * @param job job
+     */
     public CapabilitiesRepresentation(final Job job) {
         this(job, MediaType.TEXT_XML);
     } 
-    
+    /**
+     * Init.
+     */
     private void init() {
-        this.setObject(this.job);
-        XStream xstream = configureXStream();
+        this.setObject(this.getJob());
+        final XStream xstream = configureXStream();
         this.setXstream(xstream);
     }
 
+    /**
+     * XStream configuration.
+     * @return the xstream configuration
+     */
     protected XStream configureXStream() {
-        QNameMap qnm = new QNameMap();
+        final QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://sitools.cnes.fr/xml/UWS/v1.0");
         //qnm.setDefaultPrefix("uws");
         createXstream(getMediaType(), qnm);
-        XStream xstream = getXstream();
+        final XStream xstream = getXstream();
         //xstream.addDefaultImplementation(XMLGregorianCalendar.class, XMLGregorianCalendar.class);
         xstream.alias("Job", fr.cnes.sitools.xml.uws.v1.Job.class);
         xstream.aliasField("Name", fr.cnes.sitools.xml.uws.v1.Job.class, "name");
@@ -83,40 +100,63 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         return xstream;
     }    
 
-    private static class OutputImage implements Converter {
+    /**
+     * Returns the job.
+     * @return the job
+     */
+    public final Job getJob() {
+        return job;
+    }
+
+    /**
+     * Sets the job.
+     * @param job the job to set
+     */
+    private void setJob(final Job job) {
+        this.job = job;
+    }
+
+    /**
+     * Output image converter.
+     */
+    protected static class OutputImage implements Converter {
 
         public OutputImage() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.OutputsType.Image image = (fr.cnes.sitools.xml.uws.v1.OutputsType.Image) o;
-            String format = image.getFormat().value();
+        public final void marshal(final Object o, HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.OutputsType.Image image = (fr.cnes.sitools.xml.uws.v1.OutputsType.Image) o;
+            final String format = image.getFormat().value();
             writer.addAttribute("format", format);            
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Image otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Image otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.OutputsType.Image.class == type;
         }
     }
 
-    private static class InputImage implements Converter {
+    protected static class InputImage implements Converter {
 
         public InputImage() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Image image = (fr.cnes.sitools.xml.uws.v1.InputsType.Image)o;
-            String name = image.getName();
-            String format = image.getFormat().value();
-            String documentation = image.getDocumentation();
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Image image = (fr.cnes.sitools.xml.uws.v1.InputsType.Image)o;
+            final String name = image.getName();
+            final String format = image.getFormat().value();
+            final String documentation = image.getDocumentation();
             writer.addAttribute("name", name);
             writer.addAttribute("format", format);
             writer.startNode("documentation");
@@ -125,12 +165,16 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Image otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Image otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Image.class == type;
         }
     }
@@ -141,11 +185,11 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Geometry geom = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry) o;
-            String refFrame = geom.getReferenceFrame().value();
+        public void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Geometry geom = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry) o;
+            final String refFrame = geom.getReferenceFrame().value();
             writer.addAttribute("referenceFrame", refFrame);
-            Circle circle = geom.getCircle();
+            final Circle circle = geom.getCircle();
             if (circle != null) {
                 writer.startNode("circle");
                 mc.convertAnother(circle.getLongitude(), new Longitude());
@@ -153,7 +197,7 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
                 mc.convertAnother(circle.getRadius(), new Radius());
                 writer.endNode();                
             }
-            Healpix hpx = geom.getHealpix();
+            final Healpix hpx = geom.getHealpix();
             if (hpx != null) {
                 writer.startNode("healpix");
                 mc.convertAnother(hpx.getOrder(), new Order());
@@ -163,27 +207,31 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Geometry otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Geometry otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.class == type;
         }
     }
 
-    private static class Longitude implements Converter {
+    protected static class Longitude implements Converter {
 
         public Longitude() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Longitude longitude = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Longitude) o;
-            String name = longitude.getName();
-            String unit = longitude.getUnit();
-            String doc = longitude.getDocumentation();
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Longitude longitude = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Longitude) o;
+            final String name = longitude.getName();
+            final String unit = longitude.getUnit();
+            final String doc = longitude.getDocumentation();
             writer.startNode("longitude");
             writer.addAttribute("name", name);
             writer.addAttribute("unit", unit);
@@ -192,28 +240,32 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Longitude otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Longitude otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Longitude.class == type;
         }
     }
 
 
-    private static class Latitude implements Converter {
+    protected static class Latitude implements Converter {
 
         public Latitude() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Latitude latitude = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Latitude) o;
-            String name = latitude.getName();
-            String unit = latitude.getUnit();
-            String doc = latitude.getDocumentation();
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Latitude latitude = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Latitude) o;
+            final String name = latitude.getName();
+            final String unit = latitude.getUnit();
+            final String doc = latitude.getDocumentation();
             writer.startNode("latitude");
             writer.addAttribute("name", name);
             writer.addAttribute("unit", unit);
@@ -222,27 +274,31 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Latitude otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Latitude otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Latitude.class == type;
         }
     }
-    
-    private static class Radius implements Converter {
+
+    protected static class Radius implements Converter {
 
         public Radius() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Radius radius = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Radius) o;
-            String name = radius.getName();
-            String unit = radius.getUnit();
-            String doc = radius.getDocumentation();
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Radius radius = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Radius) o;
+            final String name = radius.getName();
+            final String unit = radius.getUnit();
+            final String doc = radius.getDocumentation();
             writer.startNode("radius");
             writer.addAttribute("name", name);
             writer.addAttribute("unit", unit);
@@ -251,50 +307,58 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Radius otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Radius otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle.Radius.class == type;
         }
-    }   
-    
-    private static class Documentation implements Converter {
+    }
+
+    protected static class Documentation implements Converter {
 
         public Documentation() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            String doc = (String) o;
+        public void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final String doc = (String) o;
             writer.startNode("documentation");
             writer.setValue(doc);
             writer.endNode();
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with String otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with String otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return String.class == type;
         }
-    }      
+    }
 
-    private static class Order implements Converter {
+    protected static class Order implements Converter {
 
         public Order() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Order order = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Order) o;
-            String name = order.getName();
-            String doc = order.getDocumentation();
+        public void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Order order = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Order) o;
+            final String name = order.getName();
+            final String doc = order.getDocumentation();
             writer.startNode("order");
             writer.addAttribute("name", name);
             mc.convertAnother(doc, new Documentation());
@@ -302,26 +366,30 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Order otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Order otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Order.class == type;
         }
     }
 
-    private static class Pixels implements Converter {
+    protected static class Pixels implements Converter {
 
         public Pixels() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Pixels pixels = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Pixels) o;
-            String name = pixels.getName();
-            String doc = pixels.getDocumentation();
+        public void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Pixels pixels = (fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Pixels) o;
+            final String name = pixels.getName();
+            final String doc = pixels.getDocumentation();
             writer.startNode("pixels");
             writer.addAttribute("name", name);
             mc.convertAnother(doc, new Documentation());
@@ -329,26 +397,30 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Pixels otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Pixels otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix.Pixels.class == type;
         }
     }
 
-    private static class InputKeyword implements Converter {
+    protected static class InputKeyword implements Converter {
 
         public InputKeyword() {
         }
 
         @Override
-        public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
-            fr.cnes.sitools.xml.uws.v1.InputsType.Keyword keyword = (fr.cnes.sitools.xml.uws.v1.InputsType.Keyword)o;
-            String name = keyword.getName();
-            String documentation = keyword.getDocumentation();
+        public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
+            final fr.cnes.sitools.xml.uws.v1.InputsType.Keyword keyword = (fr.cnes.sitools.xml.uws.v1.InputsType.Keyword)o;
+            final String name = keyword.getName();
+            final String documentation = keyword.getDocumentation();
             writer.addAttribute("name", name);
             writer.startNode("documentation");
             writer.setValue(documentation);
@@ -356,12 +428,16 @@ public class CapabilitiesRepresentation extends AbstractXstreamRepresentation {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public final Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext uc) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-
+        /**
+         * Returns <code>True</code> when type is compatible with Keyword otherwise <code>False</code>.
+         * @param type type to check
+         * @return <code>True</code> when type is compatible with Keyword otherwise <code>False</code>
+         */
         @Override
-        public boolean canConvert(Class type) {
+        public final boolean canConvert(final Class type) {
             return fr.cnes.sitools.xml.uws.v1.InputsType.Keyword.class == type;
         }
     }

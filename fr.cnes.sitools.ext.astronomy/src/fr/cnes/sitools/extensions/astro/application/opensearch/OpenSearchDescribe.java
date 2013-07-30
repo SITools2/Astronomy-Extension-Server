@@ -63,12 +63,12 @@ public class OpenSearchDescribe extends OpenSearchBase {
           final JSONArray son = new JSONArray();
           filter.put("son", son);
           final Map<String, Long> topTerms = index.getTopTerms();
-          for (String term : topTerms.keySet()) {
+          for (Map.Entry<String,Long> entryTerm : topTerms.entrySet()) {
             final JSONObject termEnum = new JSONObject();
-            termEnum.put("id", term);
-            termEnum.put("title", term);
-            termEnum.put("value", term);
-            termEnum.put("population", topTerms.get(term));
+            termEnum.put("id", entryTerm.getKey());
+            termEnum.put("title", entryTerm.getKey());
+            termEnum.put("value", entryTerm.getKey());
+            termEnum.put("population", entryTerm.getValue());
             son.put(termEnum);
           }
           filterArray.put(filter);

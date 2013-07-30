@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -169,24 +168,16 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
      */
     public UwsApplicationPlugin(final Context context, final ApplicationPluginModel model) {
         super(context, model);
-        try {
-            final Category category = Category.valueOf(getParameter("category").getValue());
-            if (model.getCategory() == null) {
-                model.setCategory(category);
-            }
-            setCategory(category);
-        } catch (Exception ex) {
-            LOG.warning(ex.getMessage());
-        }
+        setCategory(Category.USER_DYNAMIC);
         setJobTaskImplementation();
         final long destructionDelay = Constants.DESTRUCTION_DELAY;
-        getContext().getAttributes().put(APP_URL_UWS_SERVICE, model.getUrlAttach());
-        getContext().getAttributes().put(APP_DESTRUCTION_DELAY, destructionDelay);
-        getContext().getAttributes().put(APP_UWS, this);
+        //getContext().getAttributes().put(APP_URL_UWS_SERVICE, model.getUrlAttach());
+        //getContext().getAttributes().put(APP_DESTRUCTION_DELAY, destructionDelay);
+        //getContext().getAttributes().put(APP_UWS, this);
         setStorageDirectory();
-        JobTaskManager.getInstance().init(getContext());
+        //JobTaskManager.getInstance().init(this);
         register();
-    }
+    }    
 
     @Override
     public final void sitoolsDescribe() {
@@ -231,7 +222,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     }    
 
     /**
-     * Sets storage directory.
+     * Sets the storage directory.
      */
     private void setStorageDirectory() {
         final String directory = this.getParameter(STORAGE_DIRECTORY_PARAMETER).getValue();
@@ -240,7 +231,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         } else {
             this.storageDirectory = directory;
         }
-        this.storageDirectory = this.storageDirectory.substring(6, this.storageDirectory.length());
+        this.storageDirectory = this.storageDirectory.substring("file://".length(), this.storageDirectory.length());
     }
     
     /**
@@ -258,28 +249,24 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         if (isLoadPersistence()) {
             return;
         }
-        final File storageDirectoryObj = new File(this.storageDirectory);
-        if (!storageDirectoryObj.exists()) {
-            final boolean status = storageDirectoryObj.mkdir();
-            if (!status) {
-                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot create the " + this.storageDirectory + "directory");
-            }
-        } else {
-            if (!storageDirectoryObj.canRead() || !storageDirectoryObj.canWrite()) {
-                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot read or write on " + this.storageDirectory + "directory");
-            }
-        }
+        initDataStorage();
+        initPersistence();
+    }
+    
+    /**
+     * Init the persistence by loading save.xml file when it exists.
+     */
+    private void initPersistence() {
         final File file = new File(this.storageDirectory + File.separator + "save.xml");
         if (file.exists()) {
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(file);
-                final XStream xs = new XStream(new DomDriver());
-                final Map<String, AbstractJobTask> map = (Map<String, AbstractJobTask>) xs.fromXML(fis);
-                final Set<String> jobsId = map.keySet();
-                for (final Iterator<String> iterJobId = jobsId.iterator(); iterJobId.hasNext();) {
-                    final String jobId = iterJobId.next();
-                    final AbstractJobTask jobTask = map.get(jobId);
+                final XStream xstream = new XStream(new DomDriver());
+                final Map<String, AbstractJobTask> map = (Map<String, AbstractJobTask>) xstream.fromXML(fis);
+                for (Map.Entry<String, AbstractJobTask> entryAbstractJobTask : map.entrySet()) {
+                    final String jobId = entryAbstractJobTask.getKey();
+                    final AbstractJobTask jobTask = entryAbstractJobTask.getValue();
                     final ExecutionPhase phase = jobTask.getJobSummary().getPhase();
                     if (phase.equals(ExecutionPhase.QUEUED) || phase.equals(ExecutionPhase.EXECUTING) || phase.equals(ExecutionPhase.HELD) || phase.equals(ExecutionPhase.UNKNOWN)) {
                         JobTaskManager.getInstance().setPhase(jobTask);
@@ -293,11 +280,35 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
             } finally {
                 setLoadPersistence(true);
                 try {
-                    fis.close();
+                    if (fis != null) {
+                        fis.close();
+                    }
                 } catch (IOException ex) {
                     LOG.warning(ex.getMessage());
                 }
             }
+        }        
+    }
+    
+    /**
+     * Init data storage.
+     * <p>
+     * If the storageDirectory does not exist, then the storage is created.
+     * If the storagedirectory exists but it is not readable and writable then
+     * an Exception is raised.
+     * </p>
+     */
+    private void initDataStorage() {
+        final File storageDirectoryObj = new File(this.storageDirectory);
+        if (storageDirectoryObj.exists()) {
+            if (!storageDirectoryObj.canRead() || !storageDirectoryObj.canWrite()) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot read or write on " + this.storageDirectory + "directory");
+            }
+        } else {
+            final boolean status = storageDirectoryObj.mkdir();
+            if (!status) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot create the " + this.storageDirectory + "directory");
+            }            
         }
     }
 
@@ -372,11 +383,6 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     }
 
     @Override
-    public final Application getApplication() {
-        return super.getApplication();
-    }
-
-    @Override
     public final ApplicationInfo getApplicationInfo(final Request request, final Response response) {
         final ApplicationInfo result = super.getApplicationInfo(request, response);
         final DocumentationInfo docInfo = new DocumentationInfo("The Universal Worker Service (UWS) pattern defines how to manage asynchronous execution of jobs on a service");
@@ -402,7 +408,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
             @Override
             public Set<ConstraintViolation> validate(final AbstractApplicationPlugin item) {
                 final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-                ApplicationPluginParameter param = item.getParameter(STORAGE_DIRECTORY_PARAMETER);                
+                ApplicationPluginParameter param = item.getParameter(STORAGE_DIRECTORY_PARAMETER);
                 final String storageDirectoryValue = param.getValue();
                 if (storageDirectoryValue.isEmpty()) {
                     final ConstraintViolation constraint = new ConstraintViolation();
@@ -410,14 +416,14 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setInvalidValue(storageDirectoryValue);
                     constraint.setValueName(param.getName());
-                    constraints.add(constraint);                   
+                    constraints.add(constraint);
                 } else if (!storageDirectoryValue.startsWith("file://")) {
                     final ConstraintViolation constraint = new ConstraintViolation();
                     constraint.setMessage("The parameter value must start with file://");
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setInvalidValue(storageDirectoryValue);
                     constraint.setValueName(param.getName());
-                    constraints.add(constraint);                     
+                    constraints.add(constraint);
                 } else {
                     final File file = new File(storageDirectoryValue.substring(7));
                     if (!file.canRead() || !file.canWrite()) {

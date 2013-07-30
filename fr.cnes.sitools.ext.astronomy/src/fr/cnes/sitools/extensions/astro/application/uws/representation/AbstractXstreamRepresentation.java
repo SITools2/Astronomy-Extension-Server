@@ -138,7 +138,7 @@ public abstract class AbstractXstreamRepresentation<T> extends WriterRepresentat
      */
     public final void setObject(final T objectVal) {
         this.object = objectVal;
-    }    
+    }
 
     /**
      * Returns the XStream object.

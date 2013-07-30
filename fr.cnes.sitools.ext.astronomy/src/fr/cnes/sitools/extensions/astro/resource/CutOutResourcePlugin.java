@@ -116,7 +116,7 @@ public class CutOutResourcePlugin extends ResourceModel {
     final ResourceParameter hduNumber = new ResourceParameter(HDU_NUMBER_INPUT_PARAMETER, "HDU Image number to cut (start=1)", ResourceParameterType.PARAMETER_USER_INPUT);
     hduNumber.setValueType("xs:int");
     hduNumber.setValue("1");
-    final ResourceParameter cubeIndex = new ResourceParameter(FITS_CUBE_DEEP_INPUT_PARAMETER, "Cube Index to extract (start=0)",ResourceParameterType.PARAMETER_USER_INPUT);
+    final ResourceParameter cubeIndex = new ResourceParameter(FITS_CUBE_DEEP_INPUT_PARAMETER, "Cube Index to extract (start=0)", ResourceParameterType.PARAMETER_USER_INPUT);
     cubeIndex.setValueType("xs:int");
     cubeIndex.setValue("0");
     final ResourceParameter outputFormat = new ResourceParameter(IMAGE_FORMAT, "Output format", ResourceParameterType.PARAMETER_USER_INPUT);
@@ -142,7 +142,7 @@ public class CutOutResourcePlugin extends ResourceModel {
    * @return <code>true</code> when the object exists and is not empty(!=""); otherwise <code>false</code>
    */
   private static boolean isSet(final Object object) {
-    return (object != null && !object.equals("")) ? true : false;
+    return (object != null && !object.equals(""));
   }
 
   /**

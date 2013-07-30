@@ -24,20 +24,25 @@ import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManage
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for ExcecutionDuration Object
+ * Representation for ExcecutionDuration Object.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobExecutionDurationRepresentation extends JobQuoteRepresentation {
 
     /**
-     * Creates a new instance of __NAME__
+     * Creates a new instance of ExcecutionDuration representation.
+     * @param jobTask job
+     * @param isUsedDestructionDate Defines if a destruction has been set
      */
-    public JobExecutionDurationRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    public JobExecutionDurationRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         super(jobTask, isUsedDestructionDate);
     }
-
-    public JobExecutionDurationRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Creates a new instance of ExcecutionDuration representation.
+     * @param jobTask job
+     */
+    public JobExecutionDurationRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 

@@ -29,13 +29,19 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for ParameterName object
+ * Representation for ParameterName object.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobParameterNameRepresentation extends StringRepresentation {
 
-    public JobParameterNameRepresentation(AbstractJobTask jobTask, String key, boolean isUsedDestructionDate) {
+    /**
+     * Creates a new instance of JobParameterName representation.
+     * @param jobTask job
+     * @param key parameter key
+     * @param isUsedDestructionDate Defines if a destruction has been set
+     */
+    public JobParameterNameRepresentation(final AbstractJobTask jobTask, final String key, final boolean isUsedDestructionDate) {
         super("");
         this.setText(String.valueOf(checkExistingJobTask(jobTask, key)));
         if (isUsedDestructionDate) {
@@ -44,30 +50,34 @@ public class JobParameterNameRepresentation extends StringRepresentation {
                 try {
                     calendar = fr.cnes.sitools.extensions.astro.application.uws.common.Util.convertIntoXMLGregorian(new Date());
                 } catch (DatatypeConfigurationException ex) {
-                    //TODO Logger.getLogger(JobErrorRepresentation.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new ResourceException(ex);
                 }
-                int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
+                final int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
                 if (val == DatatypeConstants.GREATER) {
                     JobTaskManager.getInstance().deleteTask(jobTask);
                     this.setText(null);
                 }
             } catch (UniversalWorkerException ex) {
-                throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+                throw new ResourceException(ex);
             }
         }
     }
 
-    public JobParameterNameRepresentation(AbstractJobTask jobTask, String key) {
+    /**
+     * Creates a new instance of JobParameterName representation.
+     * @param jobTask job
+     * @param key parameter key
+     */
+    public JobParameterNameRepresentation(final AbstractJobTask jobTask, final String key) {
         this(jobTask, key, false);
     }
 
-    protected Object checkExistingJobTask(AbstractJobTask jobTask, String key) throws ResourceException {
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask, final String key) throws ResourceException {
         try {
-            String obj = JobTaskManager.getInstance().getValueParameter(jobTask, key);
-            return obj;
+            return JobTaskManager.getInstance().getValueParameter(jobTask, key);
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex);
         }
     }
-}    //  end __NAME__
+} 
 

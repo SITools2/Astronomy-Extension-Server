@@ -147,10 +147,22 @@ public class CutOut extends AbstractJobTask {
         final CutOutSITools2 cutout = new CutOutSITools2(new Fits(uri), rightAscension, declination, radius);
         final String outputFileJpeg = getStoragePathJob() + File.separator + getNameFrom(new URL(uri), "jpeg");
         final File fileJpeg = new File(outputFileJpeg);
-        cutout.createCutoutPreview(new FileOutputStream(fileJpeg));
+        FileOutputStream fos = new FileOutputStream(fileJpeg);
+        cutout.createCutoutPreview(fos);
+        try {
+            fos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+        }
         final String outputFileFits = getStoragePathJob() + File.separator + getNameFrom(new URL(uri), "fits");
-        final File fileFits = new File(outputFileFits);        
-        cutout.createCutoutFits(new FileOutputStream(fileFits));
+        final File fileFits = new File(outputFileFits);
+        fos = new FileOutputStream(fileFits);
+        cutout.createCutoutFits(fos);
+        try {
+            fos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return Arrays.asList(getNameFrom(new URL(uri), "fits"), getNameFrom(new URL(uri), "jpeg"));
     }
 

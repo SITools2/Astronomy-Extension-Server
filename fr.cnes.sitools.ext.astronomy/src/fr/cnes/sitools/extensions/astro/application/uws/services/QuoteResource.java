@@ -36,48 +36,50 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle Quote
- * @author Jean-Christophe Malapert
+ * Resource to handle Quote.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QuoteResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         setName("Quote Resource");
         setDescription("This resource handles quote prediction");
     }
 
     /**
-     * Get Quote
-     * @return Returns a Quote representation
-     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Returns Quote.
+     * <p>
+     * Returns a HTTP Status 404 when jobId is unknown.
+     * Returns a HTTP Status 500 for an Internal Server Error.
+     * </p>
+     * @return a Quote representation
      */
     @Get
-    public Representation getQuote() {
+    public final Representation getQuote() {
         setStatus(Status.SUCCESS_OK);
-        return new JobQuoteRepresentation(getJobTask(),true);
+        return new JobQuoteRepresentation(getJobTask(), true);
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Quote Resource");
         setDescription("This resource handles quote prediction");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get quote value");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("xs:dateTime");
         repInfo.setMediaType(MediaType.TEXT_PLAIN);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("Quote");
         docInfo.setTextContent("A Quote predicts when the job is likely to complete");
         repInfo.setDocumentation(docInfo);
@@ -95,8 +97,8 @@ public class QuoteResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");

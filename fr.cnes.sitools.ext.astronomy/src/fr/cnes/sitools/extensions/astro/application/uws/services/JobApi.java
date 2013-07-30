@@ -30,17 +30,22 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- *
- * @author malapert
+ * Provides a semantic description to make interaction with MIZAR.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobApi extends BaseJobResource {
 
     @Override
-    public void doInit() {
+    public final void doInit() {
         super.doInit();
         this.setAutoDescribing(false);
     }
 
+    /**
+     * Returns the job description as XML format.
+     * @return the job description
+     * @throws ResourceException 
+     */
     @Get("xml")
     public final Representation getJobToXML() throws ResourceException {
         try {
@@ -57,6 +62,11 @@ public class JobApi extends BaseJobResource {
         }
     }
     
+    /**
+     * Returns the job description as JSON format.
+     * @return the job description
+     * @throws ResourceException 
+     */
     @Get("json")
     public final Representation getJobToJSON() throws ResourceException {
         try {
@@ -71,6 +81,5 @@ public class JobApi extends BaseJobResource {
             Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         }
-    }    
-
+    }
 }

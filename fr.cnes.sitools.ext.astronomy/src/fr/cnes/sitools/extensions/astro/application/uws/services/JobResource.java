@@ -43,23 +43,23 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle a submitted job
- * @author Jean-Christophe Malapert
+ * Resource to handle a submitted job.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         setName("Job Resource");
         setDescription("This resource handles a job");
     }
 
     /**
-     * Get a Job
+     * Returns a Job as XML format.
      * The server returns a HTTP Status 200 when the operation is completed
-     * @return Returns a JobSummary representation
-     * @exception Returns a HTTP Status 404 when the jobId is not found
+     * @return a JobSummary representation
+     * @exception ResourceException a HTTP Status 404 when the jobId is not found
      */
     @Get("xml")
     public final Representation getJobToXML() throws ResourceException {
@@ -70,10 +70,10 @@ public class JobResource extends BaseJobResource {
     }
 
     /**
-     * Get a Job
+     * Returns a Job as JSON format.
      * The server returns a HTTP Status 200 when the operation is completed
      * @return Returns a JobSummary representation
-     * @exception Returns a HTTP Status 404 when the jobId is not found
+     * @exception ResourceException a HTTP Status 404 when the jobId is not found
      */
     @Get("json")
     public final Representation getJobToJSON() throws ResourceException {
@@ -99,7 +99,7 @@ public class JobResource extends BaseJobResource {
      * RFC - 10.4.4 403 Forbidden</a>
      */
     @Post("form")
-    public final void deleteJobID(Form form) throws ResourceException {
+    public final void deleteJobID(final Form form) throws ResourceException {
         if (isValidAction(form)) {
             this.deleteJobID();
         } else {
@@ -108,7 +108,7 @@ public class JobResource extends BaseJobResource {
     }
 
     /**
-     * Delete a job when the job is NOT running ot NOT queued
+     * Delete sa job when the job is NOT running ot NOT queued.
      * The server returns a HTTP Status 303 (/{job-id}) when the operation is completed    
      * @exception ResourceException Returns a HTTP Status 404 when the jobId is not found
      * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
@@ -127,45 +127,47 @@ public class JobResource extends BaseJobResource {
             JobTaskManager.getInstance().deleteTask(getJobTask());
             this.redirectToJobs();
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 
     /**
-     * Check whether the DELETE action is allowed.
+     * Checks whether the DELETE action is allowed.
+     * <p>
      * The DELETE action is not allowed when ACTION=DELETE is not set in the Form object
+     * </p>
      * @param form Form send by a user
-     * @return Returns True when the Form object is valid otherwhise False
+     * @return <code>True</code> when the Form object is valid otherwhise <code>False</code>
      */
-    protected boolean isValidAction(Form form) {
+    protected boolean isValidAction(final Form form) {
         boolean isValid = false;
         if (form == null || form.size() > 1) {
             isValid = false;
         } else {
-            Parameter param = form.get(0);
+            final Parameter param = form.get(0);
             isValid = (param.getName().equals(Constants.ACTION) && param.getValue().equals(Constants.DELETE)) ? true : false;
         }
         return isValid;
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Job Resource");
         setDescription("This resource handles a job");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get a Job - The job is automatically destroyed when the currentDate is superior to destructionDate.");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("uws:JobSummary");
         repInfo.setMediaType(MediaType.TEXT_XML);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("JobSummary");
         docInfo.setTextContent("The complete representation of the state of a job");
         repInfo.setDocumentation(docInfo);
@@ -181,8 +183,8 @@ public class JobResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");
@@ -193,7 +195,7 @@ public class JobResource extends BaseJobResource {
     }
 
     @Override
-    protected void describePost(MethodInfo info) {
+    protected final void describePost(final MethodInfo info) {
         info.setName(Method.POST);
         info.setDocumentation("Delete a job");
 
@@ -205,7 +207,7 @@ public class JobResource extends BaseJobResource {
         param.setRequired(true);
         param.setType("xs:string");
 
-        RequestInfo request = new RequestInfo();
+        final RequestInfo request = new RequestInfo();
         request.getParameters().add(param);
 
         param = new ParameterInfo();
@@ -239,12 +241,12 @@ public class JobResource extends BaseJobResource {
     }
 
     @Override
-    protected void describeDelete(MethodInfo info) {
+    protected final void describeDelete(final MethodInfo info) {
         info.setName(Method.DELETE);
         info.setDocumentation("Deleting a job");
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setName("job-id");
         param.setDocumentation("job-id value");
         param.setStyle(ParameterStyle.TEMPLATE);

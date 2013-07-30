@@ -26,17 +26,23 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for Quote object
+ * Representation for Quote object.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobQuoteRepresentation extends StringRepresentation {
 
-    public JobQuoteRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    /**
+     * Constructor.
+     * @param jobTask job task
+     * @param isUsedDestructionDate the destruction time is set
+     */
+    public JobQuoteRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         super("");
         this.setText(String.valueOf(checkExistingJobTask(jobTask)));
         if (isUsedDestructionDate) {
@@ -45,34 +51,37 @@ public class JobQuoteRepresentation extends StringRepresentation {
                 try {
                     calendar = fr.cnes.sitools.extensions.astro.application.uws.common.Util.convertIntoXMLGregorian(new Date());
                 } catch (DatatypeConfigurationException ex) {
-                    //TODO Logger.getLogger(JobErrorRepresentation.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
                 }
-                int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
+                final int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
                 if (val == DatatypeConstants.GREATER) {
                     JobTaskManager.getInstance().deleteTask(jobTask);
                     this.setText(null);
                 }
-            }
-            //this(jobTask, jobTask.getJobSummary().getQuote().getValue().toXMLFormat(),isUsedDestructionDate);
-            catch (UniversalWorkerException ex) {
-                throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+            } catch (UniversalWorkerException ex) {
+                throw new ResourceException(ex);
             }
         }
-
-
-        //this(jobTask, jobTask.getJobSummary().getQuote().getValue().toXMLFormat(),isUsedDestructionDate);
     }
-
-    public JobQuoteRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Constructor.
+     * @param jobTask job task
+     */
+    public JobQuoteRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
+    /**
+     * Returns a auote if the job task exists.
+     * @param jobTask job task
+     * @return a job task if it exists.
+     * @throws ResourceException 
+     */
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
         try {
-            JAXBElement<XMLGregorianCalendar> obj = JobTaskManager.getInstance().getQuote(jobTask);
-            return obj;
+            return JobTaskManager.getInstance().getQuote(jobTask);         
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 }

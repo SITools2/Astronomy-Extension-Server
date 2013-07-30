@@ -24,45 +24,55 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import net.ivoa.xml.uws.v1.Parameters;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for Parameters object
- * @author Jean-Christophe Malapert
+ * Representation for Parameters object.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @see Parameters
  */
 public class JobParametersRepresentation extends JobRepresentation {
-
-    public JobParametersRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate, MediaType mediaType) {
+    /**
+     * Creates a new instance of JobParameter representation.
+     * @param jobTask job
+     * @param isUsedDestructionDate Defines if a destruction has been set
+     * @param mediaType media type
+     */
+    public JobParametersRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate, final MediaType mediaType) {
         super(jobTask, isUsedDestructionDate, mediaType);
     }
-    
-    public JobParametersRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    /**
+     * Creates a new instance of JobParameter representation.
+     * @param jobTask job
+     * @param isUsedDestructionDate Defines if a destruction has been set
+     */    
+    public JobParametersRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         this(jobTask, isUsedDestructionDate, MediaType.TEXT_XML);
     }
-
-    public JobParametersRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Creates a new instance of JobParameter representation.
+     * @param jobTask job
+     */
+    public JobParametersRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
     @Override
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
         try {
-            Parameters obj = JobTaskManager.getInstance().getParameters(jobTask);
-            return obj;
+            return JobTaskManager.getInstance().getParameters(jobTask);
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 
     @Override
     protected XStream configureXStream() {
-        QNameMap qnm = new QNameMap();
+        final QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
         qnm.setDefaultPrefix("uws");
-        XStream xstream = new XStream(new StaxDriver(qnm));
+        final XStream xstream = new XStream(new StaxDriver(qnm));
         xstream.alias("parameters", net.ivoa.xml.uws.v1.Parameters.class);
         xstream.alias("parameter", net.ivoa.xml.uws.v1.Parameter.class);
         xstream.addImplicitCollection(net.ivoa.xml.uws.v1.Parameters.class, "parameter", net.ivoa.xml.uws.v1.Parameter.class);

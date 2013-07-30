@@ -150,7 +150,7 @@ public class DestructionResource extends BaseJobResource {
             }
             return isValid;
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 

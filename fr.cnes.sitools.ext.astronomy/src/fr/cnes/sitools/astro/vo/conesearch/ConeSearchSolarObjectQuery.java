@@ -277,13 +277,11 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     String coordinatesRa = null;
     String coordinatesDec = null;
 
-    final Set<Field> fields = record.keySet();
-    final Iterator<Field> iter = fields.iterator();
-    while (iter.hasNext()) {
-      final Field field = iter.next();
+    for (Map.Entry<Field, String> entryField : record.entrySet()) {
+      final Field field = entryField.getKey();
       final String ucd = field.getUcd();
       final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
-      final String value = record.get(field);
+      final String value = entryField.getValue();
       if (Utility.isSet(ucd) && Utility.isSet(value) && !value.isEmpty()) {
         final Object response = Utility.getDataType(dataType, value);
         final ReservedWords ucdWord = ReservedWords.find(ucd);

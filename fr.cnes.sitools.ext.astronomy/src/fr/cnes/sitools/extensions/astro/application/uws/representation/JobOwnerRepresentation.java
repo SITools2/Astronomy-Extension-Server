@@ -24,28 +24,33 @@ import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManage
 import org.restlet.resource.ResourceException;
 
 /**
- * Reprsentation for Owner Object
+ * Representation for Owner Object.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobOwnerRepresentation extends JobQuoteRepresentation {
 
     /**
-     * Creates a new instance of __NAME__
+     * Creates a new instance of JobOwner representation.
+     * @param jobTask job
+     * @param isUsedDestructionDate Defines if a destruction has been set
      */
-    public JobOwnerRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    public JobOwnerRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         super(jobTask, isUsedDestructionDate);
     }
 
-    public JobOwnerRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Creates a new instance of JobOwner representation.
+     * @param jobTask job
+     */
+    public JobOwnerRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
     @Override
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
         try {
-            String obj = JobTaskManager.getInstance().getOwnerId(jobTask);
-            return obj;
+            return JobTaskManager.getInstance().getOwnerId(jobTask);
         } catch (UniversalWorkerException ex) {
             throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
         }

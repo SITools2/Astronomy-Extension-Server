@@ -151,7 +151,7 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
                 "Sets the profiles column name that contains the profiles.",
                 FilterParameterType.PARAMETER_INTERN);
         profilesColumn.setValueType("xs:string");
-        addParam(profilesColumn);        
+        addParam(profilesColumn);
     }
 
     @Override

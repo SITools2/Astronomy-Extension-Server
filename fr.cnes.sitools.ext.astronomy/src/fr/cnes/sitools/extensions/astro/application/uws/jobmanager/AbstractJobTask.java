@@ -52,10 +52,10 @@ import net.ivoa.xml.uws.v1.Results;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.OutputRepresentation;
@@ -89,18 +89,17 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     /**
      * Load dynamically a specific jobTask.
      *
-     * @param className Class name of the specific jobTask
-     * @param context Context
+     * @param app UWS application
      * @param jobTaskId Job task identifier
-     * @param form www-form-urlencoded form
+     * @param entity www-form-urlencoded form
      * @return Returns an instance of a specific jobTask
      * @throws UniversalWorkerException Returns an Internal error
      */
-    public static AbstractJobTask create(String className, Context context, String jobTaskId, Representation entity) throws UniversalWorkerException {
+    public static AbstractJobTask create(final UwsApplicationPlugin app, final String jobTaskId, final Representation entity) throws UniversalWorkerException {
         AbstractJobTask jobTask = null;
         try {            
-            jobTask = (AbstractJobTask) Class.forName(className).newInstance();
-            jobTask.doInit(context, jobTaskId, entity);
+            jobTask = (AbstractJobTask) Class.forName(app.getJobTaskImplementation()).newInstance();
+            jobTask.doInit(app, jobTaskId, entity);
         } catch (InstantiationException ex) {
             throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IllegalAccessException ex) {
@@ -114,17 +113,17 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     /**
      * Init the specific JobTask.
      *
-     * @param context Context
+     * @param app Uws application
      * @param jobTaskId Job task identifier
-     * @param form www-form-urlencoded form
+     * @param entity www-form-urlencoded form
      * @throws UniversalWorkerException
      */
-    protected void doInit(final Context context, final String jobTaskId, final Representation entity) throws UniversalWorkerException {
+    protected final void doInit(final UwsApplicationPlugin app, final String jobTaskId, final Representation entity) throws UniversalWorkerException {
         final long delay = Long.parseLong(UwsApplicationPlugin.APP_DESTRUCTION_DELAY);        
-        final SitoolsSettings settings = (SitoolsSettings) context.getAttributes().get(ContextAttributes.SETTINGS);
-        final String uwsAttachUrl = (String) context.getAttributes().get(UwsApplicationPlugin.APP_URL_UWS_SERVICE);
+        final SitoolsSettings settings = (SitoolsSettings) app.getContext().getAttributes().get(ContextAttributes.SETTINGS);
+        final String uwsAttachUrl = app.getAttachementRef();
         this.storagePublic = settings.getPublicHostDomain() + uwsAttachUrl;
-        this.storagePath = ((UwsApplicationPlugin) context.getAttributes().get(UwsApplicationPlugin.APP_UWS)).getStorageDirectory();
+        this.storagePath = app.getStorageDirectory();
         this.jobTaskId = jobTaskId;
         this.executionDuration = 0;
         try {
@@ -153,6 +152,15 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
+    /**
+     * Returns the form from a entity.
+     * <p>
+     * The entity must be either MULTIPART_FORM_DATA or APPLICATION_WWW_FORM.
+     * </p>
+     * @param entity representation that is sent by the user
+     * @return the form
+     * @throws UniversalWorkerException This style of representation is not implemented
+     */
     private Form computeForm(final Representation entity) throws UniversalWorkerException {
         Form form = null;
         if (!Util.isSet(entity)) {
@@ -184,6 +192,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      *
      * @param form www-form-urlencoded form
      * @return Returns the ExecutionPhase
+     * @throws UniversalWorkerException only RUN value is accepted for PHASE keyword
      */
     private ExecutionPhase setPhaseAtCreation(final Form form) throws UniversalWorkerException {
         if (Util.isSet(form) && Util.isSet(form.getFirst(Constants.PHASE))) {
@@ -208,15 +217,15 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      */
     private Parameters createParametersForJob(final Form form, final boolean isPost) {
         //TODO encoder les paramètres si ce sont des URLS
-        Parameters parametersUWS = new Parameters();
+        final Parameters parametersUWS = new Parameters();
         if (form != null && !form.isEmpty()) {
-            Iterator<Parameter> iterParam = form.iterator();
+            final Iterator<Parameter> iterParam = form.iterator();
             while (iterParam.hasNext()) {
-                Parameter param = iterParam.next();
+                final Parameter param = iterParam.next();
                 if (!param.getName().equals(Constants.PHASE)) {
-                    net.ivoa.xml.uws.v1.Parameter parameterUWS = new net.ivoa.xml.uws.v1.Parameter();
+                    final net.ivoa.xml.uws.v1.Parameter parameterUWS = new net.ivoa.xml.uws.v1.Parameter();
                     parameterUWS.setId(param.getName());
-                    parameterUWS.setContent(param.getValue());
+                    parameterUWS.setContent(Reference.decode(param.getValue()));
                     parametersUWS.getParameter().add(parameterUWS);
                     parameterUWS.setIsPost(isPost);
                     if (param.getValue().startsWith("http")) {
@@ -229,12 +238,22 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Asynchronous run
+     * Asynchronous run.
      */
+    @Override
     public abstract void run();
 
+    /**
+     * Returns the get capabilities of the runnable job.
+     * @return the get capabilities of the runnable job
+     */
     public abstract Job getCapabilities();
 
+    /**
+     * Returns the get Capabilities of the Runnable job.
+     * @param className runnable class
+     * @return the get Capabilities of the Runnable job
+     */
     public static final Job getCapabilities(final String className) {
         Job job = null;
         try {
@@ -261,26 +280,21 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * set Thread
+     * sets the Thread.
      *
      * @param blinker Thread
      */
-    public void setBlinker(Thread blinker) {
+    public void setBlinker(final Thread blinker) {
         this.blinker = blinker;
     }
-//    public void run() {
-//        this.blinker = Thread.currentThread();
-//        setPhase(ExecutionPhase.EXECUTING);
-//        JobTaskManager.getInstance().updateJobTask(this);
-//    }
 
     /**
-     * Get JobSummary object
+     * Returns the JobSummary object.
      *
-     * @return Returns JobSummary object
+     * @return Returns the JobSummary object
      */
     public final JobSummary getJobSummary() {
-        JobSummary jobSummary = new JobSummary();
+        final JobSummary jobSummary = new JobSummary();
         jobSummary.setJobId(getJobTaskId());
         jobSummary.setPhase(getPhase());
         jobSummary.setExecutionDuration(getExecutionDuration());
@@ -296,10 +310,10 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Cancel the thread
+     * Cancel the thread.
      */
-    public void cancel() {
-        Thread tmpBlinker = blinker;
+    public final void cancel() {
+        final Thread tmpBlinker = blinker;
         blinker = null;
         if (tmpBlinker != null) {
             tmpBlinker.interrupt();
@@ -308,82 +322,82 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Get execution duration
+     * Returns the execution duration.
      *
      * @return Returns the executionDuraction
      */
-    protected int getExecutionDuration() {
+    protected final int getExecutionDuration() {
         return executionDuration;
     }
 
     /**
-     * Set the execution duration and update the JobTaskManager
+     * Sets the execution duration and update the JobTaskManager
      *
      * @param executionDuraction the executionDuraction to set
      */
-    protected void setExecutionDuration(int executionDuraction) {
+    protected final void setExecutionDuration(final int executionDuraction) {
         this.executionDuration = executionDuraction;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get Job task identifier
+     * Returns the Job task identifier.
      *
-     * @return Returns the job task indentifier
+     * @return the job task indentifier
      */
-    protected String getJobTaskId() {
+    protected final String getJobTaskId() {
         return this.jobTaskId;
     }
 
     /**
-     * Get job phase
+     * Returns the job phase.
      *
-     * @return Returns the phase
+     * @return the phase
      */
-    protected ExecutionPhase getPhase() {
+    protected final ExecutionPhase getPhase() {
         return phase;
     }
 
     /**
-     * Set the job phase and update the JobTaskManager when mustBeUpdated = true
+     * Sets the job phase and update the JobTaskManager when mustBeUpdated = true.
      *
-     * @param phase Phase to set
+     * @param phaseVal Phase to set
      * @param mustBeUpdated true calls the JobTaskManager otherwise false
      * otherwise false
      */
-    protected void setPhase(ExecutionPhase phase, boolean mustBeUpdated) {
-        this.phase = phase;
+    protected final void setPhase(final ExecutionPhase phaseVal, final boolean mustBeUpdated) {
+        this.phase = phaseVal;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
         }
     }
 
     /**
-     * Set the phase and update the JobTaskManager
+     * Sets the phase and updates the JobTaskManager.
      *
-     * @param phase
+     * @param phaseVal phase
      */
-    protected void setPhase(ExecutionPhase phase) {
-        this.phase = phase;
+    protected void setPhase(ExecutionPhase phaseVal) {
+        this.phase = phaseVal;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get destruction time
+     * Returns the destruction time.
      *
      * @return Returns the destructionTime
      */
-    protected XMLGregorianCalendar getDestructionTime() {
+    protected final XMLGregorianCalendar getDestructionTime() {
         return destructionTime;
     }
 
     /**
-     * Set the destruction time and update the JobTaskManager
+     * Sets the destruction time and update the JobTaskManager.
      *
      * @param destructionTime the destructionTime to set
      * @param mustBeUpdated
      */
-    protected void setDestructionTime(XMLGregorianCalendar destructionTime, boolean mustBeUpdated) {
+    protected void setDestructionTime(final XMLGregorianCalendar destructionTime, final boolean mustBeUpdated) {
         this.destructionTime = destructionTime;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
@@ -391,31 +405,31 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set the destruction time and update the JobTaskManager
+     * Sets the destruction time and update the JobTaskManager
      *
      * @param destructionTime the destructionTime to set
      */
-    protected void setDestructionTime(XMLGregorianCalendar destructionTime) {
+    protected void setDestructionTime(final XMLGregorianCalendar destructionTime) {
         this.destructionTime = destructionTime;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get error
+     * Returns the error.
      *
-     * @return Returns the error
+     * @return the error
      */
-    protected ErrorSummary getError() {
+    protected final ErrorSummary getError() {
         return error;
     }
 
     /**
-     * Set the error and update the JobTaskManager
+     * Sets the error and update the JobTaskManager.
      *
      * @param error the error to set
      * @param mustBeUpdated
      */
-    protected void setError(ErrorSummary error, boolean mustBeUpdated) {
+    protected final void setError(final ErrorSummary error, final boolean mustBeUpdated) {
         this.error = error;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
@@ -423,47 +437,47 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set the error and update the JobTaskManager
+     * Set the error and update the JobTaskManager.
      *
      * @param error the error to set
      */
-    protected void setError(ErrorSummary error) {
+    protected final void setError(final ErrorSummary error) {
         this.error = error;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
-    protected JobInfo getJobInfo() {
+    protected final JobInfo getJobInfo() {
         return this.jobInfo;
     }
 
-    protected void setJobInfo(JobInfo jobInfo, boolean mustBeUpdated) {
+    protected final void setJobInfo(final JobInfo jobInfo, final boolean mustBeUpdated) {
         this.jobInfo = jobInfo;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
         }
     }
 
-    protected void setJobInfo(JobInfo jobInfo) {
+    protected final void setJobInfo(final JobInfo jobInfo) {
         this.jobInfo = jobInfo;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get the quote
+     * Returns the quote.
      *
      * @return the quote
      */
-    protected JAXBElement<XMLGregorianCalendar> getQuote() {
+    protected final JAXBElement<XMLGregorianCalendar> getQuote() {
         return quote;
     }
 
     /**
-     * Set the quote and update the JobTaskManager
+     * Sets the quote and update the JobTaskManager.
      *
      * @param quote the quote to set
      * @param mustBeUpdated
      */
-    protected void setQuote(JAXBElement<XMLGregorianCalendar> quote, boolean mustBeUpdated) {
+    protected final void setQuote(final JAXBElement<XMLGregorianCalendar> quote, final boolean mustBeUpdated) {
         this.quote = quote;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
@@ -471,31 +485,31 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set the quote and update the JobTaskManager
+     * Sets the quote and updates the JobTaskManager.
      *
      * @param quote the quote to set
      */
-    protected void setQuote(JAXBElement<XMLGregorianCalendar> quote) {
+    protected final void setQuote(final JAXBElement<XMLGregorianCalendar> quote) {
         this.quote = quote;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get results
+     * Returns the results.
      *
      * @return the results
      */
-    protected Results getResults() {
+    protected final Results getResults() {
         return results;
     }
 
     /**
-     * Set results and update the JobTaskManager
+     * Sets the results and updates the JobTaskManager.
      *
      * @param results the results to set
      * @param mustBeUpdated
      */
-    protected void setResults(Results results, boolean mustBeUpdated) {
+    protected final void setResults(final Results results, final boolean mustBeUpdated) {
         this.results = results;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
@@ -503,31 +517,31 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set results and update the JobTaskManager
+     * Sets results and update the JobTaskManager.
      *
      * @param results the results to set
      */
-    protected void setResults(Results results) {
+    protected final void setResults(final Results results) {
         this.results = results;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get parameters
+     * Returns the parameters.
      *
      * @return the parameters The parameters to set
      */
-    protected Parameters getParameters() {
+    protected final Parameters getParameters() {
         return parameters;
     }
 
     /**
-     * Set the parameters
+     * Sets the parameters.
      *
      * @param parameters the parameters to set
      * @param mustBeUpdated
      */
-    protected void setParameters(Parameters parameters, boolean mustBeUpdated) {
+    protected final void setParameters(final Parameters parameters, final boolean mustBeUpdated) {
         this.parameters = parameters;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
@@ -535,26 +549,26 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set the parameters
+     * Sets the parameters.
      *
      * @param parameters the parameters to set
      */
-    protected void setParameters(Parameters parameters) {
+    protected final void setParameters(final Parameters parameters) {
         this.parameters = parameters;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get the value of parameter name
+     * Returns the value of parameter name.
      *
      * @param parameterName Parameter name to find
      * @return Returns the value of the parameter name
      */
-    protected String getParameterValue(String parameterName) {
+    protected final String getParameterValue(final String parameterName) {
         String valueParam = null;
-        Iterator<net.ivoa.xml.uws.v1.Parameter> iterParam = this.parameters.getParameter().iterator();
+        final Iterator<net.ivoa.xml.uws.v1.Parameter> iterParam = this.parameters.getParameter().iterator();
         while (iterParam.hasNext()) {
-            net.ivoa.xml.uws.v1.Parameter parameter = iterParam.next();
+            final net.ivoa.xml.uws.v1.Parameter parameter = iterParam.next();
             if (parameter.getId().equals(parameterName)) {
                 valueParam = parameter.getContent();
             }
@@ -563,16 +577,16 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set a value to a parameter name
+     * Sets a value to a parameter name.
      *
      * @param key Key
      * @param value Value
      * @param mustBeUpdated
      */
-    protected void setParameterValue(String key, String value, boolean mustBeUpdated) {
-        Iterator<net.ivoa.xml.uws.v1.Parameter> iterParam = this.parameters.getParameter().iterator();
+    protected final void setParameterValue(final String key, final String value, final boolean mustBeUpdated) {
+        final Iterator<net.ivoa.xml.uws.v1.Parameter> iterParam = this.parameters.getParameter().iterator();
         while (iterParam.hasNext()) {
-            net.ivoa.xml.uws.v1.Parameter parameter = iterParam.next();
+            final net.ivoa.xml.uws.v1.Parameter parameter = iterParam.next();
             if (parameter.getId().equals(key)) {
                 parameter.setContent(value);
             }
@@ -583,15 +597,15 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set a value to a parameter name
+     * Sets a value to a parameter name.
      *
      * @param key Key
      * @param value Value
      */
-    protected void setParameterValue(String key, String value) {
-        Iterator<net.ivoa.xml.uws.v1.Parameter> iterParam = this.parameters.getParameter().iterator();
+    protected final void setParameterValue(final String key, final String value) {
+        final Iterator<net.ivoa.xml.uws.v1.Parameter> iterParam = this.parameters.getParameter().iterator();
         while (iterParam.hasNext()) {
-            net.ivoa.xml.uws.v1.Parameter parameter = iterParam.next();
+            final net.ivoa.xml.uws.v1.Parameter parameter = iterParam.next();
             if (parameter.getId().equals(key)) {
                 parameter.setContent(value);
             }
@@ -600,25 +614,25 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Get start time
+     * Returns the start time.
      *
-     * @return Returns the startTime
+     * @return the startTime
      */
     protected final XMLGregorianCalendar getStartTime() {
         return startTime;
     }
 
     /**
-     * Set the start time
+     * Sets the start time.
      *
      * @param startTime the startTime to set
      */
-    protected final void setStartTime(XMLGregorianCalendar startTime) {
+    protected final void setStartTime(final XMLGregorianCalendar startTime) {
         this.startTime = startTime;
     }
 
     /**
-     * Get the end time
+     * Returns the end time.
      *
      * @return the endTime
      */
@@ -627,30 +641,30 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set the end time
+     * Sets the end time.
      *
      * @param endTime the endTime to set
      */
-    protected final void setEndTime(XMLGregorianCalendar endTime) {
+    protected final void setEndTime(final XMLGregorianCalendar endTime) {
         this.endTime = endTime;
     }
 
     /**
-     * Get the ownerID
+     * Returns the ownerID.
      *
-     * @return Returns the ownerId
+     * @return the ownerId
      */
-    protected String getOwnerId() {
+    protected final String getOwnerId() {
         return ownerId;
     }
 
     /**
-     * Set the owner ID
+     * Sets the owner ID.
      *
      * @param ownerId the ownerId to set
      * @param mustBeUpdated
      */
-    protected void setOwnerId(String ownerId, boolean mustBeUpdated) {
+    protected final void setOwnerId(final String ownerId, final boolean mustBeUpdated) {
         this.ownerId = ownerId;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
@@ -658,25 +672,25 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Set the owner ID
+     * Sets the owner ID.
      *
      * @param ownerId the ownerId to set
      */
-    protected void setOwnerId(String ownerId) {
+    protected final void setOwnerId(final String ownerId) {
         this.ownerId = ownerId;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
     /**
-     * Get the Thread
+     * Returns the Thread.
      *
-     * @return Returns the thread
+     * @return the thread
      */
-    protected Thread getBlinker() {
+    protected final Thread getBlinker() {
         return this.blinker;
     }
 
-    private Form uploadFile(Representation rep) throws FileUploadException, Exception {
+    private Form uploadFile(final Representation rep) throws FileUploadException, Exception {
 
         // The Apache FileUpload project parses HTTP requests which
         // conform to RFC 1867, "Form-based File Upload in HTML". That
@@ -685,22 +699,22 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         // FileUpload can parse that request, and get all uploaded files
         // as FileItem.
         // 1/ Create a factory for disk-based file items
-        DiskFileItemFactory factory = new DiskFileItemFactory();
+        final DiskFileItemFactory factory = new DiskFileItemFactory();
         factory.setSizeThreshold(1000240);
 
         // 2/ Create a new file upload handler based on the Restlet
         // FileUpload extension that will parse Restlet requests and
         // generates FileItems.
-        RestletFileUpload upload = new RestletFileUpload(factory);
+        final RestletFileUpload upload = new RestletFileUpload(factory);
         List items;
 
         // 3/ Request is parsed by the handler which generates a
         // list of FileItems
         items = upload.parseRepresentation(rep);
         // Process only the uploaded item  and save it on disk
-        Form form = new Form();
+        final Form form = new Form();
         for (final Iterator it = items.iterator(); it.hasNext();) {
-            FileItem fi = (FileItem) it.next();
+            final FileItem fi = (FileItem) it.next();
             if (fi.isFormField()) {
                 form.add(fi.getFieldName(), fi.getString());
             } else {
@@ -711,13 +725,13 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         return form;
     }
 
-    protected void retrieveFile(URI url, File fileDestination) {
-        ClientResource client = new ClientResource(url);
+    protected final void retrieveFile(final URI url, final File fileDestination) {
+        final ClientResource client = new ClientResource(url);
         OutputStream os = null;
         if (client.getStatus().isSuccess()) {
             InputStream is = null;
             try {
-                Representation rep = client.get();
+                final Representation rep = client.get();
                 is = rep.getStream();
                 os = new FileOutputStream(fileDestination);
                 byte[] buffer = new byte[4096];
@@ -745,20 +759,20 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
         }
     }
 
-    protected void moveFile(final File fileToCopy) throws UniversalWorkerException {
-        String uri = "riap://application/jobCache/" + jobTaskId + "/" + fileToCopy.getName();
-        ClientResource client = new ClientResource(uri);
-        //client.put(new FileRepresentation(fileToCopy, MediaType.APPLICATION_ALL));
+    protected final void moveFile(final File fileToCopy) throws UniversalWorkerException {
+        final String uri = "riap://application/jobCache/" + jobTaskId + "/" + fileToCopy.getName();
+        final ClientResource client = new ClientResource(uri);        
         client.put(new OutputRepresentation(MediaType.ALL) {
 
             @Override
-            public void write(OutputStream outputStream) throws IOException {
-                FileInputStream fileOs = new FileInputStream(fileToCopy);
+            public void write(final OutputStream outputStream) throws IOException {
+                final FileInputStream fileOs = new FileInputStream(fileToCopy);
                 int c;
                 while ((c = fileOs.read()) != -1) {
                     outputStream.write(c);
                 }
                 fileOs.close();
+                outputStream.close();
             }
         });
         if (!client.getStatus().isSuccess()) {
@@ -766,41 +780,55 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
             throw new UniversalWorkerException(client.getStatus(), "Cannot copy " + fileToCopy.getName());
         }
         client.release();
-        fileToCopy.delete();
+        if (!fileToCopy.delete()) {
+            throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, "Cannot delete " + fileToCopy.getName());
+        }
     }
 
-    protected void copyFile(FileItem fi) throws UniversalWorkerException {
-        String uri = "riap://application/jobCache/" + jobTaskId + "/" + fi.getName();
-        ClientResource client = new ClientResource(uri);
+    protected final void copyFile(final FileItem fi) throws UniversalWorkerException {
+        final String uri = "riap://application/jobCache/" + jobTaskId + "/" + fi.getName();
+        final ClientResource client = new ClientResource(uri);
         client.put(fi.getString());
         client.release();
     }
 
+    /**
+     * Creates user space.
+     * @throws UniversalWorkerException 
+     */
     private void createUserSpace() throws UniversalWorkerException {
-        String uri = "riap://application/jobCache";
-        ClientResource client = new ClientResource(uri);
+        final String uri = "riap://application/jobCache";
+        final ClientResource client = new ClientResource(uri);
         client.post(jobTaskId);
         client.release();
     }
 
     /**
-     * Delete user space disk for a specific jobId
+     * Deletes user space disk for a specific jobId
      *
      * @param jobTaskId
      * @throws UniversalWorkerException Returns an CLIENT_ERROR_BAD_REQUEST
      */
-    protected void deleteUserSpace() throws UniversalWorkerException {
-        String uri = "riap://application/jobCache/" + jobTaskId;
-        ClientResource client = new ClientResource(uri);
+    protected final void deleteUserSpace() throws UniversalWorkerException {
+        final String uri = "riap://application/jobCache/" + jobTaskId;
+        final ClientResource client = new ClientResource(uri);
         client.delete();
         client.release();
     }
 
-    protected String getStoragePublicUrl() {
+    /**
+     * Returns the storage public URL.
+     * @return the storage public URL
+     */
+    protected final String getStoragePublicUrl() {
         return this.storagePublic + "/storage";
     }
 
-    protected String getStoragePathJob() {
+    /**
+     * Returns the storage path job.
+     * @return the storage path job
+     */
+    protected final String getStoragePathJob() {
         return this.storagePath + File.separator + getJobTaskId();
     }
 }

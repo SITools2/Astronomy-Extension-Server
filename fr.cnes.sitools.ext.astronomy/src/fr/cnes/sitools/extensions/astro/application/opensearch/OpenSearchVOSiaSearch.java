@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -306,16 +307,13 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     String download = null;
     final Map properties = new HashMap();
     final Map feature = new HashMap();
-    final Set<Field> fields = row.keySet();
-    final Iterator<Field> fieldIter = fields.iterator();
     double raValue = Double.NaN;
-    double decValue = Double.NaN;
-
-    while (fieldIter.hasNext()) {
-      final Field field = fieldIter.next();
+    double decValue = Double.NaN;    
+    for (Map.Entry<Field,String> entryField : row.entrySet()) {
+      final Field field = entryField.getKey();
       final String ucd = field.getUcd();
       final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
-      final String value = row.get(field);
+      final String value = entryField.getValue();
 
       if (Utility.isSet(value) && !value.isEmpty()) {
         Object response;
@@ -755,7 +753,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   /**
    * Parses user parameters from the request.
    */
-  public class UserParameters {
+  private static class UserParameters {
 
     /**
      * right ascension.

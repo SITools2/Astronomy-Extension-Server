@@ -44,8 +44,8 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle Phase resource
- * @author Jean-Christophe Malapert
+ * Resource to handle Phase resource.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class PhaseResource extends BaseJobResource {
 
@@ -58,10 +58,12 @@ public class PhaseResource extends BaseJobResource {
 
 
     /**
-     * Get the Job's Phase
-     * @return Returns the phase of the Job
-     * @exception ResourceException Returns a HTTP Status 404 when JobID is unkown
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Returns the Job's Phase.
+     * <p>
+     * Returns a HTTP Status 404 when JobID is unkown.
+     * Returns a HTTP Status 500 for an Internal Server Error
+     * </p>
+     * @return the phase of the Job
      */
     @Get("plain")
     public Representation getPhase() {
@@ -82,10 +84,10 @@ public class PhaseResource extends BaseJobResource {
      * RFC - 10.3.4 303 See Other</a>
      */
     @Post("form")
-    public void acceptPhase(Form form) throws ResourceException {
+    public final void acceptPhase(final Form form) throws ResourceException {
         try {
             if (isValidAction(form)) {
-                Parameter parameter = form.get(0);
+                final Parameter parameter = form.get(0);
                 if (parameter.getName().equals(Constants.PHASE)) {
                     if (parameter.getValue().equals(Constants.PHASE_RUN)) {
                             JobTaskManager.getInstance().runAsynchrone(getJobTask());
@@ -103,53 +105,53 @@ public class PhaseResource extends BaseJobResource {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "The parameters sent by the user are wrong");
             }
         } catch (UniversalWorkerException ex) {
-           throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+           throw new ResourceException(ex.getStatus(), ex);
         }
     }
 
     /**
-     * Check whether the Phase action is allowed.
+     * Checks whether the Phase action is allowed.
      * The Form object is valid when the Form object contains PHASE=RUN ou PHASE=ABORT
      * @param form Form send by a user
      * @return Returns True when the Form object is valid otherwhise False
      */
-    protected boolean isValidAction(Form form) throws UniversalWorkerException {
+    protected final boolean isValidAction(final Form form) throws UniversalWorkerException {
         boolean isValid = false;
 
         if (form == null || form.size() > 1) {
             isValid = false;
         } else {
-            ExecutionPhase currentPhase = JobTaskManager.getInstance().getPhase(getJobTask());
-            Parameter param = form.get(0);
+            final ExecutionPhase currentPhase = JobTaskManager.getInstance().getPhase(getJobTask());
+            final Parameter param = form.get(0);
             isValid = (param.getName().equals(Constants.PHASE)
                     && (param.getValue().equals(Constants.PHASE_RUN)
                     ||param.getValue().equals(Constants.PHASE_ABORT))
                     && (currentPhase.equals(ExecutionPhase.PENDING)
                     || currentPhase.equals(ExecutionPhase.QUEUED)
-                    || currentPhase.equals(ExecutionPhase.EXECUTING))) ? true : false;
+                    || currentPhase.equals(ExecutionPhase.EXECUTING)));
         }
 
         return isValid;
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Phase Resource");
         setDescription("This resource handles job phase");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get job phase");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("xs:string");
         repInfo.setMediaType(MediaType.TEXT_PLAIN);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("ExecutionPhase");
         docInfo.setTextContent("Enumeration of possible phases of job execution");
         repInfo.setDocumentation(docInfo);
@@ -167,8 +169,8 @@ public class PhaseResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");
@@ -179,7 +181,7 @@ public class PhaseResource extends BaseJobResource {
     }
 
     @Override
-    protected void describePost(MethodInfo info) {
+    protected final void describePost(final MethodInfo info) {
         info.setName(Method.POST);
         info.setDocumentation("Starting/Aborting the processing");
 
@@ -202,7 +204,7 @@ public class PhaseResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
+        final RequestInfo request = new RequestInfo();
         ParameterInfo param = new ParameterInfo();
         param.setName("PHASE");
         OptionInfo opt = new OptionInfo();

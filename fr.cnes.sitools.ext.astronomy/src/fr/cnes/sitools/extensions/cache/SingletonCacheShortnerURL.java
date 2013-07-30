@@ -45,13 +45,19 @@ public class SingletonCacheShortnerURL {
      */
     private static final String CACHE_NAME = "ShortenerUrl";
     
+    /**
+     * Alpha numeric for transformation.
+     */
     private static String ALPHANUMERIC
             = "0123456789"
             + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             + "abcdefghijklmnopqrstuvwxyz";
 
-    //Remove 0oO1iIl - Base52
-    private static String ALPHANUMERIC_ALT
+    /**
+     * Any letters or numbers which are similar in appearance should be avoided
+     * (like “I”, “1”, “O”, “0”,"Q", "i", "l", "o").
+     */
+    private static String ALPHANUMERICALT
             = "23456789"
             + "ABCDEFGHJKLMNPRSTUVWXYZ"
             + "abcdefghjkmnpqrstuvwxyz";
@@ -138,14 +144,14 @@ public class SingletonCacheShortnerURL {
      * @return a shortening Id
      */
     public static final synchronized String putUrl(final String url) {
-        int urlId = 0;
+        int urlId;
         final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
         final Cache cache = cacheMgt.getCache(CACHE_NAME);
         do {
             urlId = generateId();
         } while (cache.isKeyInCache(urlId));
         cache.put(new Element(urlId, new UrlCache(url)));
-        return toBase(urlId, ALPHANUMERIC_ALT);
+        return toBase(urlId, ALPHANUMERICALT);
     }
     
     /**
@@ -158,13 +164,13 @@ public class SingletonCacheShortnerURL {
      */
     public static final synchronized String getUrl(final String shorteningId) {
         String result;
-        final int urlId = fromBase(shorteningId, ALPHANUMERIC_ALT);
+        final int urlId = fromBase(shorteningId, ALPHANUMERICALT);
         final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
         final Cache cache = cacheMgt.getCache(CACHE_NAME);         
         if (cache.isKeyInCache(urlId)) {
             UrlCache urlCache = (UrlCache) cache.get(urlId).getObjectValue();
             result = urlCache.getUrl();
-            urlCache.setNbClick(urlCache.getNbClicks()+1);
+            urlCache.setNbClicks(urlCache.getNbClicks() + 1);
             cache.put(new Element(urlId, urlCache));
         } else {
             throw new IllegalArgumentException("Cannot find the record in the cache");
@@ -176,6 +182,9 @@ public class SingletonCacheShortnerURL {
      * Creates cache of the URL and also about its number of access.
      */
     private static class UrlCache implements Serializable {
+        /**
+         * Serial version.
+         */
         private static final long serialVersionUID = 1L;
         /**
          * The URL to bookmark.
@@ -199,15 +208,15 @@ public class SingletonCacheShortnerURL {
          * @param nbClicksVal  number of clicks that has been done on this URL.
          */
         public UrlCache(final String urlVal, final int nbClicksVal) {
-            this.url = urlVal;
-            this.nbClicks = nbClicksVal;
+            setUrl(urlVal);
+            setNbClicks(nbClicksVal);            
         }
-        
+
         /**
          * Sets the url.
-         * @param urlVal url 
+         * @param urlVal url
          */
-        public final void setUrl(final String urlVal) {
+        private void setUrl(final String urlVal) {
             this.url = urlVal;
         }
         /**
@@ -217,19 +226,22 @@ public class SingletonCacheShortnerURL {
         public final String getUrl() {
             return this.url;
         }
+
         /**
-         * Sets the number of clicks
-         * @param nbClickVal the number of clicks
-         */
-        public final void setNbClick(final int nbClickVal) {
-            this.nbClicks = nbClickVal;
-        }
-        /**
-         * Returns the number of  clicks.
-         * @return the number of clicks
+         * Return the number of clicks.
+         * @return the nbClicks
          */
         public final int getNbClicks() {
-            return this.nbClicks;
-        }                
+            return nbClicks;
+        }
+
+        /**
+         * Sets the number of clicks.
+         * @param nbClicksVal the nbClicks to set
+         */
+        public final void setNbClicks(final int nbClicksVal) {
+            this.nbClicks = nbClicksVal;
+        }
+
     }
 }

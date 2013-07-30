@@ -37,47 +37,49 @@ import org.restlet.resource.ResourceException;
 
 
 /**
- * Resource to handle Owner
- * @author Jean-Christophe Malapert
+ * Resource to handle Owner.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class OwnerResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         setName("Owner Resource");
         setDescription("This resource handles job owner");
     }
 
     /**
-     * Get an owner
-     * @return Returns the owner Representation
-     * @exception ResourceException Returns a HTTP Status 404 when the jobId is not found
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Returns the owner.
+     * <p>
+     * a HTTP Status 404 when the jobId is not found.
+     * a HTTP Status 500 for an Internal Server Error.
+     * </p>
+     * @return the owner Representation
      */
     @Get
-    public Representation getOwner() {
-        return new JobOwnerRepresentation(getJobTask(),true);
+    public final Representation getOwner() {
+        return new JobOwnerRepresentation(getJobTask(), true);
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Owner Resource");
         setDescription("This resource handles job owner");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Getting an ownerId");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("xs:string");
         repInfo.setMediaType(MediaType.TEXT_PLAIN);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("Owner");
         docInfo.setTextContent("the owner (creator) of the job - this should be expressed as a string that can be parsed in accordance with IVOA security standards. If there was no authenticated job creator then this should be set to NULL.");
         repInfo.setDocumentation(docInfo);
@@ -95,8 +97,8 @@ public class OwnerResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");

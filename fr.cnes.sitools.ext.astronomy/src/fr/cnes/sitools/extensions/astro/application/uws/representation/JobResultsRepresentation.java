@@ -20,55 +20,66 @@ package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.QNameMap;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import net.ivoa.xml.uws.v1.Results;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for Results object
- * @author Jean-Christophe Malapert
+ * Representation for Results object.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @see Results
  */
 public class JobResultsRepresentation extends JobRepresentation {
     
-    public JobResultsRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate, MediaType mediaType) {
+    /**
+     * Constructor.
+     * @param jobTask jobTask to represent
+     * @param isUsedDestructionDate destruction of the resource is set
+     * @param mediaType Media Type
+     */
+    public JobResultsRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate, final MediaType mediaType) {
         super(jobTask, isUsedDestructionDate, mediaType);
     }    
 
-    public JobResultsRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    /**
+     * Constructor.
+     * @param jobTask jobTask to represent
+     * @param isUsedDestructionDate Media Type
+     */
+    public JobResultsRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         this(jobTask, isUsedDestructionDate, MediaType.TEXT_XML);
     }
 
-    public JobResultsRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Constructor.
+     * @param jobTask jobTask to represent
+     */
+    public JobResultsRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
     @Override
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
+    protected final Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
         try {
-            Results obj = JobTaskManager.getInstance().getResults(jobTask);
-            return obj;
+            return JobTaskManager.getInstance().getResults(jobTask);            
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 
     @Override
-    protected XStream configureXStream() {
-        QNameMap qnm = new QNameMap();
+    protected final XStream configureXStream() {
+        final QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
         qnm.setDefaultPrefix("uws");
         createXstream(getMediaType(), qnm);
-        XStream xstream = getXstream();
+        final XStream xstream = getXstream();
         xstream.alias("results", net.ivoa.xml.uws.v1.Results.class);
         xstream.addImplicitCollection(net.ivoa.xml.uws.v1.Results.class, "result", net.ivoa.xml.uws.v1.ResultReference.class);
         xstream.alias("result", net.ivoa.xml.uws.v1.ResultReference.class);
         xstream.registerConverter(new JobResultsConverter());
         return xstream;
     }
-
 }
