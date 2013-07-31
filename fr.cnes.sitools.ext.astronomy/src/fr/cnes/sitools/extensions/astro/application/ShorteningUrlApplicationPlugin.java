@@ -29,7 +29,18 @@ import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 
 /**
- * Plugin that provides a shortner URL based on the URL.
+ * Plugin that provides a shortner URL based on a MIZAR context.
+ * <p>
+ * Here is an example of usage:<br/>
+ * <pre>
+ * <code>
+ *   curl -X POST -d "context={toto:\"fdfd\"}" "http://localhost:8182/shorturl"
+ *   => returns 972
+ *   curl -X GET "http://localhost:8182/shorturl/972"
+ *   => returns {toto:"fdfd"}
+ * </code>
+ * </pre>
+ * </p>
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ShorteningUrlApplicationPlugin extends AbstractApplicationPlugin {
@@ -82,7 +93,10 @@ public class ShorteningUrlApplicationPlugin extends AbstractApplicationPlugin {
         this.setName("Shortening URL Application");
         this.setAuthor("J-C Malapert");
         this.setOwner("CNES");
-        this.setDescription("Shortening URL Application");
+        this.setDescription("This plugin caches a JSON configuration sent by"
+                + " a client and returns a shortenerID. "
+                + "Then the client can retrieve the JSON configuration by calling the "
+                + "resource according to the shortenerID");
     }
 
     /**
@@ -100,8 +114,8 @@ public class ShorteningUrlApplicationPlugin extends AbstractApplicationPlugin {
     public final Restlet createInboundRoot() {
             final Router router = new Router(getContext());
             router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-            router.attachDefault(fr.cnes.sitools.extensions.astro.application.ShorteningResource.class);
-            router.attach("/{shortenerId}", fr.cnes.sitools.extensions.astro.application.ShorteningResource.class);
+            router.attachDefault(fr.cnes.sitools.extensions.astro.application.shortenerurl.ShorteningResource.class);
+            router.attach("/{shortenerId}", fr.cnes.sitools.extensions.astro.application.shortenerurl.ShorteningResource.class);
         return router;
     }
 }

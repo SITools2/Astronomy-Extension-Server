@@ -109,13 +109,14 @@ public class SingletonCacheShortnerURL {
      * @param baseChars the base that is used for the conversion (alphanumeric or alphanumeric_alt)
      * @return the input that is converted to the base
      */
-    private static String toBase(long input, final String baseChars) {
+    private static String toBase(final long input, final String baseChars) {
+        long inputVal = input;
         String shorteningId = "";
         final int targetBase = baseChars.length();
         do {
-            shorteningId = String.format("%s%s", String.valueOf(baseChars.charAt((int) (input % targetBase))), shorteningId);
-            input /= targetBase;
-        } while (input > 0);
+            shorteningId = String.format("%s%s", String.valueOf(baseChars.charAt((int) (inputVal % targetBase))), shorteningId);
+            inputVal /= targetBase;
+        } while (inputVal > 0);
 
         return shorteningId;
     }
@@ -139,39 +140,39 @@ public class SingletonCacheShortnerURL {
     }
 
     /**
-     * Stores a URL and gets a shortening Id.
-     * @param url URL to store
+     * Stores a config and gets a shortening Id.
+     * @param config config to store
      * @return a shortening Id
      */
-    public static final synchronized String putUrl(final String url) {
-        int urlId;
+    public static final synchronized String putConfig(final String config) {
+        int configId;
         final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
         final Cache cache = cacheMgt.getCache(CACHE_NAME);
         do {
-            urlId = generateId();
-        } while (cache.isKeyInCache(urlId));
-        cache.put(new Element(urlId, new UrlCache(url)));
-        return toBase(urlId, ALPHANUMERICALT);
+            configId = generateId();
+        } while (cache.isKeyInCache(configId));
+        cache.put(new Element(configId, new ConfigCache(config)));
+        return toBase(configId, ALPHANUMERICALT);
     }
     
     /**
-     * Returns an URL from tits shortening ID.
+     * Returns an configCache from its shortening ID.
      * @param shorteningId
      * <p>
      * Raise an IllegalArgumentException when <code>shorteningId</code> is not in the cache
      * </p>
      * @return an URL
      */
-    public static final synchronized String getUrl(final String shorteningId) {
+    public static final synchronized String getConfig(final String shorteningId) {
         String result;
-        final int urlId = fromBase(shorteningId, ALPHANUMERICALT);
+        final int storeId = fromBase(shorteningId, ALPHANUMERICALT);
         final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
         final Cache cache = cacheMgt.getCache(CACHE_NAME);         
-        if (cache.isKeyInCache(urlId)) {
-            UrlCache urlCache = (UrlCache) cache.get(urlId).getObjectValue();
-            result = urlCache.getUrl();
-            urlCache.setNbClicks(urlCache.getNbClicks() + 1);
-            cache.put(new Element(urlId, urlCache));
+        if (cache.isKeyInCache(storeId)) {
+            final ConfigCache configCache = (ConfigCache) cache.get(storeId).getObjectValue();
+            result = configCache.getConfig();
+            configCache.setNbClicks(configCache.getNbClicks() + 1);
+            cache.put(new Element(storeId, configCache));
         } else {
             throw new IllegalArgumentException("Cannot find the record in the cache");
         }
@@ -179,9 +180,9 @@ public class SingletonCacheShortnerURL {
     }   
     
     /**
-     * Creates cache of the URL and also about its number of access.
+     * Creates cache of the MIZAR config and also about its number of access.
      */
-    private static class UrlCache implements Serializable {
+    private static class ConfigCache implements Serializable {
         /**
          * Serial version.
          */
@@ -189,7 +190,7 @@ public class SingletonCacheShortnerURL {
         /**
          * The URL to bookmark.
          */
-        private String url;
+        private String config;
         /**
          * The number of access on this URL.
          */
@@ -197,34 +198,34 @@ public class SingletonCacheShortnerURL {
         
         /**
          * Constructor.
-         * @param urlVal URL
+         * @param configVal URL
          */
-        public UrlCache(final String urlVal) {
-          this(urlVal, 0);  
+        public ConfigCache(final String configVal) {
+          this(configVal, 0);  
         }
         /**
          * Constructor.
-         * @param urlVal URL
+         * @param configVal URL
          * @param nbClicksVal  number of clicks that has been done on this URL.
          */
-        public UrlCache(final String urlVal, final int nbClicksVal) {
-            setUrl(urlVal);
+        public ConfigCache(final String configVal, final int nbClicksVal) {
+            setConfig(configVal);
             setNbClicks(nbClicksVal);            
         }
 
         /**
-         * Sets the url.
-         * @param urlVal url
+         * Sets the config.
+         * @param configVal config
          */
-        private void setUrl(final String urlVal) {
-            this.url = urlVal;
+        private void setConfig(final String configVal) {
+            this.config = configVal;
         }
         /**
-         * Returns the url.
-         * @return the url
+         * Returns the config.
+         * @return the config
          */
-        public final String getUrl() {
-            return this.url;
+        public final String getConfig() {
+            return this.config;
         }
 
         /**
