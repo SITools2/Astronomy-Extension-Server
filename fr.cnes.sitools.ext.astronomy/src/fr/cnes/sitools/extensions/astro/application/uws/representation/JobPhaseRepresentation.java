@@ -25,30 +25,35 @@ import net.ivoa.xml.uws.v1.ExecutionPhase;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for Phase Object
+ * Representation for Phase Object.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class JobPhaseRepresentation extends JobQuoteRepresentation {
 
     /**
-     * Creates a new instance of __NAME__
+     * Creates a new instance of Phase object representation.
+     * @param jobTask job
+     * @param isUsedDestructionDate Defines if a destruction has been set
      */
-    public JobPhaseRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    public JobPhaseRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         super(jobTask, isUsedDestructionDate);
     }
 
-    @Override
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
-        try {
-            ExecutionPhase obj = JobTaskManager.getInstance().getPhase(jobTask);
-            return obj;
-        } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
-        }
-    }
-
-    public JobPhaseRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Creates a new instance of Phase object representation.
+     * @param jobTask job
+     */
+    public JobPhaseRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
+    }
+    
+    @Override
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
+        try {
+            return JobTaskManager.getInstance().getPhase(jobTask);
+        } catch (UniversalWorkerException ex) {
+            throw new ResourceException(ex);
+        }
     }
 }

@@ -62,43 +62,47 @@ public class CutOutSITools2 implements CutOutInterface {
     /**
      * Fits image.
      */
-    private final FITSImage fits;
+    private FITSImage fits;
     /**
      * Right ascension coordinate (in deg) for the center of the cutOut.
      */
-    private final double ra;
+    private double ra;
     /**
      * Declination coordinate (in deg) for the center of the cutOut.
      */
-    private final double dec;
+    private double dec;
     /**
-     * Radius (in deg) of the cutOut.
+     * Width (in deg) of the cutOut.
      */
-    private final double sr;
+    private double widthDeg;
+    /**
+     * Height (in deg) of the cutOut.
+     */
+    private double heightDeg;    
     /**
      * Scale in deg/pixel along NAXIS1.
      */
-    private double scaleDegPerPixelWidth;
+    private transient double scaleDegPerPixelWidth;
     /**
      * Scale in deg/pixel along NAXIS2.
      */    
-    private double scaleDegPerPixelHeight;
+    private transient double scaleDegPerPixelHeight;
     /**
      * Transformation (ra,dec) in pixels reference.
      */
-    private Point2D.Double xyCoord;
+    private transient Point2D.Double xyCoord;
     /**
      * CRPIX1 shift when the corner is out of the image.
      */
-    private int shiftCrpix1 = 0;
+    private transient int shiftCrpix1 = 0;
     /**
      * CRPIX1 shift when the corner is out of the image.
      */    
-    private int shiftCrpix2 = 0;
+    private transient int shiftCrpix2 = 0;
     /**
      * lengths of the image following the cutOut.
      */
-    private final int[] lengths;
+    private final transient int[] lengths;
     /**
      * corners of the origin point of cutOut.
      * 
@@ -109,46 +113,50 @@ public class CutOutSITools2 implements CutOutInterface {
      * |______|___|
      *    (corners)  
      */    
-    private final int[] corners;
+    private final transient int[] corners;
     /**
      * NAXIS2 index in the corners and length arrays.
      */
-    public int HEIGHT = 0;
+    private int height = 0;
     /**
      * NAXIS1 index in the corners and length arrays.
      */    
-    public int WIDTH = 1; 
+    private int width = 1; 
     /**
      * DEEP for Cube FITS (start at 0).
      */    
-    public static final int DEEP = 0;    
+    public static final int DEEP = 0;
     /**
      * DeepLevel in the FITS cube.
      */
-    private int deepLevel = 0;
-    
+    private int deepLevel;
+    /**
+     * TODO : should provide a choice between PNG and JPEG.
+     */
     private SupportedFileFormat supportedFormatOutput;
-    
+
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
      * @param rightAscension right ascension coordinates in deg
      * @param declination declination in deg
-     * @param radius radius in deg
+     * @param widthDeg width in deg
+     * @param heightDeg height in deg
      * @param hduImageNumber number of the image HDU to read (start=1)
      * @param deepLevel level of the FITS cube (start=0)
      * @throws CutOutException When a problem happens
      */
-    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double radius, final int hduImageNumber, final int deepLevel) throws CutOutException  {
+    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double widthDeg, final double heightDeg, final int hduImageNumber, final int deepLevel) throws CutOutException  {
         try {
-            this.fits = new FITSImage(fitsObj, hduImageNumber, deepLevel, FITSImage.SCALE_LINEAR);
-            this.ra = rightAscension;
-            this.dec = declination;
-            this.sr = radius;
-            int nbAxes = this.fits.getImageHDU().getAxes().length;
+            setFits(new FITSImage(fitsObj, hduImageNumber, deepLevel, FITSImage.SCALE_LINEAR));
+            setRa(rightAscension);
+            setDec(declination);
+            setWidthDeg(widthDeg);
+            setHeightDeg(heightDeg);
+            final int nbAxes = getFits().getImageHDU().getAxes().length;
             this.corners = new int[nbAxes];
             this.lengths = new int[nbAxes];
-            this.deepLevel = deepLevel;
+            setDeepLevel(deepLevel);
             init();
         } catch (FitsException ex) {
             throw new CutOutException(ex);
@@ -160,7 +168,34 @@ public class CutOutSITools2 implements CutOutInterface {
             throw new CutOutException(ex);
         }
     }
-    
+
+    /**
+     * Constructs a cut out based on the image, the center of the zone to cut and its radius.
+     * @param fitsObj Object to cut
+     * @param rightAscension right ascension coordinates in deg
+     * @param declination declination in deg
+     * @param radius radius in deg
+     * @param hduImageNumber number of the image HDU to read (start=1)
+     * @param deepLevel level of the FITS cube (start=0)
+     * @throws CutOutException When a problem happens
+     */
+    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double radius, final int hduImageNumber, final int deepLevel) throws CutOutException  {
+        this(fitsObj, rightAscension, declination, radius * 2d, radius * 2d, hduImageNumber, deepLevel);
+    }
+
+    /**
+     * Constructs a cut out based on the image, the center of the zone to cut and its radius.
+     * @param fitsObj Object to cut
+     * @param rightAscension right ascension coordinates in deg
+     * @param declination declination in deg
+     * @param widthDeg width in deg
+     * @param heightDeg height in deg
+     * @param hduImageNumber number of the image HDU to read
+     * @throws CutOutException When a problem happens
+     */
+    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double widthDeg, final double heightDeg, final int hduImageNumber) throws CutOutException {
+        this(fitsObj, rightAscension, declination, widthDeg, heightDeg, hduImageNumber, 0);
+    }
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
@@ -173,7 +208,6 @@ public class CutOutSITools2 implements CutOutInterface {
     public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double radius, final int hduImageNumber) throws CutOutException  {
         this(fitsObj, rightAscension, declination, radius, hduImageNumber, 0);
     }
-    
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
@@ -185,31 +219,42 @@ public class CutOutSITools2 implements CutOutInterface {
     public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double radius) throws CutOutException  {
         this(fitsObj, rightAscension, declination, radius, 1, 0);
     }
-
+    /**
+     * Constructs a cut out based on the image, the center of the zone to cut and its radius.
+     * @param fitsObj Object to cut
+     * @param rightAscension right ascension coordinates in deg
+     * @param declination declination in deg
+     * @param widthDeg width in deg
+     * @param heightDeg height in deg
+     * @throws CutOutException When a problem happens
+     */
+    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double widthDeg, final double heightDeg) throws CutOutException  {
+        this(fitsObj, rightAscension, declination, widthDeg, heightDeg, 1, 0);
+    }
     /**
      * Computes the ranges of pixels to cut and checks if cutOut is inside the image.
      *
      * Raises an IllegalArgumentException if the cutOut is outside the image
      */
     private void init() {
-        final WCSTransform wcs = getWcs(this.fits.getImageHDU());
+        final WCSTransform wcs = getWcs(this.getFits().getImageHDU());
         this.scaleDegPerPixelWidth = computeScaleDegPerPixelWidth(wcs);
         this.scaleDegPerPixelHeight = computeScaleDegPerPixelHeight(wcs);
-        this.xyCoord = wcs.wcs2pix(this.ra, this.dec);
+        this.xyCoord = wcs.wcs2pix(this.getRa(), this.getDec());
         if (getIsDataCube()) {
-            WIDTH++;
-            HEIGHT++;
-            this.lengths[WIDTH] = (int) Math.round(computeOutputWidth());
-            this.lengths[HEIGHT] = (int) Math.round(computeOutputHeight());
+            setWidth(getWidth() + 1);
+            setHeight(getHeight() + 1);
+            this.lengths[getWidth()] = (int) Math.round(computeOutputWidth());
+            this.lengths[getHeight()] = (int) Math.round(computeOutputHeight());
             this.lengths[0] = 1;
-            this.corners[WIDTH] = (int) Math.round(computeCornerWidth(xyCoord));
-            this.corners[HEIGHT] = (int) Math.round(computeCornerHeight(xyCoord));
-            this.corners[DEEP] = deepLevel - 1;
+            this.corners[getWidth()] = (int) Math.round(computeCornerWidth(xyCoord));
+            this.corners[getHeight()] = (int) Math.round(computeCornerHeight(xyCoord));
+            this.corners[DEEP] = getDeepLevel() - 1;
         } else {
-            this.lengths[WIDTH] = (int) Math.round(computeOutputWidth());
-            this.lengths[HEIGHT] = (int) Math.round(computeOutputHeight());            
-            this.corners[WIDTH] = (int) Math.round(computeCornerWidth(xyCoord));
-            this.corners[HEIGHT] = (int) Math.round(computeCornerHeight(xyCoord));            
+            this.lengths[getWidth()] = (int) Math.round(computeOutputWidth());
+            this.lengths[getHeight()] = (int) Math.round(computeOutputHeight());
+            this.corners[getWidth()] = (int) Math.round(computeCornerWidth(xyCoord));
+            this.corners[getHeight()] = (int) Math.round(computeCornerHeight(xyCoord));
         }
 
         /**
@@ -222,21 +267,21 @@ public class CutOutSITools2 implements CutOutInterface {
          */
         if (isCornerCutWidthOutImage()) {
             // Checks if the cutOut is completely outside the image
-            if (this.lengths[WIDTH] <= Math.abs(this.corners[WIDTH])) {
+            if (this.lengths[getWidth()] <= Math.abs(this.corners[getWidth()])) {
                 throw new IllegalArgumentException("Cut out of the image");
             } else {
-                this.shiftCrpix1 = this.corners[WIDTH];
-                this.lengths[WIDTH] = this.lengths[WIDTH] - Math.abs(this.corners[WIDTH]);
-                if (this.lengths[WIDTH] > wcs.getWidth()) {
-                    this.lengths[WIDTH] = (int) wcs.getWidth();
+                this.shiftCrpix1 = this.corners[getWidth()];
+                this.lengths[getWidth()] = this.lengths[getWidth()] - Math.abs(this.corners[getWidth()]);
+                if (this.lengths[getWidth()] > wcs.getWidth()) {
+                    this.lengths[getWidth()] = (int) wcs.getWidth();
                 }
-                this.corners[WIDTH] = 0;
+                this.corners[getWidth()] = 0;
             }
         } else if (isCutWidthOutImage((int) wcs.getWidth())) {
-           if (this.corners[WIDTH] >= wcs.getWidth()) {
+           if (this.corners[getWidth()] >= wcs.getWidth()) {
                 throw new IllegalArgumentException("Cut out of the image");
            } else {
-                this.lengths[WIDTH] = this.lengths[WIDTH] - (this.corners[WIDTH] + this.lengths[WIDTH] - (int) wcs.getWidth());
+                this.lengths[getWidth()] = this.lengths[getWidth()] - (this.corners[getWidth()] + this.lengths[getWidth()] - (int) wcs.getWidth());
            }
         }
         /**
@@ -250,21 +295,21 @@ public class CutOutSITools2 implements CutOutInterface {
          *               |_|
          */
         if (isCornerCutHeightOutImage()) {
-            if (this.lengths[HEIGHT] <= Math.abs(this.corners[HEIGHT])) {
+            if (this.lengths[getHeight()] <= Math.abs(this.corners[getHeight()])) {
                 throw new IllegalArgumentException("Cut out of the image");
             } else {
-                this.shiftCrpix2 = this.corners[HEIGHT];
-                this.lengths[HEIGHT] = this.lengths[HEIGHT] - Math.abs(this.corners[HEIGHT]);
-                if (this.lengths[HEIGHT] > wcs.getHeight()) {
-                    this.lengths[HEIGHT] = (int) wcs.getHeight();
-                }                
-                this.corners[HEIGHT] = 0;
+                this.shiftCrpix2 = this.corners[getHeight()];
+                this.lengths[getHeight()] = this.lengths[getHeight()] - Math.abs(this.corners[getHeight()]);
+                if (this.lengths[getHeight()] > wcs.getHeight()) {
+                    this.lengths[getHeight()] = (int) wcs.getHeight();
+                }
+                this.corners[getHeight()] = 0;
             }
         } else if (isCutHeightOutImage((int) wcs.getHeight())) {
-           if (this.corners[HEIGHT] >= wcs.getHeight()) {
+           if (this.corners[getHeight()] >= wcs.getHeight()) {
                 throw new IllegalArgumentException("Cut out of the image");
            } else {
-                this.lengths[HEIGHT] = this.lengths[HEIGHT] - (this.corners[HEIGHT] + this.lengths[HEIGHT] - (int) wcs.getHeight());
+                this.lengths[getHeight()] = this.lengths[getHeight()] - (this.corners[getHeight()] + this.lengths[getHeight()] - (int) wcs.getHeight());
            }
         }
     }
@@ -273,14 +318,14 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return True when the corner of the cutOut is out of the image otherwise False
      */
     private boolean isCornerCutWidthOutImage() {
-        return (this.corners[WIDTH] < 0);
+        return (this.corners[getWidth()] < 0);
     }
     /**
      * Returns True when the corner of the cutOut is out of the image along the height.
      * @return True when the corner of the cutOut is out of the image otherwise False
      */
     private boolean isCornerCutHeightOutImage() {
-        return (this.corners[HEIGHT] < 0);
+        return (this.corners[getHeight()] < 0);
     }
     /**
      * Returns True when the length of the cutOut is out of the image along the width.
@@ -288,7 +333,7 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return True when the cutOut is out of the image otherwise False
      */
     private boolean isCutWidthOutImage(final int imageWidth) {
-        return (this.corners[WIDTH] + this.lengths[WIDTH] >= imageWidth);
+        return (this.corners[getWidth()] + this.lengths[getWidth()] >= imageWidth);
     }
     /**
      * Returns True when the length of the cutOut is out of the image along the height.
@@ -296,7 +341,7 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return True when the cutOut is out of the image otherwise False
      */
     private boolean isCutHeightOutImage(final int imageHeight) {
-        return (this.corners[HEIGHT] + this.lengths[HEIGHT] >= imageHeight);
+        return (this.corners[getHeight()] + this.lengths[getHeight()] >= imageHeight);
     }
     /**
      * Computes the shift to give to CRPIX1 when the corner is out of the cutOut.
@@ -349,14 +394,14 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return the number of pixels along the width axis as the result of the cutOut
      */
     private double computeOutputWidth() {
-        return this.sr / scaleDegPerPixelWidth;
+        return this.getWidthDeg() / scaleDegPerPixelWidth;
     }
     /**
      * Computes the number of pixels along the height axis as the result of the cutOut.
      * @return the number of pixels along the height axis as the result of the cutOut
      */
     private double computeOutputHeight() {
-        return this.sr / scaleDegPerPixelHeight;
+        return this.getHeightDeg() / scaleDegPerPixelHeight;
     }
     /**
      * Returns the WCS after readinf an ImageHDU.
@@ -375,19 +420,19 @@ public class CutOutSITools2 implements CutOutInterface {
      */
     private ImageHDU cutOutFitsProcessing() throws CutOutException {
         try {
-            final ImageHDU originHdu = fits.getImageHDU();
-            Object obj = this.fits.getImageHDU().getTiler().getTile(this.corners, this.lengths);
-            obj = Utility.array1DTo2D(obj, originHdu.getBitPix(), this.lengths[WIDTH], this.lengths[HEIGHT]);
+            final ImageHDU originHdu = getFits().getImageHDU();
+            Object obj = this.getFits().getImageHDU().getTiler().getTile(this.corners, this.lengths);
+            obj = Utility.array1DTo2D(obj, originHdu.getBitPix(), this.lengths[getWidth()], this.lengths[getHeight()]);
             final ImageData imgData = new ImageData(obj);
             final ImageHDU imageHDU = (ImageHDU) Fits.makeHDU(imgData);
-            imageHDU.addValue("NAXIS1", this.lengths[WIDTH], null);
-            imageHDU.addValue("NAXIS2", this.lengths[HEIGHT], null);
+            imageHDU.addValue("NAXIS1", this.lengths[getWidth()], null);
+            imageHDU.addValue("NAXIS2", this.lengths[getHeight()], null);
             imageHDU.addValue("CRPIX1", originHdu.getHeader().getDoubleValue("CRPIX1") - computeShiftCrpixWidth() , null);
             imageHDU.addValue("CRPIX2", originHdu.getHeader().getDoubleValue("CRPIX2") - computeShiftCrpixHeight(), null);
             imageHDU.addValue("CREATOR", "SITools2", "http://sitools2.sourceforge.net");
             propagateKeywords(originHdu.getHeader(), imageHDU);
             imageHDU.getHeader().insertHistory("CUT FITS DATE : " + GregorianCalendar.getInstance().getTime().toString());
-            imageHDU.getHeader().insertHistory(String.format("CUT FITS query (ra,dec,sr) = (%s,%s,%s)", this.ra, this.dec, this.sr));
+            imageHDU.getHeader().insertHistory(String.format("CUT FITS query (ra,dec,width, height) = (%s,%s,%s,%s)", this.getRa(), this.getDec(), this.getWidthDeg(), this.getHeightDeg()));
             return imageHDU;
         } catch (IOException ex) {
             throw new CutOutException(ex);
@@ -456,16 +501,22 @@ public class CutOutSITools2 implements CutOutInterface {
     }
 
     @Override
-    public void createCutoutPreview(OutputStream os) throws CutOutException {
-        createCutoutPreview(os, Float.NaN);
+    public final void createCutoutPreview(final OutputStream outputStream) throws CutOutException {
+        createCutoutPreview(outputStream, Float.NaN);
     }
 
-    public final void createCutoutPreview(final OutputStream os, final float scaleFactor) throws CutOutException {
+    /**
+     * Creates cutout preview.
+     * @param outputStream output stream
+     * @param scaleFactor factor to scale images
+     * @throws CutOutException when an error happend during the processing
+     */
+    public final void createCutoutPreview(final OutputStream outputStream, final float scaleFactor) throws CutOutException {
         this.setFormatOutput(SupportedFileFormat.JPEG);
         try {
             Raster raster;
             if (getIsDataCube()) {
-                final double[][] data = ((double[][][]) fits.getImageHDU().getData().getData())[this.deepLevel];
+                final double[][] data = ((double[][][]) getFits().getImageHDU().getData().getData())[this.getDeepLevel()];
                 final ImageData imgData = new ImageData(data);
                 final BasicHDU bHdu = Fits.makeHDU(data);
                 final Header hdr = bHdu.getHeader();
@@ -477,25 +528,24 @@ public class CutOutSITools2 implements CutOutInterface {
                 final FITSImage fitsImage = new FITSBufferedImage(bufferedImage, FITSBufferedImage.SCALE_LINEAR);
                 raster = fitsImage.getData();
             } else {
-                raster = fits.getData();
+                raster = getFits().getData();
             }
             final BufferedImage newimage = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_INT_RGB);
             newimage.setData(raster);
-            final PlanarImage p = PlanarImage.wrapRenderedImage(newimage);
-            final ParameterBlock pb = new ParameterBlock();
-            pb.addSource(p);
-            pb.add((float) this.corners[WIDTH]);
-            pb.add((float) this.corners[HEIGHT]);
-            pb.add((float) this.lengths[WIDTH]);
-            pb.add((float) this.lengths[HEIGHT]);
-            PlanarImage pI = JAI.create("crop", pb);
-            pI = flip(pI);
+            final PlanarImage planarImageWrap = PlanarImage.wrapRenderedImage(newimage);
+            final ParameterBlock parameterBlock = new ParameterBlock();
+            parameterBlock.addSource(planarImageWrap);
+            parameterBlock.add((float) this.corners[getWidth()]);
+            parameterBlock.add((float) this.corners[getHeight()]);
+            parameterBlock.add((float) this.lengths[getWidth()]);
+            parameterBlock.add((float) this.lengths[getHeight()]);
+            PlanarImage planarImage = JAI.create("crop", parameterBlock);
+            planarImage = flip(planarImage);
             if (scaleFactor > 0) {
-                pI = (PlanarImage) scaleParameter(pI, scaleFactor);
+                planarImage = (PlanarImage) scaleParameter(planarImage, scaleFactor);
             }
-            
             try {
-                ImageIO.write(pI, "jpeg", os);
+                ImageIO.write(planarImage, "jpeg", outputStream);
             } catch (IOException ex) {
                 throw new CutOutException(ex);
             }
@@ -539,31 +589,31 @@ public class CutOutSITools2 implements CutOutInterface {
     @Override
     public final boolean getIsDataCube() {
         try {
-            return (this.fits.getImageHDU().getAxes().length == 3) ? true : false;
+            return (this.getFits().getImageHDU().getAxes().length == 3);
         } catch (FitsException ex) {
             throw new RuntimeException("Error when loading the number of axis in the FITS header");
         }
     }
 
     @Override
-    public final void createCutoutFits(final OutputStream os) throws CutOutException {
+    public final void createCutoutFits(final OutputStream outputStream) throws CutOutException {
         this.setFormatOutput(SupportedFileFormat.FITS);
-        DataOutputStream dos = null;
+        DataOutputStream dataOutputStream = null;
         try {
             final ImageHDU imageHdu = cutOutFitsProcessing();
             final Fits outputFits = new Fits();
             outputFits.addHDU(imageHdu);
-            dos = new DataOutputStream(os);
-            outputFits.write(dos);
+            dataOutputStream = new DataOutputStream(outputStream);
+            outputFits.write(dataOutputStream);
             try {
-                dos.close();
+                dataOutputStream.close();
             } catch (IOException ex) {
                 Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (FitsException ex) {
-            if (dos != null) {
+            if (dataOutputStream != null) {
                 try {
-                    dos.close();
+                    dataOutputStream.close();
                 } catch (IOException ex1) {
                     Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex1);
                 }
@@ -595,4 +645,131 @@ public class CutOutSITools2 implements CutOutInterface {
 //      throw new CutOutException("Problem when GIF creation");
 //  }
 
+    /**
+     * Returns the FITS.
+     * @return the fits
+     */
+    public final FITSImage getFits() {
+        return fits;
+    }
+
+    /**
+     * Sets the FITS.
+     * @param fitsVal the fits to set
+     */
+    private void setFits(final FITSImage fitsVal) {
+        this.fits = fitsVal;
+    }
+
+    /**
+     * Returns the right ascension.
+     * @return the ra
+     */
+    public final double getRa() {
+        return ra;
+    }
+
+    /**
+     * Sets the right ascension.
+     * @param raVal the ra to set
+     */
+    private void setRa(final double raVal) {
+        this.ra = raVal;
+    }
+
+    /**
+     * Returns the declination.
+     * @return the dec
+     */
+    public final double getDec() {
+        return dec;
+    }
+
+    /**
+     * Sets the declination.
+     * @param decVal the dec to set
+     */
+    private void setDec(final double decVal) {
+        this.dec = decVal;
+    }
+
+    /**
+     * Returns the width in degree.
+     * @return the widthDeg
+     */
+    public final double getWidthDeg() {
+        return widthDeg;
+    }
+
+    /**
+     * Sets the width in degree.
+     * @param widthDegVal the widthDeg to set
+     */
+    private void setWidthDeg(final double widthDegVal) {
+        this.widthDeg = widthDegVal;
+    }
+
+    /**
+     * Returns the height in degree.
+     * @return the heightDeg
+     */
+    public final double getHeightDeg() {
+        return heightDeg;
+    }
+
+    /**
+     * Sets the height in degree.
+     * @param heightDegVal the heightDeg to set
+     */
+    private void setHeightDeg(final double heightDegVal) {
+        this.heightDeg = heightDegVal;
+    }
+
+    /**
+     * Returns the deep level.
+     * @return the deepLevel
+     */
+    public final int getDeepLevel() {
+        return deepLevel;
+    }
+
+    /**
+     * Sets the deep level.
+     * @param deepLevelVal the deepLevel to set
+     */
+    private void setDeepLevel(final int deepLevelVal) {
+        this.deepLevel = deepLevelVal;
+    }
+
+    /**
+     * Returns the height.
+     * @return the height
+     */
+    private int getHeight() {
+        return height;
+    }
+
+    /**
+     * Sets the height index number.
+     * @param heightVal the height to set
+     */
+    private void setHeight(final int heightVal) {
+        this.height = heightVal;
+    }
+
+    /**
+     * Returns the width index number.
+     * @return the width
+     */
+    private int getWidth() {
+        return width;
+    }
+
+    /**
+     * Sets the width index number.
+     * @param widthVal the width to set
+     */
+    private void setWidth(final int widthVal) {
+        this.width = widthVal;
+    }
 }

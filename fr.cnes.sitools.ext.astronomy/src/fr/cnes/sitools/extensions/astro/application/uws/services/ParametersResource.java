@@ -45,12 +45,12 @@ import org.restlet.resource.ResourceException;
 
 /**
  * Resource to handle Parameters
- * @author Jean-Chirstophe Malapert
+ * @author Jean-Chirstophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ParametersResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         setName("Parameters Resource");
         setDescription("This resource handles job parameters");
@@ -58,33 +58,50 @@ public class ParametersResource extends BaseJobResource {
 
 
     /**
-     * Get parameters
+     * Returns parameters as XML format.
+     * <p>
+     * Returns a HTTP Status 404 when jobId is unknown.
+     * Returns a HTTP Status 500 for an Internal Server Error
+     * </p>
      * @return Returns Parameters representation
-     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Get("xml")
-    public Representation getParameters() {
-        return new JobParametersRepresentation(this.getJobTask(),true);
+    public final Representation getParametersToXML() {
+        return new JobParametersRepresentation(this.getJobTask(), true);
     }
+    
+    /**
+     * Returns parameters as JSON format
+     * <p>
+     * Returns a HTTP Status 404 when jobId is unknown.
+     * Returns a HTTP Status 500 for an Internal Server Error
+     * </p>     
+     * @return Returns Parameters representation
+     */
+    @Get("json")
+    public final Representation getParametersToJSON() {
+        return new JobParametersRepresentation(this.getJobTask(),true, MediaType.APPLICATION_JSON);
+    }    
 
     /**
-     * Set Parameters
+     * Sets the Parameters.
+     * <p>
+     * Returns a HTTP Status 400 when jobId is unknown.
+     * Returns a HTTP Status 403 when the operation is not allowed.
+     * Returns a HTTP Status 404 when form is not valid.
+     * Returns a HTTP Status 500 for an Internal Server Error.
+     * </p>
      * @param form Parameters to set through a form
-     * @exception ResourceException Returns a HTTP Status 400 when jobId is unknown
-     * @exception ResourceException Returns a HTTP Status 403 when the operation is not allowed
-     * @exception ResourceException Returns a HTTP Status 404 when form is not valid
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
      */
     @Post("form")
-    public void setParameters(Form form) {
+    public final void setParameters(final Form form) {
         try {
             if (isValidAction()) {
-                Parameters parameters = new Parameters();
-                Iterator<org.restlet.data.Parameter> iterParam = form.iterator();
+                final Parameters parameters = new Parameters();
+                final Iterator<org.restlet.data.Parameter> iterParam = form.iterator();
                 while (iterParam.hasNext()) {
-                    org.restlet.data.Parameter parameterData = iterParam.next();
-                    Parameter parameter = new Parameter();
+                    final org.restlet.data.Parameter parameterData = iterParam.next();
+                    final Parameter parameter = new Parameter();
                     parameter.setId(parameterData.getName());
                     if (parameterData.getValue().startsWith("http://")) {
                         parameter.setByReference(Boolean.TRUE);
@@ -101,33 +118,38 @@ public class ParametersResource extends BaseJobResource {
             }
             this.redirectToJobID();
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+            throw new ResourceException(ex.getStatus(), ex);
         }
     }
 
+    /**
+     * Checks if the parameter can be get according to the phase.
+     * @return <code>True</code> when the parameter can be get otherwise <code>false</code>
+     * @throws UniversalWorkerException 
+     */
     protected final boolean isValidAction() throws UniversalWorkerException {
-        ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
-        return (phase.equals(phase.EXECUTING)) ? false : true;
+        final ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
+        return !(phase.equals(ExecutionPhase.EXECUTING));
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Parameters Resource");
         setDescription("This resource handles job parameters");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get Job parameters");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("uws:parameters");
         repInfo.setMediaType(MediaType.TEXT_XML);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("Parameters");
         docInfo.setTextContent("the list of input parameters to the job - if the job description language does not naturally have parameters, then this list should contain one element which is the content of the original POST that created the job.");
         repInfo.setDocumentation(docInfo);
@@ -145,8 +167,8 @@ public class ParametersResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");
@@ -157,7 +179,7 @@ public class ParametersResource extends BaseJobResource {
     }
 
     @Override
-    protected void describePost(MethodInfo info) {
+    protected final void describePost(final MethodInfo info) {
         info.setName(Method.POST);
         info.setDocumentation("Add new parameters");
 
@@ -184,8 +206,8 @@ public class ParametersResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");

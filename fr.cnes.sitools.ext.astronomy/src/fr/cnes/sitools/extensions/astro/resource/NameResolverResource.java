@@ -126,7 +126,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             Validation validationAttributes = new InputsAttributesValidation(getRequestAttributes());
             validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "objectName");
             validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "coordSystem");
-            StatusValidation status = validationAttributes.validate();
+            final StatusValidation status = validationAttributes.validate();
             if (status.isValid()) {
                 final Map<String, String> requestInputs = validationAttributes.getMap();
                 this.objectName = Reference.decode(requestInputs.get("objectName"));

@@ -55,11 +55,17 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 /**
+ * Implements a FIT cutout in a UWS service.
+ * <p>
+ * Here is an example to run the cutout from a UWS service
+ * <code>
  * curl -v -X POST -d
- * "PHASE=RUN&uri=/sitools/datastorage/user/tmp/test.fits&ra=57&dec=88&radius=1"
+ * "PHASE=RUN&uri=http://localhost:8182/sitools/datastorage/user/tmp/test.fits&rightAscension=57&declination=88&radius=1"
  * "http://localhost:8182/uws"
+ * </code>
+ * </p>
  *
- * @author malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CutOut extends AbstractJobTask {
 
@@ -124,23 +130,48 @@ public class CutOut extends AbstractJobTask {
         }        
     }
 
-    private List<String> createJob() throws CutOutException, MalformedURLException, FitsException, FileNotFoundException {        
-        
+    /**
+     * Runs the cutout and returns the filename of the created files.
+     * @return the cutout and returns the filename of the created files
+     * @throws CutOutException when a cutout probem occurs
+     * @throws MalformedURLException when the URL of the input file is wrong
+     * @throws FitsException when a Fits error happens
+     * @throws FileNotFoundException when the file is not found
+     */
+    private List<String> createJob() throws CutOutException, MalformedURLException, FitsException, FileNotFoundException {                
         final String uri = getParameterValue("uri");
         setOwnerId(getJobOwner(new URL(uri)));
-        final double ra = Double.valueOf(getParameterValue("ra"));
-        final double dec = Double.valueOf(getParameterValue("dec"));
+        final double rightAscension = Double.valueOf(getParameterValue("ra"));
+        final double declination = Double.valueOf(getParameterValue("dec"));
         final double radius = Double.valueOf(getParameterValue("radius"));
-        final CutOutSITools2 cutout = new CutOutSITools2(new Fits(uri), ra, dec, radius);
+        final CutOutSITools2 cutout = new CutOutSITools2(new Fits(uri), rightAscension, declination, radius);
         final String outputFileJpeg = getStoragePathJob() + File.separator + getNameFrom(new URL(uri), "jpeg");
         final File fileJpeg = new File(outputFileJpeg);
-        cutout.createCutoutPreview(new FileOutputStream(fileJpeg));
+        FileOutputStream fos = new FileOutputStream(fileJpeg);
+        cutout.createCutoutPreview(fos);
+        try {
+            fos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+        }
         final String outputFileFits = getStoragePathJob() + File.separator + getNameFrom(new URL(uri), "fits");
-        final File fileFits = new File(outputFileFits);        
-        cutout.createCutoutFits(new FileOutputStream(fileFits));
+        final File fileFits = new File(outputFileFits);
+        fos = new FileOutputStream(fileFits);
+        cutout.createCutoutFits(fos);
+        try {
+            fos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return Arrays.asList(getNameFrom(new URL(uri), "fits"), getNameFrom(new URL(uri), "jpeg"));
     }
 
+    /**
+     * Returns the filename from an URL without the extension and add an extension
+     * @param url URL of the FITS file
+     * @param ext Extension of the output file
+     * @return the filename
+     */
     private String getNameFrom(final URL url, final String ext) {
         final String filename = url.getFile();
         final int slashIndex = filename.lastIndexOf('/');
@@ -148,23 +179,32 @@ public class CutOut extends AbstractJobTask {
         return filenameWithoutExt + "." + ext;
     }
 
+    /**
+     * Returns the job owner from the URL.
+     * @param url url
+     * @return the job owner
+     */
     private String getJobOwner(final URL url) {
         return url.getUserInfo();
     }
 
+    /**
+     * Creates the UWS results.
+     * @param filenameList filenames to add in the result
+     */
     private void createResults(final List<String> filenameList) {
-        final Results r = new Results();
-        for (String filename:filenameList) {
-            final ResultReference rf = new ResultReference();
-            rf.setId(filename);
-            rf.setHref(getStoragePublicUrl() + "/" + getJobTaskId() + "/" + filename);
-            r.getResult().add(rf);
+        final Results uwsResults = new Results();
+        for (final String filename:filenameList) {
+            final ResultReference resultReference = new ResultReference();
+            resultReference.setId(filename);
+            resultReference.setHref(getStoragePublicUrl() + "/" + getJobTaskId() + "/" + filename);
+            uwsResults.getResult().add(resultReference);
         }
-        setResults(r);
+        setResults(uwsResults);
     }
     
     @Override
-    public Job getCapabilities() {
+    public final Job getCapabilities() {
         final ObjectFactory objFactory = new ObjectFactory();
         final Job job = objFactory.createJob();
         // Create geometry

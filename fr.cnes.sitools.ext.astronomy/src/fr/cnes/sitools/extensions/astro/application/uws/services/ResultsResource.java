@@ -36,48 +36,64 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle Results
- * @author Jean-Christophe Malapert
+ * Resource to handle job Results.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ResultsResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         setName("Results Resource");
         setDescription("This resource handles job results");
     }
 
     /**
-     * Get results
-     * @return Returns results representation
-     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Returns the results as XML format.
+     * <p>
+     * ResourceException Returns a HTTP Status 404 when jobId is unknown.
+     * ResourceException Returns a HTTP Status 500 for an Internal Server Error.
+     * </p>
+     * @return results representation
      */
-    @Get
-    public Representation getResults() {
+    @Get("xml")
+    public final Representation getResultsToXML() {
         setStatus(Status.SUCCESS_OK);
-        return new JobResultsRepresentation(getJobTask(),true);
+        return new JobResultsRepresentation(getJobTask(), true);
     }
+    
+    /**
+     * Returns the results as JSON format.
+     * <p>
+     * Returns a HTTP Status 404 when jobId is unknown.
+     * Returns a HTTP Status 500 for an Internal Server Error.
+     * </p>
+     * @return results representation
+     */
+    @Get("json")
+    public final Representation getResultsToJSON() {
+        setStatus(Status.SUCCESS_OK);
+        return new JobResultsRepresentation(getJobTask(), true, MediaType.APPLICATION_JSON);
+    }    
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Results Resource");
         setDescription("This resource handles job results");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Getting Job results");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("uws:results");
         repInfo.setMediaType(MediaType.TEXT_XML);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("Results");
         docInfo.setTextContent("Results for the job");
         repInfo.setDocumentation(docInfo);
@@ -95,8 +111,8 @@ public class ResultsResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");

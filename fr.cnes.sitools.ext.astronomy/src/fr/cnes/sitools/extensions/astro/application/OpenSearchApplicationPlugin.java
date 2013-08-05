@@ -43,7 +43,7 @@ import org.restlet.routing.Template;
  * server by the use of (Healpix,order) parameters and it returns a GeoJson
  * file. </p>.
  *
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
 

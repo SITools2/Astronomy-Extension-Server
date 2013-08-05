@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
+import java.util.logging.Logger;
 import org.restlet.data.Status;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
@@ -36,37 +37,73 @@ import org.restlet.resource.ResourceException;
  */
 public class StoreObject extends SitoolsParameterizedResource {
 
+    /**
+     * Uws application.
+     */
     private UwsApplicationPlugin app;
-    private static final String cachedFileName = "save.xml";
+    /**
+     * The file where the Job manager saves its content.
+     */
+    private static final String CACHED_FILENAME = "save.xml";
+    /**
+    * Logger.
+    */
+    private static final Logger LOG = Logger.getLogger(StoreObject.class.getName());
+    
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
-        this.app = (UwsApplicationPlugin) getApplication();
+        this.setApp((UwsApplicationPlugin) getApplication());
     }
 
     /**
-     * Jobs caching. This methods handles conccurent access by the use of FileLock object
+     * Jobs caching. 
+     * <p>
+     * This methods handles conccurent access by the use of FileLock object
+     * </p>
      * @param object XML representation of the cache
      */
     @Post
-    public void acceptObject(String object) throws IOException {
+    public final void acceptObject(final String object) throws IOException {
+        LOG.finest(object);
         FileOutputStream fout = null;
         FileLock lock = null;
         try {
-            fout = new FileOutputStream(this.app.getStorageDirectory() + File.separator + cachedFileName);
+            fout = new FileOutputStream(this.getApp().getStorageDirectory() + File.separator + CACHED_FILENAME);
             lock = fout.getChannel().lock();
             fout.write(object.getBytes());
         } catch (FileNotFoundException ex) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL,ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IOException ex) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL,ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } finally {
             try {
-                fout.close();
-                lock.release();
-            } catch (IOException ex) {                
+                if (fout != null) {
+                    fout.close();
+                }
+                if (lock != null) {
+                    lock.release();
+                }
+            } catch (IOException ex) {
+                LOG.fine(ex.getMessage());
             }
         }
+    }
+
+    /**
+     * Returns the Uws application.
+     * @return the app
+     */
+    private UwsApplicationPlugin getApp() {
+        return app;
+    }
+
+    /**
+     * Sets the Uws application.
+     * @param app the app to set
+     */
+    private void setApp(final UwsApplicationPlugin app) {
+        this.app = app;
     }
 }

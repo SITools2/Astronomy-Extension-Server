@@ -73,12 +73,33 @@ public class CutOutResource extends SitoolsParameterizedResource {
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(CutOutResource.class.getName());
+    /**
+     * Right ascension as input.
+     */
     private transient double rightAscension;
+    /**
+     * Declination as input.
+     */
     private transient double declination;
+    /**
+     * Radius as input.
+     */
     private transient double radius;
+    /**
+     * hdu number to load.
+     */
     private transient int hduNumber;
+    /**
+     * Z index of the cube.
+     */
     private transient int cubeIndex;
+    /**
+     * Data storage where the result is stored.
+     */
     private transient String dataSorageName;
+    /**
+     * Output format of the result.
+     */
     private transient String outputFormat;
 
     /**

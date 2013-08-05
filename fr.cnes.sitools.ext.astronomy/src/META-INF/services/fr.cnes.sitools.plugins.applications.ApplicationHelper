@@ -3,3 +3,4 @@ fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchApplicationPl
 fr.cnes.sitools.extensions.astro.application.OpenSearchVOSiaSearchApplicationPlugin
 fr.cnes.sitools.extensions.astro.application.ProxyHealpixCacheApplicationPlugin
 fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin
+fr.cnes.sitools.extensions.astro.application.ShorteningUrlApplicationPlugin

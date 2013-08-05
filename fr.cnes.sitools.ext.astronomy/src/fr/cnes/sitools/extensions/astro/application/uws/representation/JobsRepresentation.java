@@ -20,13 +20,11 @@ package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.QNameMap;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -35,46 +33,76 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import net.ivoa.xml.uws.v1.JobSummary;
 import net.ivoa.xml.uws.v1.Jobs;
 import net.ivoa.xml.uws.v1.ShortJobDescription;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for ShortJobDescription object
- * @author Jean-Christophe Malapert
+ * Representation for ShortJobDescription object.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @see ShortJobDescription
  */
-public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.application.uws.representation.XstreamRepresentation {
+public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.application.uws.representation.AbstractXstreamRepresentation {
 
     /**
-     * Jobs representation
-     * @param referenceIdentifier
-     * @param jobTasks JobTask
-     * @param isUsedDestructionDate
+     * Constructor.
+     * @param referenceIdentifier reference identifier
+     * @param jobTasks List of jobs 
+     * @param isUsedDestructionDate the destruction time is set
      * @throws ResourceException Internal Server Error (500)
      */
-    public JobsRepresentation(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks, boolean isUsedDestructionDate) throws ResourceException {
+    public JobsRepresentation(final String referenceIdentifier, final Map<String, AbstractJobTask> jobTasks, final boolean isUsedDestructionDate) throws ResourceException {
         super();
         init(referenceIdentifier, jobTasks, isUsedDestructionDate);
     }
 
     /**
-     *
-     * @param referenceIdentifier
-     * @param jobTasks
+     * Constructor.
+     * @param referenceIdentifier reference identifier
+     * @param jobTasks list of jobs
+     * @param isUsedDestructionDate the desctruction time is set
+     * @param mediaType media Type
      * @throws ResourceException Internal Server Error (500)
      */
-    public JobsRepresentation(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks) throws ResourceException{
+    public JobsRepresentation(final String referenceIdentifier, final Map<String, AbstractJobTask> jobTasks, final boolean isUsedDestructionDate, final MediaType mediaType) throws ResourceException {
+        super(mediaType, null);
+        init(referenceIdentifier, jobTasks, isUsedDestructionDate);
+    }    
+
+    /**
+     * Constructor.
+     * @param referenceIdentifier reference identifier
+     * @param jobTasks list of jobs
+     * @throws ResourceException Internal Server Error (500)
+     */
+    public JobsRepresentation(final String referenceIdentifier, final Map<String, AbstractJobTask> jobTasks) throws ResourceException{
         this(referenceIdentifier, jobTasks, false);
     }
+    
+    /**
+     * Constructor.
+     * @param referenceIdentifier reference identifier
+     * @param jobTasks list of jobs
+     * @param mediaType media type
+     * @throws ResourceException Internal Server Error (500)
+     */
+    public JobsRepresentation(final String referenceIdentifier, final Map<String, AbstractJobTask> jobTasks, final MediaType mediaType) throws ResourceException{
+        this(referenceIdentifier, jobTasks, false, mediaType);
+    }    
 
-    private void init(String referenceIdentifier, Map<String, AbstractJobTask> jobTasks, boolean isUsedDestructionDate) {
-        Date currentDate = new Date();
-        Jobs jobs = new Jobs();
-        List<ShortJobDescription> shortJobsDescription = jobs.getJobref();
-        Iterator<String> iterJobTasks = jobTasks.keySet().iterator();
-        while (iterJobTasks.hasNext()) {
-            String jobKey = iterJobTasks.next();
-            AbstractJobTask jobTask = jobTasks.get(jobKey);
+    /**
+     * Init
+     * @param referenceIdentifier reference identifier
+     * @param jobTasks list of jobs
+     * @param isUsedDestructionDate descruction time is set
+     */
+    private void init(final String referenceIdentifier, final Map<String, AbstractJobTask> jobTasks, final boolean isUsedDestructionDate) {
+        final Date currentDate = new Date();
+        final Jobs jobs = new Jobs();
+        final List<ShortJobDescription> shortJobsDescription = jobs.getJobref();
+        for (final Map.Entry<String, AbstractJobTask> entryAbstractJobTask : jobTasks.entrySet()) { 
+            final String jobKey = entryAbstractJobTask.getKey();
+            final AbstractJobTask jobTask = entryAbstractJobTask.getValue();
 
             if (isUsedDestructionDate) {
                 try {
@@ -84,32 +112,36 @@ public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.applica
                     } catch (DatatypeConfigurationException ex) {
                         throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, "Cannot convert the current date into XML Gregorian");
                     }
-                    int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
+                    final int val = calendar.compare(JobTaskManager.getInstance().getDestructionTime(jobTask));
                     if (val == DatatypeConstants.GREATER) {
                         JobTaskManager.getInstance().deleteTask(jobTask);
                         this.setObject(null);
                     } else {
-                        JobSummary jobSummary = jobTask.getJobSummary();
+                        final JobSummary jobSummary = jobTask.getJobSummary();
                         addJobDescription(referenceIdentifier, jobSummary, shortJobsDescription);
                     }
                 } catch (UniversalWorkerException ex) {
-                    throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+                    throw new ResourceException(ex);
                 }
             } else {
-                JobSummary jobSummary = jobTask.getJobSummary();
+                final JobSummary jobSummary = jobTask.getJobSummary();
                 addJobDescription(referenceIdentifier, jobSummary, shortJobsDescription);
             }
         }
         this.setObject(jobs);
-        XStream xstream = configureXStream();
+        final XStream xstream = configureXStream();
         this.setXstream(xstream);
     }
-
-    protected XStream configureXStream() {
-        QNameMap qnm = new QNameMap();
+    /**
+     * Configures XStream.
+     * @return xstream
+     */
+    protected final XStream configureXStream() {
+        final QNameMap qnm = new QNameMap();
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
-        qnm.setDefaultPrefix("uws");
-        XStream xstream = new XStream(new StaxDriver(qnm));
+        qnm.setDefaultPrefix("uws");        
+        createXstream(getMediaType(), qnm);
+        final XStream xstream = getXstream();
         xstream.alias("jobs", Jobs.class);
         xstream.alias("jobref", ShortJobDescription.class);
         xstream.useAttributeFor(ShortJobDescription.class, "id");
@@ -118,13 +150,14 @@ public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.applica
         return xstream;
     }
 
-    protected String fixXStreamBug(String representation) {
-        representation = representation.replaceFirst("uws:jobs xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\"", "uws:jobs xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/UWS/v1.0 http://ivoa.net/xml/UWS/UWS-v1.0.xsd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
-        return representation.replaceAll("href=", "xlink:href=");
-    }
-
-    private void addJobDescription(String referenceIdentifier, JobSummary jobSummary, List<ShortJobDescription> shortJobsDescription) {
-        ShortJobDescription shortJobDescription = new ShortJobDescription();
+    /**
+     * Adds job dscription.
+     * @param referenceIdentifier reference identifier
+     * @param jobSummary job summary
+     * @param shortJobsDescription short description
+     */
+    private void addJobDescription(final String referenceIdentifier, final JobSummary jobSummary, final List<ShortJobDescription> shortJobsDescription) {
+        final ShortJobDescription shortJobDescription = new ShortJobDescription();
         shortJobDescription.setId(jobSummary.getJobId());
         shortJobDescription.setPhase(jobSummary.getPhase());
         shortJobDescription.setHref(referenceIdentifier + Constants.SLASH + jobSummary.getJobId());

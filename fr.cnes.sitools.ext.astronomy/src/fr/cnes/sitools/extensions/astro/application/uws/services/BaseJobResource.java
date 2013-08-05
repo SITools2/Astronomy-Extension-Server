@@ -24,24 +24,32 @@ import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 
 /**
- *
- * @author malapert
+ * Initializes all resources.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class BaseJobResource extends SitoolsParameterizedResource {    
     
+    /**
+     * Uws application.
+     */
     protected UwsApplicationPlugin app = null;
     /**
-     * JobId requested by the user
+     * JobId requested by the user.
      */
     protected String requestedJobId = null;        
 
     @Override
     public void doInit() {
         super.doInit();
+        setNegotiated(true);
+        getMetadataService().addExtension("json", MediaType.APPLICATION_JSON);
+        getMetadataService().addExtension("xml", MediaType.TEXT_XML);
+        getMetadataService().setDefaultMediaType(MediaType.TEXT_XML);
         this.app = (UwsApplicationPlugin) getApplication();
         this.requestedJobId = (String) getRequestAttributes().get("job-id");
         this.setAutoDescribing(false);
@@ -51,45 +59,44 @@ public class BaseJobResource extends SitoolsParameterizedResource {
     }
 
     /**
-     * Redirection to /{jobs}/{jobId}
+     * Redirection to /{jobs}/{jobId}.
      */
-    protected void redirectToJobID() {
+    protected final void redirectToJobID() {
         redirectSeeOther(new Reference(getReference().getIdentifier() + Constants.SLASH + getRequestedJobId()));
     }    
     
     /**
-     * Redirection to /{jobs}
+     * Redirection to /{jobs}.
      */
-    protected void redirectToJobs() {
+    protected final void redirectToJobs() {
         redirectSeeOther(new Reference(getReference().getIdentifier()));
     }
 
     /**
-     * Get JobTask from the job task manager
-     * @return Returns JobTask Submitted task
+     * Returns JobTask from the job task manager.
+     * @return JobTask Submitted task
      */
-    protected AbstractJobTask getJobTask() {
+    protected final AbstractJobTask getJobTask() {
         try {
             return JobTaskManager.getInstance().getJobTaskById(getRequestedJobId());
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(),ex.getMessage(),ex.getCause());
+            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
         }
     }
 
     /**
-     * Get requested Job identifier asked by a user
-     * @return Returns the job identifier
+     * Returns requested Job identifier asked by a user.
+     * @return the job identifier
      */
-    protected String getRequestedJobId() {
+    protected final String getRequestedJobId() {
         return this.requestedJobId;
     }
 
     /**
-     * Set JobID
+     * Sets the JobID.
      * @param jobId JobID
      */
-    protected void setRequestedJobId(String jobId) {
+    protected final void setRequestedJobId(final String jobId) {
         this.requestedJobId = jobId;
-    }
-    
+    }    
 }

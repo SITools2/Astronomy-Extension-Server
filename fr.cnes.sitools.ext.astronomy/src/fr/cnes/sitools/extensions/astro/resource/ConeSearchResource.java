@@ -78,6 +78,7 @@ public class ConeSearchResource extends SitoolsParameterizedResource {
    */
   @Get
   public final Representation getVOResponse() {
+    LOG.info(this.getRequest().getEntityAsText());
     final ConeSearchProtocolLibrary coneSearch = new ConeSearchProtocolLibrary((DataSetApplication) this.getApplication(),
             this.getModel(), this.getRequest(), this.getContext());
     final Representation rep = coneSearch.getResponse();

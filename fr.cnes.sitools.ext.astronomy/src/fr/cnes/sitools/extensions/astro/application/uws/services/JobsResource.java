@@ -61,23 +61,33 @@ public class JobsResource extends BaseJobResource {
      */
     @Override
     public final void doInit() throws ResourceException {
-
-        super.doInit();
+        super.doInit();         
         this.app = (UwsApplicationPlugin) getApplication();
         setName("Jobs Resource");
         setDescription("This resource contains the whole list of job for which the current date is inferior to destruction date");
     }
-
+    
     /**
-     * Returns the list of jobs.
+     * Returns the list of Jobs as JSON format.
+     * @return the list of Jobs as JSON format
+     * @throws ResourceException a HTTP Status 500 for an Internal Server Error
+     */
+    @Get("json")
+    public final Representation getJobsToJSON() throws ResourceException {
+        setStatus(Status.SUCCESS_OK);
+        return new JobsRepresentation(getReference().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true, MediaType.APPLICATION_JSON);
+    } 
+    
+    /**
+     * Returns the list of jobs as XML format.
      * @return the JobSummary representation
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * @exception ResourceException a HTTP Status 500 for an Internal Server Error
      */
     @Get("xml")
-    public final Representation getJobs() throws ResourceException {
+    public final Representation getJobsToXML() throws ResourceException {
         setStatus(Status.SUCCESS_OK);
         return new JobsRepresentation(getReference().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true);
-    }
+    }       
 
     /**
      * Creates a Job.
@@ -88,11 +98,11 @@ public class JobsResource extends BaseJobResource {
     @Post("form")
     public final void acceptJob(final Representation entity) throws ResourceException {
         try {
-            final String jobTaskId = JobTaskManager.getInstance().createJobTask(entity);
+            final String jobTaskId = JobTaskManager.getInstance().createJobTask(this.app, entity);
             this.setRequestedJobId(jobTaskId);
             this.redirectToJobID();
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage());
+            throw new ResourceException(ex);
         }
     }
 
@@ -187,7 +197,7 @@ public class JobsResource extends BaseJobResource {
                 params.add(param);
                 final String radius = circle.getRadius().getName();
                 param = new ParameterInfo(radius, true, "xs:double", ParameterStyle.QUERY, circle.getRadius().getDocumentation());
-                params.add(param);                               
+                params.add(param);
             } else {
                 final Healpix hpx = geom.getHealpix();
                 final String order = hpx.getOrder().getName();
@@ -195,21 +205,21 @@ public class JobsResource extends BaseJobResource {
                 params.add(param);
                 final String pixels = hpx.getPixels().getName();
                 param = new ParameterInfo(pixels, true, "xs:long", ParameterStyle.QUERY, hpx.getPixels().getDocumentation());
-                params.add(param);                
+                params.add(param);
             }
         }
         final List<Image> images = inputs.getImage();
         for (final Image image : images) {
             final String imageParam = image.getName();
             final ParameterInfo param = new ParameterInfo(imageParam, true, "xs:anyURI", ParameterStyle.QUERY, image.getDocumentation());
-            params.add(param);            
+            params.add(param);
         }
         final List<Keyword> keywords = inputs.getKeyword();
         for (final Keyword keyword : keywords) {
             final String keywordParam = keyword.getName();
             final ParameterInfo param = new ParameterInfo(keywordParam, true, "xs:string", ParameterStyle.QUERY, keyword.getDocumentation());
-            params.add(param);             
+            params.add(param);
         }
-        return params;        
+        return params;
     }
 }

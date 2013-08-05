@@ -39,18 +39,21 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle ParameterName
- * @author Jean-Chirstophe Malapert
+ * Resource to handle ParameterName.
+ * @author Jean-Chirstophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ParameterNameResource extends BaseJobResource {
 
+    /**
+     * Parameter name to retrieve.
+     */
     private String parameterNameId = null;
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         this.parameterNameId = (String) getRequestAttributes().get("parameter-name");
-        CopyOnWriteArraySet<Method> allowedMethods = new CopyOnWriteArraySet<Method>();
+        final CopyOnWriteArraySet<Method> allowedMethods = new CopyOnWriteArraySet<Method>();
         allowedMethods.add(Method.GET);
         if (((UwsApplicationPlugin) getApplication()).isAllowedParameterNamePutMethod()) {
             allowedMethods.add(Method.PUT);
@@ -60,10 +63,13 @@ public class ParameterNameResource extends BaseJobResource {
         setDescription("This resource handles parameter value");
     }
 
-    /*
-     * Get the parameter value
-     * @exception ResourceException Returns a HTTP Status 404 when the jobId or parameter is not found
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+    /**
+     * Returns the parameter value.
+     * <p>
+     * a HTTP Status 404 when the jobId or parameter is not found
+     * a HTTP Status 500 for an Internal Server Error
+     * </p>
+     * @return the value.
      */
     @Get("plain")
     public Representation getParameterValue() {
@@ -71,19 +77,21 @@ public class ParameterNameResource extends BaseJobResource {
     }
 
     /**
-     * Set a value for a specific parameter
-     * @exception ResourceException Returns a HTTP Status 400 when the key is wrong
-     * @exception ResourceException Returns a HTTP Status 403 when the operation is not allowed
-     * @exception ResourceException Returns a HTTP Status 404 when the jobId or parameter is not found
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Sets a value for a specific parameter.
+     * <p>
+     * a HTTP Status 400 when the key is wrong
+     * a HTTP Status 404 when the jobId or parameter is not found
+     * a HTTP Status 500 for an Internal Server Error
+     * </p> 
+     * @param parameterValue the parameter value to update
      */
     @Put("plain")
-    public void updateParameterValue(String parameterValue) {
+    public final void updateParameterValue(final String parameterValue) {
         if (isValidAction()) {
             try {
                 JobTaskManager.getInstance().setParameter(getJobTask(), getParameterNameId(), parameterValue);
             } catch (UniversalWorkerException ex) {
-                throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+                throw new ResourceException(ex.getStatus(), ex);
             }
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "A parameter value cannot be set while the job is running");
@@ -91,34 +99,42 @@ public class ParameterNameResource extends BaseJobResource {
         this.redirectToJobID();
     }
 
+    /**
+     * Returns the parameter name.
+     * @return the parameter name
+     */
     protected final String getParameterNameId() {
         return this.parameterNameId;
     }
 
+    /**
+     * Checks if it is possible to update a parameter according to he phase.
+     * @return <code>True<code> when it is possible to update a parameter otherwise <code>false</code>
+     */
     protected final boolean isValidAction() {
         try {
-            ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
-            return (phase.equals(phase.EXECUTING)) ? false : true;
+            final ExecutionPhase phase = JobTaskManager.getInstance().getStatus(getJobTask());
+            return !(phase.equals(ExecutionPhase.EXECUTING));
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex.getStatus(), ex);
         }
     }
 
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("ParameterName Resource");
         setDescription("This resource handles parameter value");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get a parameter name");
 
         ResponseInfo responseInfo = new ResponseInfo();
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("xs:string");
         repInfo.setMediaType(MediaType.TEXT_PLAIN);
         repsInfo.add(repInfo);
@@ -137,7 +153,7 @@ public class ParameterNameResource extends BaseJobResource {
     }
 
     @Override
-    protected void describePut(MethodInfo info) {
+    protected final void describePut(final MethodInfo info) {
         info.setName(Method.PUT);
         info.setDocumentation("Change a parameter value");
 
@@ -167,9 +183,9 @@ public class ParameterNameResource extends BaseJobResource {
             responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
             info.getResponses().add(responseInfo);
 
-            RequestInfo request = new RequestInfo();
+            final RequestInfo request = new RequestInfo();
             request.setDocumentation("Value to set");
-            RepresentationInfo repInfo = new RepresentationInfo();
+            final RepresentationInfo repInfo = new RepresentationInfo();
             repInfo.setMediaType(MediaType.TEXT_PLAIN);
             request.getRepresentations().add(repInfo);
             info.setRequest(request);

@@ -73,14 +73,6 @@ public class JobTaskManager {
         return instance;
     }
 
-    /**
-     * Init the instance
-     * @param context Context
-     */
-    public void init(Context context) {
-        this.context = context;
-        this.app = (UwsApplicationPlugin) context.getAttributes().get(UwsApplicationPlugin.APP_UWS);
-    }
 
     /**
      * Get the job tasks
@@ -118,9 +110,10 @@ public class JobTaskManager {
      * @return Returns the generated job task identifier
      * @throws UniversalWorkerException Returns an server error internal
      */
-    public String createJobTask(Representation entity) throws UniversalWorkerException {
+    public String createJobTask(UwsApplicationPlugin app, Representation entity) throws UniversalWorkerException {
+        this.app = app;
         String jobTaskId = UUID.randomUUID().toString();      
-        AbstractJobTask jobTask = AbstractJobTask.create(app.getJobTaskImplementation(), context, jobTaskId, entity);
+        AbstractJobTask jobTask = AbstractJobTask.create(app, jobTaskId, entity);
         if(jobTask.getPhase().equals(ExecutionPhase.QUEUED)) {
             app.getTaskService().execute(jobTask);
         }

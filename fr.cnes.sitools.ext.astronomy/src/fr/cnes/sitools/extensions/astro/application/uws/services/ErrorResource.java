@@ -36,48 +36,50 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- * Resource to handle error
- * @author Jean-Christophe Malapert
+ * Resource to handle errors.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ErrorResource extends BaseJobResource {
 
     @Override
-    public void doInit() throws ResourceException {
+    public final void doInit() throws ResourceException {
         super.doInit();
         setName("Error Resource");
         setDescription("This resource handles error happening during the job processing");        
     }
 
     /**
-     * Get error
-     * @return Returns error representation
-     * @exception ResourceException Returns a HTTP Status 404 when jobId is unknown or error is undefined
-     * @exception ResourceException Returns a HTTP Status 500 for an Internal Server Error
+     * Returns the errors as a XML format.
+     * <p>
+     * a HTTP Status 404 when jobId is unknown or error is undefined.
+     * a HTTP Status 500 for an Internal Server Error
+     * </p>
+     * @return error representation
      */
     @Get("xml")
-    public Representation getError() {
+    public final Representation getErrorToXML() {
         return new JobErrorRepresentation(this.getJobTask(), true);
     }
-
+    
     @Override
-    protected Representation describe() {
+    protected final Representation describe() {
         setName("Error Resource");
         setDescription("This resource handles error happening during the job processing");
         return super.describe();
     }
 
     @Override
-    protected void describeGet(MethodInfo info) {
+    protected final void describeGet(final MethodInfo info) {
         info.setName(Method.GET);
         info.setDocumentation("Get the generated error");
 
         ResponseInfo responseInfo = new ResponseInfo();
         responseInfo.getStatuses().add(Status.SUCCESS_OK);
-        List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
-        RepresentationInfo repInfo = new RepresentationInfo();
+        final List<RepresentationInfo> repsInfo = new ArrayList<RepresentationInfo>();
+        final RepresentationInfo repInfo = new RepresentationInfo();
         repInfo.setXmlElement("uws:ErrorSummary");
         repInfo.setMediaType(MediaType.TEXT_XML);
-        DocumentationInfo docInfo = new DocumentationInfo();
+        final DocumentationInfo docInfo = new DocumentationInfo();
         docInfo.setTitle("ErrorSummary");
         docInfo.setTextContent("This is arbitrary information that can be added to the job description by the UWS implementation.");
         repInfo.setDocumentation(docInfo);
@@ -94,8 +96,8 @@ public class ErrorResource extends BaseJobResource {
         responseInfo.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
         info.getResponses().add(responseInfo);
 
-        RequestInfo request = new RequestInfo();
-        ParameterInfo param = new ParameterInfo();
+        final RequestInfo request = new RequestInfo();
+        final ParameterInfo param = new ParameterInfo();
         param.setStyle(ParameterStyle.TEMPLATE);
         param.setName("job-id");
         param.setDocumentation("job-id value");

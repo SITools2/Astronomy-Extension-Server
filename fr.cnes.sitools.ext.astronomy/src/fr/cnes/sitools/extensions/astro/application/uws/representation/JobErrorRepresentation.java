@@ -24,27 +24,34 @@ import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManage
 import org.restlet.resource.ResourceException;
 
 /**
- * Representation for ErrorSummary object
- * @author Jean-Christophe Malapert
+ * Representation for ErrorSummary object.
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @see ErrorSummary
  */
 public class JobErrorRepresentation extends JobQuoteRepresentation {
 
-    public JobErrorRepresentation(AbstractJobTask jobTask, boolean isUsedDestructionDate) {
+    /**
+     * Creates a new instance of JobError representation.
+     * @param jobTask job
+     * @param isUsedDestructionDate Defines if a destruction has been set
+     */
+    public JobErrorRepresentation(final AbstractJobTask jobTask, final boolean isUsedDestructionDate) {
         super(jobTask, isUsedDestructionDate);
     }
-
-    public JobErrorRepresentation(AbstractJobTask jobTask) {
+    /**
+     * Creates a new instance of ExcecutionDuration representation.
+     * @param jobTask job
+     */
+    public JobErrorRepresentation(final AbstractJobTask jobTask) {
         this(jobTask, false);
     }
 
     @Override
-    protected Object checkExistingJobTask(AbstractJobTask jobTask) throws ResourceException {
+    protected Object checkExistingJobTask(final AbstractJobTask jobTask) throws ResourceException {
         try {
-            String obj = JobTaskManager.getInstance().getError(jobTask).getMessage();
-            return obj;
+            return JobTaskManager.getInstance().getError(jobTask).getMessage();
         } catch (UniversalWorkerException ex) {
-            throw new ResourceException(ex.getStatus(), ex.getMessage(), ex.getCause());
+            throw new ResourceException(ex);
         }
     }
 }

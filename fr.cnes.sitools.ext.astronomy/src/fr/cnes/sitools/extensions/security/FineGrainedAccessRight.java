@@ -140,11 +140,11 @@ public class FineGrainedAccessRight extends Authorizer {
      * @throws SQLException SQL exception
      */
     private void setSqlParameters(final PreparedStatement stmt, final List<Role> roles, final String filename) throws SQLException {
-        stmt.setString(1, filename);        
+        stmt.setString(1, filename);
         int sqlParameterIndex = 2;
         for (Role role : roles) {
             stmt.setString(sqlParameterIndex++, role.getName());
-        }        
+        }
     }
 
     @Override

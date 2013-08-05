@@ -31,7 +31,7 @@ public class UniversalWorkerException extends Exception {
    * serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  private Status status;
+  private final Status status;
 
 
   /**
