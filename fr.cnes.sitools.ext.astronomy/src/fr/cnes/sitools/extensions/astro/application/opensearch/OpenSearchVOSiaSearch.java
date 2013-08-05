@@ -277,12 +277,8 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       final String url = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getModel().getParametersMap().get("siaSearchURL").getValue();
       this.query = new SIASearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
-        if (getRequestAttributes().containsKey("coordSystem")) {
-            this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(getRequestAttributes().get("coordSystem")));                    
-        } else {
-            throw new Exception("coordSystem attribute must exist.");
-        }          
         this.userParameters = new OpenSearchVOSiaSearch.UserParameters(getRequest().getResourceRef().getQueryAsForm());
+        this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(this.userParameters.getCoordSystem()));
         this.dico = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getDico();
       }
     } catch (Exception ex) {
@@ -373,6 +369,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
           for (int i=0 ; i<polygonCelest.length ; i = i +2) {
               astroCoordinates.setRaAsDecimal(polygonCelest[i]);
               astroCoordinates.setDecAsDecimal(polygonCelest[i+1]);              
+			  astroCoordinates.setCoordinateSystem(CoordinateSystem.EQUATORIAL);
               astroCoordinates.processTo(CoordinateSystem.GALACTIC);
               polygonCelest[i] = astroCoordinates.getRaAsDecimal();
               polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();              
@@ -571,7 +568,8 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       double declination = userParameters.getDec();
       if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
           AstroCoordinate astroCoordinates = new AstroCoordinate(rightAscension, declination);
-          astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
+          astroCoordinates.setCoordinateSystem(CoordinateSystem.GALACTIC);
+          astroCoordinates.processTo(CoordinateSystem.EQUATORIAL);
           rightAscension = astroCoordinates.getRaAsDecimal();
           declination = astroCoordinates.getDecAsDecimal();
       }      
@@ -633,7 +631,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @param radius radius of the cone
    * @param isEnabled cache enable or disable
    * @return the response from the cache or from the VO service
-   * @throws Exception - an error occurs dwhen calling the server
+   * @throws Exception - an error occurs when calling the server
    */
   private List<Map<Field, String>> useCacheHealpix(final SIASearchQuery siaQuery, final double rightAscension, final double declination, final double radius, final boolean isEnabled) throws Exception {
     final String applicationID = ((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getId();
@@ -811,6 +809,19 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     private static final double MULT_FACT = 1.5;
 
     /**
+     * Coordinate system
+     */
+    private transient String coordSystem;
+    
+    public String getCoordSystem() {
+    	return coordSystem;
+	}
+	
+	public void setCoordSystem(String coordSystem) {
+	  	this.coordSystem = coordSystem;
+	}
+    
+    /**
      * Constructor.
      *
      * @param form request parameters
@@ -842,6 +853,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       final String sizeInput = form.getFirstValue(SimpleImageAccessProtocolLibrary.SIZE);
       final String healpixInput = form.getFirstValue("healpix");
       final String orderInput = form.getFirstValue("order");
+      final String coordSystem = form.getFirstValue("coordSystem");
       if (raInput != null && decInput != null && sizeInput != null) {
         this.rightAscension = Double.valueOf(raInput);
         this.declination = Double.valueOf(decInput);
@@ -861,6 +873,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
         this.rightAscension = Math.toDegrees(pointing.phi);
         this.declination = MAX_DEC - Math.toDegrees(pointing.theta);
         this.size = pixRes * MULT_FACT;
+        this.coordSystem = coordSystem;
       } else {
         throw new Exception("wrong input parameters");
       }
@@ -952,6 +965,9 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
             "Healpix number"));
     parametersInfo.add(new ParameterInfo("order", true, "integer", ParameterStyle.QUERY,
             "Healpix order"));
+	final ParameterInfo coordSystem = new ParameterInfo("coordSystem", true, "string", ParameterStyle.QUERY,
+            "Healpix coordinate system");
+    parametersInfo.add(coordSystem);
     final ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
     json.setFixed("json");
     parametersInfo.add(json);

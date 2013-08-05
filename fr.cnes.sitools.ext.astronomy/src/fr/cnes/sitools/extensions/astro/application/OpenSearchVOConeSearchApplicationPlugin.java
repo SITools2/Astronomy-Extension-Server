@@ -218,7 +218,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     router.attachDefault(fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeDescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
-      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeSearch.class);
+      router.attach("/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeSearch.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeSearchDico.class);
       router.attach("/moc", fr.cnes.sitools.extensions.astro.application.opensearch.VoMocDescription.class);
       attachParameterizedResources(router);

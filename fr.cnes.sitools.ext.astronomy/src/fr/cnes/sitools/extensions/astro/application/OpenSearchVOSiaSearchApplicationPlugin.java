@@ -215,7 +215,7 @@ public class OpenSearchVOSiaSearchApplicationPlugin extends AbstractApplicationP
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSiaSearchDico.class);
-      router.attach("/{coordSystem}/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSiaSearch.class);
+      router.attach("/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSiaSearch.class);
       attachParameterizedResources(router);
     }
     return router;
