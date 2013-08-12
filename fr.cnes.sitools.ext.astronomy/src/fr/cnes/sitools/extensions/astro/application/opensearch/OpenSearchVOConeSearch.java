@@ -95,12 +95,8 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       final String url = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel().getParametersMap().get("coneSearchURL").getValue();
       this.query = new ConeSearchQuery(url);
       if (!getRequest().getMethod().equals(Method.OPTIONS)) {
-        if (getRequestAttributes().containsKey("coordSystem")) {
-            this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(getRequestAttributes().get("coordSystem")));                    
-        } else {
-            throw new Exception("coordSystem attribute must exist.");
-        }           
         this.userParameters = new UserParameters(getRequest().getResourceRef().getQueryAsForm());
+        this.coordinatesSystem = CoordinateSystem.valueOf(String.valueOf(this.userParameters.getCoordSystem()));
         this.dico = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getDico();
       }
     } catch (Exception ex) {
@@ -186,7 +182,8 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       double declination = userParameters.getDec();
       if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
           AstroCoordinate astroCoordinates = new AstroCoordinate(rightAscension, declination);
-          astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
+          astroCoordinates.setCoordinateSystem(CoordinateSystem.GALACTIC);
+          astroCoordinates.processTo(CoordinateSystem.EQUATORIAL);
           rightAscension = astroCoordinates.getRaAsDecimal();
           declination = astroCoordinates.getDecAsDecimal();
       }         
@@ -248,6 +245,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {          
           astroCoordinates.setRaAsDecimal(raResponse);
           astroCoordinates.setDecAsDecimal(decResponse);
+          astroCoordinates.setCoordinateSystem(CoordinateSystem.EQUATORIAL);
           astroCoordinates.processTo(CoordinateSystem.GALACTIC);
           raResponse = astroCoordinates.getRaAsDecimal();
           decResponse = astroCoordinates.getDecAsDecimal();
@@ -471,6 +469,19 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     private transient boolean isHealpixMode;
 
     /**
+     * Coordinate system of query
+     */
+    private transient String coordSystem;
+    
+    public String getCoordSystem() {
+		return coordSystem;
+	}
+
+	public void setCoordSystem(String coordSystem) {
+		this.coordSystem = coordSystem;
+	}
+
+	/**
      * Constructor.
      *
      * @param form form
@@ -492,6 +503,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
       final String srInput = form.getFirstValue(ConeSearchProtocolLibrary.SR);
       final String healpixInput = form.getFirstValue("healpix");
       final String orderInput = form.getFirstValue("order");
+      final String coordSystem = form.getFirstValue("coordSystem");
       if (raInput != null && decInput != null && srInput != null) {
         this.rightAscension = Double.valueOf(raInput);
         this.declination = Double.valueOf(decInput);
@@ -511,6 +523,7 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
         this.rightAscension = Math.toDegrees(pointing.phi);
         this.declination = MAX_DEC - Math.toDegrees(pointing.theta);
         this.radius = pixRes * MULT_FACT;
+        this.coordSystem = coordSystem;
       } else {
         throw new Exception("wrong input parameters");
       }
@@ -605,6 +618,9 @@ public class OpenSearchVOConeSearch extends SitoolsParameterizedResource {
     ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
     json.setFixed("json");
     parametersInfo.add(json);
+	final ParameterInfo coordSystem = new ParameterInfo("coordSystem", true, "string", ParameterStyle.QUERY,
+            "Healpix coordinate system");
+    parametersInfo.add(coordSystem);
 
     info.getRequest().setParameters(parametersInfo);
 
