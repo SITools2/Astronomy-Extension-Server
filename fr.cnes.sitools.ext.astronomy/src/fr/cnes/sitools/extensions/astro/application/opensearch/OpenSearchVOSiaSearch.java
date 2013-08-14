@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,7 +79,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * Coordinate system for both inputs and result.
    */
   private CoordinateSystem coordinatesSystem;
-  
+  /**
+   * List of preview formats.
+   */
+  private static final List<String> PREVIEW_FORMATS = Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/gif");
   /**
    * Index in polygonCelest array of the X coordinate of the first point of the polygon.
    */
@@ -144,7 +146,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   /**
    * Mapping keyword<-->UCD.
    */
-  private static final transient Map<String, String[]> map = new HashMap<String, String[]>() {
+  private static final Map<String, String[]> MAPPING_KEYWORD_UCD = new HashMap<String, String[]>() {
     { put("CD1_1", new String[]{"VOX:WCS_CDMatrix", "0"});
       put("CD1_2", new String[]{"VOX:WCS_CDMatrix", "1"});
       put("CD2_1", new String[]{"VOX:WCS_CDMatrix", "2"});
@@ -254,14 +256,13 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       ReservedWords response = ReservedWords.NONE;
       if (Utility.isSet(keyword)) {
         final ReservedWords[] words = ReservedWords.values();
-        for (int i = 0; i < words.length; i++) {
-          final ReservedWords word = words[i];
-          final String reservedName = word.getName();
-          if (keyword.equals(reservedName)) {
-            response = word;
-            break;
+          for (ReservedWords word : words) {
+              final String reservedName = word.getName();
+              if (keyword.equals(reservedName)) {
+                  response = word;
+                  break;
+              }
           }
-        }
       }
       return response;
     }
@@ -286,6 +287,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       LOG.log(Level.WARNING, null, ex);
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
     }
+    //TO DO : ckeck inputs.
   }
 
   /**
@@ -332,6 +334,9 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
           case IMAGE_ACCESS_REFERENCE:
             response = Utility.getDataType(dataType, value);
             download = String.valueOf(response);
+            if (hasPreview(format, download)) {
+                properties.put("quicklook", download);
+            }             
             break;
           case IMAGE_FORMAT:
             response = Utility.getDataType(dataType, value);
@@ -364,10 +369,10 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     if (wcs.isWCS()) {
       double[] polygonCelest = computeWcsCorner(wcs);
       if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {          
-          for (int i=0 ; i<polygonCelest.length ; i = i +2) {
+          for (int i = 0; i < polygonCelest.length; i = i + 2) {
               astroCoordinates.setRaAsDecimal(polygonCelest[i]);
-              astroCoordinates.setDecAsDecimal(polygonCelest[i+1]);              
-			  astroCoordinates.setCoordinateSystem(CoordinateSystem.EQUATORIAL);
+              astroCoordinates.setDecAsDecimal(polygonCelest[i + 1]);              
+              astroCoordinates.setCoordinateSystem(CoordinateSystem.EQUATORIAL);
               astroCoordinates.processTo(CoordinateSystem.GALACTIC);
               polygonCelest[i] = astroCoordinates.getRaAsDecimal();
               polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();              
@@ -389,7 +394,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       geometry.put("type", "Point");
       geometry.put("crs", this.coordinatesSystem.getCrs());
     }
-    feature.put("geometry", geometry);
+    feature.put("geometry", geometry);   
     feature.put("properties", properties);
     if (hasFileToDownload(format, download)) {
       final Map downloadMap = new HashMap();
@@ -435,10 +440,12 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @return the list of distinct fields from the response
    */
   private Set<Field> getFields(final List<Map<Field, String>> response) {
-    Set<Field> fields = new HashSet<Field>();
-    if (!response.isEmpty()) {
+    Set<Field> fields;
+    if (response.isEmpty()) {
+      fields = new HashSet<Field>();
+    } else {
       final Map<Field, String> mapResponse = response.get(0);
-      fields = mapResponse.keySet();
+      fields = mapResponse.keySet();        
     }
     return fields;
   }
@@ -467,7 +474,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   private boolean isGeometryIsInsidePixel(final Map geometry) {
     boolean result;
     final String type = String.valueOf(geometry.get("type"));
-    if (type.equals("Point")) {
+    if ("Point".equals(type)) {
       String coordinates = String.valueOf(geometry.get("coordinates"));
       coordinates = coordinates.replace("[", "");
       coordinates = coordinates.replace("]", "");
@@ -475,18 +482,14 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       final double rightAscension = Double.valueOf(coordinateArray[0]);
       final double declination = Double.valueOf(coordinateArray[1]);
       try {
-        long healpixFromService = this.userParameters.getHealpixIndex().ang2pix_nest(Math.PI / 2 - Math.toRadians(declination),
+        final long healpixFromService = this.userParameters.getHealpixIndex().ang2pix_nest(Math.PI / 2 - Math.toRadians(declination),
                 Math.toRadians(rightAscension));
-        if (healpixFromService == this.userParameters.getHealpix()) {
-          result = true;
-        } else {
-          result = false;
-        }
+        result = healpixFromService == this.userParameters.getHealpix();
       } catch (Exception ex) {
         result = false;
       }
 
-    } else if (type.equals("Polygon")) {
+    } else if ("Polygon".equals(type)) {
       final String coordinates = String.valueOf(geometry.get("coordinates"));
       final String[] coordinateArray = coordinates.split("\\],\\[");
       final Pointing[] pointings = new Pointing[coordinateArray.length - 1];
@@ -547,13 +550,24 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * Returns true when the SIA response contains a file to download.
    *
    * @param format file format
-   * @param download file to download
+   * @param url file to download
    * @return True when the SIA response contains a file to download
    */
-  private boolean hasFileToDownload(final String format, final String download) {
-    return (format != null && download != null);
+  private boolean hasFileToDownload(final String format, final String url) {
+    return (format != null && url != null);
   }
 
+  /**
+   * Returns true when the SIA response contains a preview.
+   *
+   * @param format file format
+   * @param url url to test
+   * @return True when the SIA response contains a preview.
+   */
+  private boolean hasPreview(final String format, final String url) {
+    return (format != null && url != null && PREVIEW_FORMATS.contains(format));
+  }
+  
   /**
    * Returns the JSON representation.
    *
@@ -565,7 +579,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       double rightAscension = userParameters.getRa();
       double declination = userParameters.getDec();
       if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
-          AstroCoordinate astroCoordinates = new AstroCoordinate(rightAscension, declination);
+          final AstroCoordinate astroCoordinates = new AstroCoordinate(rightAscension, declination);
           astroCoordinates.setCoordinateSystem(CoordinateSystem.GALACTIC);
           astroCoordinates.processTo(CoordinateSystem.EQUATORIAL);
           rightAscension = astroCoordinates.getRaAsDecimal();
@@ -574,9 +588,8 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
       final double size = userParameters.getSize();
       final List<Map<Field, String>> response = useCacheHealpix(query, rightAscension, declination, size, true);
       final Map dataModel = createGeoJsonDataModel(response);
-      Representation rep = new GeoJsonRepresentation(dataModel);
-      rep = useCacheBrowser(rep, true);
-      return rep;
+      final Representation rep = new GeoJsonRepresentation(dataModel);
+      return useCacheBrowser(rep, true);    
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -611,11 +624,13 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
    * @return the representation with the cache directive when the cache is enabled
    */
   private Representation useCacheBrowser(final Representation rep, final boolean isEnabled) {
-    Representation cachedRepresentation = rep;
+    Representation cachedRepresentation;
     if (isEnabled) {
       final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
       getResponse().setCacheDirectives(cache.getCacheDirectives());
       cachedRepresentation = cache.getRepresentation();
+    } else {
+        cachedRepresentation = rep;
     }
     return cachedRepresentation;
   }
@@ -637,11 +652,11 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
     final Cache cache = cacheManager.getCache("VOservices");
     List<Map<Field, String>> response;
-    
+
     if (cache.isKeyInCache(cacheID) && isEnabled) {
       LOG.log(Level.INFO, "Use of the cache for ID {0}", cacheID);
       response = (List<Map<Field, String>>) cache.get(cacheID).getObjectValue();
-    } else if(isEnabled) {
+    } else if (isEnabled) {
       response = siaQuery.getResponseAt(rightAscension, declination, radius);
       LOG.log(Level.INFO, "Caching result for ID {0}", cacheID);
       final Element element = new Element(cacheID, response);
@@ -652,25 +667,16 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     return response;
   }
 
-  /**
-   * Returns True when the cache is enabled otherwise False.
-   *
-   * @return True when the cache is enabled otherwise False
-   */
-  private boolean cacheIsEnabled() {
-    return Boolean.parseBoolean(((OpenSearchVOSiaSearchApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
-  }
-
   @Override
   public final boolean findKey(final String key) {
     boolean isFound = false;
-    final String[] ucdObj = map.get(key);
+    final String[] ucdObj = MAPPING_KEYWORD_UCD.get(key);
     final Set<Field> fields = this.doc.keySet();
     final Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
       final Field field = fieldIter.next();
       final String ucd = field.getUcd();
-      if (ucd != null && ucdObj != null && ucdObj[0].equals(ucd)) {
+      if (ucd != null && ucdObj != null && ucdObj[0] != null && ucdObj[0].equals(ucd)) {
         isFound = true;
         break;
       }
@@ -681,7 +687,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
   @Override
   public final String getStringValue(final String key) {
     String value = null;
-    final String[] ucdObj = map.get(key);
+    final String[] ucdObj = MAPPING_KEYWORD_UCD.get(key);
     final Set<Field> fields = this.doc.keySet();
     final Iterator<Field> fieldIter = fields.iterator();
     while (fieldIter.hasNext()) {
@@ -807,18 +813,25 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     private static final double MULT_FACT = 1.5;
 
     /**
-     * Coordinate system
+     * Coordinate system.
      */
     private transient String coordSystem;
-    
+
+    /**
+     * Returns the coordinate system.
+     * @return the coordinate system
+     */
     public String getCoordSystem() {
-    	return coordSystem;
-	}
-	
-	public void setCoordSystem(String coordSystem) {
-	  	this.coordSystem = coordSystem;
-	}
-    
+        return coordSystem;
+    }
+    /**
+     * Sets the coordinate system.
+     * @param coordSystemVal the coordinate system tp set
+     */
+    public void setCoordSystem(final String coordSystemVal) {
+        this.coordSystem = coordSystemVal;
+    }
+
     /**
      * Constructor.
      *
@@ -958,17 +971,14 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
     info.setIdentifier("SimpleImageAccessProtocolJSON");
     info.setDocumentation("Interoperability service to distribute images through a converted format of the Simple Image Access Protocol");
 
-    List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
+    final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("healpix", true, "long", ParameterStyle.QUERY,
             "Healpix number"));
     parametersInfo.add(new ParameterInfo("order", true, "integer", ParameterStyle.QUERY,
             "Healpix order"));
-	final ParameterInfo coordSystem = new ParameterInfo("coordSystem", true, "string", ParameterStyle.QUERY,
+    final ParameterInfo coordSystem = new ParameterInfo("coordSystem", true, "string", ParameterStyle.QUERY,
             "Healpix coordinate system");
     parametersInfo.add(coordSystem);
-    final ParameterInfo json = new ParameterInfo("format", true, "string", ParameterStyle.QUERY, "JSON format");
-    json.setFixed("json");
-    parametersInfo.add(json);
 
     info.getRequest().setParameters(parametersInfo);
 
