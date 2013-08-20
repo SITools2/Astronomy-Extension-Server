@@ -211,7 +211,7 @@ public class OpenSearchSearch extends OpenSearchBase {
     final JSONObject responseService = new JSONObject();
     responseService.put("type", "FeatureCollection");
     final JSONObject response = json.getJSONObject("response");
-    responseService.put("totalResults", response.getLong("numFound"));
+    responseService.put(FeaturesDataModel.TOTAL_RESULTS, response.getLong("numFound"));
 
     final JSONArray docsArray = (JSONArray) response.get("docs");
 
@@ -225,11 +225,11 @@ public class OpenSearchSearch extends OpenSearchBase {
       final String footprint = (String) doc.get(OpenSearchApplicationPlugin.Standard_Open_Search.GEOMETRY_COORDINATES.getKeywordSolr());
       final JSONArray pointArray = getFirstPoint(footprint);
       if (isPoint(footprint)) {
-        geometry.put("type", "Point");
-        geometry.put("coordinates", Arrays.asList(pointArray.get(0), pointArray.get(1)));
-        geometry.put("referencesystem", referenceSystem);
+        geometry.put(FeatureDataModel.GEOMETRY_TYPE, "Point");
+        geometry.put(FeatureDataModel.GEOMETRY_COORDINATES, Arrays.asList(pointArray.get(0), pointArray.get(1)));
+        geometry.put(FeatureDataModel.PROPERTIES_CRS, referenceSystem);
       } else {
-        geometry.put("type", "Polygon");
+        geometry.put(FeatureDataModel.GEOMETRY_TYPE, "Polygon");
         final String[] points = footprint.split("],");
         final List responsePoints = new ArrayList();
         for (int j = 0; j < points.length; j++) {
@@ -240,9 +240,9 @@ public class OpenSearchSearch extends OpenSearchBase {
           final List responsePoint = Arrays.asList(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
           responsePoints.add(responsePoint);
         }
-        geometry.put("coordinates", Arrays.asList(responsePoints));
+        geometry.put(FeatureDataModel.GEOMETRY_COORDINATES, Arrays.asList(responsePoints));
       }
-      dataModelRecord.put("geometry", geometry);
+      dataModelRecord.put(FeatureDataModel.GEOMETRY, geometry);
 
       final Map properties = new HashMap();
       final Map services = new HashMap();
@@ -255,7 +255,7 @@ public class OpenSearchSearch extends OpenSearchBase {
       crs.put("properties", crsProperties);
       crs.put("type", "name");
       properties.put("crs", crs);
-
+      //TODO check as above
       final Iterator iter = doc.keys();
       while (iter.hasNext()) {
         final String key = (String) iter.next();
@@ -287,13 +287,13 @@ public class OpenSearchSearch extends OpenSearchBase {
         services.put("download", download);
       }
       if (!services.isEmpty()) {
-        dataModelRecord.put("services", services);
+        dataModelRecord.put(FeatureDataModel.SERVICES, services);
       }
-      dataModelRecord.put("properties", properties);
+      dataModelRecord.put(FeatureDataModel.PROPERTIES, properties);
 
       records.add(dataModelRecord);
     }
-    responseService.put("features", records);
+    responseService.put(FeaturesDataModel.FEATURES, records);
     return responseService;
   }
 }

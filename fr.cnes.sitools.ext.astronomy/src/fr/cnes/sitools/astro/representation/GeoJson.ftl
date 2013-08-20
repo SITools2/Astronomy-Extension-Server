@@ -12,13 +12,13 @@
                 "crs": {
                     "type": "name",
                     "properties": {
-                        "name": "${feature.geometry.crs}"
+                        "name": "${feature.properties.crs.properties.name}"
                     }
                 },
                 <#list feature.properties?keys as key>
                 <#if key?exists>
                 <#assign value = feature.properties[key]>
-                "${key}":<#if value?is_number>${value?string.computer}<#else>"${value}"</#if><#if key_has_next>,</#if>
+                <#if value?is_number>"${key}":${value?string.computer}<#if key_has_next>,</#if><#elseif value?is_string>"${key}":"${value}"<#if key_has_next>,</#if></#if>
                 </#if>
                 </#list>                        
             }<#if feature.services?exists>,
