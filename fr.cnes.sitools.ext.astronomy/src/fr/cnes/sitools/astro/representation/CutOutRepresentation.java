@@ -43,7 +43,9 @@ public class CutOutRepresentation extends OutputRepresentation {
    * Interface.
    */
     private final transient CutOutInterface cutout;
-    
+    /**
+     * Default output filename.
+     */
     private String filename = "cutOut.fits";
     
     /**
@@ -56,11 +58,17 @@ public class CutOutRepresentation extends OutputRepresentation {
         super(media);
         this.cutout = cutOut;
     }
-    
-    public final void setFilename(final String filename) {
-        this.filename = filename;
+    /**
+     * Sets the output filename.
+     * @param filenameVal output filename
+     */
+    public final void setFilename(final String filenameVal) {
+        this.filename = filenameVal;
     }
-    
+    /**
+     * Returns the output filename.
+     * @return the output filename
+     */
     public final String getFilename() {
         return this.filename;
     }
@@ -78,9 +86,9 @@ public class CutOutRepresentation extends OutputRepresentation {
     @Override
     public final void write(final OutputStream out) throws IOException {        
         try {
-            if (getMediaType().equals(MediaType.IMAGE_PNG) || 
-                getMediaType().equals(MediaType.IMAGE_JPEG) ||
-                getMediaType().equals(MediaType.IMAGE_GIF)){
+            if (getMediaType().equals(MediaType.IMAGE_PNG)
+                || getMediaType().equals(MediaType.IMAGE_JPEG)
+                || getMediaType().equals(MediaType.IMAGE_GIF)) {
                 this.cutout.createCutoutPreview(out);
             } else {
                 final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);

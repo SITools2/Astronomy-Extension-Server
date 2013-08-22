@@ -41,9 +41,14 @@ import org.restlet.resource.ClientResource;
  *              |__ geometry
  *              |       |__ coordinates (mandatory)
  *              |       |__ type (mandatory)
- *              |       |__ crs (mandatory)
  *              |__ properties
- *              |       |__ keyword/value(List) (identifier is mandatory)
+ *              |       |__ identifier (mandatory)
+ *              |       |__ quicklook
+ *              |       |__ crs (mandatory)
+ *              |       |   |__ properties
+ *              |       |       |__ name
+ *              |       |__ date-obs
+ *              |       |__ keyword/value(List)
  *              |__ services
  *                      |__ download
  *                              |__ mimetype

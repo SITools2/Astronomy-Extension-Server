@@ -18,6 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
+import static fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel.PROPERTIES;
+import static fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel.PROPERTIES_ID;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -299,7 +301,6 @@ public class FeatureDataModel {
      * Clears the feature.
      */
     public final void clear() {
-        this.feature.clear();
         geometry.clear();
         properties.clear();
         services.clear();

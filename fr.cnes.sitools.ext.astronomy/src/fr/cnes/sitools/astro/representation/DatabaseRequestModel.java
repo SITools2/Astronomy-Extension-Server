@@ -62,11 +62,11 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
     /**
      * DB Result set.
      */
-    private transient DatabaseRequest rs = null;
+    private final DatabaseRequest request;
     /**
      * SITools2 converters.
      */
-    private transient ConverterChained converterChained = null;
+    private final transient ConverterChained converterChained;
     /**
      * Number of rows.
      */
@@ -79,15 +79,15 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      * @param converterChainedVal the converter object
      */
     public DatabaseRequestModel(final DatabaseRequest rsVal, final ConverterChained converterChainedVal) {
-        this.rs = rsVal;
+        this.request = rsVal;
         this.converterChained = converterChainedVal;
-        this.size = rs.getTotalCount();
+        this.size = request.getTotalCount();
 
         // we need to close the connection here
         // otherwise the connection will not be free.
         if (this.size == 0) {
             try {
-                this.rs.close();
+                this.request.close();
             } catch (SitoolsException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
@@ -104,37 +104,35 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
 
     /**
      * Returns a row of the template model.
-     * @param i row number
+     * @param rowNumber row number
      * @return the template model
      * @throws TemplateModelException Exception
      */
     @Override
-    public final TemplateModel get(final int i) throws TemplateModelException {
+    public final TemplateModel get(final int rowNumber) throws TemplateModelException {
         TemplateModel model = null;
         try {
-            boolean nextResult = rs.nextResult();
+            final boolean nextResult = request.nextResult();
             if (nextResult) {
-                model = new Row(rs, this.converterChained);
+                model = new Row(request, this.converterChained);
             }
         } catch (SitoolsException ex) {
             try {
-                this.rs.close();
+                this.request.close();
             } catch (SitoolsException ex1) {
                 LOG.log(Level.WARNING, null, ex1);
-            } finally {
-                throw new TemplateModelException(ex.toString());
-            }
+            } 
+            throw new TemplateModelException(ex);            
         }
 
         // this is the last record and we need to close the connection
-        if (i == this.size() - 1) {
+        if (rowNumber == this.size() - 1) {
             try {
-                this.rs.close();
+                this.request.close();
             } catch (SitoolsException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
-
         return model;
     }
 
@@ -155,15 +153,15 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         /**
          * Database result set.
          */
-        private transient DatabaseRequest resultSet = null;
+        private final DatabaseRequest resultSet;
         /**
          * Mapping with database columns.
          */
-        private transient Map map = null;
+        private final Map map;
         /**
          * SITools2 converter.
          */
-        private transient ConverterChained converterChained = null;
+        private final ConverterChained converterChained;
 
         /**
          * Contructs a new row.
@@ -187,9 +185,11 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          * @throws SitoolsException Exception
          */
         private void init() throws SitoolsException {
-            Record record = this.resultSet.getRecord();
+            Record record;
             if (Util.isSet(converterChained)) {
-                record = converterChained.getConversionOf(record);
+                record = converterChained.getConversionOf(this.resultSet.getRecord());
+            } else {
+                record = this.resultSet.getRecord();
             }
             final List<AttributeValue> attValueList = record.getAttributeValues();
             for (AttributeValue iter : attValueList) {
@@ -205,8 +205,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final TemplateModel get(final String columnAlias) throws TemplateModelException {
-            final TemplateModel model = new SimpleScalar(String.valueOf(this.map.get(columnAlias)));
-            return model;
+            return new SimpleScalar(String.valueOf(this.map.get(columnAlias)));            
         }
 
         /**
@@ -216,16 +215,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final boolean isEmpty() throws TemplateModelException {
-            boolean isEmpty = false;
-            if (this.resultSet == null) {
-                isEmpty = true;
-                try {
-                    this.resultSet.close();
-                } catch (SitoolsException ex) {
-                    LOG.log(Level.WARNING, null, ex);
-                }
-            }
-            return isEmpty;
+            return (this.resultSet == null);
         }
     }    
 }

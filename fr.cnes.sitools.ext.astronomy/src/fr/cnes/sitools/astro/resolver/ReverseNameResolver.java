@@ -18,14 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
+import fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.FeaturesDataModel;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.util.ClientResourceProxy;
 import fr.cnes.sitools.util.Util;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,9 +64,9 @@ public class ReverseNameResolver {
      */    
     private final transient CoordinateSystem coordinatesSystem;
     /**
-     * Init the data model.
+     * Init data model.
      */
-    private final transient Map dataModel = new HashMap();
+    final FeaturesDataModel features = new FeaturesDataModel();
     /**
      * Max radius.
      */
@@ -98,7 +98,7 @@ public class ReverseNameResolver {
      *
      * @throws NameResolverException
      */
-    private void process() throws NameResolverException {
+    private void process() throws NameResolverException {        
         // we convert in galactic because the service only accept equatorial
         if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
             String[] coordinatesStr = coordinates.split(" ");
@@ -152,28 +152,18 @@ public class ReverseNameResolver {
                     }
 
                     // we are building the data model for the response
-                    final Map feature = new HashMap();
-
-                    final Map properties = new HashMap();
-                    properties.put("identifier", name);
-                    properties.put("title", name);
-                    properties.put("credits", "CDS");
+                    FeatureDataModel feature = new FeatureDataModel(name);
+                    feature.addProperty("title", name);
+                    feature.addProperty("credits", "CDS");
                     if (Util.isSet(magnitude)) {
-                        properties.put("magnitude", magnitude);
+                        feature.addProperty("magnitude", magnitude);
                     }
-                    properties.put("type", objectType);
-                    properties.put("seeAlso", "http://simbad.u-strasbg.fr/simbad/sim-id?Ident=" + name);
-                    feature.put("properties", properties);
-
-                    final Map geometry = new HashMap();
-                    geometry.put("type", "Point");
+                    feature.addProperty("type", objectType);
+                    feature.addProperty("seeAlso", "http://simbad.u-strasbg.fr/simbad/sim-id?Ident=" + name);
                     final AstroCoordinate astroCoordinate = new AstroCoordinate(hms.toString(true), dms.toString(true));
-                    geometry.put("coordinates", String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()));
-                    geometry.put("crs", this.coordinatesSystem.getCrs());
-                    feature.put("geometry", geometry);
-
-                    dataModel.put("features", Arrays.asList(feature));
-                    dataModel.put("totalResults", 1);
+                    feature.createGeometry(String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()), "Point");
+                    feature.createCrs(this.coordinatesSystem.getCrs());
+                    features.addFeature(feature);
                 }
             } catch (IOException ex) {
                 throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -186,28 +176,33 @@ public class ReverseNameResolver {
 
     /**
      * Get the response from the reverse name resolver. The format of the
-     * response is the following :      {@code 
+     * response is the following :      {@code
      * {
      *   totalResults=1,
      *   features=[{
+     *      geometry={          
+     *          type=Point,
+     *          coordinates=[23.934419722222223,-0.9884027777777777]
+     *      },     
      *      properties={
+     *         "crs": {
+     *              "type": "name",
+     *              "properties": {
+     *                  "name": "equatorial.ICRS"
+     *              }
+     *          },     
      *          title=IC 1515 ,
      *          magnitude=14.8,
      *          credits=CDS,
      *          seeAlso=http://simbad.u-strasbg.fr/simbad/sim-id?Ident=IC 1515 ,
      *          type=Seyfert_2,
      *          identifier=IC 1515
-     *      },
-     *      geometry={
-     *          crs=EQUATORIAL.ICRS,
-     *          type=Point,
-     *          coordinates=[23.934419722222223,-0.9884027777777777]
      *      }
      * }] } }
      *
      * @return response
      */
     public final Map getJsonResponse() {
-        return Collections.unmodifiableMap(this.dataModel);
-    }    
+        return Collections.unmodifiableMap(this.features.getFeatures());
+    }
 }

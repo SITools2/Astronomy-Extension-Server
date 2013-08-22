@@ -26,6 +26,8 @@ import fr.cnes.sitools.astro.resolver.CorotIdResolver;
 import fr.cnes.sitools.astro.resolver.IMCCESsoResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.FeaturesDataModel;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
@@ -35,7 +37,6 @@ import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
 import fr.cnes.sitools.extensions.common.Validation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -333,38 +334,25 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      * @throws JSONException
      */
     private Map getDataModel(final String name, final List<AstroCoordinate> astroList, final String referenceFrame) {
-
-        final Map dataModel = new HashMap();
-        final ArrayList<Map> features = new ArrayList<Map>();
+        final FeaturesDataModel features = new FeaturesDataModel();
+        final FeatureDataModel feature = new FeatureDataModel();
         int index = 0;
-        final Map feature = new HashMap();
-        final Map properties = new HashMap();
-        final Map geometry = new HashMap();
         for (AstroCoordinate astroIter : astroList) {
             feature.clear();
-            properties.clear();
-            geometry.clear();
-            properties.put("identifier", name.concat(String.valueOf(index++)));
-            properties.put("credits", name);
+            feature.setIdentifier(name.concat(String.valueOf(index++)));
+            feature.addProperty("credits", name);
             final Map<String, String> metadata = astroIter.getMatadata();
             final Set<Entry<String, String>> entries = metadata.entrySet();
             final Iterator<Entry<String, String>> iter = entries.iterator();
             while (iter.hasNext()) {
                 final Entry<String, String> entry = iter.next();
-                properties.put(entry.getKey(), entry.getValue());
+                feature.addProperty(entry.getKey(), entry.getValue());
             }
-            feature.put("properties", properties);
-            geometry.put("type", "Point");
-            geometry.put("coordinates", String.format("[%s,%s]", astroIter.getRaAsDecimal(), astroIter.getDecAsDecimal()));
-            geometry.put("crs", (CoordinateSystem.EQUATORIAL.name().equals(referenceFrame))
-                        ? CoordinateSystem.EQUATORIAL.name().concat(".ICRS")
-                        : CoordinateSystem.GALACTIC.name());
-            feature.put("geometry", geometry);
-            features.add(feature);
-        }
-        dataModel.put("features", features);
-        dataModel.put("totalResults", features.size());
-        return dataModel;
+            feature.createCrs(CoordinateSystem.valueOf(referenceFrame).getCrs());
+            feature.createGeometry(String.format("[%s,%s]", astroIter.getRaAsDecimal(), astroIter.getDecAsDecimal()), "Point");
+            features.addFeature(feature);
+        }        
+        return features.getFeatures();
     }
 
     /**
