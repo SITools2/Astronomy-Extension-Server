@@ -21,12 +21,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Data model of the collection of feature.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class FeaturesDataModel {    
+public class FeaturesDataModel {
+  /**
+   * Logger.
+   */
+  private static final Logger LOG = Logger.getLogger(FeaturesDataModel.class.getName());    
     /**
      * Total result of records in the response.
      */
@@ -83,13 +89,14 @@ public class FeaturesDataModel {
      */
     public final boolean hasIdentifier(final String identifier) {
         boolean result = false;
-        for (final Map feature : featureList) {
+        for (final Map feature : featureList) {          
             final Map properties = (Map) feature.get(FeatureDataModel.PROPERTIES);
+            assert properties != null;
             if (properties.containsKey(FeatureDataModel.PROPERTIES_ID) && properties.get(FeatureDataModel.PROPERTIES_ID).equals(identifier)) {
                 result = true;
                 break;
             }
-        }
+        }    
         return result;
     }
     /**
@@ -101,9 +108,10 @@ public class FeaturesDataModel {
      * @return a feature based on a identifier
      */
     public final Map getFeature(final String identifier) {        
-        for (final Map feature : featureList) {
+        for (final Map feature : featureList) {           
             final Map properties = (Map) feature.get(FeatureDataModel.PROPERTIES);
-            if (properties.get(FeatureDataModel.PROPERTIES_ID).equals(identifier)) {
+            assert properties != null;
+            if (properties.containsKey(FeatureDataModel.PROPERTIES_ID) && properties.get(FeatureDataModel.PROPERTIES_ID).equals(identifier)) {                
                 return feature;
             }
         }

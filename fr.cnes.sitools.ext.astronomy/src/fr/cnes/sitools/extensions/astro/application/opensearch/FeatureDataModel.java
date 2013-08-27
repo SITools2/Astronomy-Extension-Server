@@ -108,7 +108,7 @@ public class FeatureDataModel {
     /**
      * services information.
      */
-    private final Map services = new HashMap();    
+    private final Map services = new HashMap();
     /**
      * crs information.
      */
@@ -274,7 +274,7 @@ public class FeatureDataModel {
      * @return the properties
      */
     public final Map getProperties() {
-        return properties;
+        return this.properties;
     }
     /**
      * Sets the feature.
@@ -307,5 +307,6 @@ public class FeatureDataModel {
         crs.clear();
         crsProperties.clear();
         download.clear();
+        feature.clear();
     }
 }

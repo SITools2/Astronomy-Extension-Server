@@ -612,7 +612,7 @@ public class OpenSearchVOSiaSearch extends SitoolsParameterizedResource implemen
         for (Map<Field, String> iterDoc : response) {
             this.doc = iterDoc;
             final FeatureDataModel feature = parseRow(doc);
-            dataModel.updateFeatureWithSpecialCase(feature);
+            dataModel.updateFeatureWithSpecialCase(feature);            
             dataModel.addFeature(feature);            
         }
         return dataModel.getFeatures();
