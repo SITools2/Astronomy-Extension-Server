@@ -176,7 +176,12 @@ public class CutOut extends AbstractJobTask {
     private String getNameFrom(final URL url, final String ext) {
         final String filename = url.getFile();
         final int slashIndex = filename.lastIndexOf('/');
-        String filenameWithoutExt = filename.substring(slashIndex+1, filename.lastIndexOf('.'));
+        final int pointIndex = filename.lastIndexOf('.');
+        String filenameWithoutExt;
+        if ( pointIndex != -1 )
+        	filenameWithoutExt = filename.substring(slashIndex+1, pointIndex );
+        else
+        	filenameWithoutExt = filename.substring(slashIndex+1);
         return filenameWithoutExt + "." + ext;
     }
 
