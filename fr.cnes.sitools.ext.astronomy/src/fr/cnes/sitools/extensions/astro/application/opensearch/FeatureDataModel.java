@@ -203,6 +203,7 @@ public class FeatureDataModel {
         crs.put(PROPERTIES_CRS_PROPERTIES, crsProperties);
         crsProperties.put(PROPERTIES_CRS_PROPERTIES_NAME, crsName);
         properties.put(PROPERTIES_CRS, crs);
+        getFeature().put(PROPERTIES, properties);
     }
     /**
      * Creates services in the data model.
