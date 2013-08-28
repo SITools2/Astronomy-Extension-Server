@@ -74,7 +74,7 @@ public class CutOut extends AbstractJobTask {
         try {
             setBlinker(Thread.currentThread());
             setStartTime(Util.convertIntoXMLGregorian(new Date()));           
-            setPhase(ExecutionPhase.EXECUTING);            
+            setPhase(ExecutionPhase.EXECUTING);
             final List<String> filenameList = createJob();
             createResults(filenameList);
             setEndTime(Util.convertIntoXMLGregorian(new Date()));
@@ -127,7 +127,8 @@ public class CutOut extends AbstractJobTask {
             errorSumm.setHasDetail(true);
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);           
-        }        
+        }
+        // TODO : RuntimeException must be handled on UWS framework.
     }
 
     /**

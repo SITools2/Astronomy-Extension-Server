@@ -166,6 +166,8 @@ public class CutOutSITools2 implements CutOutInterface {
             throw new CutOutException(ex);
         } catch (IOException ex) {
             throw new CutOutException(ex);
+        } catch (RuntimeException err) {
+            throw new CutOutException(err);
         }
     }
 

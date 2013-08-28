@@ -106,7 +106,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
             throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (ClassNotFoundException ex) {
             throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
-        }
+        } 
         return jobTask;
     }
 

@@ -18,6 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.application.ContextAttributes;
 import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import static fr.cnes.sitools.extensions.astro.application.uws.common.Util.isSet;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -75,7 +78,9 @@ public class JobsResource extends BaseJobResource {
     @Get("json")
     public final Representation getJobsToJSON() throws ResourceException {
         setStatus(Status.SUCCESS_OK);
-        return new JobsRepresentation(getReference().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true, MediaType.APPLICATION_JSON);
+        final Reference refTarget = new Reference(getReference().getPath());
+        refTarget.setBaseRef(getSettings().getPublicHostDomain());         
+        return new JobsRepresentation(refTarget.getTargetRef().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true, MediaType.APPLICATION_JSON);
     } 
     
     /**
@@ -86,7 +91,9 @@ public class JobsResource extends BaseJobResource {
     @Get("xml")
     public final Representation getJobsToXML() throws ResourceException {
         setStatus(Status.SUCCESS_OK);
-        return new JobsRepresentation(getReference().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true);
+        final Reference refTarget = new Reference(getReference().getPath());
+        refTarget.setBaseRef(getSettings().getPublicHostDomain());        
+        return new JobsRepresentation(refTarget.getTargetRef().getIdentifier(), JobTaskManager.getInstance().getJobTasks(), true);
     }       
 
     /**

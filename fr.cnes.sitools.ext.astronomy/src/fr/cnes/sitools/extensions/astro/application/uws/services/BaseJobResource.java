@@ -62,14 +62,18 @@ public class BaseJobResource extends SitoolsParameterizedResource {
      * Redirection to /{jobs}/{jobId}.
      */
     protected final void redirectToJobID() {
-        redirectSeeOther(new Reference(getReference().getIdentifier() + Constants.SLASH + getRequestedJobId()));
+        final Reference refTarget = new Reference(getReference().getPath());
+        refTarget.setBaseRef(getSettings().getPublicHostDomain());         
+        redirectSeeOther(new Reference(refTarget.getTargetRef().getIdentifier() + Constants.SLASH + getRequestedJobId()));
     }    
     
     /**
      * Redirection to /{jobs}.
      */
     protected final void redirectToJobs() {
-        redirectSeeOther(new Reference(getReference().getIdentifier()));
+        final Reference refTarget = new Reference(getReference().getPath());
+        refTarget.setBaseRef(getSettings().getPublicHostDomain());         
+        redirectSeeOther(new Reference(refTarget.getTargetRef().getIdentifier()));
     }
 
     /**

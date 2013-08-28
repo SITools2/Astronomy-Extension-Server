@@ -23,6 +23,7 @@ import com.thoughtworks.xstream.io.xml.QNameMap;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
+import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ResourceException;
 
@@ -77,8 +78,12 @@ public class JobResultsRepresentation extends JobRepresentation {
         createXstream(getMediaType(), qnm);
         final XStream xstream = getXstream();
         xstream.alias("results", net.ivoa.xml.uws.v1.Results.class);
-        xstream.addImplicitCollection(net.ivoa.xml.uws.v1.Results.class, "result", net.ivoa.xml.uws.v1.ResultReference.class);
-        xstream.alias("result", net.ivoa.xml.uws.v1.ResultReference.class);
+        if (MediaType.TEXT_XML == MediaType.valueOf(getMediaType().getName())) {
+            xstream.addImplicitCollection(net.ivoa.xml.uws.v1.Results.class, "result", net.ivoa.xml.uws.v1.ResultReference.class);
+            xstream.alias("result", net.ivoa.xml.uws.v1.ResultReference.class);
+        } else {
+        xstream.alias("result", List.class, net.ivoa.xml.uws.v1.ResultReference.class);    
+        }                        
         xstream.registerConverter(new JobResultsConverter());
         return xstream;
     }
