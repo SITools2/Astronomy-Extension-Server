@@ -44,11 +44,10 @@ public class SingletonCacheShortnerURL {
      * Cache name for this service.
      */
     private static final String CACHE_NAME = "ShortenerUrl";
-    
     /**
      * Alpha numeric for transformation.
      */
-    private static String ALPHANUMERIC
+    private static final String ALPHANUMERIC
             = "0123456789"
             + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             + "abcdefghijklmnopqrstuvwxyz";
@@ -57,7 +56,7 @@ public class SingletonCacheShortnerURL {
      * Any letters or numbers which are similar in appearance should be avoided
      * (like “I”, “1”, “O”, “0”,"Q", "i", "l", "o").
      */
-    private static String ALPHANUMERICALT
+    private static final String ALPHANUMERICALT
             = "23456789"
             + "ABCDEFGHJKLMNPRSTUVWXYZ"
             + "abcdefghjkmnpqrstuvwxyz";
@@ -66,7 +65,10 @@ public class SingletonCacheShortnerURL {
      * Cache configuration.
      */
     private final transient Representation cacheConf = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/ehcache.xml").get();
-
+    /**
+     * Lock.
+     */
+    private static final String LOCK = "LOCK";
     /**
      * Constructsthe singleton.
      */
@@ -144,17 +146,19 @@ public class SingletonCacheShortnerURL {
      * @param config config to store
      * @return a shortening Id
      */
-    public static final synchronized String putConfig(final String config) {
-        int configId;
-        final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
-        final Cache cache = cacheMgt.getCache(CACHE_NAME);
-        do {
-            configId = generateId();
-        } while (cache.isKeyInCache(configId));
-        cache.put(new Element(configId, new ConfigCache(config)));
-        return toBase(configId, ALPHANUMERICALT);
+    public static final String putConfig(final String config) {
+        synchronized (LOCK) {
+            int configId;
+            final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
+            final Cache cache = cacheMgt.getCache(CACHE_NAME);
+            do {
+                configId = generateId();
+            } while (cache.isKeyInCache(configId));
+            cache.put(new Element(configId, new ConfigCache(config)));
+            return toBase(configId, ALPHANUMERICALT);
+        }
     }
-    
+
     /**
      * Returns an configCache from its shortening ID.
      * @param shorteningId
@@ -163,22 +167,24 @@ public class SingletonCacheShortnerURL {
      * </p>
      * @return an URL
      */
-    public static final synchronized String getConfig(final String shorteningId) {
-        String result;
-        final int storeId = fromBase(shorteningId, ALPHANUMERICALT);
-        final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
-        final Cache cache = cacheMgt.getCache(CACHE_NAME);         
-        if (cache.isKeyInCache(storeId)) {
-            final ConfigCache configCache = (ConfigCache) cache.get(storeId).getObjectValue();
-            result = configCache.getConfig();
-            configCache.setNbClicks(configCache.getNbClicks() + 1);
-            cache.put(new Element(storeId, configCache));
-        } else {
-            throw new IllegalArgumentException("Cannot find the record in the cache");
+    public static final String getConfig(final String shorteningId) {
+        synchronized (LOCK) {
+            String result;
+            final int storeId = fromBase(shorteningId, ALPHANUMERICALT);
+            final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
+            final Cache cache = cacheMgt.getCache(CACHE_NAME);
+            if (cache.isKeyInCache(storeId)) {
+                final ConfigCache configCache = (ConfigCache) cache.get(storeId).getObjectValue();
+                result = configCache.getConfig();
+                configCache.setNbClicks(configCache.getNbClicks() + 1);
+                cache.put(new Element(storeId, configCache));
+            } else {
+                throw new IllegalArgumentException("Cannot find the record in the cache");
+            }
+            return result;
         }
-        return result;
-    }   
-    
+    }
+
     /**
      * Creates cache of the MIZAR config and also about its number of access.
      */
@@ -195,13 +201,13 @@ public class SingletonCacheShortnerURL {
          * The number of access on this URL.
          */
         private int nbClicks;
-        
+
         /**
          * Constructor.
          * @param configVal URL
          */
         public ConfigCache(final String configVal) {
-          this(configVal, 0);  
+          this(configVal, 0);
         }
         /**
          * Constructor.
@@ -210,7 +216,7 @@ public class SingletonCacheShortnerURL {
          */
         public ConfigCache(final String configVal, final int nbClicksVal) {
             setConfig(configVal);
-            setNbClicks(nbClicksVal);            
+            setNbClicks(nbClicksVal);
         }
 
         /**
@@ -243,6 +249,5 @@ public class SingletonCacheShortnerURL {
         public final void setNbClicks(final int nbClicksVal) {
             this.nbClicks = nbClicksVal;
         }
-
     }
 }

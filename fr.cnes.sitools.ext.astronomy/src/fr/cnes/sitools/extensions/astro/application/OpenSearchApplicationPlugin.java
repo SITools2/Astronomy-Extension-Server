@@ -171,7 +171,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
          * @return Returns an array [node name, keyword]
          */
         public static String[] getKeywordProperties(final String keywordSolr) {
-            final String result[] = new String[2];
+            final String[] result = new String[2];
             result[0] = "properties"; // no standard fields are in properties node
             final Standard_Open_Search[] standardOpenSearchArray = Standard_Open_Search.values();
             for (int i = 0; i < standardOpenSearchArray.length; i++) {

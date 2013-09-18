@@ -44,12 +44,12 @@ import org.restlet.routing.Template;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ShorteningUrlApplicationPlugin extends AbstractApplicationPlugin {
-    
+
     /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(OpenSearchApplicationPlugin.class.getName());
-    
+
     /**
      * Constructor.
      */
@@ -107,9 +107,9 @@ public class ShorteningUrlApplicationPlugin extends AbstractApplicationPlugin {
         this.getModel().setClassName("Shortening URL Application");
         this.getModel().setClassOwner("CNES");
         this.getModel().setClassVersion("1.0");
-        SingletonCacheShortnerURL.create(); 
-    }    
-    
+        SingletonCacheShortnerURL.create();
+    }
+
     @Override
     public final Restlet createInboundRoot() {
             final Router router = new Router(getContext());

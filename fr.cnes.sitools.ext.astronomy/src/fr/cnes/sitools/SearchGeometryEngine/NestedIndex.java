@@ -18,70 +18,72 @@
  ******************************************************************************/
 package fr.cnes.sitools.SearchGeometryEngine;
 
-import cds.moc.HealpixMoc;
-import cds.moc.MocCell;
 import healpix.core.HealpixIndex;
+import healpix.core.base.set.LongRangeIterator;
+import healpix.core.base.set.LongRangeSet;
 import healpix.essentials.Pointing;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
+import healpix.tools.SpatialVector;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Nested Index for hierarchical resolution.
+ * This index is used to find pixels at a given order.
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class NestedIndex implements Index {
+public final class NestedIndex implements Index {
 
-  /**
-   * Shape for which the index must be computed.
-   */
-  private Shape shape;
-  /**
-   * Initialize Max order = Max order of Healpix in JAVA.
-   */
-  private int orderMax = HealpixMoc.MAXORDER;
-  /**
-   * Initialize min order to 0.
-   */
-  private int orderMin = 0;
-  /**
-   * Typical choice of fact.
-   */
-  protected static final int TYPICAL_CHOICE_FACT = 128;
   /**
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(NestedIndex.class.getName());
+  /**
+   * Typical choice of fact.
+   */
+  protected static final int TYPICAL_CHOICE_FACT = 4;
+  /**
+   * Convertion Deg to Arsec.
+   */
+  private static final double DEG_TO_ARCSEC = 3600.0;
+  /**
+   * Number of points in a quadrlatere.
+   */
+  private static final int QUADRI = 4;
+  /**
+   * Shape.
+   */
+  private Shape shape;
+  /**
+   * Healpix order.
+   */
+  private int order;
 
   /**
-   * Cronstructs a new Index based with a shape.
+   * Create an indexed shape.
    *
-   * @param geometryShape shape for which the Healpix index must be computed.
+   * @param shapeVal Shape
    */
-  public NestedIndex(final Shape geometryShape) {
-    this.shape = geometryShape;
+  public NestedIndex(final Shape shapeVal) {
+    assert shapeVal != null;
+    setShape(shapeVal);
+    computeBestOrder();
   }
 
   /**
-   * Empty constructor.
-   */
-  protected NestedIndex() {
-  }
-
-  /**
-   * Returns the Healpix index of the shape. <p> A long is returned when the geometry is a point. A HealpixMoc is returned when the geometry
-   * is a polygon or a cone. </p>
+   * Returns the index. <p> For a Point, returns a long For a cone or a polygon, returns a RangeSet. </p>
+   *
+   * <p>RuntimeException if the shape is unknown.</p>
    *
    * @return the index
    */
   @Override
-  public final Object getIndex() {
+  public Object getIndex() {
+    Object result = null;
     try {
-      Object result = null;
-      HealpixIndex index = new HealpixIndex((int) Math.pow(2, getOrderMax()), Scheme.NESTED);
+      HealpixIndex index = new HealpixIndex((int) Math.pow(2, getOrder()), Scheme.RING);
       switch (getShape().getType()) {
         case POINT:
           result = computePointIndex(index);
@@ -90,140 +92,168 @@ public class NestedIndex implements Index {
           result = computePolygonIndex(index);
           break;
         case CONE:
-          result = computePolygonIndex(index);
+          result = computeConeIndex(index);
           break;
         default:
           throw new RuntimeException("Shape : " + getShape() + " not found");
       }
-      return result;
     } catch (Exception ex) {
-      LOG.log(Level.SEVERE, null, ex);
-      throw new RuntimeException("Cannot compute the index.");
+      Logger.getLogger(NestedIndex.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex);
     }
+    return result;
   }
 
   /**
-   * Computes the pixel related to the point.
+   * Computes the pixel that intersects with the point.
    *
    * @param index Healpix index
    * @return the pixel number
-   * @throws Exception Healpix Exception
+   * @throws Exception Healpix
    */
-  protected final long computePointIndex(final HealpixIndex index) throws Exception {
-    return computePointIndex(index, (Point) getShape());
+  protected long computePointIndex(final HealpixIndex index) throws Exception {
+    Point point = (Point) getShape();
+    return index.ang2pix_nest(point.theta, point.phi);
   }
 
   /**
-   * Computes the pixel related to the point.
+   * Computes the pixels that intersect with the cone.
    *
    * @param index Healpix index
-   * @param shape point
-   * @return the pixel number
-   * @throws Exception Healpix Exception
+   * @return Returns the pixel numbers
+   * @throws Exception Healpix
    */
-  protected static long computePointIndex(final HealpixIndex index, final Shape shape) throws Exception {
-    Point point = (Point) shape;
-    return index.ang2pix(point);
+  protected RangeSet computeConeIndex(final HealpixIndex index) throws Exception {
+    Cone cone = (Cone) getShape();
+    RangeSet rangeSet =  index.queryDiscInclusive(cone.getCenter(), cone.getRadius(), TYPICAL_CHOICE_FACT);
+    long[] pixelsNested = new long[(int)rangeSet.nval()];
+    RangeSet.ValueIterator iter = rangeSet.valueIterator();
+    int indice = 0;
+    while(iter.hasNext()) {
+        long pixel = iter.next();
+        pixelsNested[indice] = index.ring2nest(pixel);
+        indice++;
+    }        
+    return new RangeSet(pixelsNested);
   }
 
   /**
-   * Returns a hierarchical index of a cone.
+   * Compute the pixels that intersect with the polygon.
    *
    * @param index Healpix index
-   * @return the pixel numbers as a hierarchical index
-   * @throws Exception Healpix Exception
+   * @return the rangeSet;
+   * @throws Exception Healpix
    */
-  protected final HealpixMoc computeConeIndex(final HealpixIndex index) throws Exception {
-    return computeConeIndex(index, (Cone) getShape());
-  }
-
-  /**
-   * Returns a hierarchical index of a cone.
-   *
-   * @param index Healpix index
-   * @param shape cone
-   * @return the pixel numbers as a hierarchical index
-   * @throws Exception Healpix Exception
-   */
-  protected static HealpixMoc computeConeIndex(final HealpixIndex index, final Shape shape) throws Exception {
-    HealpixMoc moc = new HealpixMoc();
-    Cone cone = (Cone) shape;
-    RangeSet rangeSet = index.queryDiscInclusive(cone.getCenter(), cone.getRadius(), TYPICAL_CHOICE_FACT);
-    RangeSet.ValueIterator valueIter = rangeSet.valueIterator();
-    while (valueIter.hasNext()) {
-      long pixNest = valueIter.next();
-      moc.add(new MocCell(index.getOrder(), pixNest));
-    }
-    return moc;
-  }
-
-  /**
-   * Returns a hierarchical index of a polygon.
-   *
-   * <p> When the polygon is clockwise, the index is computed on this polygon.<br/> When the polygon is counterclockwised, the index is
-   * computed on the complement of this polygon </p>
-   *
-   * @param index Healpix index
-   * @return the HealpixMoc;
-   * @throws Exception Healpix Exception
-   */
-  protected final HealpixMoc computePolygonIndex(final HealpixIndex index) throws Exception {
-    return computePolygonIndex(index, (Polygon) getShape());
-  }
-
-  /**
-   * Returns a hierarchical index of a polygon.
-   *
-   * <p> When the polygon is clockwise, the index is computed on this polygon.<br/> When the polygon is counterclockwised, the index is
-   * computed on the complement of this polygon </p>
-   *
-   * @param index Healpix index
-   * @param shape polygon
-   * @return the HealpixMoc;
-   * @throws Exception Healpix Exception
-   */
-  protected static HealpixMoc computePolygonIndex(final HealpixIndex index, final Shape shape) throws Exception {
+  protected RangeSet computePolygonIndex(final HealpixIndex index) throws Exception {
     RangeSet rangeSet;
-    HealpixMoc moc = new HealpixMoc();
-    Polygon polygon = (Polygon) shape;
+    Polygon polygon = (Polygon) getShape();
+    
 
-    Resampling resample = new Resampling(polygon);
-    polygon = resample.processResampling();
-    List<Polygon> polygons = polygon.triangulate();
-    rangeSet = new RangeSet();
-    for (Polygon p : polygons) {
-      RangeSet rangeSetTmp = new RangeSet(rangeSet);
-      rangeSet.setToUnion(rangeSetTmp, computePolygon(p.getPoints(), index));
+    if (polygon.isConvex() && polygon.isCounterClockwised()) {
+      try {
+        rangeSet = computePolygon(polygon.getPoints(), index);
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    } else {
+      Resampling resample = new Resampling(polygon);    
+      polygon = resample.processResampling();      
+      List<Polygon> polygons = polygon.triangulate();
+      rangeSet = new RangeSet();
+      for (Polygon p : polygons) {
+        RangeSet rangeSetTmp = new RangeSet(rangeSet);
+        rangeSet.setToUnion(rangeSetTmp, computePolygon(p.getPoints(), index));
+      }
     }
 
-    RangeSet.ValueIterator valueIter = rangeSet.valueIterator();
-    while (valueIter.hasNext()) {
-      moc.add(new MocCell(index.getOrder(), valueIter.next()));
-    }
     if (polygon.isClockwised()) {
-      moc = moc.complement();
+      RangeSet rangeFullSky = new RangeSet();
+      long nPixels = index.getNpix();
+      rangeFullSky.add(1, nPixels);
+      RangeSet rangeSetTmp = new RangeSet(rangeSet);
+      rangeSet.setToDifference(rangeFullSky, rangeSetTmp);
     }
-    return moc;
+    long[] pixelsNested = new long[(int)rangeSet.nval()];
+    RangeSet.ValueIterator iter = rangeSet.valueIterator();
+    int indice = 0;
+    while(iter.hasNext()) {
+        long pixel = iter.next();
+        pixelsNested[indice] = index.ring2nest(pixel);
+        indice++;
+    }        
+    return new RangeSet(pixelsNested);    
   }
 
   /**
-   * Returns a range of Healpix pixels from the a list of points.
+   * Computes the pixels that intersect with a clockwised polygon.
    *
    * @param points List of points of the polygon
    * @param index Healpix index
    * @return the rangeSet of pixels
-   * @throws Exception Helapix Exception
+   * @throws Exception Healpix
    */
-  protected static RangeSet computePolygon(final List<Point> points, final HealpixIndex index) throws Exception {
+  protected RangeSet computePolygon(final List<Point> points, final HealpixIndex index) throws Exception {
     RangeSet result;
-    Pointing[] pointings = new Pointing[points.size()];
-    int i = 0;
-    for (Point p : points) {
-      pointings[i] = p;
-      i++;
+    if (points.size() != 3) {
+      Pointing[] pointings = new Pointing[points.size()];
+
+      int i = 0;
+      double maxTheta = 0;
+      double minTheta = Math.PI * 2;
+      for (Point p : points) {
+        pointings[i] = p;
+        i++;
+        double currentTheta = p.theta();
+        if (currentTheta > maxTheta) {
+          maxTheta = currentTheta;
+        }
+        if (currentTheta < minTheta) {
+          minTheta = currentTheta;
+        }
+      }
+
+      try {
+        result = index.queryPolygonInclusive(pointings, TYPICAL_CHOICE_FACT);
+      } catch (Exception ex) {
+        result = index.queryStrip(minTheta, maxTheta, true);
+      }
+    } else {
+      LongRangeSet resultLong = index.query_triangle(index.getNside(), points.get(0).getAsVector(), points.get(1).getAsVector(), points.get(2).getAsVector(), 0, 1);
+      LongRangeIterator iter = resultLong.rangeIterator();
+      result = new RangeSet();
+      while (iter.moveToNext()) {
+        long first = iter.first();
+        long last = iter.last() + 1;
+        result.add(first, last);
+      }
     }
-    result = index.queryPolygonInclusive(pointings, TYPICAL_CHOICE_FACT);
-    return result;
+    long[] pixelsNested = new long[(int)result.nval()];
+    RangeSet.ValueIterator iter = result.valueIterator();
+    int indice = 0;
+    while(iter.hasNext()) {
+        long pixel = iter.next();
+        pixelsNested[indice] = index.ring2nest(pixel);
+        indice++;
+    }        
+    return new RangeSet(pixelsNested);    
+  }
+
+  /**
+   * Sets the Healpix order.
+   *
+   * @param orderHealpix Healpix resolution level
+   */
+  public void setOrder(final int orderHealpix) {
+    this.order = orderHealpix;
+  }
+
+  /**
+   * Returns the order of the Healpix processing.
+   *
+   * @return the Healpix resolution level
+   */
+  public int getOrder() {
+    return order;
   }
 
   /**
@@ -231,52 +261,88 @@ public class NestedIndex implements Index {
    *
    * @return the shape
    */
-  public final Shape getShape() {
+  public Shape getShape() {
     return shape;
   }
 
   /**
-   * Sets the shape.
+   * Sets the shape to index.
    *
-   * @param val shape
+   * @param val Shape
    */
-  public final void setShape(final Shape val) {
+  protected void setShape(final Shape val) {
     this.shape = val;
   }
 
   /**
-   * Returns the Max order.
+   * Computes an automatic order based on the shape area.
    *
-   * @return max order
+   * @param shapeHealpix polygon
+   * @throws Exception Exception
    */
-  public final int getOrderMax() {
-    return this.orderMax;
+  protected void computeBestOrderPolygon(final Shape shapeHealpix) throws Exception {
+    Polygon polygon = (Polygon) shapeHealpix;
+    double pixRes = 0.0; // in degree
+    if (polygon.getPoints().size() == QUADRI) {
+      SpatialVector sp1 = new SpatialVector(Math.toDegrees(polygon.getPoints().get(0).phi()), Math.toDegrees(Math.PI / 2 - polygon.getPoints().get(0).theta()));
+      SpatialVector sp2 = new SpatialVector(Math.toDegrees(polygon.getPoints().get(1).phi()), Math.toDegrees(Math.PI / 2 - polygon.getPoints().get(1).theta()));
+      SpatialVector sp3 = new SpatialVector(Math.toDegrees(polygon.getPoints().get(2).phi()), Math.toDegrees(Math.PI / 2 - polygon.getPoints().get(2).theta()));
+      pixRes = Math.toDegrees(HealpixIndex.angDist(sp1, sp2));
+      pixRes = (Math.toDegrees(HealpixIndex.angDist(sp2, sp3)) < pixRes) ? Math.toDegrees(HealpixIndex.angDist(sp2, sp3)) : pixRes;
+    } else {
+      SpatialVector spInit = new SpatialVector(Math.toDegrees(polygon.getPoints().get(0).phi()), Math.toDegrees(Math.PI / 2 - polygon.getPoints().get(0).theta()));
+      for (int i = 1; i < polygon.getPoints().size(); i++) {
+        SpatialVector sp = new SpatialVector(Math.toDegrees(polygon.getPoints().get(i).phi()), Math.toDegrees(Math.PI / 2 - polygon.getPoints().get(i).theta()));
+        double angularDist = Math.toDegrees(HealpixIndex.angDist(spInit, sp));
+        if (angularDist < pixRes) {
+          pixRes = angularDist;
+        }
+        spInit = sp;
+      }
+    }
+    int nside = HealpixIndex.calculateNSide(pixRes * DEG_TO_ARCSEC);
+    int orderFromShape = HealpixIndex.nside2order(nside);
+    int bestOrder = (orderFromShape > HealpixIndex.order_max) ? HealpixIndex.order_max : orderFromShape;
+    setOrder(bestOrder);
   }
 
   /**
-   * Returns the min order.
+   * Computes an automatic order based on the shape area.
    *
-   * @return min order.
+   * @param shapeHealpix cone
+   * @throws Exception Healpix
    */
-  public final int getOrderMin() {
-    return this.orderMin;
+  protected void computeBestOrderCone(final Shape shapeHealpix) throws Exception {
+    Cone cone = (Cone) shapeHealpix;
+    double radiusInArcsec = Math.toDegrees(cone.getRadius()) * 2 * DEG_TO_ARCSEC;
+    int nside = HealpixIndex.calculateNSide(radiusInArcsec);
+    int orderFromShape = HealpixIndex.nside2order(nside);
+    int bestOrder = ((orderFromShape) > HealpixIndex.order_max) ? HealpixIndex.order_max : orderFromShape;
+    setOrder(bestOrder);
   }
 
   /**
-   * Sets the max order.
+   * Computes an automatic order based on the shape area.
    *
-   * @param val max order
+   * <p>RuntimeException if the shape is unknown or an error.</p>
    */
-  public final void setOrderMax(final int val) {
-    this.orderMax = val;
-  }
-
-  /**
-   * Sets the min order.
-   *
-   * @param val mion order
-   */
-  public final void setOrderMin(final int val) {
-    this.orderMin = val;
+  protected void computeBestOrder() {
+    try {
+      switch (getShape().getType()) {
+        case POINT:
+          setOrder(HealpixIndex.order_max);
+          break;
+        case POLYGON:
+          computeBestOrderPolygon(shape);
+          break;
+        case CONE:
+          computeBestOrderCone(shape);
+          break;
+        default:
+          throw new RuntimeException("Shape : " + getShape() + " not found");
+      }
+    } catch (Exception ex) {
+      throw new RuntimeException("Shape : " + getShape() + " not found");
+    }
   }
 }

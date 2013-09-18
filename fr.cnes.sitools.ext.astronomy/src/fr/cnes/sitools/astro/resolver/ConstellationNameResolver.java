@@ -21,6 +21,8 @@ package fr.cnes.sitools.astro.resolver;
 import fr.cnes.sitools.astro.resolver.constellations.Wrapper;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -37,11 +39,14 @@ import org.restlet.resource.ClientResource;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ConstellationNameResolver extends AbstractNameResolver {
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = Logger.getLogger(ConstellationNameResolver.class.getName());
     /**
      * Constellation name to find.
      */
-    private final transient String constellationName;
+    private String constellationName;
 
     /**
      * Credits to return.
@@ -52,15 +57,36 @@ public class ConstellationNameResolver extends AbstractNameResolver {
      * Constellation database.
      */
     private static final String CONSTELLATIONS_DB = "constellations.data";
-
+    /**
+     * Empty constructor.
+     */
+    protected ConstellationNameResolver() {
+        
+    }
     /**
      * Constructor.
      * @param consNameVal constellation name to find
      */
     public ConstellationNameResolver(final String consNameVal) {
-        this.constellationName = consNameVal.toLowerCase();
+        setConstellationName(consNameVal);
     }
-
+    /**
+     * Sets the constellation name.
+     * <p>
+     * The constellation name is transformed in lower case.
+     * </p>
+     * @param constellationNameVal constellation name to set
+     */
+    protected final void setConstellationName(final String constellationNameVal) {
+        this.constellationName = constellationNameVal.toLowerCase();
+    }
+    /**
+     * Returns the constellation name.
+     * @return the constellation name
+     */
+    protected final String getConstellationName() {
+        return this.constellationName;
+    }
     @Override
     public final NameResolverResponse getResponse() {
         NameResolverResponse response = new NameResolverResponse(CREDITS_NAME);
@@ -70,11 +96,13 @@ public class ConstellationNameResolver extends AbstractNameResolver {
             final JAXBContext jaxb = JAXBContext.newInstance(Wrapper.class);
             final Unmarshaller umMarshaller = jaxb.createUnmarshaller();
             final Wrapper wrapper = (Wrapper) umMarshaller.unmarshal(constelDb.getStream());
-            final HashMap<String, Double[]> database = wrapper.getHashMap();
-            if (database.containsKey(this.constellationName)) {
-                final Double[] coordinates = database.get(this.constellationName);
+            final HashMap<String, Double[]> database = wrapper.getHashMap();            
+            if (database.containsKey(getConstellationName())) {
+                LOG.log(Level.INFO, "{0} found as constellation", getConstellationName());
+                final Double[] coordinates = database.get(getConstellationName());
                 response.addAstroCoordinate(coordinates[0], coordinates[1]);
             } else {
+                LOG.log(Level.WARNING, "{0} not found as constellation", getConstellationName());
                 if (getSuccessor() == null) {
                     response.setError(new NameResolverException(Status.CLIENT_ERROR_NOT_FOUND));
                 } else {

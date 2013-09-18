@@ -18,8 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.FeaturesDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.util.ClientResourceProxy;
@@ -53,20 +53,20 @@ public class ReverseNameResolver {
     /**
      * input parameter : sky position.
      */
-    private transient String coordinates;
+    private String coordinates;
     /**
      * input parameter : radius.
      */
-    private final transient double radius;
+    private double radius;
     
     /**
      * Coordinates system of both inputs and response.
      */    
-    private final transient CoordinateSystem coordinatesSystem;
+    private CoordinateSystem coordinatesSystem;
     /**
      * Init data model.
      */
-    final FeaturesDataModel features = new FeaturesDataModel();
+    private final transient FeaturesDataModel features;
     /**
      * Max radius.
      */
@@ -75,7 +75,12 @@ public class ReverseNameResolver {
      * Minimum time in seconds to wait to redo another request. 
      */
     private static final int RESPONSE_IN_SECONDS_TO_WAIT = 6;
-
+    /**
+     * Empty constructor.
+     */
+    protected ReverseNameResolver() {
+        this.features = new FeaturesDataModel();
+    }
     /**
      * Creates a ReverseNameResolver instance based on coordinates (ex: 23:42:30.02 -42:34:12.02) and the Healpix order.<br/>
      * 
@@ -87,10 +92,75 @@ public class ReverseNameResolver {
      * @throws NameResolverException  
      */
     public ReverseNameResolver(final String coordinatesVal, final double radiusVal, final CoordinateSystem coordinateSystemVal) throws NameResolverException {
-        this.coordinates = coordinatesVal;
-        this.radius = (radiusVal > MAX_RADIUS) ? MAX_RADIUS : radiusVal;
-        this.coordinatesSystem = coordinateSystemVal;
+        setCoordinates(coordinatesVal);
+        setRadius(radiusVal);
+        setCoordinatesSystem(coordinateSystemVal);
+        this.features = new FeaturesDataModel();
+        checkInputParameters();
         process();
+    }
+  /**
+   * Checks if the input parameters are set.
+   * 
+   * <p>
+   * Returns a IllegalArgumentException if one of the input parameters is <code>null</code> or empty.
+   * </p>
+   */
+    protected final void checkInputParameters() {
+      if (getCoordinates() == null || getCoordinates().isEmpty()) {
+        throw new IllegalArgumentException("Coordinates must be set.");
+      }
+      if (getRadius() <= 0) {
+        throw new IllegalArgumentException("Radius must > 0.");
+      }
+      if (getCoordinatesSystem() == null) {
+        throw new IllegalArgumentException("Coordinates system must be set.");
+      }
+    }    
+    /**
+     * Sets the coordinates.
+     * @param coordinatesVal the coordinates 
+     */
+    protected final void setCoordinates(final String coordinatesVal) {
+        this.coordinates = coordinatesVal;
+    }
+    /**
+     * Returs the coordinates.
+     * @return the coordinates
+     */
+    protected final String getCoordinates() {
+        return this.coordinates;
+    }
+    /**
+     * Sets the radius.
+     * <p>
+     * when the radius is > MAX_RADIUS then radius = MAX_RADIUS
+     * </p>
+     * @param radiusVal the radius 
+     */
+    protected final void setRadius(final double radiusVal) {
+        this.radius = (radiusVal > MAX_RADIUS) ? MAX_RADIUS : radiusVal;
+    }
+    /**
+     * Returns the radius.
+     * @return the radius
+     */
+    protected final double getRadius() {
+        return this.radius;
+    }
+    /**
+     * Sets the coordinate system.
+     * @param coordinateSystemVal the coordinate system
+     */
+    protected final void setCoordinatesSystem(final CoordinateSystem coordinateSystemVal) {
+        this.coordinatesSystem = coordinateSystemVal;
+    }
+    /**
+     * Returns the coordinate system.
+     * @return the coordinate system
+     */
+    protected final CoordinateSystem getCoordinatesSystem() {
+        return this.coordinatesSystem;
     }
 
     /**
@@ -101,15 +171,15 @@ public class ReverseNameResolver {
     private void process() throws NameResolverException {        
         // we convert in galactic because the service only accept equatorial
         if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
-            String[] coordinatesStr = coordinates.split(" ");
-            AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesStr[0], coordinatesStr[1]);            
+            final String[] coordinatesStr = coordinates.split(" ");
+            final AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesStr[0], coordinatesStr[1]);            
             astroCoordinate.transformTo(CoordinateSystem.EQUATORIAL);
             this.coordinates = astroCoordinate.getRaAsSexagesimal() + " " + astroCoordinate.getDecAsSexagesimal();
         }
         
         // building the query
-        String serviceToQuery = TEMPLATE_REVERSE_NAME_RESOLVER.replace("<coordinates>", coordinates);
-        serviceToQuery = serviceToQuery.replace("<radius>", String.valueOf(radius));
+        final String serviceToQueryTmp = TEMPLATE_REVERSE_NAME_RESOLVER.replace("<coordinates>", coordinates);
+        final String serviceToQuery = serviceToQueryTmp.replace("<radius>", String.valueOf(radius));
 
         // requesting
         final ClientResourceProxy client = new ClientResourceProxy(serviceToQuery, Method.GET);
@@ -130,11 +200,12 @@ public class ReverseNameResolver {
                     final int posSlash = response.indexOf('/');
                     final String position = response.substring(0, posSlash);
                     final String name = response.substring(posSlash + 1, posParenthesis);
-                    Double magnitude = null;
+                    Double magnitude;
                     try {
                         magnitude = Double.valueOf(response.substring(posParenthesis + 1, posComma));
                     } catch (NumberFormatException ex) {
                         LOG.log(Level.FINER, null, ex);
+                        magnitude = Double.NaN;
                     }
                     final String objectType = response.substring(posComma + 1, response.length() - 2);
 
@@ -152,10 +223,10 @@ public class ReverseNameResolver {
                     }
 
                     // we are building the data model for the response
-                    FeatureDataModel feature = new FeatureDataModel(name);
+                    final FeatureDataModel feature = new FeatureDataModel(name);
                     feature.addProperty("title", name);
                     feature.addProperty("credits", "CDS");
-                    if (Util.isSet(magnitude)) {
+                    if (Util.isSet(magnitude) && !magnitude.isNaN()) {
                         feature.addProperty("magnitude", magnitude);
                     }
                     feature.addProperty("type", objectType);
@@ -172,25 +243,23 @@ public class ReverseNameResolver {
             throw new NameResolverException(status, status.getThrowable());
         }
     }
-     
-
     /**
      * Get the response from the reverse name resolver. The format of the
      * response is the following :      {@code
      * {
      *   totalResults=1,
      *   features=[{
-     *      geometry={          
+     *      geometry={
      *          type=Point,
      *          coordinates=[23.934419722222223,-0.9884027777777777]
-     *      },     
+     *      },
      *      properties={
      *         "crs": {
      *              "type": "name",
      *              "properties": {
      *                  "name": "equatorial.ICRS"
      *              }
-     *          },     
+     *          },
      *          title=IC 1515 ,
      *          magnitude=14.8,
      *          credits=CDS,

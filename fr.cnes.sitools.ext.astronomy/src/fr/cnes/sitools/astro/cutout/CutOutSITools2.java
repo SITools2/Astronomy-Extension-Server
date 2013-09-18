@@ -243,7 +243,7 @@ public class CutOutSITools2 implements CutOutInterface {
         this.scaleDegPerPixelWidth = computeScaleDegPerPixelWidth(wcs);
         this.scaleDegPerPixelHeight = computeScaleDegPerPixelHeight(wcs);
         this.xyCoord = wcs.wcs2pix(this.getRa(), this.getDec());
-        if (getIsDataCube()) {
+        if (isDataCube()) {
             setWidth(getWidth() + 1);
             setHeight(getHeight() + 1);
             this.lengths[getWidth()] = (int) Math.round(computeOutputWidth());
@@ -517,7 +517,7 @@ public class CutOutSITools2 implements CutOutInterface {
         this.setFormatOutput(SupportedFileFormat.JPEG);
         try {
             Raster raster;
-            if (getIsDataCube()) {
+            if (isDataCube()) {
                 final double[][] data = ((double[][][]) getFits().getImageHDU().getData().getData())[this.getDeepLevel()];
                 final ImageData imgData = new ImageData(data);
                 final BasicHDU bHdu = Fits.makeHDU(data);
@@ -589,7 +589,7 @@ public class CutOutSITools2 implements CutOutInterface {
     }
 
     @Override
-    public final boolean getIsDataCube() {
+    public final boolean isDataCube() {
         try {
             return (this.getFits().getImageHDU().getAxes().length == 3);
         } catch (FitsException ex) {

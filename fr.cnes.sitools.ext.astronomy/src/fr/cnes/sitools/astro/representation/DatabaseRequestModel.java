@@ -62,15 +62,22 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
     /**
      * DB Result set.
      */
-    private final DatabaseRequest request;
+    private DatabaseRequest request;
     /**
      * SITools2 converters.
      */
-    private final transient ConverterChained converterChained;
+    private ConverterChained converterChained;
     /**
      * Number of rows.
      */
-    private transient int size;
+    private transient int sizeValue;
+
+    /**
+     * Empty constructor.
+     */
+    protected DatabaseRequestModel() {
+        setSize(0);
+    }
 
     /**
      * Creates a DatabaseRequest Model instance.
@@ -79,13 +86,13 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      * @param converterChainedVal the converter object
      */
     public DatabaseRequestModel(final DatabaseRequest rsVal, final ConverterChained converterChainedVal) {
-        this.request = rsVal;
-        this.converterChained = converterChainedVal;
-        this.size = request.getTotalCount();
+        setRequest(rsVal);
+        setConverterChained(converterChainedVal);
+        setSize(request.getTotalCount());
 
         // we need to close the connection here
         // otherwise the connection will not be free.
-        if (this.size == 0) {
+        if (this.size() == 0) {
             try {
                 this.request.close();
             } catch (SitoolsException ex) {
@@ -99,7 +106,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      * @param sizeVal number of rows
      */
     public final void setSize(final int sizeVal) {
-        this.size = sizeVal;
+        this.sizeValue = sizeVal;
     }
 
     /**
@@ -110,15 +117,17 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      */
     @Override
     public final TemplateModel get(final int rowNumber) throws TemplateModelException {
-        TemplateModel model = null;
+        TemplateModel model;
         try {
-            final boolean nextResult = request.nextResult();
+            final boolean nextResult = getRequest().nextResult();
             if (nextResult) {
-                model = new Row(request, this.converterChained);
+                model = new Row(getRequest(), this.getConverterChained());
+            } else {
+                model = null;
             }
         } catch (SitoolsException ex) {
             try {
-                this.request.close();
+                this.getRequest().close();
             } catch (SitoolsException ex1) {
                 LOG.log(Level.WARNING, null, ex1);
             } 
@@ -128,7 +137,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         // this is the last record and we need to close the connection
         if (rowNumber == this.size() - 1) {
             try {
-                this.request.close();
+                this.getRequest().close();
             } catch (SitoolsException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
@@ -142,7 +151,42 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      */
     @Override
     public final int size()  {
-        return this.size;
+        return this.sizeValue;
+    }
+
+    /**
+     * Returns the database request.
+     * @return the request
+     */
+    protected final DatabaseRequest getRequest() {
+        return request;
+    }
+
+    /**
+     * Sets the database request.
+     * @param requestVal the database request to set
+     */
+    protected final void setRequest(final DatabaseRequest requestVal) {
+        this.request = requestVal;
+    }
+
+    /**
+     * Returns the converter.
+     * @return the converterChained
+     */
+    protected final ConverterChained getConverterChained() {
+        return converterChained;
+    }
+
+    /**
+     * Sets the converter.
+     * <p>
+     * We set the transfer function that could be defined in SITools2.
+     * </p>
+     * @param converterChainedVal the converterChained to set
+     */
+    protected final void setConverterChained(final ConverterChained converterChainedVal) {
+        this.converterChained = converterChainedVal;
     }
 
     /**
@@ -153,15 +197,22 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         /**
          * Database result set.
          */
-        private final DatabaseRequest resultSet;
+        private DatabaseRequest resultSet;
         /**
          * Mapping with database columns.
          */
-        private final Map map;
+        private Map map;
         /**
          * SITools2 converter.
          */
-        private final ConverterChained converterChained;
+        private ConverterChained converterChained;
+        
+        /**
+         * Emprty constructor.
+         */
+        protected Row() {
+            this.map = new HashMap();
+        }
 
         /**
          * Contructs a new row.
@@ -170,11 +221,59 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          * @throws SitoolsException Exception
          */
         public Row(final DatabaseRequest rsVal, final ConverterChained converterChainedVal) throws SitoolsException {
-            this.resultSet = rsVal;
-            this.converterChained = converterChainedVal;
-            this.map = new HashMap();
+            setResultSet(rsVal);
+            setConverterChained(converterChainedVal);
+            setMap(new HashMap());
             init();
         }
+
+        /**
+         * Sets the result set.
+         * @param databaseRequestVal resultset to set
+         */
+        protected final void setResultSet(final DatabaseRequest databaseRequestVal) {
+            this.resultSet = databaseRequestVal;
+        }
+
+        /**
+         * Returns the resultSet.
+         * @return the resultSet
+         */
+        protected final DatabaseRequest getResultSet() {
+            return this.resultSet;
+        }
+
+        /**
+         * Returns the converter.
+         * @return the converterChained
+         */
+        protected final ConverterChained getConverterChained() {
+            return converterChained;
+        }
+
+        /**
+         * Sets the converter.
+         * @param converterChainedVal the converterChained to set
+         */
+        protected final void setConverterChained(final ConverterChained converterChainedVal) {
+            this.converterChained = converterChainedVal;
+        }        
+
+        /**
+         * Sets the mapping.
+         * @param mapVal the mapping
+         */
+        protected final void setMap(final HashMap mapVal) {
+            this.map = mapVal;
+        }
+
+        /**
+         * Returns the mapping.
+         * @return the mapping
+         */
+        protected final Map getMap() {
+            return this.map;
+        }       
 
         /**
          * Creates a HashMap of the different attributes from a record. 
@@ -184,7 +283,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          * </p>
          * @throws SitoolsException Exception
          */
-        private void init() throws SitoolsException {
+        protected final void init() throws SitoolsException {
             Record record;
             if (Util.isSet(converterChained)) {
                 record = converterChained.getConversionOf(this.resultSet.getRecord());
@@ -205,7 +304,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final TemplateModel get(final String columnAlias) throws TemplateModelException {
-            return new SimpleScalar(String.valueOf(this.map.get(columnAlias)));            
+            return new SimpleScalar(String.valueOf(getMap().get(columnAlias)));
         }
 
         /**
@@ -215,7 +314,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final boolean isEmpty() throws TemplateModelException {
-            return (this.resultSet == null);
+            return (getResultSet() == null);
         }
-    }    
+    }
 }

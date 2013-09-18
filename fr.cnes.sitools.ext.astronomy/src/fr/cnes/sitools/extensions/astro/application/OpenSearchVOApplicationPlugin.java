@@ -49,12 +49,12 @@ import org.restlet.routing.Template;
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplicationPlugin {
+public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
 
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchVOConeSearchApplicationPlugin.class.getName());
+  private static final Logger LOG = Logger.getLogger(OpenSearchVOApplicationPlugin.class.getName());
   /**
    * Maximum of characters that is allowed for the short name by the open search standard.
    */
@@ -77,9 +77,17 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
   private final transient Map<String, VoDictionary> dico = new HashMap<String, VoDictionary>();
 
   /**
+   * List of supported protocols by the service.
+   */
+  public enum Protocol {
+      DETECT_AUTOMATICALLY,
+      CONE_SEARCH_PROTOCOL,
+      SIMPLE_IMAGE_ACCESS_PROTOCOL;
+  }
+  /**
    * Constructor.
    */
-  public OpenSearchVOConeSearchApplicationPlugin() {
+  public OpenSearchVOApplicationPlugin() {
     super();
     constructor();
   }
@@ -89,9 +97,9 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    *
    * @param context Context
    */
-  public OpenSearchVOConeSearchApplicationPlugin(final Context context) {
+  public OpenSearchVOApplicationPlugin(final Context context) {
     super(context);
-    constructor();    
+    constructor();
   }
 
   /**
@@ -100,7 +108,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
    * @param context Context
    * @param model Plugin model
    */
-  public OpenSearchVOConeSearchApplicationPlugin(final Context context, final ApplicationPluginModel model) {
+  public OpenSearchVOApplicationPlugin(final Context context, final ApplicationPluginModel model) {
     super(context, model);
     try {
       final Category category = Category.valueOf(getParameter("category").getValue());
@@ -121,7 +129,7 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     this.getModel().setClassAuthor("J-C Malapert");
     this.getModel().setClassName("VO OpenSearch Application");
     this.getModel().setClassOwner("CNES");
-    this.getModel().setClassVersion("1.1");
+    this.getModel().setClassVersion("1.0");
 
     ApplicationPluginParameter param = new ApplicationPluginParameter();
     param.setName("category");
@@ -174,15 +182,8 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     this.addParameter(param);
 
     param = new ApplicationPluginParameter();
-    param.setName("queryShape");
-    param.setDescription("Contains a value that indicates the shape that will be given by the user.");
-    param.setValueType(String.format("xs:enum[%s,%s]", GeometryShape.CONE.getShape(), GeometryShape.HEALPIX.getShape()));
-    param.setValue(GeometryShape.HEALPIX.getShape());
-    this.addParameter(param);
-
-    param = new ApplicationPluginParameter();
-    param.setName("coneSearchURL");
-    param.setDescription("The Cone Search URL");
+    param.setName("serviceURL");
+    param.setDescription("URL of the VO service");
     param.setValueType("String");
     param.setValue("http://vizier.u-strasbg.fr/viz-bin/votable/-A?-source=I/284&");
     this.addParameter(param);
@@ -195,31 +196,38 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
     this.addParameter(param);
 
     param = new ApplicationPluginParameter();
+    param.setName("protocol");
+    param.setDescription("Set the service protocol");
+    param.setValueType("xs:enum[" + Protocol.DETECT_AUTOMATICALLY.name() + "," + Protocol.CONE_SEARCH_PROTOCOL.name() + "," + Protocol.SIMPLE_IMAGE_ACCESS_PROTOCOL.name() + "]");
+    param.setValue(Protocol.DETECT_AUTOMATICALLY.name());
+    this.addParameter(param);
+    
+    param = new ApplicationPluginParameter();
     param.setName("cacheable");
     param.setDescription("Set to true when the result can be cached");
     param.setValueType("xs:enum[True,False]");
     param.setValue("False");
-    this.addParameter(param);    
+    this.addParameter(param);
     SingletonCacheHealpixDataAccess.create();
   }
   
   @Override
   public final void sitoolsDescribe() {
-    this.setName("VO OpenSearch Application for Cone Search");
+    this.setName("VO OpenSearch Application");
     this.setAuthor("J-C Malapert");
     this.setOwner("CNES");
-    this.setDescription("This application allows to configure an open search application based on a Cone Search Protocol.");
+    this.setDescription("This application allows to configure an open search application based on a Cone Search Protocol or Simple Image Access Protocol.");
   }
 
   @Override
-  public final Restlet createInboundRoot() {    
+  public final Restlet createInboundRoot() {
     final Router router = new Router(getContext());
     router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-    router.attachDefault(fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeDescription.class);
+    router.attachDefault(fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVODescription.class);
     if (!getParameter("syndicationRight").getValue().equals("closed")) {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
-      router.attach("/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeSearch.class);
-      router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOConeSearchDico.class);
+      router.attach("/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSearch.class);
+      router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVODico.class);
       router.attach("/moc", fr.cnes.sitools.extensions.astro.application.opensearch.VoMocDescription.class);
       attachParameterizedResources(router);
     }
@@ -318,12 +326,12 @@ public class OpenSearchVOConeSearchApplicationPlugin extends AbstractApplication
           constraint.setMessage("syndicationRight must take one of the following values : open, private, limited, closed");
           constraintList.add(constraint);
         }
-        final ApplicationPluginParameter coneSearchURL = params.get("coneSearchURL");
-        if (coneSearchURL.getValue().isEmpty()) {
+        final ApplicationPluginParameter serviceURL = params.get("serviceURL");
+        if (serviceURL.getValue().isEmpty()) {
           final ConstraintViolation constraint = new ConstraintViolation();
-          constraint.setValueName("coneSearchURL");
+          constraint.setValueName("serviceURL");
           constraint.setLevel(ConstraintViolationLevel.CRITICAL);
-          constraint.setMessage("A cone search URL must be set.");
+          constraint.setMessage("A service URL must be set.");
           constraintList.add(constraint);
         }
         return constraintList;

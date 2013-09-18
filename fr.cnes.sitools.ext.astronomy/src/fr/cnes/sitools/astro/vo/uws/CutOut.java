@@ -168,7 +168,7 @@ public class CutOut extends AbstractJobTask {
     }
 
     /**
-     * Returns the filename from an URL without the extension and add an extension
+     * Returns the filename from an URL without the extension and add an extension.
      * @param url URL of the FITS file
      * @param ext Extension of the output file
      * @return the filename
@@ -178,10 +178,11 @@ public class CutOut extends AbstractJobTask {
         final int slashIndex = filename.lastIndexOf('/');
         final int pointIndex = filename.lastIndexOf('.');
         String filenameWithoutExt;
-        if ( pointIndex != -1 )
-        	filenameWithoutExt = filename.substring(slashIndex+1, pointIndex );
-        else
-        	filenameWithoutExt = filename.substring(slashIndex+1);
+        if (pointIndex != -1) {
+            filenameWithoutExt = filename.substring(slashIndex + 1, pointIndex);
+        } else {
+            filenameWithoutExt = filename.substring(slashIndex + 1);
+        }
         return filenameWithoutExt + "." + ext;
     }
 

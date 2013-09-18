@@ -34,13 +34,61 @@ import org.restlet.resource.ClientResource;
  * Creates a VOTable representation with a template and a data model. The data model is the following :
  * <pre>
  * root
- *    |__ totalResults
- *    |__ features (List)
- *              |__ geometry
- *              |       |__ coordinates
- *              |       |__ type
- *              |__ properties
- *                      |__ keyword/value(List)
+ *    |__ description
+ *    |__ infos
+ *    |      |__ id
+ *    |      |__ name (required)
+ *    |      |__ valueAttribute (required)
+ *    |      |__ xtype
+ *    |      |__ ref
+ *    |      |__ unit
+ *    |      |__ ucd
+ *    |      |__ utype
+ *    |__ params (List)
+ *    |      |__ param
+ *    |           |__ id
+ *    |           |__ unit
+ *    |           |__ datatype (required)
+ *    |           |__ precision
+ *    |           |__ width
+ *    |           |__ xtype
+ *    |           |__ ref
+ *    |           |__ name (required)
+ *    |           |__ ucd
+ *    |           |__ utype
+ *    |           |__ arraysize
+ *    |           |__ value (required)
+ *    |           |__ DESCRIPTION
+ *    |           |__ VALUES
+ *    |                 |__ id
+ *    |                 |__ type
+ *    |                 |__ null
+ *    |                 |__ ref
+ *    |                 |__ OPTION (List)
+ *    |                        |__ option
+ *    |                               |__ name
+ *    |                               |__ value (required)
+ *    |__ fields (List)
+ *    |      |__ field
+ *    |           |__ DESCRIPTION
+ *    |           |__ id
+ *    |           |__ name (required)
+ *    |           |__ ucd
+ *    |           |__ utype
+ *    |           |__ ref
+ *    |           |__ datatype (required)
+ *    |           |__ width
+ *    |           |__ precision
+ *    |           |__ unit
+ *    |           |__ type
+ *    |           |__ xtype
+ *    |           |__ arraysize
+ *    |__ rows (List) (required)
+ *    |     |__ row (required)
+ *    |         
+ *    |__ sqlColAlias (List) (required)
+ *          |__ sqlcol (required)
+ * 
  * </pre> Provide a VOTable representation by streaming based on Freemarker To have a dataModel by streaming, dataModel for rows element
  * must use the DatabaseRequestModel adapter
  *
@@ -59,11 +107,11 @@ public class VOTableRepresentation extends OutputRepresentation {
   /**
    * Data model that contains the information to represent.
    */
-  private final transient Map dataModel;
+  private Map dataModel;
   /**
    * Template file.
    */
-  private final transient String ftl;
+  private String ftl;
 
   /**
    * Creates a VOTableRepresentation based on a dataModel and a templateFile.
@@ -73,8 +121,8 @@ public class VOTableRepresentation extends OutputRepresentation {
    */
   public VOTableRepresentation(final Map dataModelVal, final String ftlVal) {
     super(MediaType.TEXT_XML);
-    this.dataModel = dataModelVal;
-    this.ftl = ftlVal;
+    setDataModel(dataModelVal);
+    setFtl(ftlVal);
   }
   
   /**
@@ -95,10 +143,43 @@ public class VOTableRepresentation extends OutputRepresentation {
   @Override
   public final void write(final OutputStream outputStream) throws IOException {
     final Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
-            + ftl).get();
-    final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, dataModel, getMediaType());
-    LOG.log(Level.FINEST, ftl, tpl);
+            + getFtl()).get();
+    final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, getDataModel(), getMediaType());
+    LOG.log(Level.FINEST, getFtl(), tpl);
     outputStream.write(tpl.getText().getBytes());
     outputStream.flush();
   }
+
+
+    /**
+     * Returns the data model.
+     * @return the dataModel
+     */
+    protected final Map getDataModel() {
+        return dataModel;
+    }
+
+    /**
+     * Sets the data model.
+     * @param dataModelVal the dataModel to set
+     */
+    protected final void setDataModel(final Map dataModelVal) {
+        this.dataModel = dataModelVal;
+    }
+
+    /**
+     * Returns the template filename.
+     * @return the ftl
+     */
+    protected final String getFtl() {
+        return ftl;
+    }
+
+    /**
+     * Sets the template filename.
+     * @param ftlVal the ftl to set
+     */
+    protected final void setFtl(final String ftlVal) {
+        this.ftl = ftlVal;
+    }  
 }

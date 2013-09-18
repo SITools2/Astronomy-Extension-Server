@@ -36,7 +36,7 @@ public class PolygonTest {
   public void testSearchGeometryGeocentric() throws Exception {
     Polygon polygon = new Polygon(new Point(-118.95597, -36.1787, CoordSystem.GEOCENTRIC),
             new Point(106.04403, 73.68463, CoordSystem.GEOCENTRIC));
-    Index index = GeometryIndex.createIndex(polygon, Scheme.RING);
+    Index index = GeometryIndex.createIndex(polygon, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
     ((RingIndex) index).setOrder(3);
     RangeSet range = (RangeSet) index.getIndex();
     RangeSet expectedRange = new RangeSet();
@@ -74,7 +74,7 @@ public class PolygonTest {
     Point p3 = new Point(50, 10, CoordSystem.EQUATORIAL);
     Point p4 = new Point(50, -10, CoordSystem.EQUATORIAL);
     Polygon polygon = new Polygon(Arrays.asList(p1,p4,p3,p2));
-    Index index = GeometryIndex.createIndex(polygon, Scheme.RING);
+    Index index = GeometryIndex.createIndex(polygon, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
     ((RingIndex)index).setOrder(3);
     RangeSet range = (RangeSet) index.getIndex();     
     RangeSet expectedRange = new RangeSet();

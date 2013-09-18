@@ -210,6 +210,17 @@ public class Point extends AngularPosition implements Shape {
   }
 
   /**
+   * Inputs validation.
+   *
+   * <p>IllegalArgumentException if longitude and latitude are not in a valide range.</p>
+   *
+   * @param longitudeVal right ascension in decimal degrees
+   * @param latitudeVal declination in decimal degrees
+   */
+  protected final void checkCoordinatesInGalactic(final double longitudeVal, final double latitudeVal) {
+      checkCoordinatesInEquatorial(longitudeVal, latitudeVal);
+  }  
+  /**
    * Sets the point in a specific reference frame.
    *
    * <p>IllegalArgumentException if
@@ -231,6 +242,11 @@ public class Point extends AngularPosition implements Shape {
         setTheta(Math.toRadians(CoordSystem.convertDecToTheta(latitudeVal)));
         setPhi(Math.toRadians(CoordSystem.convertRaToPhi(longitudeVal)));
         break;
+      case GALACTIC:
+        checkCoordinatesInGalactic(longitudeVal, latitudeVal);
+        setTheta(Math.toRadians(CoordSystem.convertDecToTheta(latitudeVal)));
+        setPhi(Math.toRadians(CoordSystem.convertRaToPhi(longitudeVal)));
+        break;          
       case GEOCENTRIC:
         if (longitudeVal == MAX_LONG) {
           longitudeVal = MAX_LONG - 1e-5;
@@ -322,6 +338,9 @@ public class Point extends AngularPosition implements Shape {
       case EQUATORIAL:
         output = String.format("EQUATORIAL(%s,%s)", this.longitude, this.latitude);
         break;
+      case GALACTIC:
+        output = String.format("GALACTIC(%s,%s)", this.longitude, this.latitude);
+        break;          
       case GEOCENTRIC:
         output = String.format("GEO(%s,%s)", this.longitude, this.latitude);
         break;

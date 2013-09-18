@@ -42,12 +42,18 @@ public class PngRepresentation extends OutputRepresentation {
   /**
    * Graph.
    */
-  private final transient Graph graph;
+  private Graph graph;
   /**
    * height of the PNG.
    */
-  private final transient int height;
+  private int height;
 
+  /**
+   * Empty constructor.
+   */
+  protected PngRepresentation() {
+    super(MediaType.IMAGE_PNG);
+  }
   /**
    * Creates a PNG representation.
    *
@@ -56,8 +62,8 @@ public class PngRepresentation extends OutputRepresentation {
    */
   public PngRepresentation(final Graph graphVal, final int heightVal) {
     super(MediaType.IMAGE_PNG);
-    this.graph = graphVal;
-    this.height = heightVal;
+    setGraph(graphVal);
+    setHeight(heightVal);
   }
 
   /**
@@ -68,7 +74,39 @@ public class PngRepresentation extends OutputRepresentation {
    */
   @Override
   public final void write(final OutputStream out) throws IOException {
-    LOG.log(Level.FINEST, "PNG size, h : {0}", height);
-    Utility.createPNG(graph, out, height);
+    LOG.log(Level.FINEST, "PNG size, h : {0}", getHeight());
+    Utility.createPNG(getGraph(), out, getHeight());
   }
+
+    /**
+     * Returns the graph.
+     * @return the graph
+     */
+    protected final Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * Sets the graph.
+     * @param graphVal the graph to set
+     */
+    protected final void setGraph(final Graph graphVal) {
+        this.graph = graphVal;
+    }
+
+    /**
+     * Returns the height.
+     * @return the height
+     */
+    protected final int getHeight() {
+        return height;
+    }
+
+    /**
+     * Sets the height in pixels.
+     * @param heightVal the height to set
+     */
+    protected final void setHeight(final int heightVal) {
+        this.height = heightVal;
+    }
 }

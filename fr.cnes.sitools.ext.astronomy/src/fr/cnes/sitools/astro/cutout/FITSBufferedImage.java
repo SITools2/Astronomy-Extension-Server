@@ -36,102 +36,118 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
 
+/**
+ * Scales FITS images
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ */
 public class FITSBufferedImage extends FITSImage {
     /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(FITSBufferedImage.class.getName());
     /**
-     * Constructor.
-     * @param scaledImage Image buffer
-     * @param scaleMethod 
-     * @throws FitsException
-     * @throws edu.jhu.pha.sdss.fits.FITSImage.DataTypeNotSupportedException
-     * @throws edu.jhu.pha.sdss.fits.FITSImage.NoImageDataFoundException
+     * BYTE datatype in FITS.
+     */
+    private static final int BYTE = 8;
+    /**
+     * SHORT datatype in FITS.
+     */    
+    private static final int SHORT = 16;
+    /**
+     * INT datatype in FITS.
+     */    
+    private static final int INT = 32;
+    /**
+     * FLOAT datatype in FITS.
+     */    
+    private static final int FLOAT = -32;
+    /**
+     * DOUBLE datatype in FITS.
+     */    
+    private static final int DOUBLE = -64;
+    /**
+     * Construct a FITS image on which a scale method is applied.
+     * @param scaledImage image to transform
+     * @param scaleMethod scale method to apply
+     * @throws FitsException FITS exception
+     * @throws FITSImage.DataTypeNotSupportedException DataTypeNotSupported
+     * @throws FITSImage.NoImageDataFoundException NoImageDataFound
      * @throws IOException 
      */
-    public FITSBufferedImage(BufferedImage[] scaledImage, int scaleMethod)
+    public FITSBufferedImage(final BufferedImage[] scaledImage, final int scaleMethod)
             throws FitsException, FITSImage.DataTypeNotSupportedException, FITSImage.NoImageDataFoundException, IOException {
         super(null, scaledImage, scaleMethod);
     }
 
     /**
-     * 
-     * @param hdu
-     * @return
-     * @throws FitsException
-     * @throws edu.jhu.pha.sdss.fits.FITSImage.DataTypeNotSupportedException 
+     * Scales the image and returns it.
+     * @param hdu FITS HDU to scale
+     * @return the scaled image
+     * @throws FitsException FITS exception
+     * @throws FITSImage.DataTypeNotSupportedException DataTypeNotSupported
      */
-    public static BufferedImage[] createScaledImages(ImageHDU hdu) throws FitsException, FITSImage.DataTypeNotSupportedException {
+    public static BufferedImage[] createScaledImages(final ImageHDU hdu) throws FitsException, FITSImage.DataTypeNotSupportedException {
         return createScaledImages(hdu, 0);
     }
 
     /**
-     * 
-     * @param hdu
-     * @param dataCubeIndex
-     * @return
-     * @throws FitsException
-     * @throws edu.jhu.pha.sdss.fits.FITSImage.DataTypeNotSupportedException 
+     * Scales the data cube image and returns it.
+     * @param hdu FITS HDU to scale
+     * @param dataCubeIndex index of the data cube to scale
+     * @return the scaled data cube image and returns i
+     * @throws FitsException FITS exception
+     * @throws FITSImage.DataTypeNotSupportedException DataTypeNotSupported
      */
-    public static BufferedImage[] createScaledImages(ImageHDU hdu, int dataCubeIndex) throws FitsException, FITSImage.DataTypeNotSupportedException {
-        int bitpix = hdu.getBitPix();
-        double bZero = hdu.getBZero();
-        double bScale = hdu.getBScale();
-        int[] naxes = hdu.getAxes();
-        int width = naxes.length == 3 ? hdu.getAxes()[2] : hdu.getAxes()[1];
-        int height = naxes.length == 3 ? hdu.getAxes()[1] : hdu.getAxes()[0];
-        Object data = hdu.getData().getData();
-        Histogram hist = null;
+    public static BufferedImage[] createScaledImages(final ImageHDU hdu, final int dataCubeIndex) throws FitsException, FITSImage.DataTypeNotSupportedException {
+        final int bitpix = hdu.getBitPix();
+        final double bZero = hdu.getBZero();
+        final double bScale = hdu.getBScale();
+        final int[] naxes = hdu.getAxes();
+        final int width = naxes.length == 3 ? hdu.getAxes()[2] : hdu.getAxes()[1];
+        final int height = naxes.length == 3 ? hdu.getAxes()[1] : hdu.getAxes()[0];
+        final Object data = hdu.getData().getData();        
         short[][] scaledData = (short[][]) null;
-        Object cimage = data;
+        final Object cimage = data;
+        Histogram hist;
         switch (bitpix) {
-            case 8:
+            case BYTE:
                 hist = ScaleUtils.computeHistogram((byte[][]) (byte[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((byte[][]) (byte[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
 
                 break;
-            case 16:
+            case SHORT:
                 hist = ScaleUtils.computeHistogram((short[][]) (short[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((short[][]) (short[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
 
                 break;
-            case 32:
+            case INT:
                 hist = ScaleUtils.computeHistogram((int[][]) (int[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((int[][]) (int[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
 
                 break;
-            case -32:
+            case FLOAT:
                 hist = ScaleUtils.computeHistogram((float[][]) (float[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((float[][]) (float[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
 
                 break;
-            case -64:
+            case DOUBLE:
                 hist = ScaleUtils.computeHistogram((double[][]) (double[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((double[][]) (double[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
-
                 break;
             default:
                 throw new FITSImage.DataTypeNotSupportedException(bitpix);
         }
-
-        ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(1000), false, false, 1, 1);
-
-        SampleModel sm = cm.createCompatibleSampleModel(width, height);
-
-        Hashtable properties = new Hashtable();
+        final ColorModel colorModel = new ComponentColorModel(ColorSpace.getInstance(1000), false, false, 1, 1);
+        final SampleModel sampleModel = colorModel.createCompatibleSampleModel(width, height);
+        final Hashtable properties = new Hashtable();
         properties.put("histogram", hist);
         properties.put("imageHDU", hdu);
-
-        BufferedImage[] result = new BufferedImage[scaledData.length];
-
+        final BufferedImage[] result = new BufferedImage[scaledData.length];
         for (int i = 0; i < result.length; i++) {
-            DataBuffer db = new DataBufferUShort(scaledData[i], height);
-            WritableRaster r = Raster.createWritableRaster(sm, db, null);
-
-            result[i] = new BufferedImage(cm, r, false, properties);
+            final DataBuffer dataBuffer = new DataBufferUShort(scaledData[i], height);
+            final WritableRaster raster = Raster.createWritableRaster(sampleModel, dataBuffer, null);
+            result[i] = new BufferedImage(colorModel, raster, false, properties);
         }
-
         return result;
     }
 }

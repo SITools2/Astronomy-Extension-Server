@@ -50,7 +50,7 @@ import nom.tam.fits.ImageHDU;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ZScaleProcessing extends AbstractJobTask {
-    
+
     /**
      * Constrast for Zscale algorithm.
      */
@@ -79,7 +79,7 @@ public class ZScaleProcessing extends AbstractJobTask {
                     image = (ImageHDU) basicHDU;
                 }
                 basicHDU = fits.readHDU();
-            }            
+            }
             final ZScale zscale = new ZScale(image, CONTRAST, OPT_SIZE, LEN_STDLINE);
             final ZScale.ZscaleResult result = zscale.compute();
             final double zMin = result.getZ1();
@@ -92,20 +92,20 @@ public class ZScaleProcessing extends AbstractJobTask {
             resultReferenceZ1.setHref(String.valueOf(zMin));
             resultReferenceZ2.setId("z2");
             resultReferenceZ2.setType("xs:double");
-            resultReferenceZ2.setHref(String.valueOf(zMax));            
+            resultReferenceZ2.setHref(String.valueOf(zMax));
             uwsResults.getResult().add(resultReferenceZ1);
-            uwsResults.getResult().add(resultReferenceZ2); 
+            uwsResults.getResult().add(resultReferenceZ2);
             setResults(uwsResults);
             setPhase(ExecutionPhase.COMPLETED);
             setEndTime(Util.convertIntoXMLGregorian(new Date()));
-        } catch (DatatypeConfigurationException ex) {            
+        } catch (DatatypeConfigurationException ex) {
             Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
             errorSumm.setHasDetail(true);
             setError(errorSumm);
-            setPhase(ExecutionPhase.ERROR);            
+            setPhase(ExecutionPhase.ERROR);
         } catch (FitsException ex) {
             Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
@@ -113,7 +113,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             errorSumm.setType(ErrorType.FATAL);
             errorSumm.setHasDetail(true);
             setError(errorSumm);
-            setPhase(ExecutionPhase.ERROR);            
+            setPhase(ExecutionPhase.ERROR);
         } catch (MalformedURLException ex) {
             Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
@@ -129,7 +129,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             errorSumm.setType(ErrorType.FATAL);
             errorSumm.setHasDetail(true);
             setError(errorSumm);
-            setPhase(ExecutionPhase.ERROR);            
+            setPhase(ExecutionPhase.ERROR);
         }
     }
 
@@ -148,7 +148,7 @@ public class ZScaleProcessing extends AbstractJobTask {
         final OutputsType outputs = new OutputsType();
         Keyword keyword = new Keyword();
         keyword.setDocumentation("z1 Value");
-        keyword.setName("z1");       
+        keyword.setName("z1");
         outputs.getKeyword().add(keyword);
         keyword = new Keyword();
         keyword.setDocumentation("z2 Value");
@@ -161,5 +161,4 @@ public class ZScaleProcessing extends AbstractJobTask {
         job.setTitle("Computes the ZScale algorithm");
         return job;
     }
-
 }

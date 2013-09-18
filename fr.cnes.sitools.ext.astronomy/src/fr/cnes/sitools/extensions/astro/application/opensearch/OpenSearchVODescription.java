@@ -20,8 +20,7 @@ package fr.cnes.sitools.extensions.astro.application.opensearch;
 
 import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.io.IOException;
@@ -45,11 +44,11 @@ import org.restlet.resource.ResourceException;
  * Description resource for Cone search description.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
+public class OpenSearchVODescription extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(OpenSearchVOConeDescription.class.getName());
+    private static final Logger LOG = Logger.getLogger(OpenSearchVODescription.class.getName());
     /**
      * Data model.
      */
@@ -62,7 +61,7 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
     @Override
     public final void doInit() {
         super.doInit();            
-        parameters = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel().getParametersMap();
+        parameters = ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap();
         // TO remplacer par AbstractApplicationPlugin
     }
 
@@ -73,16 +72,8 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
      * @throws IOException Exception
      */
     private String buildTemplateURL() throws JSONException, IOException {
-        final String serviceURL = getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel().getUrlAttach();
-        final String queryShape = parameters.get("queryShape").getValue();
-        String shape;        
-        if (queryShape.equals(GeometryShape.CONE.getShape())) {
-            shape = "cone={sitools:cone}&amp;";
-        } else if (queryShape.equals(GeometryShape.HEALPIX.getShape())) {
-            shape = "healpix={sitools:healpix}&amp;order={sitools:order}&amp;";
-        } else {
-            shape = "";
-        }
+        final String serviceURL = getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getUrlAttach();
+        final String shape = "healpix={sitools:healpix}&amp;order={sitools:order}&amp;coordSystem={sitools:coordSystem}&amp;";
         return String.format("%s/search?%sformat=json", serviceURL, shape);        
     }
 
@@ -115,11 +106,11 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
             this.dataModel.put("syndicationRight", parameters.get("syndicationRight").getValue());
         }
         if (!parameters.get("mocdescribe").getValue().isEmpty()) {
-            this.dataModel.put("mocdescribe", getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOConeSearchApplicationPlugin) 
+            this.dataModel.put("mocdescribe", getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOApplicationPlugin)
                     getApplication()).getModel().getUrlAttach() + "/moc");
-        }        
+        }
         this.dataModel.put("referenceSystem", "ICRS");
-        this.dataModel.put("dicodescribe", getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOConeSearchApplicationPlugin) 
+        this.dataModel.put("dicodescribe", getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOApplicationPlugin)
                     getApplication()).getModel().getUrlAttach() + "/dico/{name}");
     }
 
@@ -147,8 +138,8 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
 
   @Override
   public final void sitoolsDescribe() {
-    setName("OpenSearch description for the Cone Search service.");
-    setDescription("Returns the description of the openSearch service for a Cone Search Service.");
+    setName("OpenSearch description for VO services.");
+    setDescription("Returns the description of the openSearch service for VO Services.");
   }
 
   /**
@@ -159,8 +150,8 @@ public class OpenSearchVOConeDescription extends SitoolsParameterizedResource {
   @Override
   protected final void describeGet(final MethodInfo info) {
     this.addInfo(info);
-    info.setIdentifier("OpenSearchConeSearchProtocol");
-    info.setDocumentation("OpenSearch description for the Cone Search Protocol");
+    info.setIdentifier("OpenSearchVOProtocol");
+    info.setDocumentation("OpenSearch description for VO services");
 
     final DocumentationInfo documentationXml = new DocumentationInfo();
     documentationXml.setTitle("XML");

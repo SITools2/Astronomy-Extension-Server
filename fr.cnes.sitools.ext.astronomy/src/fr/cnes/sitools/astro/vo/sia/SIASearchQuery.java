@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
+import net.ivoa.xml.votable.v1.Info;
 import net.ivoa.xml.votable.v1.Param;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.Table;
@@ -63,7 +64,7 @@ public class SIASearchQuery {
      * @param urlVal url of SIA server
      */
     public SIASearchQuery(final String urlVal) {
-        this.url = urlVal;       
+        this.url = urlVal;
     }
 
     /**
@@ -98,7 +99,7 @@ public class SIASearchQuery {
         LOG.log(Level.INFO, queryService);
         final ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
         final ClientResource client = proxy.getClientResource();
-        final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+        final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
         final Unmarshaller unMarshaller = ctx.createUnmarshaller();
         String result = client.get().getText();
         if (result.contains("xmlns")) {
@@ -118,6 +119,13 @@ public class SIASearchQuery {
      * @return records
      */
     private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
+        final List<Info> infos = resourceIter.getINFO();
+        for (Info info : infos) {
+            final String status = info.getValueAttribute();
+            if ("ERROR".equals(status)) {
+                throw new IllegalArgumentException(info.getValue());
+            }
+        }        
         List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
         for (Object objectIter : objects) {

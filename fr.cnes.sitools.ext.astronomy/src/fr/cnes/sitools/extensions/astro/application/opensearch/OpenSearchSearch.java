@@ -19,6 +19,8 @@
 
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
 import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;

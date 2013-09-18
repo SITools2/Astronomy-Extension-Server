@@ -173,14 +173,14 @@ public class MocDescription extends OpenSearchBase {
     final AbstractSolrQueryRequestFactory querySolr = AbstractSolrQueryRequestFactory.createInstance(queryParameters, CoordSystem.EQUATORIAL, getSolrBaseUrl(), Scheme.NESTED);
     querySolr.createQueryBuilder();
     String query = querySolr.getSolrQueryRequest();
-    query = query.concat("&rows=0&facet=true&facet.field=order13&facet.limit=-1&facet.mincount=1");
+    query = query.concat("&rows=0&facet=true&facet.field=eqorder13&facet.limit=-1&facet.mincount=1");
     //ClientResource client = new ClientResource(getSolrBaseUrl() + "/select/?q=*:*&rows=0&facet=true&facet.field=order13&facet.limit=-1&facet.mincount=1&wt=json");
     final ClientResource client = new ClientResource(query);
     final String text = client.get().getText();
     JSONObject json = new JSONObject(text);
     json = json.getJSONObject("facet_counts");
     json = json.getJSONObject("facet_fields");
-    final JSONArray array = json.getJSONArray("order13");
+    final JSONArray array = json.getJSONArray("eqorder13");
 
     setMoc(new HealpixMoc());
     for (int i = 0; i < array.length(); i++) {

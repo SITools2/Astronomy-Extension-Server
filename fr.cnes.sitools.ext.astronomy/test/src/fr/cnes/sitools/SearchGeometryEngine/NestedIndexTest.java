@@ -36,15 +36,15 @@ public class NestedIndexTest {
 
 
     /**
-     * Test of getShape method, of class NestedIndex.
+     * Test of getShape method, of class MocIndex.
      */
     @Test
     public void testGetShape() {
         System.out.println("getShape");
         Shape cone = new Cone(new Point(20, 50, CoordSystem.EQUATORIAL), Math.toRadians(30));
-        NestedIndex instance;
+        MocIndex instance;
         try {
-            instance = new NestedIndex(cone);
+            instance = new MocIndex(cone);
             Shape expResult = new Cone(new Point(20, 50, CoordSystem.EQUATORIAL), Math.toRadians(30));
             Shape result = instance.getShape();
             System.out.println(result.getType()+ ""+result.isSurface());
@@ -55,60 +55,60 @@ public class NestedIndexTest {
     }
 
     /**
-     * Test of setShape method, of class NestedIndex.
+     * Test of setShape method, of class MocIndex.
      */
     @Test
     public void testSetShape() {
         System.out.println("setShape");
         Shape val = new Cone(new Point(20, 50, CoordSystem.EQUATORIAL), Math.toRadians(30));
-        NestedIndex instance = new NestedIndex();
+        MocIndex instance = new MocIndex();
         instance.setShape(val);
     }
 
     /**
-     * Test of getOrderMax method, of class NestedIndex.
+     * Test of getOrderMax method, of class MocIndex.
      */
     @Test
     public void testGetOrderMax() {
         System.out.println("getOrderMax");
-        NestedIndex instance = new NestedIndex();
+        MocIndex instance = new MocIndex();
         int expResult = HealpixMoc.MAXORDER;
         int result = instance.getOrderMax();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getOrderMin method, of class NestedIndex.
+     * Test of getOrderMin method, of class MocIndex.
      */
     @Test
     public void testGetOrderMin() {
         System.out.println("getOrderMin");
         
-        NestedIndex instance = new NestedIndex();
+        MocIndex instance = new MocIndex();
         int expResult = 0;
         int result = instance.getOrderMin();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setOrderMax method, of class NestedIndex.
+     * Test of setOrderMax method, of class MocIndex.
      */
     @Test
     public void testSetOrderMax() {
         System.out.println("setOrderMax");
         int val = 10;
-        NestedIndex instance = new NestedIndex();
+        MocIndex instance = new MocIndex();
         instance.setOrderMax(val);
     }
 
     /**
-     * Test of setOrderMin method, of class NestedIndex.
+     * Test of setOrderMin method, of class MocIndex.
      */
     @Test
     public void testSetOrderMin() {
         System.out.println("setOrderMin");
         int val = 2;
-        NestedIndex instance = new NestedIndex();
+        MocIndex instance = new MocIndex();
         instance.setOrderMin(val);
     }
 }

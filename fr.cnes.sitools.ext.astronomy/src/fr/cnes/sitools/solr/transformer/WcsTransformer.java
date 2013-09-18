@@ -287,13 +287,18 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
    * @param points points describing the polygon   
    */
   private void computeHealpix(final List<Point2D.Double> points) {
+      computeHealpixEquatorial(points);
+      computeHealpixGalactic(points);
+  }
+  
+  private void computeHealpixEquatorial(final List<Point2D.Double> points) {
     try {
       List<Point> skyPoints = new ArrayList<Point>(points.size());
       for (Point2D.Double point : points) {
         skyPoints.add(new Point(point.x, point.y, CoordSystem.EQUATORIAL));
       }
       if (skyPoints.size() == 1) {
-        Index index = GeometryIndex.createIndex(skyPoints.get(0), Scheme.RING);
+        Index index = GeometryIndex.createIndex(skyPoints.get(0), fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
         for (int order = minOrder; order <= maxOrder; order++) {
           ((RingIndex) index).setOrder(order);
           String pixelNumber = String.valueOf(index.getIndex());
@@ -309,19 +314,57 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
             default:
               throw new RuntimeException("Unknown Scheme");
           }
-          row.put("order" + order, pixelNumber);
+          row.put("eqorder" + order, pixelNumber);
         }
       } else {
         Shape polygon = new Polygon(skyPoints);
-        Index index = GeometryIndex.createIndex(polygon, Scheme.RING);
+        Index index = GeometryIndex.createIndex(polygon, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
         for (int order = minOrder; order <= maxOrder; order++) {
-          row.put("order" + order, computeAtOrder(order, index));
+          row.put("eqorder" + order, computeAtOrder(order, index));
         }
       }
     } catch (Exception ex) {
       throw new DataImportHandlerException(DataImportHandlerException.SKIP_ROW, row.toString(), ex);
     }
-
+      
+  }
+  
+  private void computeHealpixGalactic(final List<Point2D.Double> points) {
+    try {
+      List<Point> skyPoints = new ArrayList<Point>(points.size());
+      for (Point2D.Double point : points) {
+        skyPoints.add(new Point(point.x, point.y, CoordSystem.GALACTIC));
+      }
+      if (skyPoints.size() == 1) {
+        Index index = GeometryIndex.createIndex(skyPoints.get(0), fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
+        for (int order = minOrder; order <= maxOrder; order++) {
+          ((RingIndex) index).setOrder(order);
+          String pixelNumber = String.valueOf(index.getIndex());
+          switch (scheme) {
+            case RING:
+              break;
+            case NESTED:
+              //((NestedIndex) index).setOrderMax(order);
+              int nside = (int) Math.pow(2.0, order);
+              HealpixIndex healpixIndex = new HealpixIndex(nside, Scheme.RING);
+              pixelNumber = String.valueOf(healpixIndex.ring2nest(Long.valueOf(pixelNumber)));
+              break;
+            default:
+              throw new RuntimeException("Unknown Scheme");
+          }
+          row.put("galacorder" + order, pixelNumber);
+        }
+      } else {
+        Shape polygon = new Polygon(skyPoints);
+        Index index = GeometryIndex.createIndex(polygon, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
+        for (int order = minOrder; order <= maxOrder; order++) {
+          row.put("galacorder" + order, computeAtOrder(order, index));
+        }
+      }
+    } catch (Exception ex) {
+      throw new DataImportHandlerException(DataImportHandlerException.SKIP_ROW, row.toString(), ex);
+    }
+      
   }
 
   /**

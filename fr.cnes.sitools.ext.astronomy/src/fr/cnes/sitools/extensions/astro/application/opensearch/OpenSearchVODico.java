@@ -19,7 +19,7 @@
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
 import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
@@ -44,7 +44,7 @@ import org.restlet.resource.ResourceException;
  * Provides a dictionary for open search services that use Virtual Observatory.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class OpenSearchVOConeSearchDico extends SitoolsParameterizedResource {
+public class OpenSearchVODico extends SitoolsParameterizedResource {
   
   /**
    * VO dictionary.
@@ -58,7 +58,7 @@ public class OpenSearchVOConeSearchDico extends SitoolsParameterizedResource {
   @Override
   public final void doInit() {
     super.doInit();
-    this.dico = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getDico();
+    this.dico = ((OpenSearchVOApplicationPlugin) getApplication()).getDico();
     this.name = String.valueOf(this.getRequestAttributes().get("name"));
   }
   
@@ -112,7 +112,7 @@ public class OpenSearchVOConeSearchDico extends SitoolsParameterizedResource {
    * @return True when the cache is enabled otherwise False
    */
   private boolean cacheIsEnabled() {
-    return Boolean.parseBoolean(((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
+    return Boolean.parseBoolean(((OpenSearchVOApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
   }  
   
   /**

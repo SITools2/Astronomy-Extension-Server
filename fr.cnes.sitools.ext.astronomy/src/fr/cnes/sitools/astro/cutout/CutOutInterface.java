@@ -22,7 +22,7 @@ import java.io.OutputStream;
 
 /**
  * Interface for handling cutout services.
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public interface CutOutInterface {
     /**
@@ -59,17 +59,17 @@ public interface CutOutInterface {
 
     /**
      * Create a cutout as graphic.
-     * @param os output stream
+     * @param outputStream output stream
      * @throws CutOutException cutOut Exception
      */
-    void createCutoutPreview(OutputStream os) throws CutOutException;
+    void createCutoutPreview(OutputStream outputStream) throws CutOutException;
 
     /**
      * Create a cutout as FITS.
-     * @param os output stream
+     * @param outputStream output stream
      * @throws CutOutException cutOut Exception
      */
-    void createCutoutFits(OutputStream os) throws CutOutException;
+    void createCutoutFits(OutputStream outputStream) throws CutOutException;
 
     /**
      * Test if the output format can be a graphic.
@@ -87,5 +87,5 @@ public interface CutOutInterface {
      * Test if the file to cut is a data cube.
      * @return True when the file is a data cube
      */
-    boolean getIsDataCube();
+    boolean isDataCube();
 }

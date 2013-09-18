@@ -43,9 +43,9 @@ import org.restlet.representation.Representation;
 
 /**
  * Plugin Application for Healpix server to redirect client request to target template url in Redirector mode.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
- * 
+ *
  */
 public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicationPlugin {
   /** PARAM_URLCLIENT. */
@@ -57,7 +57,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
 
   /**
    * Default constructor.
-   * 
+   *
    * @param context context
    */
   public ProxyHealpixCacheApplicationPlugin(final Context context) {
@@ -76,7 +76,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
   /**
    * Constructor with context and model of the application configuration used when actually creating application
    * instance.
-   * 
+   *
    * @param arg0 Restlet context
    * @param model model contains configuration parameters of the application instance
    */
@@ -128,12 +128,12 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
     this.setName("Proxy Healpix Image cache");
     this.setAuthor("J-C Malapert");
     this.setOwner("CNES");
-    this.setDescription("Proxy Healpix Image cache");    
+    this.setDescription("Proxy Healpix Image cache");
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.restlet.Application#createInboundRoot()
    */
   @Override
@@ -159,7 +159,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.restlet.ext.wadl.WadlApplication#handle(org.restlet.Request, org.restlet.Response)
    */
   @Override
@@ -176,7 +176,7 @@ public final class ProxyHealpixCacheApplicationPlugin extends AbstractApplicatio
       final Element element = new Element(uniqueId, rep);
       cache.put(element);
     }
-    super.handle(request, cachedRep);   
+    super.handle(request, cachedRep);
   }
 
   @Override

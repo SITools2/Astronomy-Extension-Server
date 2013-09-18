@@ -120,7 +120,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
      * @throws UnsupportedOperationException when NESTED is asked
      */
     private Index getIntersectedHealpixWithShape(Shape shape, Scheme healpixScheme) throws Exception {
-        Index index = GeometryIndex.createIndex(shape, healpixScheme);
+        Index index = GeometryIndex.createIndex(shape, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(healpixScheme.name()));
         int nbHealpixOrder;
         switch(healpixScheme) {
             case RING:

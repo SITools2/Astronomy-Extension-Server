@@ -48,7 +48,13 @@ public enum CoordSystem {
      * Right ascension = [0, 360]
      * Declination = [-90, 90]
      */
-    EQUATORIAL; // right ascension, declination
+    EQUATORIAL, // right ascension, declination
+    /**
+     * Astronomy is based on (longitude, latitude).
+     * longitude = [0, 360]
+     * latitude = [-90, 90]
+     */    
+    GALACTIC;
 
     /**
      * Angle that defines the circumference of the circle.

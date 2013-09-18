@@ -61,7 +61,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import net.ivoa.xml.uws.v1.ExecutionPhase;
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -102,7 +101,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
      */
     private boolean isAllowedParameterNamePutMethod = true;
     /**
-     * Keyword provding the attached URL inputStream the context. 
+     * Keyword provding the attached URL inputStream the context.
      */
     public static final String APP_URL_UWS_SERVICE = "uwsService";
     /**
@@ -116,7 +115,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     /**
      * Keyword of this class inputStream the context.
      */
-    public static final String APP_UWS = "UWS";      
+    public static final String APP_UWS = "UWS";
     /**
      * Parameter name of the Job task implemententation.
      */
@@ -124,7 +123,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     /**
      * Parameter name of the storage directory.
      */
-    private static final String STORAGE_DIRECTORY_PARAMETER = "storageDirectory";    
+    private static final String STORAGE_DIRECTORY_PARAMETER = "storageDirectory";
     /**
      * Storage directory where the results are stored.
      */
@@ -177,7 +176,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         setStorageDirectory();
         //JobTaskManager.getInstance().init(this);
         register();
-    }    
+    }
 
     @Override
     public final void sitoolsDescribe() {
@@ -212,14 +211,14 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
     private void setJobTaskImplementation() {
         this.jobTaskImplementation = this.getParameter(JOB_TASK_IMPL_PARAMETER).getValue();
     }
-    
+
     /**
      * Returns the job task implementation.
      * @return the job task implementation
      */
     public final String getJobTaskImplementation() {
         return this.jobTaskImplementation;
-    }    
+    }
 
     /**
      * Sets the storage directory.
@@ -233,7 +232,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         }
         this.storageDirectory = this.storageDirectory.substring("file://".length(), this.storageDirectory.length());
     }
-    
+
     /**
      * Returns the storage directory.
      * @return the storage directory
@@ -252,7 +251,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         initDataStorage();
         initPersistence();
     }
-    
+
     /**
      * Init the persistence by loading save.xml file when it exists.
      */
@@ -287,9 +286,9 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
                     LOG.warning(ex.getMessage());
                 }
             }
-        }        
+        }
     }
-    
+
     /**
      * Init data storage.
      * <p>
@@ -308,7 +307,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
             final boolean status = storageDirectoryObj.mkdir();
             if (!status) {
                 throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Cannot create the " + this.storageDirectory + "directory");
-            }            
+            }
         }
     }
 
@@ -432,7 +431,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
                         constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                         constraint.setInvalidValue(storageDirectoryValue);
                         constraint.setValueName(param.getName());
-                        constraints.add(constraint);                        
+                        constraints.add(constraint);
                     }
                 }
                 param = item.getParameter(JOB_TASK_IMPL_PARAMETER);

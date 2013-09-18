@@ -74,7 +74,7 @@ public class AstrometryProcessing extends AbstractJobTask {
      * Time in milliseconds between two calls to obspm.
      */
     private static final long ELAPSED_TIME_BETWEEN_CALL_MILLISEC = 30000;
-    
+
     static {
         CATALOG.put("UCAC2", 1);
         CATALOG.put("2MASS", 2);
@@ -84,8 +84,8 @@ public class AstrometryProcessing extends AbstractJobTask {
     public final void run() {
         try {
             setBlinker(Thread.currentThread());
-            setStartTime(Util.convertIntoXMLGregorian(new Date()));           
-            setPhase(ExecutionPhase.QUEUED);              
+            setStartTime(Util.convertIntoXMLGregorian(new Date()));
+            setPhase(ExecutionPhase.QUEUED);
             final ClientUWS uws = new ClientUWS(ASTRO_CALIB_SERVER);
             final Form form = new Form();
             form.add(IMAGE_PARAM, getParameterValue(IMAGE_PARAM));
@@ -95,13 +95,13 @@ public class AstrometryProcessing extends AbstractJobTask {
             final String jobId = uws.createJob(form);
             jobFinished(uws, jobId);
             final ExecutionPhase phaseResult = uws.getJobPhase(jobId);
-            if (phaseResult.equals(ExecutionPhase.COMPLETED)) {          
+            if (phaseResult.equals(ExecutionPhase.COMPLETED)) {
                 setPhase(ExecutionPhase.COMPLETED);
                 setResults(uws.getJobResults(jobId));
-            } else {            
+            } else {
                 setPhase(phaseResult);
-                setError(uws.getJobError(jobId));                   
-            }                        
+                setError(uws.getJobError(jobId));
+            }
         } catch (ClientUWSException ex) {
             Logger.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
             setPhase(ExecutionPhase.ERROR);
@@ -109,7 +109,7 @@ public class AstrometryProcessing extends AbstractJobTask {
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
             errorSumm.setHasDetail(true);
-            setError(errorSumm);            
+            setError(errorSumm);
         } catch (InterruptedException ex) {
             Logger.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
             setPhase(ExecutionPhase.ERROR);

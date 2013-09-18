@@ -35,7 +35,7 @@
         <TABLE>
         <#list fields as field>                
           <#if field.DESCRIPTION?exists>
-        <FIELD<#if field.id?exists> ID="${field.id}</#if> name="${field.name}"<#if field.ucd?exists> ucd="${field.ucd}"</#if><#if field.utype?exists> utype="${field.utype}"</#if><#if field.ref?exists> ref="${field.ref}"</#if> datatype="${field.datatype.value()}"<#if field.width?exists> width="${field.width}"</#if><#if field.precision?exists> precision="${field.precision}"</#if><#if field.unit?exists> unit="${field.unit}"</#if><#if field.type?exists> type="${field.type}"</#if><#if field.xtype?exists> xtype="${field.xtype}"</#if><#if field.arraysize?exists> arraysize="${field.arraysize}"</#if>>
+        <FIELD<#if field.id?exists> ID="${field.id}</#if> name="${field.name}"<#if field.ucd?exists> ucd="${field.ucd}"</#if><#if field.utype?exists> utype="${field.utype}"</#if><#if field.ref?exists> ref="${field.ref.equinox}"</#if> datatype="${field.datatype.value()}"<#if field.width?exists> width="${field.width}"</#if><#if field.precision?exists> precision="${field.precision}"</#if><#if field.unit?exists> unit="${field.unit}"</#if><#if field.type?exists> type="${field.type}"</#if><#if field.xtype?exists> xtype="${field.xtype}"</#if><#if field.arraysize?exists> arraysize="${field.arraysize}"</#if>>
             <DESCRIPTION>
             <#list field.DESCRIPTION.content as description>
                 ${description}

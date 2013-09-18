@@ -20,7 +20,6 @@ package fr.cnes.sitools.SearchGeometryEngine;
 
 import healpix.core.HealpixIndex;
 import healpix.essentials.RangeSet;
-import healpix.essentials.Scheme;
 
 /**
  * Factory to create an geometry index based on a shape and a Healpix Scheme.
@@ -65,13 +64,16 @@ public abstract class GeometryIndex {
     public static Index createIndex(final Shape shape, final Scheme scheme) {
         Index index = null;
         switch (scheme) {
-            case NESTED:
-                index = new NestedIndex(shape);
+            case MOC:
+                index = new MocIndex(shape);
                 break;
 
             case RING:
                 index = new RingIndex(shape);
                 break;
+            
+            case NESTED:
+                index = new NestedIndex(shape);
 
             default:
                 throw new RuntimeException("Cannot manage this scheme");

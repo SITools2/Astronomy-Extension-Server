@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package fr.cnes.sitools.extensions.astro.application.opensearch;
+package fr.cnes.sitools.extensions.astro.application.opensearch.datamodel;
 
-import static fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel.PROPERTIES;
-import static fr.cnes.sitools.extensions.astro.application.opensearch.FeatureDataModel.PROPERTIES_ID;
+import static fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel.PROPERTIES;
+import static fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel.PROPERTIES_ID;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,11 +36,11 @@ public class FeatureDataModel {
     /**
      * Sets of coordinates describing the FOV.
      */
-    public static final String GEOMETRY_COORDINATES = "coordinates";     
+    public static final String GEOMETRY_COORDINATES = "coordinates";
     /**
      * Geometry type : Point or Polygon.
      */
-    public static final String GEOMETRY_TYPE = "type";  
+    public static final String GEOMETRY_TYPE = "type";
     /**
      * Properties node.
      */
@@ -56,7 +56,7 @@ public class FeatureDataModel {
     /**
      * Coordinate system name.
      */
-    public static final String PROPERTIES_CRS_TYPE_VALUE = "name";      
+    public static final String PROPERTIES_CRS_TYPE_VALUE = "name";
     /**
      * Coordinate system properties.
      */
@@ -64,7 +64,7 @@ public class FeatureDataModel {
     /**
      * Coordinate system name.
      */
-    public static final String PROPERTIES_CRS_PROPERTIES_NAME = "name";    
+    public static final String PROPERTIES_CRS_PROPERTIES_NAME = "name";
     /**
      * Unique identifier.
      */
@@ -137,7 +137,7 @@ public class FeatureDataModel {
     }
     /**
      * Constructs and initializes the data model with an record ID.
-     * @param identifier 
+     * @param identifier Identifier
      */
     public FeatureDataModel(final String identifier) {
         geometry.clear();
@@ -181,7 +181,7 @@ public class FeatureDataModel {
      * Creates the geometry in the data model.
      * @param coordinates coordinates
      * @param shapeName shape (Polygon or Point)
-     */    
+     */
     public final void createGeometry(final String coordinates, final String shapeName) {
         geometry.put(GEOMETRY_COORDINATES, coordinates);
         geometry.put(GEOMETRY_TYPE, shapeName);

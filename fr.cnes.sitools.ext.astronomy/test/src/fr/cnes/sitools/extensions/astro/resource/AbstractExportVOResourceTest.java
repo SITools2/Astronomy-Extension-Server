@@ -109,7 +109,7 @@ public abstract class AbstractExportVOResourceTest extends AbstractSitoolsServic
       ClientResource clientResource = new ClientResource(getHostUrl() + AbstractExportVOResourceTest.request);
       Representation rep = clientResource.get();
       String result = rep.getText();
-      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
       Unmarshaller um = ctx.createUnmarshaller();
       VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
       assertNotNull(votable);

@@ -19,7 +19,7 @@ import javax.xml.namespace.QName;
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the net.ivoa.xml.votable.v1 package. 
- * <p>An VotableFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -30,7 +30,7 @@ import javax.xml.namespace.QName;
  * 
  */
 @XmlRegistry
-public class VotableFactory implements Serializable {
+public class ObjectFactory implements Serializable {
 
     private final static QName _TableLINK_QNAME = new QName("http://www.ivoa.net/xml/VOTable/v1.2", "LINK");
     private final static QName _TableDESCRIPTION_QNAME = new QName("http://www.ivoa.net/xml/VOTable/v1.2", "DESCRIPTION");
@@ -41,10 +41,10 @@ public class VotableFactory implements Serializable {
     private final static QName _TableINFO_QNAME = new QName("http://www.ivoa.net/xml/VOTable/v1.2", "INFO");
 
     /**
-     * Create a new VotableFactory that can be used to create new instances of schema derived classes for package: net.ivoa.xml.votable.v1
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: net.ivoa.xml.votable.v1
      * 
      */
-    public VotableFactory() {
+    public ObjectFactory() {
     }
 
     /**

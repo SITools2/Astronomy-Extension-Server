@@ -25,7 +25,7 @@ import nom.tam.fits.Header;
 /**
  * Implements the WCS Keyword Provider interface to use this object
  * for WCS processing.
- * @author Jean-Christophe Malapert
+ * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FitsHeader implements WCSKeywordProvider{
     /**
@@ -35,14 +35,34 @@ public class FitsHeader implements WCSKeywordProvider{
     /**
      * Initialize Header FITS.
      */
-    private Header fitsHdr = null;
-
+    private Header fitsHdr;
+    
+    /**
+     * Empty constructor.
+     */
+    protected FitsHeader() {
+        setFitsHdr(null);
+    }
     /**
      * Constructs a new FitsHeader.
      * @param fitsHeader header FITS
      */
     public FitsHeader(final Header fitsHeader) {
         this.fitsHdr = fitsHeader;
+    }
+    /**
+     * Returns the FITS header.
+     * @return the FITS header
+     */
+    protected final Header getFitsHdr() {
+        return this.fitsHdr;
+    }
+    /**
+     * Sets the FITS header.
+     * @param header the FITS header to set
+     */
+    protected final void setFitsHdr(final Header header) {
+        this.fitsHdr = header;
     }
 
     @Override

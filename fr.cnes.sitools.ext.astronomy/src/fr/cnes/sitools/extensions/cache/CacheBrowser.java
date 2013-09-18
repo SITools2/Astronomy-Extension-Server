@@ -43,10 +43,9 @@ public class CacheBrowser {
    * Cache directives.
    */
   private transient List<CacheDirective> cacheDirectivesBrowser = null;
-  
   /**
    * Constructor.
-   * @param repVal representation to cache  
+   * @param repVal representation to cache
    */
   protected CacheBrowser(final Representation repVal) {
     this.rep = repVal;
@@ -83,7 +82,7 @@ public class CacheBrowser {
   public final Representation getRepresentation() {
     return this.rep;
   }
-  
+
   /**
    * Returns the cache directives.
    * @return the cache directives
@@ -121,7 +120,7 @@ public class CacheBrowser {
 
   /**
    * Creates the cache directive for the "nocache" choice.
-   */  
+   */
   private void createNoCache() {
     final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(CacheDirective.noCache());
@@ -130,8 +129,8 @@ public class CacheBrowser {
 
   /**
    * Creates the cache directive for the "cacheday" choice.
-   */  
-  private void createCacheDay() {    
+   */
+  private void createCacheDay() {
     final Calendar expiresOn = Calendar.getInstance();
     final long age = expiresOn.getTimeInMillis();
     expiresOn.add(Calendar.HOUR_OF_DAY, NUMBER_OF_HOURS_IN_DAY);
@@ -140,5 +139,5 @@ public class CacheBrowser {
     final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(maxAge);
     this.cacheDirectivesBrowser =  cacheDirectives;
-  }  
+  }
 }

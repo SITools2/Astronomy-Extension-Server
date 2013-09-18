@@ -64,25 +64,45 @@ public class CorotIdResolver extends AbstractNameResolver {
   private String corotId;
 
   /**
+   * Empty constructor.
+   */
+  protected CorotIdResolver() {
+      
+  }
+
+  /**
    * Constructs a new CorotId resolver.
    *
    * @param corotIdVal Corot ID
    */
   public CorotIdResolver(final String corotIdVal) {
-    checkParameters(corotIdVal);
-    this.corotId = corotIdVal;
+    setCorotId(corotIdVal);  
+    checkInputParameters();      
+  }
+  /**
+   * Sets the Corot Id.
+   * @param corotIdVal the Corot ID to set 
+   */
+  protected final void setCorotId(final String corotIdVal) {
+      this.corotId = corotIdVal;
+  }
+  /**
+   * Returns the Corot ID.
+   * @return the Corot ID
+   */
+  protected final String getCorotId() {
+      return this.corotId;
   }
   
   /**
-   * Tests the validity of corotId.
+   * Tests if the coroID is set.
    *
    * <p>
    * Returns IllegalArgumentException if <code>corotId</code> is <code>null</code> or empty.
-   * </p>
-   * @param corotIdVal Corot identifier
+   * </p>  
    */
-  private void checkParameters(final String corotIdVal) {
-    if (corotIdVal == null || corotIdVal.isEmpty()) {
+  protected final void checkInputParameters() {
+    if (getCorotId() == null || getCorotId().isEmpty()) {
       throw new IllegalArgumentException("corotId must be set.");
     }
   }
@@ -91,17 +111,18 @@ public class CorotIdResolver extends AbstractNameResolver {
   public final NameResolverResponse getResponse() {
     NameResolverResponse response = new NameResolverResponse(CREDITS_NAME);
     try {      
-      String query = TEMPLATE_NAME_RESOLVER.replace("<corotid>", corotId);
-      JSONObject json = parseResponse(query);
-      String[] coordinates = parseCoordinates(json);
-      double ra = Double.valueOf(coordinates[0]);
-      double dec = Double.valueOf(coordinates[1]);      
-      response.addAstroCoordinate(ra, dec);
+      final String query = TEMPLATE_NAME_RESOLVER.replace("<corotid>", corotId);
+      LOG.log(Level.INFO, "{0} found from Corot service", getCorotId());
+      final JSONObject json = parseResponse(query);
+      final String[] coordinates = parseCoordinates(json);
+      final double rightAscension = Double.valueOf(coordinates[0]);
+      final double declination = Double.valueOf(coordinates[1]);      
+      response.addAstroCoordinate(rightAscension, declination);
     } catch (NameResolverException ex) {
-      if (getSuccessor() != null) {
-        response = getSuccessor().getResponse();
+      if (getSuccessor() == null) {
+        response.setError(ex);        
       } else {
-        response.setError(ex);
+        response = getSuccessor().getResponse();
       }
     } finally {
       return response;
@@ -117,16 +138,16 @@ public class CorotIdResolver extends AbstractNameResolver {
    */
   private JSONObject parseResponse(final String query) throws NameResolverException {
     assert query != null;
-    JSONObject json;
     LOG.log(Level.INFO, "Call IAS name resolver: {0}", query);
-    ClientResourceProxy proxy = new ClientResourceProxy(query, Method.GET);
-    ClientResource client = proxy.getClientResource();
+    final ClientResourceProxy proxy = new ClientResourceProxy(query, Method.GET);
+    final ClientResource client = proxy.getClientResource();
     client.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "guest", "sitools2public"));
-    Client clientHTTP = new Client(Protocol.HTTP);
+    final Client clientHTTP = new Client(Protocol.HTTP);
     clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
     client.setNext(clientHTTP);    
-    Status status = client.getStatus();
+    final Status status = client.getStatus();   
     if (status.isSuccess()) {
+      JSONObject json;         
       try {
         json = new JSONObject(client.get().getText());
       } catch (IOException ex) {
@@ -146,23 +167,22 @@ public class CorotIdResolver extends AbstractNameResolver {
   /**
    * Parses the coordinates from CDS response and return them.
    * @param json the server's response
-   * @return the following array [ra,dec]
+   * @return the following array [rightAscension,declination]
    * @throws NameResolverException - if empty response from Corot
    */
   private String[] parseCoordinates(final JSONObject json) throws NameResolverException {
     try {
-      JSONArray jsonArray = json.getJSONArray("data");
-
+      final JSONArray jsonArray = json.getJSONArray("data");
       if (jsonArray.length() != 1) {
         throw new NameResolverException(Status.CLIENT_ERROR_NOT_FOUND, "Not found");
       }
-      JSONObject record = jsonArray.getJSONObject(0);
+      final JSONObject record = jsonArray.getJSONObject(0);
       if (!record.has("alpha_from") || !record.has("delta_from")) {
         throw new NameResolverException(Status.CLIENT_ERROR_NOT_FOUND, "Not found");
-      }      
-      String ra = record.getString("alpha_from");
-      String dec = record.getString("delta_from");
-      return new String[]{ra, dec};
+      }
+      final String rightAscension = record.getString("alpha_from");
+      final String declination = record.getString("delta_from");
+      return new String[]{rightAscension, declination};
     } catch (JSONException ex) {
       throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, "cannot parse the coordinates");
     }

@@ -42,12 +42,19 @@ public class CutOutRepresentation extends OutputRepresentation {
   /**
    * Interface.
    */
-    private final transient CutOutInterface cutout;
+    private CutOutInterface cutout;
     /**
      * Default output filename.
      */
     private String filename = "cutOut.fits";
-    
+
+    /**
+     * Constructor.
+     * @param media media type 
+     */
+    protected CutOutRepresentation(final MediaType media) {
+        super(media);
+    }
     /**
      * Constructs a new cutOut representation.
      * 
@@ -74,6 +81,22 @@ public class CutOutRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Returns the cutOut object.
+     * @return the cutout
+     */
+    protected final CutOutInterface getCutout() {
+        return cutout;
+    }
+
+    /**
+     * Sets the cutout.
+     * @param cutoutVal the cutout to set
+     */
+    protected final void setCutout(final CutOutInterface cutoutVal) {
+        this.cutout = cutoutVal;
+    }    
+
+    /**
      * Writes the response.
      * 
      * <p>
@@ -89,12 +112,12 @@ public class CutOutRepresentation extends OutputRepresentation {
             if (getMediaType().equals(MediaType.IMAGE_PNG)
                 || getMediaType().equals(MediaType.IMAGE_JPEG)
                 || getMediaType().equals(MediaType.IMAGE_GIF)) {
-                this.cutout.createCutoutPreview(out);
+                this.getCutout().createCutoutPreview(out);
             } else {
                 final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
                 disp.setFilename(getFilename());
                 this.setDisposition(disp);                
-                this.cutout.createCutoutFits(out);
+                this.getCutout().createCutoutFits(out);
             }
         } catch (CutOutException ex) {
             LOG.log(Level.SEVERE, null, ex);

@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -33,6 +34,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
+import net.ivoa.xml.votable.v1.Info;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.Table;
 import net.ivoa.xml.votable.v1.TableData;
@@ -101,14 +103,14 @@ public class ConeSearchQuery {
     LOG.log(Level.INFO, queryService);
     final ClientResourceProxy proxy = new ClientResourceProxy(queryService, Method.GET);
     final ClientResource client = proxy.getClientResource();
-    final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+    final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
     final Unmarshaller unMarshaller = ctx.createUnmarshaller();
     String result = client.get().getText();
     result = result.replace("http://www.ivoa.net/xml/VOTable/v1.1", "http://www.ivoa.net/xml/VOTable/v1.2");
     final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
     final List<Resource> resources = votable.getRESOURCE();
     final Resource resource = resources.get(0);
-    return parseResponse(resource);    
+    return parseResponse(resource);
   }
 
   /**
@@ -118,7 +120,14 @@ public class ConeSearchQuery {
    * @return records
    */
   private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
-    List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
+    final List<Info> infos = resourceIter.getINFO();
+    for (Info info : infos) {
+        final String status = info.getValueAttribute();
+        if ("ERROR".equals(status)) {
+            throw new IllegalArgumentException(info.getValue());
+        }
+    }
+    List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();    
     final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
     for (Object objectIter : objects) {
       if (objectIter instanceof Table) {

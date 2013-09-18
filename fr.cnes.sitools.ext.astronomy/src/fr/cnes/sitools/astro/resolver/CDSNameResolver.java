@@ -64,12 +64,12 @@ public class CDSNameResolver extends AbstractNameResolver {
   /**
    * Object name to find.
    */
-  private transient String objectName;
+  private String objectName;
   
   /**
    * The choice of the name resolver at CDS.
    */
-  private transient NameResolverService nameResolverService;
+  private NameResolverService nameResolverService;
 
   /**
    * List of name resolver services for stellar objects.
@@ -95,7 +95,7 @@ public class CDSNameResolver extends AbstractNameResolver {
     /**
      * Service code representing a name resolver service.
      */
-    private String serviceCode;
+    private final transient String serviceCode;
 
     /**
      * Constructs a new name resolver service.
@@ -116,7 +116,12 @@ public class CDSNameResolver extends AbstractNameResolver {
       return this.serviceCode;
     }
   }
-
+  /**
+   * Empty constructor.
+   */
+  protected CDSNameResolver() {
+      
+  }
   /**
    * Constructs a new CDS name resolver on the object name to resolve, the name resolver service.
    *
@@ -124,26 +129,51 @@ public class CDSNameResolver extends AbstractNameResolver {
    * @param service name resolver to use (NED, ...)   
    */
   public CDSNameResolver(final String objectNameVal, final NameResolverService service) {
-    checkParameters(objectNameVal, service);    
-    this.objectName = objectNameVal;
-    this.nameResolverService = service;    
+    setObjectName(objectNameVal);
+    setNameResolverService(service);
+    checkInputParameters();      
   }
-  
+  /**
+   * Returns the object name.
+   * @return the object name
+   */
+  protected final String getObjectName() {
+      return this.objectName;
+  }
+  /**
+   * Sets the object name.
+   * @param objectNameVal object name to set.
+   */
+  protected final void setObjectName(final String objectNameVal) {
+      this.objectName = objectNameVal;
+  }
+  /**
+   * Returns the name resolver service.
+   * @return the name resolver service
+   */
+  protected final NameResolverService getNameResolverService() {
+      return this.nameResolverService;
+  }
+  /**
+   * Sets the name resolver service.
+   * @param nameResolverServiceVal name resolver service to set
+   */
+  protected final void setNameResolverService(final NameResolverService nameResolverServiceVal) {
+      this.nameResolverService = nameResolverServiceVal;
+  }
   /**
    * Checks the validity of input parameters.
    * 
    * <p>
+   * Checks of the values are not null.
    * Returns a IllegalArgumentException if one of the input parameters is <code>null</code> or empty.
    * </p>
-   *
-   * @param objectNameVal object name
-   * @param service  name resolver service at CDS
    */
-  private void checkParameters(final String objectNameVal, final NameResolverService service) {
-    if (objectNameVal == null || objectNameVal.isEmpty()) {
+  protected final void checkInputParameters() {
+    if (getObjectName() == null || getObjectName().isEmpty()) {
       throw new IllegalArgumentException("Object name must be set.");
     }
-    if (service == null) {
+    if (getNameResolverService() == null) {
       throw new IllegalArgumentException("cannot find the service.");
     }
   }
@@ -152,18 +182,21 @@ public class CDSNameResolver extends AbstractNameResolver {
   public final NameResolverResponse getResponse() {
     NameResolverResponse response = new NameResolverResponse(CREDITS_NAME);
     try {
-      String url = TEMPLATE_NAME_RESOLVER.replace("<objectName>", this.objectName);
-      url = url.replace("<service>", this.nameResolverService.getServiceCode());
+      final String urlTmp = TEMPLATE_NAME_RESOLVER.replace("<objectName>", this.objectName);
+      final String url = urlTmp.replace("<service>", this.nameResolverService.getServiceCode());
       final Sesame sesameResponse = parseResponse(url);
       final String[] coordinates = parseCoordinates(sesameResponse);
       response.addAstroCoordinate(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+      LOG.log(Level.INFO, "{0} found from CDS service", getObjectName());
     } catch (NameResolverException ex) {
+      LOG.log(Level.WARNING, "{0} not found from CDS service", getObjectName());  
       if (getSuccessor() == null) {
         response.setError(ex);
       } else {
         response = getSuccessor().getResponse();
       }
     } catch (Exception ex) {
+      LOG.log(Level.WARNING, "{0} not found from CDS service", getObjectName()); 
       if (getSuccessor() == null) {
         response.setError(new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex));
       } else {
@@ -221,7 +254,7 @@ public class CDSNameResolver extends AbstractNameResolver {
     final List<Resolver> resolvers = target.getResolver();
     String[] coordinates = new String[2];
     for (Resolver resolver : resolvers) {
-      List<JAXBElement<?>> terms = resolver.getINFOOrERROROrOid();
+      final List<JAXBElement<?>> terms = resolver.getINFOOrERROROrOid();
       for (JAXBElement<?> term : terms) {
         if (coordinates[0] != null && coordinates[1] != null) {
           break;
@@ -237,5 +270,4 @@ public class CDSNameResolver extends AbstractNameResolver {
     }
     return coordinates;
   }
-
 }

@@ -138,7 +138,7 @@ public class ConeSearchResourceTest extends AbstractSitoolsServiceTestCase {
       ClientResource clientResource = new ClientResource(getHostUrl() + request + "RA=0&DEC=0&SR=20");
       Representation rep = clientResource.get();
       String result = rep.getText();      
-      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
       Unmarshaller um = ctx.createUnmarshaller();      
       VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
       List<Resource> resources = votable.getRESOURCE();
@@ -157,7 +157,7 @@ public class ConeSearchResourceTest extends AbstractSitoolsServiceTestCase {
       ClientResource clientResource = new ClientResource(getHostUrl() + request + "RA=0&DEC=0&SR=80");
       Representation rep = clientResource.get();
       String result = rep.getText();      
-      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
       Unmarshaller um = ctx.createUnmarshaller();      
       VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
       List<Resource> resources = votable.getRESOURCE();

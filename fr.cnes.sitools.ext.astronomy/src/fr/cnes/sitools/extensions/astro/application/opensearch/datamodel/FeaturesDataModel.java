@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU General Public License along with
  * SITools2. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package fr.cnes.sitools.extensions.astro.application.opensearch;
+package fr.cnes.sitools.extensions.astro.application.opensearch.datamodel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -48,7 +47,7 @@ public class FeaturesDataModel {
     /**
      * Features node of the data model.
      */
-    public static final String FEATURES = "features";    
+    public static final String FEATURES = "features";
     /**
      * Result.
      */
@@ -78,7 +77,7 @@ public class FeaturesDataModel {
      * Returns the features.
      * @return the features
      */
-    public final Map getFeatures() {        
+    public final Map getFeatures() {
         this.features.put(TOTAL_RESULTS, featureList.size());
         return features;
     }
@@ -89,14 +88,14 @@ public class FeaturesDataModel {
      */
     public final boolean hasIdentifier(final String identifier) {
         boolean result = false;
-        for (final Map feature : featureList) {          
+        for (final Map feature : featureList) {
             final Map properties = (Map) feature.get(FeatureDataModel.PROPERTIES);
             assert properties != null;
             if (properties.containsKey(FeatureDataModel.PROPERTIES_ID) && properties.get(FeatureDataModel.PROPERTIES_ID).equals(identifier)) {
                 result = true;
                 break;
             }
-        }    
+        }
         return result;
     }
     /**
@@ -108,16 +107,16 @@ public class FeaturesDataModel {
      * @return a feature based on a identifier
      */
     public final Map getFeature(final String identifier) {        
-        for (final Map feature : featureList) {           
+        for (final Map feature : featureList) {
             final Map properties = (Map) feature.get(FeatureDataModel.PROPERTIES);
             assert properties != null;
-            if (properties.containsKey(FeatureDataModel.PROPERTIES_ID) && properties.get(FeatureDataModel.PROPERTIES_ID).equals(identifier)) {                
+            if (properties.containsKey(FeatureDataModel.PROPERTIES_ID) && properties.get(FeatureDataModel.PROPERTIES_ID).equals(identifier)) {
                 return feature;
             }
         }
         throw new IllegalArgumentException(identifier + " is unknown.");
     }
-    
+
     /**
      * Updates the feature when the server returns a response that contains
      * duplicates ID.
@@ -137,7 +136,7 @@ public class FeaturesDataModel {
             final Map storedProperties = (Map) storedFeature.get(FeatureDataModel.PROPERTIES);
             final Map currentProperties = feature.getProperties();
             if (currentProperties.containsKey(FeatureDataModel.PROPERTIES_QUICKLOOK) && !storedProperties.containsKey(FeatureDataModel.PROPERTIES_QUICKLOOK)) {
-                storedProperties.put(FeatureDataModel.PROPERTIES_QUICKLOOK, currentProperties.get(FeatureDataModel.PROPERTIES_QUICKLOOK));               
+                storedProperties.put(FeatureDataModel.PROPERTIES_QUICKLOOK, currentProperties.get(FeatureDataModel.PROPERTIES_QUICKLOOK));
             }
             if (currentProperties.containsKey(FeatureDataModel.SERVICES) && storedFeature.containsKey(FeatureDataModel.SERVICES)) {
                 final Map storedServices = (Map) storedFeature.get(FeatureDataModel.SERVICES);

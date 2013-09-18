@@ -18,8 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
-import fr.cnes.sitools.astro.graph.*;
-
 /**
  * Runtime Exception for graph package.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>

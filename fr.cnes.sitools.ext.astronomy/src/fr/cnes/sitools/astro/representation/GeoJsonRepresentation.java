@@ -70,12 +70,18 @@ public class GeoJsonRepresentation extends OutputRepresentation {
   /**
    * Data model for the GeoJson representation.
    */
-  private final transient Map dataModel;
+  private Map dataModel;
   /**
    * Template file.
    */
-  private final transient String ftl;
+  private String ftl;
 
+  /**
+   * Empty constructor.
+   */
+  protected GeoJsonRepresentation() {
+      super(MediaType.APPLICATION_JSON);
+  }
   /**
    * Creates a GeoJson representation with a data model and a template as parameter.
    *
@@ -86,8 +92,8 @@ public class GeoJsonRepresentation extends OutputRepresentation {
    */
   public GeoJsonRepresentation(final Map dataModelVal, final String ftlVal) {
     super(MediaType.APPLICATION_JSON);
-    this.dataModel = dataModelVal;
-    this.ftl = ftlVal;
+    setDataModel(dataModelVal);
+      setFtl(ftlVal);
   }
 
   /**
@@ -108,10 +114,42 @@ public class GeoJsonRepresentation extends OutputRepresentation {
   @Override
   public final void write(final OutputStream out) throws IOException {
     final Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
-            + ftl).get();
-    final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, dataModel, getMediaType());
-    LOG.log(Level.FINEST, ftl, dataModel);
+            + getFtl()).get();
+    final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, getDataModel(), getMediaType());
+    LOG.log(Level.FINEST, getFtl(), getDataModel());
     out.write(tpl.getText().getBytes());
     out.flush();
   }
+
+    /**
+     * Returns the data model.
+     * @return the dataModel
+     */
+    protected final Map getDataModel() {
+        return dataModel;
+    }
+
+    /**
+     * Sets the data model.
+     * @param dataModelVal the dataModel to set
+     */
+    protected final void setDataModel(final Map dataModelVal) {
+        this.dataModel = dataModelVal;
+    }
+
+    /**
+     * Returns the template filename.
+     * @return the ftl
+     */
+    protected final String getFtl() {
+        return ftl;
+    }
+
+    /**
+     * Sets the template filename.
+     * @param ftlVal the ftl to set
+     */
+    protected final void setFtl(final String ftlVal) {
+        this.ftl = ftlVal;
+    }
 }

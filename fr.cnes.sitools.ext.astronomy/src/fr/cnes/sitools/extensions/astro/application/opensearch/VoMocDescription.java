@@ -19,7 +19,7 @@
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
 import cds.moc.HealpixMoc;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchVOConeSearchApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
 import fr.cnes.sitools.extensions.common.ApplicationPluginParameterValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
@@ -101,7 +101,7 @@ public class VoMocDescription extends MocDescription {
    */
   @Override
   protected final void computeMoc() throws Exception {
-    final ApplicationPluginModel model = ((OpenSearchVOConeSearchApplicationPlugin) getApplication()).getModel();
+    final ApplicationPluginModel model = ((OpenSearchVOApplicationPlugin) getApplication()).getModel();
     Validation configurationValidation = new ApplicationPluginParameterValidation(model.getParametersMap());
     configurationValidation = new NotNullAndNotEmptyValidation(configurationValidation, "mocdescribe");
     final StatusValidation status = configurationValidation.validate();
