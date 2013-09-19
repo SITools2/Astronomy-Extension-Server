@@ -18,6 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,11 @@ public class JsonDataModelDecorator extends VORequestDecorator {
         AbstractJsonDataModel jsonReader = DataModelFactory.jsonProcessor(model, getCoordinateSystem());
         return jsonReader.getDataModel();
     }
+  
+  public static FeaturesDataModel computeJsonDataModel(final List<Map<Field, String>> model, AstroCoordinate.CoordinateSystem coordinateSystem) {
+        AbstractJsonDataModel jsonReader = DataModelFactory.jsonProcessor(model, coordinateSystem);
+        return jsonReader.getDataModel();
+  }
     /**
      * Returns the coordinate system of the output.
      * @return the coordinateSystem

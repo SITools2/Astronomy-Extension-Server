@@ -51,6 +51,14 @@ public class VOTableDataModelDecorator extends VORequestDecorator {
      * @return the server response in a data model that allows the transformation in VOTable format
      */
     public final Map computeVotableDataModel(final List<Map<Field, String>> response) {
+        return computeVotableFromDataModel(response);
+    }
+    /**
+     * Computes the server response in a data model that allows the transformation in VOTable format.
+     * @param response server response
+     * @return the server response in a data model that allows the transformation in VOTable format
+     */
+    public static Map computeVotableFromDataModel(final List<Map<Field, String>> response) {
         final Map dataModel = new HashMap();
         final List<Field> fields = new ArrayList<Field>();
         final List rows = new ArrayList();
@@ -73,6 +81,6 @@ public class VOTableDataModelDecorator extends VORequestDecorator {
         dataModel.put("fields", fields);
         dataModel.put("rows", rows);
         dataModel.put("sqlColAlias", sqlColAlias);
-        return dataModel;
+        return dataModel;        
     }
 }

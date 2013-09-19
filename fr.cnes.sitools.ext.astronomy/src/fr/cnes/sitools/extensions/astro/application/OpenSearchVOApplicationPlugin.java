@@ -228,7 +228,7 @@ public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
       //router.attach("/describe", fr.cnes.sitools.extensions.astro.application.OpenSearchDescribe.class);
       router.attach("/search", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVOSearch.class);
       router.attach("/dico/{name}", fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchVODico.class);
-      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.opensearch.VoMocDescription.class);
+      router.attach("/moc", fr.cnes.sitools.extensions.astro.application.opensearch.VoMocDescription.class);      
       attachParameterizedResources(router);
     }
     return router;
