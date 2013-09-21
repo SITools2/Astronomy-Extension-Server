@@ -2,10 +2,13 @@
   <id>votable_concepts</id>
   <name>VOTable</name>
   <description>This dictionary handles the semantic for FIELD tag</description>
-  <properties>
+  <properties>     
     <fr.cnes.sitools.util.Property>
       <name>ID</name>
     </fr.cnes.sitools.util.Property>
+    <fr.cnes.sitools.util.Property>
+      <name>name</name>
+    </fr.cnes.sitools.util.Property>    
     <fr.cnes.sitools.util.Property>
       <name>ucd</name>
     </fr.cnes.sitools.util.Property>

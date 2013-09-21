@@ -794,7 +794,7 @@ public class WCSTransform implements WorldCoordinateConverter {
 
         // Set equinox from EQUINOX, EPOCH, or RADECSYS; default to 2000
         if ((head.findKey("EQUINOX"))) {
-            this.equinox = head.getDoubleValue("EQUINOX");
+            this.equinox = head.getDoubleValue("EQUINOX", 2000);
             ieq = 2000; // Allan: added 12-02-2009
         } else if ((head.findKey("EPOCH"))) {
             ieq = (int) head.getDoubleValue("EPOCH", 0.0);

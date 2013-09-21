@@ -36,7 +36,9 @@ import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.InputsValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.Validation;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -87,6 +89,10 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
      * Coordinate system.
      */
     private AstroCoordinate.CoordinateSystem coordinateSystem;
+    /**
+     * Dictionary.
+     */
+    private transient Map<String, VoDictionary> dico;
 
     @Override
     public void doInit() {
@@ -116,6 +122,7 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
                     this.setHealpix(healpixLongPixels);
                     this.setOrder((int) Integer.valueOf(form.getFirstValue("order")));
                     this.setCoordinateSystem(AstroCoordinate.CoordinateSystem.valueOf(form.getFirstValue("coordSystem")));
+                    this.dico = ((OpenSearchVOApplicationPlugin) getApplication()).getDico();
                 }
             }
         } catch (Exception ex) {
@@ -141,8 +148,13 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
             for (int i = 0; i < healpixPixels.length; i++) {
                 VORequestInterface voRequest = new VORequest(applicationID, getUrl(), getOrder(), healpixPixels[i], getCoordinateSystem(), protocol, cacheStrategy);
                 voRequest = new PutInCacheIfNotDecorator(voRequest, applicationID, getOrder(), healpixPixels[i], getCoordinateSystem(), cacheStrategy);
+                voRequest = new DictionaryDecorator((voRequest), dico);
                 final List<Map<Field, String>> responseFromCurrentPixel = (List<Map<Field, String>>) voRequest.getOutput();
-                result.addAll(responseFromCurrentPixel);
+                if (Utility.isSet(responseFromCurrentPixel)) {
+                    result.addAll(responseFromCurrentPixel);
+                } else {
+                    LOG.log(Level.WARNING, "Pointer is null for {0}and pixel {1}", new Object[]{url, healpixPixels[i]});
+                }
             }
             return new ArrayList(result);
        
