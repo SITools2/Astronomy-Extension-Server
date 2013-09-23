@@ -20,7 +20,7 @@ package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.astro.resolver.constellations.Wrapper;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -33,9 +33,9 @@ import org.restlet.resource.ClientResource;
 
 /**
  * Queries the SITools2 database and returns the coordinates of one constellation
- * for a given name.<br/> 
+ * for a given name.<br/>
  * The ConstellationNameResolver lets you get a sky position given an object name.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ConstellationNameResolver extends AbstractNameResolver {
@@ -61,7 +61,6 @@ public class ConstellationNameResolver extends AbstractNameResolver {
      * Empty constructor.
      */
     protected ConstellationNameResolver() {
-        
     }
     /**
      * Constructor.
@@ -96,7 +95,7 @@ public class ConstellationNameResolver extends AbstractNameResolver {
             final JAXBContext jaxb = JAXBContext.newInstance(Wrapper.class);
             final Unmarshaller umMarshaller = jaxb.createUnmarshaller();
             final Wrapper wrapper = (Wrapper) umMarshaller.unmarshal(constelDb.getStream());
-            final HashMap<String, Double[]> database = wrapper.getHashMap();            
+            final Map<String, Double[]> database = wrapper.getHashMap();
             if (database.containsKey(getConstellationName())) {
                 LOG.log(Level.INFO, "{0} found as constellation", getConstellationName());
                 final Double[] coordinates = database.get(getConstellationName());
@@ -121,8 +120,7 @@ public class ConstellationNameResolver extends AbstractNameResolver {
             } else {
                 response = getSuccessor().getResponse();
             }
-        } finally {
-            return response;
         }
+        return response;
     }
 }

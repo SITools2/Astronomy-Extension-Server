@@ -25,12 +25,10 @@ import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
  * @author Jean-Christophe Malapert
  */
 public interface ConeSearchQueryInterface {
-    
   /**
    * Returns a GeoJson representation.
    * @return GeoJson representation
    * @throws Exception Exception
    */
     GeoJsonRepresentation getResponse() throws Exception;
-    
 }

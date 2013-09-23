@@ -18,22 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
-import fr.cnes.sitools.astro.vo.conesearch.*;
-import fr.cnes.sitools.astro.graph.*;
-
 /**
  * Exception for graph package.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SimpleImageAccessException extends Exception {
-    
     /**
      * Empty constructor.
      */
     public SimpleImageAccessException() {
         super();
     }
-    
     /**
      * Constructs an Exception with a message.
      * @param message message
@@ -41,7 +36,6 @@ public class SimpleImageAccessException extends Exception {
     public SimpleImageAccessException(final String message) {
         super(message);
     }
-    
     /**
      * Constructs an Exception with a cause.
      * @param cause cause
@@ -49,7 +43,6 @@ public class SimpleImageAccessException extends Exception {
     public SimpleImageAccessException(final Throwable cause) {
         super(cause);
     }
-    
     /**
      * Constructs an Exception with a message and a cause.
      * @param message message
@@ -58,5 +51,4 @@ public class SimpleImageAccessException extends Exception {
     public SimpleImageAccessException(final String message, final Throwable cause) {
         super(message, cause);
     }
-    
 }

@@ -54,7 +54,6 @@ import java.util.List;
       if (isPolesCollision()) {
         return null;
       }
-      
       final List ranges = (List) computeRange();
       final List<Double[]> raRanges = (List<Double[]>) ranges.get(0);
       final double[] decRange = (double[]) ranges.get(1);
@@ -65,11 +64,10 @@ import java.util.List;
       } else {
         final Double[] raRange1 = raRanges.get(0);
         final Double[] raRange2 = raRanges.get(1);
-        predicatDefinition = String.format(" AND ( %s BETWEEN %s AND %s ) AND (( %s BETWEEN %s AND %s ) OR ( %s BETWEEN %s AND %s ))", 
-                                             decCol, decRange[0], decRange[1], 
+        predicatDefinition = String.format(" AND ( %s BETWEEN %s AND %s ) AND (( %s BETWEEN %s AND %s ) OR ( %s BETWEEN %s AND %s ))",
+                                             decCol, decRange[0], decRange[1],
                                              raCol, raRange1[0], raRange1[1], raCol, raRange2[0], raRange2[1]);
       }
       return predicatDefinition;
     }
-  }    
-
+  }

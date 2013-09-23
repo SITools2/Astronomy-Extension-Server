@@ -42,11 +42,11 @@ import java.util.logging.Logger;
  * <p><pre>
  * Example usage:
  *
- * in your Java source: 
- * <code>TemplateSequenceModel rows = new DatabaseRequestModel(resultSet); 
+ * in your Java source:
+ * <code>TemplateSequenceModel rows = new DatabaseRequestModel(resultSet);
  * root.put("rows",rows);</code>
  *
- * in your .ftl 
+ * in your .ftl
  * <code><#list rows as row> ${row["column1"]} - ${row["column2"]}
  * <#/list></code>
  * </pre>
@@ -130,8 +130,8 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
                 this.getRequest().close();
             } catch (SitoolsException ex1) {
                 LOG.log(Level.WARNING, null, ex1);
-            } 
-            throw new TemplateModelException(ex);            
+            }
+            throw new TemplateModelException(ex);
         }
 
         // this is the last record and we need to close the connection
@@ -205,8 +205,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         /**
          * SITools2 converter.
          */
-        private ConverterChained converterChained;
-        
+        private ConverterChained converterChained;        
         /**
          * Emprty constructor.
          */
@@ -257,13 +256,13 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         protected final void setConverterChained(final ConverterChained converterChainedVal) {
             this.converterChained = converterChainedVal;
-        }        
+        }
 
         /**
          * Sets the mapping.
          * @param mapVal the mapping
          */
-        protected final void setMap(final HashMap mapVal) {
+        protected final void setMap(final Map mapVal) {
             this.map = mapVal;
         }
 
@@ -273,11 +272,11 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         protected final Map getMap() {
             return this.map;
-        }       
+        }
 
         /**
-         * Creates a HashMap of the different attributes from a record. 
-         * 
+         * Creates a HashMap of the different attributes from a record.
+         *
          * <p>
          * The key of the hash map is the columnAlias
          * </p>

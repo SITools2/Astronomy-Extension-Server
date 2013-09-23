@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -127,7 +126,7 @@ public class ConeSearchQuery {
             throw new IllegalArgumentException(info.getValue());
         }
     }
-    List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();    
+    List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
     final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
     for (Object objectIter : objects) {
       if (objectIter instanceof Table) {
@@ -163,7 +162,7 @@ public class ConeSearchQuery {
         final TableData tableData = data.getTABLEDATA();
         final List<Tr> trs = tableData.getTR();
         for (Tr trsIter : trs) {
-          Map<Field, String> response = new HashMap<Field, String>();
+          final Map<Field, String> response = new HashMap<Field, String>();
           final List<Td> tds = trsIter.getTD();
           int nbTd = 0;
           for (Td tdIter : tds) {

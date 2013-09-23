@@ -25,11 +25,9 @@ import java.util.Map;
  * @author Jean-Christophe Malapert
  */
 interface SimpleImageAccessDataModelInterface {
-    
   /**
    * Returns the data model.
    * @return the data model
    */
     Map getDataModel();
-    
 }

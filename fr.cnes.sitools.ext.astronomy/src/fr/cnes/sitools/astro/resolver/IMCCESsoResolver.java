@@ -63,12 +63,10 @@ public class IMCCESsoResolver extends AbstractNameResolver {
    * Epoch for which the search is done.
    */
   private String epoch;
-  
   /**
    * Empty constructor.
    */
   protected IMCCESsoResolver() {
-      
   }
 
   /**
@@ -98,7 +96,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
   }
   /**
    * Sets the epoch.
-   * @param epochVal the epoch to set 
+   * @param epochVal the epoch to set
    */
   protected final void setEpoch(final String epochVal) {
       this.epoch = epochVal;
@@ -112,7 +110,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
   }
   /**
    * Checks if the input parameters are set.
-   * 
+   *
    * <p>
    * Returns a IllegalArgumentException if one of the input parameters is <code>null</code> or empty.
    * </p>
@@ -131,13 +129,13 @@ public class IMCCESsoResolver extends AbstractNameResolver {
     NameResolverResponse response = new NameResolverResponse(CREDITS_NAME);
     try {
       final Object json = callImcce(objectName, epoch);
-      final List<AstroCoordinate> astrocoordinates = processResponse(json);      
+      final List<AstroCoordinate> astrocoordinates = processResponse(json);
       response.addAstoCoordinates(astrocoordinates);
     } catch (NameResolverException ex) {
       if (getSuccessor() == null) {
-        response.setError(ex);        
+        response.setError(ex);
       } else {
-        response = getSuccessor().getResponse();               
+        response = getSuccessor().getResponse();
       }
     } finally {
       return response;
@@ -164,10 +162,10 @@ public class IMCCESsoResolver extends AbstractNameResolver {
 
     //requesting
     final ClientResourceProxy clientProxy = new ClientResourceProxy(service, Method.GET);
-    final ClientResource client = clientProxy.getClientResource();   
+    final ClientResource client = clientProxy.getClientResource();
     final Client clientHTTP = new Client(Protocol.HTTP);
     clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
-    client.setNext(clientHTTP);    
+    client.setNext(clientHTTP);
     final Status status = client.getStatus();
 
     // when the response is fine, we process the response
@@ -207,7 +205,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
       final JSONObject jsonObj = (JSONObject) json;
       astroCoordinates.add(extractCoordinatesFromRecord(jsonObj));
     } else {
-      final JSONArray jsonArray = (JSONArray) json;      
+      final JSONArray jsonArray = (JSONArray) json;
       final int length = jsonArray.length();
       for (int i = 0; i < length; i++) {
         try {
@@ -216,7 +214,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
         } catch (JSONException ex) {
           throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
         }
-      }      
+      }
     }
     return astroCoordinates;
   }

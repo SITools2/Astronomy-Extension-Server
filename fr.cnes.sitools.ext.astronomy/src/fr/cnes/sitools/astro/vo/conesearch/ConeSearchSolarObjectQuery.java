@@ -98,7 +98,6 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    * Healpix index.
    */
   private transient HealpixIndex healpixIndex = null;
-  
   /**
    * Coordinate system in which the input is given and response is returned.
    */
@@ -132,7 +131,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     /**
      * ucd name.
      */
-    private final String name;   
+    private final String name;
 
     /**
      * Constructor.
@@ -161,21 +160,20 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     public static ReservedWords find(final String keyword) {
       ReservedWords response = ReservedWords.NONE;
       final ReservedWords[] words = ReservedWords.values();
-      for (int i = 0; i < words.length; i++) {
-        final ReservedWords word = words[i];
-        final String reservedName = word.getName();
-        if (keyword.equals(reservedName)) {
-          response = word;
-          break;
+        for (ReservedWords word : words) {
+            final String reservedName = word.getName();
+            if (keyword.equals(reservedName)) {
+                response = word;
+                break;
+            }
         }
-      }
       return response;
     }
   }
 
   /**
    * Constructs a query.
-   * 
+   *
    * When the reference frame is in galactic, the inputs are transformed in equatorial frame
    * to query the external web service that takes coordinates in equatorial frame.
    *
@@ -197,7 +195,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
 
   /**
    * Constructs a query.
-   * 
+   *
    * When the reference frame is in galactic, the inputs are transformed in equatorial frame
    * to query the external web service that takes coordinates in equatorial frame.
    *
@@ -217,10 +215,9 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     this.declination = MAX_DEC - Math.toDegrees(pointing.theta);
     this.radius = pixRes * ARCSEC_2_DEG * MULT_FACT;
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", time));
-    this.coordSystem = coordSystemVal;    
-    transformToCelestialCoordinates();    
-  } 
-  
+    this.coordSystem = coordSystemVal;
+    transformToCelestialCoordinates();
+  }
   /**
    * Transforms coordinates in Equatorial when the reference frame is in Galactic.
    */
@@ -229,8 +226,8 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
         final AstroCoordinate astroCoordinates = new AstroCoordinate(this.rightAscension, this.declination);
         astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
         this.rightAscension = astroCoordinates.getRaAsDecimal();
-        this.declination = astroCoordinates.getDecAsDecimal();          
-      }      
+        this.declination = astroCoordinates.getDecAsDecimal();
+      }
   }
 
   @Override

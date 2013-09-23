@@ -92,7 +92,6 @@ public class CutOutCDS implements CutOutInterface {
         setDeclination(decVal);
         checkInputs();
     }
-        
 
     /**
      * Constructor based on sexagesimal coordinates.
@@ -115,15 +114,16 @@ public class CutOutCDS implements CutOutInterface {
      * <li>the declination is included within [MIN_DEC, MAX_DEC]</li>
      * </ul>
      * </p>
-     */    
+     */
     protected final void checkInputs() {
         if (getRightAscension() >= MIN_RA && getRightAscension() <= MAX_RA && getDeclination() >= MIN_DEC && getDeclination() <= MAX_DEC) {
             LOG.log(Level.FINE, "Input : Right Ascension(°)", getRightAscension());
             LOG.log(Level.FINE, "Input : Declination(°)", getDeclination());
         } else {
             LOG.log(Level.SEVERE, String.format("Coordinates (ra,dec)=(%s,%s) are out valid range", getRightAscension(), getDeclination()));
-            throw new IllegalArgumentException(String.format("Coordinates (ra,dec)=(%s,%s) are out valid range", getRightAscension(), getDeclination()));
-        }        
+            throw new IllegalArgumentException(String.format("Coordinates (ra,dec)=(%s,%s) are out valid range",
+                                                getRightAscension(), getDeclination()));
+        }
     }
 
     /**
@@ -136,7 +136,7 @@ public class CutOutCDS implements CutOutInterface {
     /**
      * Returns the declination in ICRS frame in decimal degrees.
      * @return the declination in ICRS frame in decimal degrees
-     */    
+     */
     protected final double getDeclination() {
         return this.declination;
     }
@@ -150,10 +150,10 @@ public class CutOutCDS implements CutOutInterface {
     /**
      * Sets the declination in decimal degrees in ICRS frame.
      * @param decVal the declination in decimal degrees in ICRS frame
-     */    
+     */
     protected final void setDeclination(final double decVal) {
         this.declination = decVal;
-    }        
+    }
 
     /**
      * Call CDS webservice.

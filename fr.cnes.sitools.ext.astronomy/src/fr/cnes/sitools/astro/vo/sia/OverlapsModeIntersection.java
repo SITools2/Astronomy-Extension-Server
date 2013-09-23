@@ -28,22 +28,18 @@ import java.util.logging.Logger;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class OverlapsModeIntersection extends AbstractSqlGeometryConstraint {
-  
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OverlapsModeIntersection.class.getName());  
-  
+  private static final Logger LOG = Logger.getLogger(OverlapsModeIntersection.class.getName());
   /**
    * Default value for resampling along right ascension axis.
    */
   private static final double DEFAULT_SAMPLING_VALUE_RA = 20;
-  
   /**
    * Default value for resampling along declination axis.
    */
   private static final double DEFAULT_SAMPLING_VALUE_DEC = 20;
-  
   /**
    * geometry attribut.
    */
@@ -92,7 +88,7 @@ public class OverlapsModeIntersection extends AbstractSqlGeometryConstraint {
       predicatDefinition = predicatDefinition.concat(String.format(" OR spoly_overlap_polygon(%s,'{(%sd,%sd),(%sd,%sd),(%sd,%sd), (%sd,%sd)}')", geomCol, 180.0, decRange[MIN], 270.0, decRange[MIN], 270.0, decRange[MAX], 180.0, decRange[MAX]));
       predicatDefinition = predicatDefinition.concat(String.format(" OR spoly_overlap_polygon(%s,'{(%sd,%sd),(%sd,%sd),(%sd,%sd), (%sd,%sd)}'))", geomCol, 270.0, decRange[MIN], 0.0, decRange[MIN], 0.0, decRange[MAX], 270.0, decRange[MAX]));
       LOG.log(Level.FINEST, predicatDefinition);
-      
+
     } else if (raRanges.size() == 1 && isLargePolygon()) {
       LOG.log(Level.FINEST, "Large polygon case");
       final Double[] raRange1 = raRanges.get(0);
@@ -111,7 +107,7 @@ public class OverlapsModeIntersection extends AbstractSqlGeometryConstraint {
 
   /**
    * Builds a multi-polygon syntax for PgSphere based on a set right ascension ranges and a declination range.
-   * 
+   *
    * <p>
    * A range is an array that is composed of two values : min and max value.
    * </p>

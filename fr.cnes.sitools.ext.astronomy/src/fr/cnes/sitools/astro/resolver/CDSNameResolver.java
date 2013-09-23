@@ -39,11 +39,11 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 /**
- * Queries the CDS name resolver and returns the list of coordinates for a given name.<br/> 
+ * Queries the CDS name resolver and returns the list of coordinates for a given name.<br/>
  * The CDSNameResolver lets you get a sky position given an object name.
  *
  * @see <a href="http://cdsweb.u-strasbg.fr/doc/sesame.htx">Sesame</a>
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CDSNameResolver extends AbstractNameResolver {
@@ -60,12 +60,10 @@ public class CDSNameResolver extends AbstractNameResolver {
    * Credits to return for CDS.
    */
   private static final String CREDITS_NAME = "CDS";
-  
   /**
    * Object name to find.
    */
   private String objectName;
-  
   /**
    * The choice of the name resolver at CDS.
    */
@@ -104,7 +102,6 @@ public class CDSNameResolver extends AbstractNameResolver {
      */
     NameResolverService(final String serviceCodeStr) {
       this.serviceCode = serviceCodeStr;
-    
     }
 
     /**
@@ -120,18 +117,17 @@ public class CDSNameResolver extends AbstractNameResolver {
    * Empty constructor.
    */
   protected CDSNameResolver() {
-      
   }
   /**
    * Constructs a new CDS name resolver on the object name to resolve, the name resolver service.
    *
    * @param objectNameVal object name to resolve
-   * @param service name resolver to use (NED, ...)   
+   * @param service name resolver to use (NED, ...)
    */
   public CDSNameResolver(final String objectNameVal, final NameResolverService service) {
     setObjectName(objectNameVal);
     setNameResolverService(service);
-    checkInputParameters();      
+    checkInputParameters();
   }
   /**
    * Returns the object name.
@@ -163,7 +159,7 @@ public class CDSNameResolver extends AbstractNameResolver {
   }
   /**
    * Checks the validity of input parameters.
-   * 
+   *
    * <p>
    * Checks of the values are not null.
    * Returns a IllegalArgumentException if one of the input parameters is <code>null</code> or empty.
@@ -189,14 +185,14 @@ public class CDSNameResolver extends AbstractNameResolver {
       response.addAstroCoordinate(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
       LOG.log(Level.INFO, "{0} found from CDS service", getObjectName());
     } catch (NameResolverException ex) {
-      LOG.log(Level.WARNING, "{0} not found from CDS service", getObjectName());  
+      LOG.log(Level.WARNING, "{0} not found from CDS service", getObjectName());
       if (getSuccessor() == null) {
         response.setError(ex);
       } else {
         response = getSuccessor().getResponse();
       }
     } catch (Exception ex) {
-      LOG.log(Level.WARNING, "{0} not found from CDS service", getObjectName()); 
+      LOG.log(Level.WARNING, "{0} not found from CDS service", getObjectName());
       if (getSuccessor() == null) {
         response.setError(new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex));
       } else {
@@ -227,8 +223,7 @@ public class CDSNameResolver extends AbstractNameResolver {
       try {
         final JAXBContext ctx = JAXBContext.newInstance(new Class[]{fr.cnes.sitools.astro.resolver.cds.CDSFactory.class});
         final Unmarshaller unMarshaller = ctx.createUnmarshaller();
-        final Sesame response = (Sesame) unMarshaller.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
-        return response;
+        return (Sesame) unMarshaller.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
       } catch (IOException ex) {
         throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
       } catch (JAXBException ex) {

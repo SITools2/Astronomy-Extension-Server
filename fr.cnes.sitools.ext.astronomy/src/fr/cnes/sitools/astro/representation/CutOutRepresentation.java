@@ -30,15 +30,14 @@ import org.restlet.representation.OutputRepresentation;
 
 /**
  * Creates a cutOut on a FITS image.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CutOutRepresentation extends OutputRepresentation {
   /**
    * Logger.
-   */  
+   */
   private static final Logger LOG = Logger.getLogger(CutOutRepresentation.class.getName());
-  
   /**
    * Interface.
    */
@@ -50,14 +49,14 @@ public class CutOutRepresentation extends OutputRepresentation {
 
     /**
      * Constructor.
-     * @param media media type 
+     * @param media media type
      */
     protected CutOutRepresentation(final MediaType media) {
         super(media);
     }
     /**
      * Constructs a new cutOut representation.
-     * 
+     *
      * @param media media type
      * @param cutOut curoff object
      */
@@ -94,11 +93,10 @@ public class CutOutRepresentation extends OutputRepresentation {
      */
     protected final void setCutout(final CutOutInterface cutoutVal) {
         this.cutout = cutoutVal;
-    }    
+    }
 
     /**
      * Writes the response.
-     * 
      * <p>
      * A RuntimeException is raised when a problem happens while the cut out is processed.
      * </p>
@@ -107,7 +105,7 @@ public class CutOutRepresentation extends OutputRepresentation {
      * @throws IOException IO Exception
      */
     @Override
-    public final void write(final OutputStream out) throws IOException {        
+    public final void write(final OutputStream out) throws IOException {
         try {
             if (getMediaType().equals(MediaType.IMAGE_PNG)
                 || getMediaType().equals(MediaType.IMAGE_JPEG)
@@ -116,7 +114,7 @@ public class CutOutRepresentation extends OutputRepresentation {
             } else {
                 final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
                 disp.setFilename(getFilename());
-                this.setDisposition(disp);                
+                this.setDisposition(disp);
                 this.getCutout().createCutoutFits(out);
             }
         } catch (CutOutException ex) {

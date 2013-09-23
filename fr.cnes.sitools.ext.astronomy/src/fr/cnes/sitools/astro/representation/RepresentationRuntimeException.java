@@ -29,7 +29,6 @@ public class RepresentationRuntimeException extends RuntimeException {
     public RepresentationRuntimeException() {
         super();
     }
-    
     /**
      * Constructs an Exception with a message.
      * @param message message
@@ -37,7 +36,6 @@ public class RepresentationRuntimeException extends RuntimeException {
     public RepresentationRuntimeException(final String message) {
         super(message);
     }
-    
     /**
      * Constructs an Exception with a cause.
      * @param cause cause
@@ -45,7 +43,6 @@ public class RepresentationRuntimeException extends RuntimeException {
     public RepresentationRuntimeException(final Throwable cause) {
         super(cause);
     }
-    
     /**
      * Constructs an Exception with a message and a cause.
      * @param message message
@@ -53,5 +50,5 @@ public class RepresentationRuntimeException extends RuntimeException {
      */
     public RepresentationRuntimeException(final String message, final Throwable cause) {
         super(message, cause);
-    }    
+    }
 }

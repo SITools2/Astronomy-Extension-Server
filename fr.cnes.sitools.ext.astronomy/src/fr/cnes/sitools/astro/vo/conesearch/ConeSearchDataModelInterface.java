@@ -22,14 +22,14 @@ import java.util.Map;
 
 /**
  * This object provides an interface to get the cone search data model.
- * 
+ *
  * @author Jean-Christophe Malapert
  */
 public interface ConeSearchDataModelInterface {
 
   /**
    * Returns the data model.
-   * 
+   *
    * @return data model
    */
   Map getDataModel();

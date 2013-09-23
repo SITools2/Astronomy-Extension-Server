@@ -337,7 +337,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         final FeaturesDataModel features = new FeaturesDataModel();
         int index = 0;
         for (AstroCoordinate astroIter : astroList) {
-            final FeatureDataModel feature = new FeatureDataModel();           
+            final FeatureDataModel feature = new FeatureDataModel();
             feature.setIdentifier(name.concat(String.valueOf(index++)));
             feature.addProperty("credits", name);
             final Map<String, String> metadata = astroIter.getMatadata();
@@ -350,7 +350,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             feature.createCrs(CoordinateSystem.valueOf(referenceFrame).getCrs());
             feature.createGeometry(String.format("[%s,%s]", astroIter.getRaAsDecimal(), astroIter.getDecAsDecimal()), "Point");
             features.addFeature(feature);
-        }        
+        }
         return features.getFeatures();
     }
 

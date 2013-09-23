@@ -36,7 +36,7 @@ import org.restlet.Request;
 public class ConeSearchProtocolLibrary {
 
     /**
-     * Logger
+     * Logger.
      */
     private static final Logger LOG = Logger.getLogger(ConeSearchProtocolLibrary.class.getName());
     /**

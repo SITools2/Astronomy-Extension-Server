@@ -318,7 +318,7 @@ public class ClientUWS {
             // do nothing
         } else {
             client.release();
-            throw new ClientUWSException(client.getStatus(), "SetExecutionDurationJob: Unable to set EXECUTIONDURATION=" + String.valueOf(timeInSeconds));
+            throw new ClientUWSException(client.getStatus(), "SetExecutionDurationJob: Unable to set EXECUTIONDURATION=" + timeInSeconds);
         }
         client.release();
     }

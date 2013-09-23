@@ -55,7 +55,6 @@ import nom.tam.util.Cursor;
  * @author malapert
  */
 public class CutOutSITools2 implements CutOutInterface {
-    
     static {
         System.setProperty("com.sun.media.jai.disableMediaLib", "true");
     }
@@ -66,11 +65,11 @@ public class CutOutSITools2 implements CutOutInterface {
     /**
      * Right ascension coordinate (in deg) for the center of the cutOut.
      */
-    private double ra;
+    private double rightAscension;
     /**
      * Declination coordinate (in deg) for the center of the cutOut.
      */
-    private double dec;
+    private double declination;
     /**
      * Width (in deg) of the cutOut.
      */
@@ -78,17 +77,17 @@ public class CutOutSITools2 implements CutOutInterface {
     /**
      * Height (in deg) of the cutOut.
      */
-    private double heightDeg;    
+    private double heightDeg;
     /**
      * Scale in deg/pixel along NAXIS1.
      */
     private transient double scaleDegPerPixelWidth;
     /**
      * Scale in deg/pixel along NAXIS2.
-     */    
+     */
     private transient double scaleDegPerPixelHeight;
     /**
-     * Transformation (ra,dec) in pixels reference.
+     * Transformation (rightAscension,declination) in pixels reference.
      */
     private transient Point2D.Double xyCoord;
     /**
@@ -97,34 +96,34 @@ public class CutOutSITools2 implements CutOutInterface {
     private transient int shiftCrpix1 = 0;
     /**
      * CRPIX1 shift when the corner is out of the image.
-     */    
+     */
     private transient int shiftCrpix2 = 0;
     /**
      * lengths of the image following the cutOut.
      */
-    private final transient int[] lengths;
+    private transient int[] lengths;
     /**
      * corners of the origin point of cutOut.
-     * 
+     *
      * ---------
      * |        |
      * |      -----
      * |      |   |
      * |______|___|
-     *    (corners)  
-     */    
-    private final transient int[] corners;
+     *    (corners)
+     */
+    private transient int[] corners;
     /**
      * NAXIS2 index in the corners and length arrays.
      */
     private int height = 0;
     /**
      * NAXIS1 index in the corners and length arrays.
-     */    
-    private int width = 1; 
+     */
+    private int width = 1;
     /**
      * DEEP for Cube FITS (start at 0).
-     */    
+     */
     public static final int DEEP = 0;
     /**
      * DeepLevel in the FITS cube.
@@ -133,7 +132,13 @@ public class CutOutSITools2 implements CutOutInterface {
     /**
      * TODO : should provide a choice between PNG and JPEG.
      */
-    private SupportedFileFormat supportedFormatOutput;
+    private SupportedFileFormat formatOutput;
+
+    /**
+     * Empty constructor.
+     */
+    protected CutOutSITools2() {        
+    }
 
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
@@ -149,13 +154,10 @@ public class CutOutSITools2 implements CutOutInterface {
     public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double widthDeg, final double heightDeg, final int hduImageNumber, final int deepLevel) throws CutOutException  {
         try {
             setFits(new FITSImage(fitsObj, hduImageNumber, deepLevel, FITSImage.SCALE_LINEAR));
-            setRa(rightAscension);
-            setDec(declination);
+            setRightAscension(rightAscension);
+            setDeclination(declination);
             setWidthDeg(widthDeg);
             setHeightDeg(heightDeg);
-            final int nbAxes = getFits().getImageHDU().getAxes().length;
-            this.corners = new int[nbAxes];
-            this.lengths = new int[nbAxes];
             setDeepLevel(deepLevel);
             init();
         } catch (FitsException ex) {
@@ -188,61 +190,66 @@ public class CutOutSITools2 implements CutOutInterface {
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
-     * @param rightAscension right ascension coordinates in deg
-     * @param declination declination in deg
-     * @param widthDeg width in deg
-     * @param heightDeg height in deg
+     * @param rightAscensionVal right ascension coordinates in deg
+     * @param declinationVal declination in deg
+     * @param widthDegVal width in deg
+     * @param heightDegVal height in deg
      * @param hduImageNumber number of the image HDU to read
      * @throws CutOutException When a problem happens
      */
-    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double widthDeg, final double heightDeg, final int hduImageNumber) throws CutOutException {
-        this(fitsObj, rightAscension, declination, widthDeg, heightDeg, hduImageNumber, 0);
+    public CutOutSITools2(final Fits fitsObj, final double rightAscensionVal, final double declinationVal, final double widthDegVal, final double heightDegVal, final int hduImageNumber) throws CutOutException {
+        this(fitsObj, rightAscensionVal, declinationVal, widthDegVal, heightDegVal, hduImageNumber, 0);
     }
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
-     * @param rightAscension right ascension coordinates in deg
-     * @param declination declination in deg
+     * @param rightAscensionVal right ascension coordinates in deg
+     * @param declinationVal declination in deg
      * @param radius radius in deg
      * @param hduImageNumber number of the image HDU to read
      * @throws CutOutException When a problem happens
      */
-    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double radius, final int hduImageNumber) throws CutOutException  {
-        this(fitsObj, rightAscension, declination, radius, hduImageNumber, 0);
+    public CutOutSITools2(final Fits fitsObj, final double rightAscensionVal, final double declinationVal, final double radius, final int hduImageNumber) throws CutOutException  {
+        this(fitsObj, rightAscensionVal, declinationVal, radius, hduImageNumber, 0);
     }
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
-     * @param rightAscension right ascension coordinates in deg
-     * @param declination declination in deg
+     * @param rightAscensionVal right ascension coordinates in deg
+     * @param declinationVal declination in deg
      * @param radius radius in deg
      * @throws CutOutException When a problem happens
      */
-    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double radius) throws CutOutException  {
-        this(fitsObj, rightAscension, declination, radius, 1, 0);
+    public CutOutSITools2(final Fits fitsObj, final double rightAscensionVal, final double declinationVal, final double radius) throws CutOutException  {
+        this(fitsObj, rightAscensionVal, declinationVal, radius, 1, 0);
     }
     /**
      * Constructs a cut out based on the image, the center of the zone to cut and its radius.
      * @param fitsObj Object to cut
-     * @param rightAscension right ascension coordinates in deg
-     * @param declination declination in deg
-     * @param widthDeg width in deg
-     * @param heightDeg height in deg
+     * @param rightAscensionVal right ascension coordinates in deg
+     * @param declinationVal declination in deg
+     * @param widthDegVal width in deg
+     * @param heightDegVal height in deg
      * @throws CutOutException When a problem happens
      */
-    public CutOutSITools2(final Fits fitsObj, final double rightAscension, final double declination, final double widthDeg, final double heightDeg) throws CutOutException  {
-        this(fitsObj, rightAscension, declination, widthDeg, heightDeg, 1, 0);
+    public CutOutSITools2(final Fits fitsObj, final double rightAscensionVal, final double declinationVal, final double widthDegVal, final double heightDegVal) throws CutOutException  {
+        this(fitsObj, rightAscensionVal, declinationVal, widthDegVal, heightDegVal, 1, 0);
     }
     /**
      * Computes the ranges of pixels to cut and checks if cutOut is inside the image.
      *
      * Raises an IllegalArgumentException if the cutOut is outside the image
+     *
+     * @throws FitsException It happens if the FITS is not valid.
      */
-    private void init() {
+    protected final void init() throws FitsException {
+        final int nbAxes = getFits().getImageHDU().getAxes().length;
+        this.corners = new int[nbAxes];
+        this.lengths = new int[nbAxes];
         final WCSTransform wcs = getWcs(this.getFits().getImageHDU());
         this.scaleDegPerPixelWidth = computeScaleDegPerPixelWidth(wcs);
         this.scaleDegPerPixelHeight = computeScaleDegPerPixelHeight(wcs);
-        this.xyCoord = wcs.wcs2pix(this.getRa(), this.getDec());
+        this.xyCoord = wcs.wcs2pix(this.getRightAscension(), this.getDeclination());
         if (isDataCube()) {
             setWidth(getWidth() + 1);
             setHeight(getHeight() + 1);
@@ -434,7 +441,7 @@ public class CutOutSITools2 implements CutOutInterface {
             imageHDU.addValue("CREATOR", "SITools2", "http://sitools2.sourceforge.net");
             propagateKeywords(originHdu.getHeader(), imageHDU);
             imageHDU.getHeader().insertHistory("CUT FITS DATE : " + GregorianCalendar.getInstance().getTime().toString());
-            imageHDU.getHeader().insertHistory(String.format("CUT FITS query (ra,dec,width, height) = (%s,%s,%s,%s)", this.getRa(), this.getDec(), this.getWidthDeg(), this.getHeightDeg()));
+            imageHDU.getHeader().insertHistory(String.format("CUT FITS query (ra,dec,width, height) = (%s,%s,%s,%s)", this.getRightAscension(), this.getDeclination(), this.getWidthDeg(), this.getHeightDeg()));
             return imageHDU;
         } catch (IOException ex) {
             throw new CutOutException(ex);
@@ -482,7 +489,7 @@ public class CutOutSITools2 implements CutOutInterface {
 
     @Override
     public final SupportedFileFormat getFormatOutput() {
-        return this.supportedFormatOutput;
+        return this.formatOutput;
     }
     /**
      * Scales the image.
@@ -628,7 +635,7 @@ public class CutOutSITools2 implements CutOutInterface {
      * @param supportedFileFormat supported the outputformat
      */
     private void setFormatOutput(final SupportedFileFormat supportedFileFormat) {
-        this.supportedFormatOutput = supportedFileFormat;
+        this.formatOutput = supportedFileFormat;
     }
 
 //  this.setFormatOutput(SupportedFileFormat.GIF_ANIMATED);
@@ -665,34 +672,34 @@ public class CutOutSITools2 implements CutOutInterface {
 
     /**
      * Returns the right ascension.
-     * @return the ra
+     * @return the rightAscension
      */
-    public final double getRa() {
-        return ra;
+    public final double getRightAscension() {
+        return rightAscension;
     }
 
     /**
      * Sets the right ascension.
-     * @param raVal the ra to set
+     * @param raVal the rightAscension to set
      */
-    private void setRa(final double raVal) {
-        this.ra = raVal;
+    private void setRightAscension(final double raVal) {
+        this.rightAscension = raVal;
     }
 
     /**
      * Returns the declination.
-     * @return the dec
+     * @return the declination
      */
-    public final double getDec() {
-        return dec;
+    public final double getDeclination() {
+        return declination;
     }
 
     /**
      * Sets the declination.
-     * @param decVal the dec to set
+     * @param decVal the declination to set
      */
-    private void setDec(final double decVal) {
-        this.dec = decVal;
+    private void setDeclination(final double decVal) {
+        this.declination = decVal;
     }
 
     /**

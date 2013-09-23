@@ -20,7 +20,7 @@ package fr.cnes.sitools.astro.resolver;
 
 /**
  * Handles in a simple way a name resolver or a set of name resolvers.
- * 
+ *
  * <p>
  * The AbstractNameResolver lets you retrieve a sky position from a given object name.
  * </p>
@@ -28,7 +28,6 @@ package fr.cnes.sitools.astro.resolver;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class AbstractNameResolver {
-  
   /**
    * Time out of 10 seconds when calling each name resolver.
    */
@@ -37,7 +36,7 @@ public abstract class AbstractNameResolver {
   /**
    * The next element in the chain of responsibility.
    */
-  private AbstractNameResolver successor;    
+  private AbstractNameResolver successor;
 
   /**
    * Sets the next element of the chain of responsability.
@@ -51,7 +50,7 @@ public abstract class AbstractNameResolver {
    * Returns the response of the name resolver.
    * @return the response of the name resolver
    */
-  public abstract NameResolverResponse getResponse();  
+  public abstract NameResolverResponse getResponse();
 
     /**
      * Returns the successor.

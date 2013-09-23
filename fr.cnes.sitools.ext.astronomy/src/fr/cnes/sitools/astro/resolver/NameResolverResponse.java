@@ -40,7 +40,6 @@ public class NameResolverResponse {
    * Service's exception.
    */
   private transient NameResolverException exception;
-  
   /**
    * Constructs a new NameResolverRsponse with credits.
    * @param creditsVal Laboratory credits
@@ -49,14 +48,12 @@ public class NameResolverResponse {
     this.credits = creditsVal;
     this.astroCoordinates = new ArrayList<AstroCoordinate>();
   }
-  
   /**
    * Constructs a new NameResolverRsponse.
    */
   public NameResolverResponse() {
     this(null);
   }
-  
   /**
    * Sets the laboratory credits.
    * @param creditsVal the laboratory credits
@@ -64,7 +61,6 @@ public class NameResolverResponse {
   public final void setCredits(final String creditsVal) {
     this.credits = creditsVal;
   }
-  
   /**
    * Returns the laboratory credits.
    * @return the laboratory credtis
@@ -80,7 +76,6 @@ public class NameResolverResponse {
   public final void addAstoCoordinates(final List<AstroCoordinate> astroCoordinatesVal) {
     this.astroCoordinates.addAll(astroCoordinatesVal);
   }
-  
   /**
    * Adds a AstroCoordinate to the current list.
    * @param astroCoordinateVal AstroCoordinate
@@ -88,7 +83,6 @@ public class NameResolverResponse {
   public final void addAstoCoordinate(final AstroCoordinate astroCoordinateVal) {
     this.astroCoordinates.add(astroCoordinateVal);
   }
-  
   /**
    * Adds a AstroCoordinate with the right ascension and declination.
    * @param rightAscension right ascension
@@ -97,7 +91,6 @@ public class NameResolverResponse {
   public final void addAstroCoordinate(final double rightAscension, final double declination) {
     this.astroCoordinates.add(new AstroCoordinate(rightAscension, declination));
   }
-  
   /**
    * Return the list of coordinates.
    * @return the list of coordinates
@@ -105,7 +98,6 @@ public class NameResolverResponse {
   public final List<AstroCoordinate> getAstroCoordinates() {
     return this.astroCoordinates;
   }
-  
   /**
    * Sets the error.
    * @param exceptionVal exception
@@ -113,7 +105,6 @@ public class NameResolverResponse {
   public final void setError(final NameResolverException exceptionVal) {
     this.exception = exceptionVal;
   }
-  
   /**
    * Returns the error.
    * @return the error

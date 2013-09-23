@@ -85,10 +85,10 @@ import org.restlet.resource.ClientResource;
  *    |           |__ arraysize
  *    |__ rows (List) (required)
  *    |     |__ row (required)
- *    |         
+ *    |
  *    |__ sqlColAlias (List) (required)
  *          |__ sqlcol (required)
- * 
+ *
  * </pre> Provide a VOTable representation by streaming based on Freemarker To have a dataModel by streaming, dataModel for rows element
  * must use the DatabaseRequestModel adapter
  *
@@ -124,7 +124,6 @@ public class VOTableRepresentation extends OutputRepresentation {
     setDataModel(dataModelVal);
     setFtl(ftlVal);
   }
-  
   /**
    * Creates a GeoJson representation with the default template (<code>DEFAULT_TEMPLATE</code>).
    *
@@ -132,8 +131,7 @@ public class VOTableRepresentation extends OutputRepresentation {
    */
   public VOTableRepresentation(final Map dataModelVal) {
     this(dataModelVal, DEFAULT_TEMPLATE);
-  }  
-
+  }
   /**
    * Writes the representation.
    *
@@ -181,5 +179,5 @@ public class VOTableRepresentation extends OutputRepresentation {
      */
     protected final void setFtl(final String ftlVal) {
         this.ftl = ftlVal;
-    }  
+    }
 }

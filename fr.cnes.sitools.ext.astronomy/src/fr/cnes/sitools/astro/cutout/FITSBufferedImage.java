@@ -37,7 +37,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
 
 /**
- * Scales FITS images
+ * Scales FITS images.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FITSBufferedImage extends FITSImage {
@@ -51,19 +51,19 @@ public class FITSBufferedImage extends FITSImage {
     private static final int BYTE = 8;
     /**
      * SHORT datatype in FITS.
-     */    
+     */
     private static final int SHORT = 16;
     /**
      * INT datatype in FITS.
-     */    
+     */
     private static final int INT = 32;
     /**
      * FLOAT datatype in FITS.
-     */    
+     */
     private static final int FLOAT = -32;
     /**
      * DOUBLE datatype in FITS.
-     */    
+     */
     private static final int DOUBLE = -64;
     /**
      * Construct a FITS image on which a scale method is applied.
@@ -72,7 +72,7 @@ public class FITSBufferedImage extends FITSImage {
      * @throws FitsException FITS exception
      * @throws FITSImage.DataTypeNotSupportedException DataTypeNotSupported
      * @throws FITSImage.NoImageDataFoundException NoImageDataFound
-     * @throws IOException 
+     * @throws IOException
      */
     public FITSBufferedImage(final BufferedImage[] scaledImage, final int scaleMethod)
             throws FitsException, FITSImage.DataTypeNotSupportedException, FITSImage.NoImageDataFoundException, IOException {
@@ -113,22 +113,18 @@ public class FITSBufferedImage extends FITSImage {
             case BYTE:
                 hist = ScaleUtils.computeHistogram((byte[][]) (byte[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((byte[][]) (byte[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
-
                 break;
             case SHORT:
                 hist = ScaleUtils.computeHistogram((short[][]) (short[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((short[][]) (short[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
-
                 break;
             case INT:
                 hist = ScaleUtils.computeHistogram((int[][]) (int[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((int[][]) (int[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
-
                 break;
             case FLOAT:
                 hist = ScaleUtils.computeHistogram((float[][]) (float[][]) cimage, bZero, bScale);
                 scaledData = ScaleUtils.scaleToUShort((float[][]) (float[][]) cimage, hist, width, height, bZero, bScale, hist.getMin(), hist.getMax(), hist.estimateSigma());
-
                 break;
             case DOUBLE:
                 hist = ScaleUtils.computeHistogram((double[][]) (double[][]) cimage, bZero, bScale);

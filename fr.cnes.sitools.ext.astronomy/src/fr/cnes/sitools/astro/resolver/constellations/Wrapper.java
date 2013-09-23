@@ -19,7 +19,7 @@
 
 package fr.cnes.sitools.astro.resolver.constellations;
 
-import java.util.HashMap;
+import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,21 +32,21 @@ public class Wrapper {
     /**
      * Data to wrap.
      */
-    private HashMap<String, Double[]> hashMap;
+    private Map<String, Double[]> hashMap;
 
     /**
      * Returns data.
      * @return data
      */
-    public final HashMap<String, Double[]> getHashMap() {
+    public final Map<String, Double[]> getHashMap() {
         return hashMap;
     }
 
     /**
      * Sets data.
-     * @param hashMap data
+     * @param hashMapVal data
      */
-    public void setHashMap(final HashMap<String, Double[]> hashMap) {
-        this.hashMap = hashMap;
+    public final void setHashMap(final Map<String, Double[]> hashMapVal) {
+        this.hashMap = hashMapVal;
     }
 }

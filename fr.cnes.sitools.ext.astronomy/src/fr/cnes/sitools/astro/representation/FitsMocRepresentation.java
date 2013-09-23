@@ -30,7 +30,7 @@ import org.restlet.representation.OutputRepresentation;
 
 /**
  * FITS Representation for Healpix multi-resolution order.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class FitsMocRepresentation extends OutputRepresentation {
@@ -76,7 +76,7 @@ public class FitsMocRepresentation extends OutputRepresentation {
 
     @Override
     public final void write(final OutputStream out) throws IOException {
-        try {            
+        try {
             getMoc().writeFits(out);
             LOG.log(Level.FINEST, filename, out);
         } catch (Exception ex) {
@@ -114,5 +114,5 @@ public class FitsMocRepresentation extends OutputRepresentation {
      */
     protected final void setMoc(final HealpixMoc mocVal) {
         this.moc = mocVal;
-    }    
+    }
 }

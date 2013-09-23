@@ -33,7 +33,7 @@ import org.restlet.resource.ClientResource;
 
 /**
  * Creates an openSearch Description representation based on both a template and a data model.
- * 
+ *
  * <p>
  * Data model must have the following structure :
  * <pre>
@@ -52,7 +52,7 @@ import org.restlet.resource.ClientResource;
  *    |__ mocdescribe (optional)
  *    |__ dicodescribe (optional)
  *    |__ referenceSystem (required)
- * </pre> 
+ * </pre>
  * </p>
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -62,12 +62,10 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(OpenSearchDescriptionRepresentation.class.getName());
-  
   /**
    * Default Template file that is used for the representation.
    */
   public static final String DEFAULT_TEMPLATE = "openSearchDescription.ftl";
-  
   /**
    * Data model for the GeoJson representation.
    */
@@ -83,7 +81,6 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
   protected OpenSearchDescriptionRepresentation() {
     super(MediaType.TEXT_XML);
   }
-  
   /**
    * Creates an OpenSearch description representation with a template and a data model as parameters.
    *
@@ -95,15 +92,14 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
     setDataModel(dataModelVal);
     setFtl(ftlVal);
   }
-  
   /**
    * Creates an OpenSearch description representation with a data model and the default template file.
    *
-   * @param dataModelVal the data model  
+   * @param dataModelVal the data model
    */
   public OpenSearchDescriptionRepresentation(final Map dataModelVal) {
     this(dataModelVal, DEFAULT_TEMPLATE);
-  }  
+  }
 
   /**
    * Writes the representation.

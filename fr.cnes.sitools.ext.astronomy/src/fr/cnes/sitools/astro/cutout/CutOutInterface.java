@@ -44,7 +44,7 @@ public interface CutOutInterface {
         /**
          * JPEG format.
          */
-        JPEG,        
+        JPEG,
         /**
          * Not defined format.
          */

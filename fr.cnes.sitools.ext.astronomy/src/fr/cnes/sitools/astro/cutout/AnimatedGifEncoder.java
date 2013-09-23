@@ -292,26 +292,24 @@ class AnimatedGifEncoder {
 			ok = false;
 		}
 		return started = ok;
-	}
-	
+	}	
 	/**
 	 * Initiates writing of a GIF file with the specified name.
 	 *
 	 * @param file String containing output file name.
 	 * @return false if open or initial write failed.
 	 */
-	public boolean start(String file) {
-		boolean ok = true;
+	public boolean start(final String file) {
+		boolean ok;
 		try {
 			out = new BufferedOutputStream(new FileOutputStream(file));
 			ok = start(out);
 			closeStream = true;
-		} catch (IOException e) {
+		} catch (FileNotFoundException e) {
 			ok = false;
 		}
-		return started = ok;
-	}
-        
+		return started == ok;
+	}        
 	/**
 	 * Analyzes image colors and creates color map.
 	 */

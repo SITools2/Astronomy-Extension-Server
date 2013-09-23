@@ -58,10 +58,9 @@ public class ReverseNameResolver {
      * input parameter : radius.
      */
     private double radius;
-    
     /**
      * Coordinates system of both inputs and response.
-     */    
+     */
     private CoordinateSystem coordinatesSystem;
     /**
      * Init data model.
@@ -72,7 +71,7 @@ public class ReverseNameResolver {
      */
     private static final double MAX_RADIUS = 0.5;
     /**
-     * Minimum time in seconds to wait to redo another request. 
+     * Minimum time in seconds to wait to redo another request.
      */
     private static final int RESPONSE_IN_SECONDS_TO_WAIT = 6;
     /**
@@ -83,13 +82,13 @@ public class ReverseNameResolver {
     }
     /**
      * Creates a ReverseNameResolver instance based on coordinates (ex: 23:42:30.02 -42:34:12.02) and the Healpix order.<br/>
-     * 
+     *
      * <p>The Healpix order allows to fix the radius of the reverse name resolver</p>
      *
      * @param coordinatesVal coordinates
      * @param radiusVal radius in degree of the cone search
      * @param coordinateSystemVal coordinate reference system of both inputs and response
-     * @throws NameResolverException  
+     * @throws NameResolverException
      */
     public ReverseNameResolver(final String coordinatesVal, final double radiusVal, final CoordinateSystem coordinateSystemVal) throws NameResolverException {
         setCoordinates(coordinatesVal);
@@ -101,7 +100,7 @@ public class ReverseNameResolver {
     }
   /**
    * Checks if the input parameters are set.
-   * 
+   *
    * <p>
    * Returns a IllegalArgumentException if one of the input parameters is <code>null</code> or empty.
    * </p>
@@ -116,10 +115,10 @@ public class ReverseNameResolver {
       if (getCoordinatesSystem() == null) {
         throw new IllegalArgumentException("Coordinates system must be set.");
       }
-    }    
+    }
     /**
      * Sets the coordinates.
-     * @param coordinatesVal the coordinates 
+     * @param coordinatesVal the coordinates
      */
     protected final void setCoordinates(final String coordinatesVal) {
         this.coordinates = coordinatesVal;
@@ -136,7 +135,7 @@ public class ReverseNameResolver {
      * <p>
      * when the radius is > MAX_RADIUS then radius = MAX_RADIUS
      * </p>
-     * @param radiusVal the radius 
+     * @param radiusVal the radius
      */
     protected final void setRadius(final double radiusVal) {
         this.radius = (radiusVal > MAX_RADIUS) ? MAX_RADIUS : radiusVal;
@@ -168,15 +167,14 @@ public class ReverseNameResolver {
      *
      * @throws NameResolverException
      */
-    private void process() throws NameResolverException {        
+    private void process() throws NameResolverException {
         // we convert in galactic because the service only accept equatorial
         if (this.coordinatesSystem == CoordinateSystem.GALACTIC) {
             final String[] coordinatesStr = coordinates.split(" ");
-            final AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesStr[0], coordinatesStr[1]);            
+            final AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesStr[0], coordinatesStr[1]);
             astroCoordinate.transformTo(CoordinateSystem.EQUATORIAL);
             this.coordinates = astroCoordinate.getRaAsSexagesimal() + " " + astroCoordinate.getDecAsSexagesimal();
         }
-        
         // building the query
         final String serviceToQueryTmp = TEMPLATE_REVERSE_NAME_RESOLVER.replace("<coordinates>", coordinates);
         final String serviceToQuery = serviceToQueryTmp.replace("<radius>", String.valueOf(radius));
@@ -210,7 +208,6 @@ public class ReverseNameResolver {
                     final String objectType = response.substring(posComma + 1, response.length() - 2);
 
                     final String[] positionElts = position.split(" ");
-                    
                     // The CDS server could return position with seconds or without second term.
                     HMS hms;
                     DMS dms;

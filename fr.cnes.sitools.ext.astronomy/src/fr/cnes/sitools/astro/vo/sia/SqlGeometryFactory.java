@@ -19,21 +19,19 @@
 package fr.cnes.sitools.astro.vo.sia;
 
 /**
- * Chooses the implementation of the SQL request 
+ * Chooses the implementation of the SQL request
  * based on the geometry intersection algorithm.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public final class SqlGeometryFactory {
-  
   /**
    * Empty constructor.
    */
-  private SqlGeometryFactory() {    
+  private SqlGeometryFactory() {
   }
-  
   /**
    * Returns the Object responsible of creating the SQL request to send to the server.
-   * 
+   *
    * <p>
    * The supported geometryIntersection is either CENTER or OVERLAPS otherwise
    * an IllegalArgumentException is raised.
@@ -42,12 +40,14 @@ public final class SqlGeometryFactory {
    * @return the Object responsible of creating the SQL request to send to the server
    */
   public static AbstractSqlGeometryConstraint create(final String geometryIntersection) {
-    if (geometryIntersection.equals("OVERLAPS")) {
-      return new OverlapsModeIntersection();
-    } else if (geometryIntersection.equals("CENTER")) {
-      return new CenterModeIntersection();
+    AbstractSqlGeometryConstraint result;
+    if ("OVERLAPS".equals(geometryIntersection)) {
+      result = new OverlapsModeIntersection();
+    } else if ("CENTER".equals(geometryIntersection)) {
+      result = new CenterModeIntersection();
     } else {
       throw new IllegalArgumentException("geometryMode " + geometryIntersection + " is unknown or not supported");
     }
+    return result;
   }
 }

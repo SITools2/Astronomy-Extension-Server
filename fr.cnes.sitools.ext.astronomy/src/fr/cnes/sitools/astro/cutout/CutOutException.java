@@ -33,7 +33,8 @@ public class CutOutException extends Exception {
      * Constructor.
      */
     public CutOutException() {
-    };
+        super();
+    }
 
     /**
      * Constructor.

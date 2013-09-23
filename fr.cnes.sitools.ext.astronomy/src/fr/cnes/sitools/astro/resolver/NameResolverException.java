@@ -31,12 +31,10 @@ public class NameResolverException extends Exception {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(NameResolverException.class.getName());
-  
   /**
    * Status of the Exception.
    */
   private Status status;
-  
   /**
    * Constructs a new NameResolverException with a Status.
    */
@@ -89,7 +87,7 @@ public class NameResolverException extends Exception {
    */
   public final Status getStatus() {
     return this.status;
-  }   
+  }
 
     /**
      * Sets the status.

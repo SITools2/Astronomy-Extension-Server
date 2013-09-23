@@ -57,7 +57,7 @@ public class SIASearchQuery {
   /**
    * URL of the WS.
    */
-    private transient String url;    
+    private transient String url;
 
     /**
      * Create a SIA search query.
@@ -110,7 +110,7 @@ public class SIASearchQuery {
         final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
         final List<Resource> resources = votable.getRESOURCE();
         final Resource resource = resources.get(0);
-        return parseResponse(resource);            
+        return parseResponse(resource);
     }
 
     /**
@@ -125,7 +125,7 @@ public class SIASearchQuery {
             if ("ERROR".equals(status)) {
                 throw new IllegalArgumentException(info.getValue());
             }
-        }        
+        }
         List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
         for (Object objectIter : objects) {
@@ -135,8 +135,7 @@ public class SIASearchQuery {
             }
         }
         return responses;
-    }    
-    
+    }
     /**
      * Parse table from VO.
      * @param table table
@@ -144,7 +143,7 @@ public class SIASearchQuery {
      */
     private List<Map<Field, String>> parseTable(final Table table) {
         int nbFields = 0;
-        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();        
+        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
         final List<JAXBElement<?>> currentTable = table.getContent();
         for (JAXBElement<?> currentTableIter : currentTable) {
@@ -174,9 +173,9 @@ public class SIASearchQuery {
                         nbTd++;
                     }
                     responses.add(response);
-                }                
+                }
             }
         }
         return responses;
-    }    
+    }
 }

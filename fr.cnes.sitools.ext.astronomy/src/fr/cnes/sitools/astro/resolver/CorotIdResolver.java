@@ -67,7 +67,6 @@ public class CorotIdResolver extends AbstractNameResolver {
    * Empty constructor.
    */
   protected CorotIdResolver() {
-      
   }
 
   /**
@@ -76,12 +75,12 @@ public class CorotIdResolver extends AbstractNameResolver {
    * @param corotIdVal Corot ID
    */
   public CorotIdResolver(final String corotIdVal) {
-    setCorotId(corotIdVal);  
+    setCorotId(corotIdVal);
     checkInputParameters();      
   }
   /**
    * Sets the Corot Id.
-   * @param corotIdVal the Corot ID to set 
+   * @param corotIdVal the Corot ID to set
    */
   protected final void setCorotId(final String corotIdVal) {
       this.corotId = corotIdVal;
@@ -93,13 +92,12 @@ public class CorotIdResolver extends AbstractNameResolver {
   protected final String getCorotId() {
       return this.corotId;
   }
-  
   /**
    * Tests if the coroID is set.
    *
    * <p>
    * Returns IllegalArgumentException if <code>corotId</code> is <code>null</code> or empty.
-   * </p>  
+   * </p>
    */
   protected final void checkInputParameters() {
     if (getCorotId() == null || getCorotId().isEmpty()) {
@@ -110,13 +108,13 @@ public class CorotIdResolver extends AbstractNameResolver {
   @Override
   public final NameResolverResponse getResponse() {
     NameResolverResponse response = new NameResolverResponse(CREDITS_NAME);
-    try {      
+    try {
       final String query = TEMPLATE_NAME_RESOLVER.replace("<corotid>", corotId);
       LOG.log(Level.INFO, "{0} found from Corot service", getCorotId());
       final JSONObject json = parseResponse(query);
       final String[] coordinates = parseCoordinates(json);
       final double rightAscension = Double.valueOf(coordinates[0]);
-      final double declination = Double.valueOf(coordinates[1]);      
+      final double declination = Double.valueOf(coordinates[1]);
       response.addAstroCoordinate(rightAscension, declination);
     } catch (NameResolverException ex) {
       if (getSuccessor() == null) {
@@ -144,10 +142,10 @@ public class CorotIdResolver extends AbstractNameResolver {
     client.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "guest", "sitools2public"));
     final Client clientHTTP = new Client(Protocol.HTTP);
     clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
-    client.setNext(clientHTTP);    
-    final Status status = client.getStatus();   
+    client.setNext(clientHTTP);
+    final Status status = client.getStatus();
     if (status.isSuccess()) {
-      JSONObject json;         
+      JSONObject json;
       try {
         json = new JSONObject(client.get().getText());
       } catch (IOException ex) {
