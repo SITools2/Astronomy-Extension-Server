@@ -157,7 +157,7 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
                 if (Utility.isSet(responseFromCurrentPixel)) {
                     result.addAll(responseFromCurrentPixel);
                 } else {
-                    LOG.log(Level.WARNING, "Pointer is null for {0}and pixel {1}", new Object[]{url, healpixPixels[i]});
+                    LOG.log(Level.SEVERE, "Pointer is null for {0} and pixel {1}", new Object[]{url, healpixPixels[i]});
                 }
             }
             return new ArrayList(result);

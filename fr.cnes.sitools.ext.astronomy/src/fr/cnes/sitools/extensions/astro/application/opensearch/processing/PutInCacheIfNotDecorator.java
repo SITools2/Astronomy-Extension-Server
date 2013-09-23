@@ -150,7 +150,7 @@ public class PutInCacheIfNotDecorator extends VORequestDecorator {
         if (Utility.isSet(result) && Utility.isSet(getCacheControl()) && !SingletonCacheHealpixDataAccess.isKeyInCache(cacheID, getCacheControl())) {
             SingletonCacheHealpixDataAccess.putInCache(cacheID, getCacheControl(), result);
         } else if (!Utility.isSet(result)) {
-            LOG.warning("Try to put a null value in the cache");
+            LOG.severe("Try to put a null value in the cache");
         }
         return result;
     }

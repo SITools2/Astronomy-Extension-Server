@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import fr.cnes.sitools.extensions.common.Utility;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.terracotta.modules.ehcache.async.scatterpolicies.HashCodeScatterPolicy;
 
 
 /**
@@ -489,4 +491,12 @@ public class Field implements Serializable{
         this.type = value;
     }
 
+    @Override
+    public final int hashCode() {
+        int result = 7;
+        final int multiplier = 17;
+        result = multiplier * result + this.name.hashCode();
+        result = multiplier * result + (Utility.isSet(this.id) ? 0 : this.id.hashCode());
+        return result;
+    }
 }
