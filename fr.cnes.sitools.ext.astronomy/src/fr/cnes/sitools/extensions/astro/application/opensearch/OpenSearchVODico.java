@@ -44,8 +44,7 @@ import org.restlet.resource.ResourceException;
  * Provides a dictionary for open search services that use Virtual Observatory.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class OpenSearchVODico extends SitoolsParameterizedResource {
-  
+public class OpenSearchVODico extends SitoolsParameterizedResource {  
   /**
    * VO dictionary.
    */
@@ -61,19 +60,18 @@ public class OpenSearchVODico extends SitoolsParameterizedResource {
     this.dico = ((OpenSearchVOApplicationPlugin) getApplication()).getDico();
     this.name = String.valueOf(this.getRequestAttributes().get("name"));
   }
-  
   /**
    * Returns the dictionary representation.
    * @return the dictionary representation
    */
-  @Get  
+  @Get
   public final Representation getDico() {
     if (!Utility.isSet(this.name)) {
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "name parameter must be set.");
     }
     if (!this.dico.containsKey(this.name)) {
       throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Cannot find " + name + " in the dictionary.");
-    }    
+    }
     final VoDictionary voDico = this.dico.get(this.name);
     String output;
     if (voDico.getDescription() != null && voDico.getUnit() != null) {
@@ -86,10 +84,9 @@ public class OpenSearchVODico extends SitoolsParameterizedResource {
       output = "No definition found";
     }
     Representation rep = new StringRepresentation(output, MediaType.TEXT_PLAIN);
-    rep = useCacheBrowser(rep, cacheIsEnabled());   
+    rep = useCacheBrowser(rep, cacheIsEnabled());
     return rep;
   }
-  
   /**
    * Returns the representation with cache directives cache parameter is set to enable.
    *
@@ -113,8 +110,7 @@ public class OpenSearchVODico extends SitoolsParameterizedResource {
    */
   private boolean cacheIsEnabled() {
     return Boolean.parseBoolean(((OpenSearchVOApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
-  }  
-  
+  }
   /**
    * General WADL description.
    */
@@ -139,8 +135,8 @@ public class OpenSearchVODico extends SitoolsParameterizedResource {
 
     final RepresentationInfo representationInfoTxt = new RepresentationInfo(MediaType.TEXT_PLAIN);
     representationInfoTxt.setDocumentation(documentationTxt);
-    
-    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();    
+
+    final List<RepresentationInfo> representationsInfo = new ArrayList<RepresentationInfo>();
     representationsInfo.add(representationInfoTxt);
 
     final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();

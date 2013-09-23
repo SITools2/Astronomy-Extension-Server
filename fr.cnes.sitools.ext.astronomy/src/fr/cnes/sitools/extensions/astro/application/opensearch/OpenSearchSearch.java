@@ -197,7 +197,12 @@ public class OpenSearchSearch extends OpenSearchBase {
   private boolean isPoint(final String footprint) {
     return (footprint.split(",").length == 2) ? true : false;
   }
-
+  /**
+   * Returns the first point.
+   * @param footprint footprint
+   * @return the first point
+   * @throws JSONException Exception
+   */
   private JSONArray getFirstPoint(final String footprint) throws JSONException {
     return new JSONArray(footprint);
   }
@@ -266,13 +271,13 @@ public class OpenSearchSearch extends OpenSearchBase {
           final String[] result = OpenSearchApplicationPlugin.Standard_Open_Search.getKeywordProperties(key);
           final String node = result[0];
           final String val = result[1];
-          if (node.equals("properties")) {
+          if ("properties".equals(node)) {
             properties.put(val, doc.get(key));
-          } else if (node.equals("layer")) {
+          } else if ("layer".equals(node)) {
             layer.put(val, doc.get(key));
-          } else if (node.equals("browse")) {
+          } else if ("browse".equals(node)) {
             browse.put(val, doc.get(key));
-          } else if (node.equals("download")) {
+          } else if ("download".equals(node)) {
             download.put(val, doc.get(key));
           } else {
             throw new IllegalArgumentException();

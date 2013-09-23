@@ -64,7 +64,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 /**
- *
+ * Computes the VO request.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class OpenSearchVOSearch extends SitoolsParameterizedResource {
@@ -95,7 +95,7 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
     private transient Map<String, VoDictionary> dico;
 
     @Override
-    public void doInit() {
+    public final void doInit() {
         try {
             super.doInit();
             setAnnotated(true);
@@ -105,15 +105,13 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
             getVariants().add(new Variant(MediaType.APPLICATION_JSON));
             setUrl(((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap().get("serviceURL").getValue());
             if (!getRequest().getMethod().equals(Method.OPTIONS)) {
-                Form form = getRequest().getResourceRef().getQueryAsForm();
+                final Form form = getRequest().getResourceRef().getQueryAsForm();
                 Validation inputsValidation = new InputsValidation(form.getValuesMap());
                 inputsValidation = new NotNullAndNotEmptyValidation(inputsValidation, "healpix", true);
                 inputsValidation = new NotNullAndNotEmptyValidation(inputsValidation, "order", true);
                 inputsValidation = new NotNullAndNotEmptyValidation(inputsValidation, "coordSystem", true);
-                StatusValidation validation = inputsValidation.validate();
-                if (!validation.isValid()) {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, validation.toString());
-                } else {
+                final StatusValidation validation = inputsValidation.validate();
+                if (validation.isValid()) {
                     final String[] healpixPixels = form.getFirstValue("healpix").split(",");
                     long[] healpixLongPixels = new long[healpixPixels.length];
                     for (int i = 0; i < healpixPixels.length; i++) {
@@ -123,6 +121,8 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
                     this.setOrder((int) Integer.valueOf(form.getFirstValue("order")));
                     this.setCoordinateSystem(AstroCoordinate.CoordinateSystem.valueOf(form.getFirstValue("coordSystem")));
                     this.dico = ((OpenSearchVOApplicationPlugin) getApplication()).getDico();
+                } else {
+                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, validation.toString());
                 }
             }
         } catch (Exception ex) {
@@ -130,10 +130,14 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
         }
     }
-    
+    /**
+     * Computes all Healpix pixels and returns the response.
+     * @return the response
+     */
     private List<Map<Field, String>> computeAllPixels() {
         try {
-            final boolean cacheableValue = Boolean.parseBoolean(((OpenSearchVOApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
+            final boolean cacheableValue = Boolean.parseBoolean(((OpenSearchVOApplicationPlugin) getApplication())
+                                           .getParameter("cacheable").getValue());
             final String applicationID = ((OpenSearchVOApplicationPlugin) getApplication()).getId();
             final String protocolParam = ((OpenSearchVOApplicationPlugin) getApplication()).getParameter("protocol").getValue();
             final OpenSearchVOApplicationPlugin.Protocol protocol = OpenSearchVOApplicationPlugin.Protocol.valueOf(protocolParam);
@@ -157,13 +161,16 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
                 }
             }
             return new ArrayList(result);
-       
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-        }        
+        }
     }
 
+    /**
+     * Returns the VOTable response.
+     * @return the VOTable response
+     */
     @Get("votable")
     public final Representation getVotableResponse() {
         try {
@@ -184,7 +191,8 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
     @Get("json")
     public final Representation getJsonResponse() {
         try {
-            final boolean cacheableValue = Boolean.parseBoolean(((OpenSearchVOApplicationPlugin) getApplication()).getParameter("cacheable").getValue());
+            final boolean cacheableValue = Boolean.parseBoolean(((OpenSearchVOApplicationPlugin) getApplication())
+                                           .getParameter("cacheable").getValue());
             final List<Map<Field, String>> result = computeAllPixels();
             final FeaturesDataModel dataModel = JsonDataModelDecorator.computeJsonDataModel(result, getCoordinateSystem());
             final Representation rep = new GeoJsonRepresentation(dataModel.getFeatures());
@@ -196,45 +204,51 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
     }
 
     /**
+     * Returns the Healpix order.
      * @return the order
      */
-    protected int getOrder() {
+    protected final int getOrder() {
         return order;
     }
 
     /**
-     * @param order the order to set
+     * Sets the Healpix order.
+     * @param orderVal the order to set
      */
-    protected void setOrder(int order) {
-        this.order = order;
+    protected final void setOrder(final int orderVal) {
+        this.order = orderVal;
     }
 
     /**
+     * Returns the Healpix pixels.
      * @return the healpix
      */
-    protected long[] getHealpix() {
-        return healpix;
+    protected final long[] getHealpix() {
+        return (long[]) healpix.clone();
     }
 
     /**
-     * @param healpix the healpix to set
+     * Set the Healpix pixels.
+     * @param healpixVal the healpix to set
      */
-    protected void setHealpix(long[] healpix) {
-        this.healpix = healpix;
+    protected final void setHealpix(final long[] healpixVal) {
+        this.healpix = healpixVal;
     }
 
     /**
+     * Returns the coodinate system.
      * @return the coordinateSystem
      */
-    protected AstroCoordinate.CoordinateSystem getCoordinateSystem() {
+    protected final AstroCoordinate.CoordinateSystem getCoordinateSystem() {
         return coordinateSystem;
     }
 
     /**
-     * @param coordinateSystem the coordinateSystem to set
+     * Sets the coordinate system.
+     * @param coordinateSystemVal the coordinateSystem to set
      */
-    protected void setCoordinateSystem(AstroCoordinate.CoordinateSystem coordinateSystem) {
-        this.coordinateSystem = coordinateSystem;
+    protected final void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystemVal) {
+        this.coordinateSystem = coordinateSystemVal;
     }
 
     /**
@@ -349,5 +363,4 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
 
         info.setResponses(Arrays.asList(responseOK, responseNOK));
     }
-
 }

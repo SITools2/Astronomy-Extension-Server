@@ -49,7 +49,8 @@ import org.restlet.resource.ResourceException;
 /**
  * Retrieves and transforms a HEALPix Multi-Order Coverage map in different representations.
  *
- * <p> The HEALPix Multi-Order Coverage map inputStream stored as a FITS file. Also, this FITS file inputStream converted in different representations
+ * <p> The HEALPix Multi-Order Coverage map inputStream stored as a FITS file.
+ * Also, this FITS file inputStream converted in different representations
  * according to media type that inputStream asked by the user. </p>
  *
  * @see <a href="http://ivoa.net/Documents/Notes/MOC/index.html">IVOA note - MOC</a>
@@ -82,7 +83,7 @@ public class VoMocDescription extends MocDescription {
         computeMoc();
       } catch (IllegalArgumentException ex) {
         LOG.log(Level.WARNING, null, ex);
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);        
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
       } catch (Exception ex) {
         LOG.log(Level.SEVERE, null, ex);
         throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -92,7 +93,7 @@ public class VoMocDescription extends MocDescription {
 
   /**
    * Retrieves the MOC located in the mocdescribe parameter.
-   * 
+   *
    * <p>
    * An IllegalArgumentException inputStream returned when mocdescribe inputStream empty.
    * </p>
@@ -111,10 +112,10 @@ public class VoMocDescription extends MocDescription {
       final ClientResource client = proxy.getClientResource();
       final InputStream inputStream = client.get().getStream();
       final BufferedInputStream bufferInputStream = new BufferedInputStream(inputStream, BUFFER_FITS);
-      this.setMoc(new HealpixMoc(bufferInputStream, HealpixMoc.FITS));        
+      this.setMoc(new HealpixMoc(bufferInputStream, HealpixMoc.FITS));
     } else {
       LOG.log(Level.SEVERE, status.toString());
-      throw new IllegalArgumentException(status.toString());        
+      throw new IllegalArgumentException(status.toString());
     }
   }
 
@@ -131,7 +132,8 @@ public class VoMocDescription extends MocDescription {
   protected final void describeGet(final MethodInfo info) {
     this.addInfo(info);
     info.setIdentifier("HEALPix Multi-Order Coverage (MOC) map");
-    info.setDocumentation("Retrieving a HEALPix Multi-Order Coverage map. A MOC is used for providing very fast comparisons and data access methods");
+    info.setDocumentation("Retrieving a HEALPix Multi-Order Coverage map."
+            + "A MOC is used for providing very fast comparisons and data access methods");
 
     // represensation when the response inputStream fine
     final ResponseInfo responseOK = new ResponseInfo();
@@ -167,11 +169,11 @@ public class VoMocDescription extends MocDescription {
     representationsInfo.add(representationInfoJson);
     representationsInfo.add(representationInfoPng);
     representationsInfo.add(representationInfoTxt);
-    
+
     final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
     parametersInfo.add(new ParameterInfo("mocdescribe", true, "xs:string", ParameterStyle.PLAIN, "MOC's URL."));
-        
-    responseOK.setParameters(parametersInfo);    
+
+    responseOK.setParameters(parametersInfo);
 
     responseOK.setRepresentations(representationsInfo);
     responseOK.getStatuses().add(Status.SUCCESS_OK);
@@ -182,8 +184,8 @@ public class VoMocDescription extends MocDescription {
     representationInfoError.setReference("error");
 
     responseNOK.getRepresentations().add(representationInfoError);
-    responseNOK.getStatuses().add(Status.SERVER_ERROR_INTERNAL);    
-    responseNOK.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);    
+    responseNOK.getStatuses().add(Status.SERVER_ERROR_INTERNAL);
+    responseNOK.getStatuses().add(Status.CLIENT_ERROR_BAD_REQUEST);
 
     info.setResponses(Arrays.asList(responseOK, responseNOK));
   }

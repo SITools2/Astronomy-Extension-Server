@@ -108,10 +108,6 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
      */
     private static final double ORIGIN_Y = 0.5;
     /**
-     * Healpix Nside where the processing for the intersection is done.
-     */
-    private static final int HEALPIX_RESOLUTION = 128;
-    /**
      * data model.
      */
     private transient Map<Field, String> doc;
@@ -333,10 +329,10 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
 
     /**
      * Sets the coordinate system.
-     * @param coordinateSystem the coordinateSystem to set
+     * @param coordinateSystemVal the coordinateSystem to set
      */
-    protected final void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystem) {
-        this.coordinateSystem = coordinateSystem;
+    protected final void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystemVal) {
+        this.coordinateSystem = coordinateSystemVal;
     }
 
     /**

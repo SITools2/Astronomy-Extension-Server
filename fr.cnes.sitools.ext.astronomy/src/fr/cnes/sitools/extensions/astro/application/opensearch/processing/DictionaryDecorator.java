@@ -48,8 +48,7 @@ public class DictionaryDecorator extends VORequestDecorator {
     public final Object getOutput() {
         final Object output = super.getOutput();
         final List<Map<Field, String>> model = (List<Map<Field, String>>) output;
-        if (model.isEmpty()) {
-            
+        if (model.isEmpty()) {           
         } else {
             fillDictionary(model.get(0).keySet());
         }

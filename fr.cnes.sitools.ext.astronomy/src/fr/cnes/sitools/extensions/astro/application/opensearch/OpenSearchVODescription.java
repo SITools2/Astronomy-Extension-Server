@@ -60,9 +60,8 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
 
     @Override
     public final void doInit() {
-        super.doInit();            
-        parameters = ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap();
-        // TO remplacer par AbstractApplicationPlugin
+        super.doInit();
+        parameters = ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap();       
     }
 
     /**
@@ -74,7 +73,7 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
     private String buildTemplateURL() throws JSONException, IOException {
         final String serviceURL = getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getUrlAttach();
         final String shape = "healpix={sitools:healpix}&amp;order={sitools:order}&amp;coordSystem={sitools:coordSystem}&amp;";
-        return String.format("%s/search?%sformat=json", serviceURL, shape);        
+        return String.format("%s/search?%sformat=json", serviceURL, shape);
     }
 
     /**
@@ -86,7 +85,6 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
         this.dataModel.put("shortName", parameters.get("shortName").getValue());
         this.dataModel.put("description", parameters.get("description").getValue());
         this.dataModel.put("templateURL", buildTemplateURL());
-        
         if (!parameters.get("contact").getValue().isEmpty()) {
             this.dataModel.put("contact", parameters.get("contact").getValue());
         }

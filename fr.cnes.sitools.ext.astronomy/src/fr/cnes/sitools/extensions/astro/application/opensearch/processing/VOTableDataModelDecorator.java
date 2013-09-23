@@ -81,6 +81,6 @@ public class VOTableDataModelDecorator extends VORequestDecorator {
         dataModel.put("fields", fields);
         dataModel.put("rows", rows);
         dataModel.put("sqlColAlias", sqlColAlias);
-        return dataModel;        
+        return dataModel;
     }
 }

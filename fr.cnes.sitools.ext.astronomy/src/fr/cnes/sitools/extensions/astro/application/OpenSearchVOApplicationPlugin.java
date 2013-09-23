@@ -22,7 +22,6 @@ import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin.GeometryShape;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
@@ -80,8 +79,17 @@ public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
    * List of supported protocols by the service.
    */
   public enum Protocol {
+      /**
+       * Detects automatically the protocol.
+       */
       DETECT_AUTOMATICALLY,
+      /**
+       * Cone search protocol.
+       */
       CONE_SEARCH_PROTOCOL,
+      /**
+       * Simple Image Access Protocol.
+       */
       SIMPLE_IMAGE_ACCESS_PROTOCOL;
   }
   /**
@@ -210,7 +218,6 @@ public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
     this.addParameter(param);
     SingletonCacheHealpixDataAccess.create();
   }
-  
   @Override
   public final void sitoolsDescribe() {
     this.setName("VO OpenSearch Application");

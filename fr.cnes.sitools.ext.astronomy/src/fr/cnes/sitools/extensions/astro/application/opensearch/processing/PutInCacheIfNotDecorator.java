@@ -22,6 +22,7 @@ import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.CacheStrategy;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.Utility;
+import java.util.logging.Logger;
 
 /**
  * Puts the VO result from the server in a cache.
@@ -49,6 +50,10 @@ public class PutInCacheIfNotDecorator extends VORequestDecorator {
      * Healpix Coordinates system.
      */
     private AstroCoordinate.CoordinateSystem coordinateSystem;
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = Logger.getLogger(PutInCacheIfNotDecorator.class.getName());
 
     /**
      * Constructor.
@@ -142,8 +147,10 @@ public class PutInCacheIfNotDecorator extends VORequestDecorator {
     public final Object getOutput() {
         final Object result = super.getOutput();
         final String cacheID = SingletonCacheHealpixDataAccess.generateId(getApplicationID(), String.valueOf(getOrder()), String.valueOf(getHealpix()), getCoordinateSystem());
-        if (Utility.isSet(getCacheControl()) && !SingletonCacheHealpixDataAccess.isKeyInCache(cacheID, getCacheControl())) {
+        if (Utility.isSet(result) && Utility.isSet(getCacheControl()) && !SingletonCacheHealpixDataAccess.isKeyInCache(cacheID, getCacheControl())) {
             SingletonCacheHealpixDataAccess.putInCache(cacheID, getCacheControl(), result);
+        } else if (!Utility.isSet(result)) {
+            LOG.warning("Try to put a null value in the cache");
         }
         return result;
     }

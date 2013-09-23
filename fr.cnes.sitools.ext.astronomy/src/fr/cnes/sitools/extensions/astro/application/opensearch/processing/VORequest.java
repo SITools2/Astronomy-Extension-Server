@@ -77,7 +77,7 @@ public class VORequest implements VORequestInterface {
         setCoordinateSystem(coordinateSystemVal);
         setApplicationID(applicationIDVal);
         setProtocol(protocolVal);
-        setCacheControl(cacheControlVal);        
+        setCacheControl(cacheControlVal);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class OpenSearchDescription extends OpenSearchBase {
 
   @Override
   public final void doInit() {
-    super.doInit();   
+    super.doInit();
   }
 
   /**

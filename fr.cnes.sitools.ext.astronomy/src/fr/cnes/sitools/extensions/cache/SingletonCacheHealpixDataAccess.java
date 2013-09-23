@@ -40,6 +40,10 @@ public class SingletonCacheHealpixDataAccess {
      */
     private final transient Representation cacheConf = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/ehcache.xml").get();
     /**
+     * Lock.
+     */
+    private static final String LOCK = "LOCK";    
+    /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(SingletonCacheHealpixDataAccess.class.getName());
@@ -116,14 +120,16 @@ public class SingletonCacheHealpixDataAccess {
      *  in the cache otherwise <code>false</code>
      */
     public static boolean isKeyInCache(final String cacheID, final CacheStrategy cacheStrategy) {
-        boolean result;
-        if (Utility.isSet(cacheStrategy)) {
-            final Cache cache = getCache(cacheStrategy);
-            result = cache.isKeyInCache(cacheID);
-        } else {
-            result = false;
+        synchronized (LOCK) {
+            boolean result;
+            if (Utility.isSet(cacheStrategy)) {
+                final Cache cache = getCache(cacheStrategy);
+                result = cache.isKeyInCache(cacheID);
+            } else {
+                result = false;
+            }
+            return result;
         }
-        return result;
     }
     /**
      * Returns the stored value from the cache.
@@ -132,8 +138,10 @@ public class SingletonCacheHealpixDataAccess {
      * @return the stored value from the cache
      */
     public static Object getFromCache(final String cacheID, final CacheStrategy cacheStrategy) {
-        final Cache cache = getCache(cacheStrategy);
-        return cache.get(cacheID).getObjectValue();
+         synchronized (LOCK) {
+            final Cache cache = getCache(cacheStrategy);
+            return cache.get(cacheID).getObjectValue();
+         }
     }
     /**
      * Inserts the <code>valueToStore</code> in cache.
@@ -142,9 +150,11 @@ public class SingletonCacheHealpixDataAccess {
      * @param valueToStore value to store in the the cache
      */
     public static void putInCache(final String cacheID, final CacheStrategy cacheStrategy, final Object valueToStore) {
-        final Cache cache = getCache(cacheStrategy);
-        final Element element = new Element(cacheID, valueToStore);
-        cache.put(element);
+         synchronized (LOCK) {
+            final Cache cache = getCache(cacheStrategy);
+            final Element element = new Element(cacheID, valueToStore);
+            cache.put(element);
+         }
     }
     /**
      * Cache strategy.

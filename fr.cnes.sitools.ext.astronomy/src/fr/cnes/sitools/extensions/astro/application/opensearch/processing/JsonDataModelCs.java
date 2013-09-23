@@ -31,18 +31,28 @@ import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
 
 /**
- *
+ * JSON data model for Cone search
  * @author malapert
  */
 class JsonDataModelCs extends AbstractJsonDataModel {
+    /**
+     * Coordinate system.
+     */
     private AstroCoordinate.CoordinateSystem coordinateSystem;
+    /**
+     * Server response.
+     */
     private List<Map<Field, String>> response;
    /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(JsonDataModelCs.class.getName());
-
-    public JsonDataModelCs(List<Map<Field, String>> responseVal, AstroCoordinate.CoordinateSystem coordinateSystemVal) {
+    /**
+     * Constructor.
+     * @param responseVal server response
+     * @param coordinateSystemVal coordinate system
+     */
+    public JsonDataModelCs(final List<Map<Field, String>> responseVal, final AstroCoordinate.CoordinateSystem coordinateSystemVal) {
         setResponse(responseVal);
         setCoordinateSystem(coordinateSystemVal);
     }
@@ -51,7 +61,6 @@ class JsonDataModelCs extends AbstractJsonDataModel {
     public FeaturesDataModel getDataModel() {
         return createGeoJsonDataModel(getResponse(), getCoordinateSystem());
     }
-    
     /**
      * Creates and returns the GeoJson data response from the response.
      *

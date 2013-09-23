@@ -52,12 +52,17 @@ public class JsonDataModelDecorator extends VORequestDecorator {
     public final Object getOutput() {
         final Object object = super.getOutput();
         final List<Map<Field, String>> model = (List<Map<Field, String>>) object;
-        AbstractJsonDataModel jsonReader = DataModelFactory.jsonProcessor(model, getCoordinateSystem());
+        final AbstractJsonDataModel jsonReader = DataModelFactory.jsonProcessor(model, getCoordinateSystem());
         return jsonReader.getDataModel();
     }
-  
-  public static FeaturesDataModel computeJsonDataModel(final List<Map<Field, String>> model, AstroCoordinate.CoordinateSystem coordinateSystem) {
-        AbstractJsonDataModel jsonReader = DataModelFactory.jsonProcessor(model, coordinateSystem);
+  /**
+   * Computes the JSON data model from the server response.
+   * @param model server response
+   * @param coordinateSystem coordinate system
+   * @return the JSON data model from the server response
+   */
+  public static FeaturesDataModel computeJsonDataModel(final List<Map<Field, String>> model, final AstroCoordinate.CoordinateSystem coordinateSystem) {
+        final AbstractJsonDataModel jsonReader = DataModelFactory.jsonProcessor(model, coordinateSystem);
         return jsonReader.getDataModel();
   }
     /**
@@ -69,9 +74,9 @@ public class JsonDataModelDecorator extends VORequestDecorator {
     }
     /**
      * Sets the coordinate system of the output.
-     * @param coordinateSystem the coordinateSystem to set
+     * @param coordinateSystemVal the coordinateSystem to set
      */
-    protected void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystem) {
-        this.coordinateSystem = coordinateSystem;
+    protected final void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystemVal) {
+        this.coordinateSystem = coordinateSystemVal;
     }
 }

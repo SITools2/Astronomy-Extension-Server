@@ -180,7 +180,7 @@ public class SiaHealpix extends AbstractVORequest implements WCSKeywordProvider 
     private void computeGeoPhysicalParameters() throws Exception {
         final int nside = (int) Math.pow(2, getOrder());
         final double pixRes = HealpixIndex.getPixRes(nside) * ARCSEC2DEG;
-        setSize(pixRes * MULT_FACT);        
+        setSize(pixRes * MULT_FACT);
         index = new HealpixIndex(nside, Scheme.NESTED);
         final Pointing pointing = index.pix2ang(healpix);
         final double longitude = Math.toDegrees(pointing.phi);
