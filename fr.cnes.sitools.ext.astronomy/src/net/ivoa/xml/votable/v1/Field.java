@@ -495,7 +495,7 @@ public class Field implements Serializable{
     public final int hashCode() {
         int result = 7;
         final int multiplier = 17;
-        result = multiplier * result + this.name.hashCode();
+        result = multiplier * result + (Utility.isSet(this.name) ? 0 : this.name.hashCode());
         result = multiplier * result + (Utility.isSet(this.id) ? 0 : this.id.hashCode());
         result = multiplier * result + (Utility.isSet(this.ucd) ? 0 : this.ucd.hashCode());
         result = multiplier * result + (Utility.isSet(this.utype) ? 0 : this.utype.hashCode());
