@@ -21,6 +21,7 @@ package fr.cnes.sitools.extensions.astro.application.opensearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.representation.VOTableRepresentation;
+import fr.cnes.sitools.common.model.Response;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;

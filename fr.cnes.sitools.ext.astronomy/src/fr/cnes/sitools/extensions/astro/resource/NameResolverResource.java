@@ -335,10 +335,9 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      */
     private Map getDataModel(final String name, final List<AstroCoordinate> astroList, final String referenceFrame) {
         final FeaturesDataModel features = new FeaturesDataModel();
-        final FeatureDataModel feature = new FeatureDataModel();
         int index = 0;
         for (AstroCoordinate astroIter : astroList) {
-            feature.clear();
+            final FeatureDataModel feature = new FeatureDataModel();           
             feature.setIdentifier(name.concat(String.valueOf(index++)));
             feature.addProperty("credits", name);
             final Map<String, String> metadata = astroIter.getMatadata();
