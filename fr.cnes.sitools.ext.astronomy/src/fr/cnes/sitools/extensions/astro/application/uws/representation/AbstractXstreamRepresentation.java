@@ -168,6 +168,7 @@ public abstract class AbstractXstreamRepresentation<T> extends WriterRepresentat
         String response = getXstream().toXML(getObject());
         response = response.replaceFirst("xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\"",
                 "xmlns:uws=\"http://www.ivoa.net/xml/UWS/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/UWS/v1.0 http://ivoa.net/xml/UWS/UWS-v1.0.xsd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+        response = response.replaceAll("class=\"org.apache.xerces.jaxp.datatype.XMLGregorianCalendarImpl\"", "");
         writer.write(response);
         writer.flush();
     }

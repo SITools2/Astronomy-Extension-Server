@@ -118,7 +118,7 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
     private void init() {
         final XStream xstream = configureXStream();
         this.setXstream(xstream);
-    }
+    } 
 
     /**
      * Returns the xstream configuration.
@@ -129,10 +129,12 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
         qnm.setDefaultNamespace("http://www.ivoa.net/xml/UWS/v1.0");
         qnm.setDefaultPrefix("uws");
         createXstream(getMediaType(), qnm);
-        final XStream xstream = getXstream();
-        xstream.addDefaultImplementation(XMLGregorianCalendar.class, XMLGregorianCalendar.class);
+        final XStream xstream = getXstream();       
         xstream.alias("job", JobSummary.class);
+        xstream.aliasField("ownerId", JobSummary.class, "ownerId");
+        //xstream.aliasField("owner", String.class, "ownerId");
         xstream.aliasField("destruction", XMLGregorianCalendar.class, "destruction");
+        //xstream.addDefaultImplementation(Date.class, org.apache.xerces.jaxp.class);
         xstream.aliasField("startTime", XMLGregorianCalendar.class, "startTime");
         xstream.aliasField("endTime", XMLGregorianCalendar.class, "endTime");
         xstream.alias("parameter", net.ivoa.xml.uws.v1.Parameter.class);
@@ -211,7 +213,7 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
         public final void marshal(final Object o, final HierarchicalStreamWriter writer, final MarshallingContext mc) {
             final XMLGregorianCalendar calendar =  (XMLGregorianCalendar) o;
             try {               
-                writer.setValue(calendar.toXMLFormat());
+                writer.setValue(calendar.toXMLFormat());               
             } catch (IllegalStateException e) {
                 writer.addAttribute("xsi:nil", "true");
             }
@@ -402,7 +404,7 @@ public class JobRepresentation extends AbstractXstreamRepresentation {
             }
             final String type = result.getType();
             if (Util.isSet(type)) {
-                writer.addAttribute("type", type);
+                writer.addAttribute("xlink:type", type);
             }
             final String href = result.getHref();
             if (Util.isSet(href)) {

@@ -665,7 +665,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      * @param mustBeUpdated
      */
     protected final void setOwnerId(final String ownerId, final boolean mustBeUpdated) {
-        this.ownerId = ownerId;
+        this.ownerId = (ownerId == null) ? Constants.NO_OWNER : ownerId;
         if (mustBeUpdated) {
             JobTaskManager.getInstance().updateJobTask(this);
         }
@@ -677,7 +677,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      * @param ownerId the ownerId to set
      */
     protected final void setOwnerId(final String ownerId) {
-        this.ownerId = ownerId;
+        this.ownerId = (ownerId == null) ? Constants.NO_OWNER : ownerId;
         JobTaskManager.getInstance().updateJobTask(this);
     }
 
