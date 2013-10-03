@@ -30,6 +30,7 @@ import fr.cnes.sitools.xml.uws.v1.InputsType;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Polygon;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Image;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Keyword;
 import fr.cnes.sitools.xml.uws.v1.Job;
@@ -195,6 +196,7 @@ public class JobsResource extends BaseJobResource {
         final Geometry geom = inputs.getGeometry();
         if (isSet(geom)) {
             final Circle circle = geom.getCircle();
+            final Polygon polygon = geom.getPolygon();
             if (isSet(circle)) {
                 final String longitude = circle.getLongitude().getName();
                 ParameterInfo param = new ParameterInfo(longitude, true, "xs:double", ParameterStyle.QUERY, circle.getLongitude().getDocumentation());
@@ -205,6 +207,34 @@ public class JobsResource extends BaseJobResource {
                 final String radius = circle.getRadius().getName();
                 param = new ParameterInfo(radius, true, "xs:double", ParameterStyle.QUERY, circle.getRadius().getDocumentation());
                 params.add(param);
+            } else if (isSet(polygon)) {
+                final String longitude1 = polygon.getLongitude1().getName();
+                ParameterInfo param = new ParameterInfo(longitude1, true, "xs:double", ParameterStyle.QUERY, polygon.getLongitude1().getDocumentation());
+                params.add(param);
+                final String longitude2 = polygon.getLongitude2().getName();
+                param = new ParameterInfo(longitude2, true, "xs:double", ParameterStyle.QUERY, polygon.getLongitude2().getDocumentation());
+                params.add(param);
+                final String longitude3 = polygon.getLongitude3().getName();
+                param = new ParameterInfo(longitude3, true, "xs:double", ParameterStyle.QUERY, polygon.getLongitude3().getDocumentation());
+                params.add(param);
+                final String longitude4 = polygon.getLongitude4().getName();
+                param = new ParameterInfo(longitude4, true, "xs:double", ParameterStyle.QUERY, polygon.getLongitude4().getDocumentation());
+                params.add(param);                
+                final String latitude1 = polygon.getLatitude1().getName();
+                param = new ParameterInfo(latitude1, true, "xs:double", ParameterStyle.QUERY, polygon.getLatitude1().getDocumentation());
+                params.add(param);
+                final String latitude2 = polygon.getLatitude2().getName();
+                param = new ParameterInfo(latitude2, true, "xs:double", ParameterStyle.QUERY, polygon.getLatitude2().getDocumentation());
+                params.add(param);
+                final String latitude3 = polygon.getLatitude3().getName();
+                param = new ParameterInfo(latitude3, true, "xs:double", ParameterStyle.QUERY, polygon.getLatitude3().getDocumentation());
+                params.add(param);
+                final String latitude4 = polygon.getLatitude4().getName();
+                param = new ParameterInfo(latitude4, true, "xs:double", ParameterStyle.QUERY, polygon.getLatitude4().getDocumentation());
+                params.add(param);                
+                final String rotation = polygon.getRotation().getName();
+                param = new ParameterInfo(rotation, true, "xs:double", ParameterStyle.QUERY, polygon.getRotation().getDocumentation());
+                params.add(param);                
             } else {
                 final Healpix hpx = geom.getHealpix();
                 final String order = hpx.getOrder().getName();
