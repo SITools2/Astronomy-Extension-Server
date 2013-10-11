@@ -357,14 +357,14 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return the shift to apply for CRPIX1
      */
     private double computeShiftCrpixWidth() {
-        return xyCoord.getX() - (computeOutputWidth() - 1) / 2 - this.shiftCrpix1;
+        return Math.round(xyCoord.getX()) - (computeOutputWidth() - 1) / 2 - this.shiftCrpix1;
     }
     /**
      * Computes the shift to give to CRPIX2 when the corner is out of the cutOut.
      * @return the shift to apply for CRPIX2
      */
     private double computeShiftCrpixHeight() {
-        return xyCoord.getY() - (computeOutputHeight() - 1) / 2 - this.shiftCrpix2;
+        return Math.round(xyCoord.getY()) - (computeOutputHeight() - 1) / 2 - this.shiftCrpix2;
     }
     /**
      * Computes the coordinates of the corner along the width axis.
@@ -372,7 +372,7 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return the coordinates of the corner along the width axis in pixels
      */
     private double computeCornerWidth(final Point2D.Double xyCoordVal) {
-        return xyCoordVal.getX() - (computeOutputWidth() - 1) / 2.0d;
+        return Math.round(xyCoordVal.getX()) - (computeOutputWidth() - 1) / 2.0d;
     }
     /**
      * Computes the coordinates of the corner along the height axis.
@@ -380,7 +380,7 @@ public class CutOutSITools2 implements CutOutInterface {
      * @return the coordinates of the corner along the width axis in pixels
      */
     private double computeCornerHeight(final Point2D.Double xyCoordVal) {
-        return xyCoordVal.getY() - (computeOutputHeight() - 1) / 2.0d;
+        return Math.round(xyCoordVal.getY()) - (computeOutputHeight() - 1) / 2.0d;
     }
     /**
      * Computes the scale along the width axis in deg per pixels.
