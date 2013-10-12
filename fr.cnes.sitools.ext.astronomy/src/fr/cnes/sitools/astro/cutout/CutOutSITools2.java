@@ -256,14 +256,14 @@ public class CutOutSITools2 implements CutOutInterface {
             this.lengths[getWidth()] = (int) Math.round(computeOutputWidth());
             this.lengths[getHeight()] = (int) Math.round(computeOutputHeight());
             this.lengths[0] = 1;
-            this.corners[getWidth()] = (int) Math.round(computeCornerWidth(xyCoord));
-            this.corners[getHeight()] = (int) Math.round(computeCornerHeight(xyCoord));
+            this.corners[getWidth()] = (int) Math.round(computeCornerPositionLeftAlongX(xyCoord));
+            this.corners[getHeight()] = (int) Math.round(computeCornerPositionBottomAlongY(xyCoord));
             this.corners[DEEP] = getDeepLevel() - 1;
         } else {
             this.lengths[getWidth()] = (int) Math.round(computeOutputWidth());
             this.lengths[getHeight()] = (int) Math.round(computeOutputHeight());
-            this.corners[getWidth()] = (int) Math.round(computeCornerWidth(xyCoord));
-            this.corners[getHeight()] = (int) Math.round(computeCornerHeight(xyCoord));
+            this.corners[getWidth()] = (int) Math.round(computeCornerPositionLeftAlongX(xyCoord));
+            this.corners[getHeight()] = (int) Math.round(computeCornerPositionBottomAlongY(xyCoord));
         }
 
         /**
@@ -274,7 +274,7 @@ public class CutOutSITools2 implements CutOutInterface {
          *      |___|      |___|
          *        |__________|
          */
-        if (isCornerCutWidthOutImage()) {
+        if (isLeftCornerCutOutImageAlongX()) {
             // Checks if the cutOut is completely outside the image
             if (this.lengths[getWidth()] <= Math.abs(this.corners[getWidth()])) {
                 throw new IllegalArgumentException("Cut out of the image");
@@ -286,7 +286,7 @@ public class CutOutSITools2 implements CutOutInterface {
                 }
                 this.corners[getWidth()] = 0;
             }
-        } else if (isCutWidthOutImage((int) wcs.getWidth())) {
+        } else if (isRightCornerCutOutImageAlongX((int) wcs.getWidth())) {
            if (this.corners[getWidth()] >= wcs.getWidth()) {
                 throw new IllegalArgumentException("Cut out of the image");
            } else {
@@ -303,7 +303,7 @@ public class CutOutSITools2 implements CutOutInterface {
          *        |______---_|
          *               |_|
          */
-        if (isCornerCutHeightOutImage()) {
+        if (isBottomCornerCutOutImageAlongY()) {
             if (this.lengths[getHeight()] <= Math.abs(this.corners[getHeight()])) {
                 throw new IllegalArgumentException("Cut out of the image");
             } else {
@@ -314,7 +314,7 @@ public class CutOutSITools2 implements CutOutInterface {
                 }
                 this.corners[getHeight()] = 0;
             }
-        } else if (isCutHeightOutImage((int) wcs.getHeight())) {
+        } else if (isUpperCornerCutOutImageAlongY((int) wcs.getHeight())) {
            if (this.corners[getHeight()] >= wcs.getHeight()) {
                 throw new IllegalArgumentException("Cut out of the image");
            } else {
@@ -323,64 +323,72 @@ public class CutOutSITools2 implements CutOutInterface {
         }
     }
     /**
-     * Returns True when the corner of the cutOut is out of the image along the width.
-     * @return True when the corner of the cutOut is out of the image otherwise False
+     * Returns True when the left corner of the cutOut is out of the image along the X axis.
+     * @return True when the left corner of the cutOut is out of the image otherwise False
      */
-    private boolean isCornerCutWidthOutImage() {
+    private boolean isLeftCornerCutOutImageAlongX() {
         return (this.corners[getWidth()] < 0);
     }
     /**
-     * Returns True when the corner of the cutOut is out of the image along the height.
-     * @return True when the corner of the cutOut is out of the image otherwise False
+     * Returns True when the bottom corner of the cutOut is out of the image along the Y axis.
+     * @return True when the bottom corner of the cutOut is out of the image otherwise False
      */
-    private boolean isCornerCutHeightOutImage() {
+    private boolean isBottomCornerCutOutImageAlongY() {
         return (this.corners[getHeight()] < 0);
     }
     /**
-     * Returns True when the length of the cutOut is out of the image along the width.
+     * Returns True when the right corner of the cutOut is out of the image along the X axis.
      * @param imageWidth length of the image along the width
-     * @return True when the cutOut is out of the image otherwise False
+     * @return True when the right corner of the cutOut is out of the image otherwise False
      */
-    private boolean isCutWidthOutImage(final int imageWidth) {
+    private boolean isRightCornerCutOutImageAlongX(final int imageWidth) {
         return (this.corners[getWidth()] + this.lengths[getWidth()] >= imageWidth);
     }
     /**
-     * Returns True when the length of the cutOut is out of the image along the height.
+     * Returns True when the upper corner of the cutOut is out of the image along the Y axis.
      * @param imageHeight length of the image along the height
-     * @return True when the cutOut is out of the image otherwise False
+     * @return True when the upper corner of the cutOut is out of the image otherwise False
      */
-    private boolean isCutHeightOutImage(final int imageHeight) {
+    private boolean isUpperCornerCutOutImageAlongY(final int imageHeight) {
         return (this.corners[getHeight()] + this.lengths[getHeight()] >= imageHeight);
     }
     /**
-     * Computes the shift to give to CRPIX1 when the corner is out of the cutOut.
+     * Computes the shift to give to CRPIX1.
+     * <p>
+     * Applies the shift in pixels within the FITS reference pixel and changes
+     * to the output FITS reference pixel.
+     * </p>
      * @return the shift to apply for CRPIX1
      */
-    private double computeShiftCrpixWidth() {
-        return Math.round(xyCoord.getX()) - (computeOutputWidth() - 1) / 2 - this.shiftCrpix1;
+    private double computeShiftCrpix1() {
+        return xyCoord.getX() - (computeOutputWidth() / 2.0d + 0.5) - this.shiftCrpix1;
     }
     /**
-     * Computes the shift to give to CRPIX2 when the corner is out of the cutOut.
+     * Computes the shift to give to CRPIX2.
+     * <p>
+     * Applies the shift in pixels within the FITS reference pixel and changes
+     * to the output FITS reference pixel.
+     * </p>
      * @return the shift to apply for CRPIX2
      */
-    private double computeShiftCrpixHeight() {
-        return Math.round(xyCoord.getY()) - (computeOutputHeight() - 1) / 2 - this.shiftCrpix2;
+    private double computeShiftCrpix2() {
+        return xyCoord.getY() - (computeOutputHeight() / 2.0d + 0.5) - this.shiftCrpix2;
     }
     /**
-     * Computes the coordinates of the corner along the width axis.
+     * Computes the position of the left corner of the user input along X axis.
      * @param xyCoordVal central position of the cutOut
      * @return the coordinates of the corner along the width axis in pixels
      */
-    private double computeCornerWidth(final Point2D.Double xyCoordVal) {
-        return Math.round(xyCoordVal.getX()) - (computeOutputWidth() - 1) / 2.0d;
+    private double computeCornerPositionLeftAlongX(final Point2D.Double xyCoordVal) {
+        return xyCoordVal.getX() - (computeOutputWidth() / 2.0d + 0.5);
     }
     /**
-     * Computes the coordinates of the corner along the height axis.
+     * Computes the position of the bottom corner of the user input along Y axis.
      * @param xyCoordVal central position of the cutOut
      * @return the coordinates of the corner along the width axis in pixels
      */
-    private double computeCornerHeight(final Point2D.Double xyCoordVal) {
-        return Math.round(xyCoordVal.getY()) - (computeOutputHeight() - 1) / 2.0d;
+    private double computeCornerPositionBottomAlongY(final Point2D.Double xyCoordVal) {
+        return xyCoordVal.getY() - (computeOutputHeight() / 2.0d + 0.5);
     }
     /**
      * Computes the scale along the width axis in deg per pixels.
@@ -400,6 +408,10 @@ public class CutOutSITools2 implements CutOutInterface {
     }
     /**
      * Computes the number of pixels along the width axis as the result of the cutOut.
+     * <p>
+     * The number of pixels along the X axis is computed as the angular distance
+     * along X set by the cut area divided by the degree per pixel of the FITS image to cut.
+     * </p>
      * @return the number of pixels along the width axis as the result of the cutOut
      */
     private double computeOutputWidth() {
@@ -407,6 +419,10 @@ public class CutOutSITools2 implements CutOutInterface {
     }
     /**
      * Computes the number of pixels along the height axis as the result of the cutOut.
+     * <p>
+     * The number of pixels along the Y axis is computed as the angular distance
+     * along Y set by the cut area divided by the degree per pixel of the FITS image to cut.
+     * </p> 
      * @return the number of pixels along the height axis as the result of the cutOut
      */
     private double computeOutputHeight() {
@@ -436,8 +452,8 @@ public class CutOutSITools2 implements CutOutInterface {
             final ImageHDU imageHDU = (ImageHDU) Fits.makeHDU(imgData);
             imageHDU.addValue("NAXIS1", this.lengths[getWidth()], null);
             imageHDU.addValue("NAXIS2", this.lengths[getHeight()], null);
-            imageHDU.addValue("CRPIX1", originHdu.getHeader().getDoubleValue("CRPIX1") - computeShiftCrpixWidth() , null);
-            imageHDU.addValue("CRPIX2", originHdu.getHeader().getDoubleValue("CRPIX2") - computeShiftCrpixHeight(), null);
+            imageHDU.addValue("CRPIX1", Math.round(originHdu.getHeader().getDoubleValue("CRPIX1") - computeShiftCrpix1()), null);
+            imageHDU.addValue("CRPIX2", Math.round(originHdu.getHeader().getDoubleValue("CRPIX2") - computeShiftCrpix2()), null);
             imageHDU.addValue("CREATOR", "SITools2", "http://sitools2.sourceforge.net");
             propagateKeywords(originHdu.getHeader(), imageHDU);
             imageHDU.getHeader().insertHistory("CUT FITS DATE : " + GregorianCalendar.getInstance().getTime().toString());
