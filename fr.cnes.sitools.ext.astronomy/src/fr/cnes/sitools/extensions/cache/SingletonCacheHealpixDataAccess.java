@@ -138,10 +138,11 @@ public class SingletonCacheHealpixDataAccess {
      * @return the stored value from the cache
      */
     public static Object getFromCache(final String cacheID, final CacheStrategy cacheStrategy) {
-         synchronized (LOCK) {
-            final Cache cache = getCache(cacheStrategy);
-            return cache.get(cacheID).getObjectValue();
-         }
+        LOG.log(Level.FINER, "cacheID: {0} - strategy:{1}", new Object[]{cacheID, cacheStrategy.getName()});
+        synchronized (LOCK) {
+           final Cache cache = getCache(cacheStrategy);
+           return cache.get(cacheID).getObjectValue();
+        }
     }
     /**
      * Inserts the <code>valueToStore</code> in cache.

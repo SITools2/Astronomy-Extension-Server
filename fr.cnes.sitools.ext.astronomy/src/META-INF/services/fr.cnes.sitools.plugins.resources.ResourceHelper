@@ -7,3 +7,4 @@ fr.cnes.sitools.extensions.astro.resource.CutOutResourcePlugin
 fr.cnes.sitools.extensions.astro.resource.GlobWebResourcePlugin
 fr.cnes.sitools.extensions.astro.resource.SkyCoverageResourcePlugin
 fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResourcePlugin
+fr.cnes.sitools.extensions.astro.resource.Votable2GeoJsonResourcePlugin

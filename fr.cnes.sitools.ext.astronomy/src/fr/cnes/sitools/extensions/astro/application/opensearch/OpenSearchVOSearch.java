@@ -21,7 +21,6 @@ package fr.cnes.sitools.extensions.astro.application.opensearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.representation.VOTableRepresentation;
-import fr.cnes.sitools.common.model.Response;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
@@ -106,6 +105,7 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
             getVariants().add(new Variant(MediaType.APPLICATION_JSON));
             setUrl(((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap().get("serviceURL").getValue());
             if (!getRequest().getMethod().equals(Method.OPTIONS)) {
+                LOG.info(this.getRequest().toString());
                 final Form form = getRequest().getResourceRef().getQueryAsForm();
                 Validation inputsValidation = new InputsValidation(form.getValuesMap());
                 inputsValidation = new NotNullAndNotEmptyValidation(inputsValidation, "healpix", true);

@@ -19,13 +19,25 @@
 package fr.cnes.sitools.extensions.common;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBElement;
+import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
+import net.ivoa.xml.votable.v1.Info;
+import net.ivoa.xml.votable.v1.Param;
+import net.ivoa.xml.votable.v1.Resource;
+import net.ivoa.xml.votable.v1.Table;
+import net.ivoa.xml.votable.v1.TableData;
+import net.ivoa.xml.votable.v1.Td;
+import net.ivoa.xml.votable.v1.Tr;
 
 /**
  * Utility class.
@@ -262,4 +274,70 @@ public abstract class Utility {
       }
       return obj;              
   }
+  
+    /**
+     * Parse Resource from VOTable.
+     * @param resourceIter Resource
+     * @return records
+     */
+    public static List<Map<Field, String>> parseResource(final Resource resourceIter) {
+        final List<Info> infos = resourceIter.getINFO();
+        for (Info info : infos) {
+            final String status = info.getValueAttribute();
+            if ("ERROR".equals(status)) {
+                throw new IllegalArgumentException(info.getValue());
+            }
+        }
+        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
+        final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
+        for (Object objectIter : objects) {
+            if (objectIter instanceof Table) {
+                final Table table = (Table) objectIter;
+                responses = parseTable(table);
+            }
+        }
+        return responses;
+    }
+    /**
+     * Parse table from VO.
+     * @param table table
+     * @return records
+     */
+    private static List<Map<Field, String>> parseTable(final Table table) {
+        int nbFields = 0;
+        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
+        final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
+        final List<JAXBElement<?>> currentTable = table.getContent();
+        for (JAXBElement<?> currentTableIter : currentTable) {
+            // metadata case
+            if (currentTableIter.getValue() instanceof Param) {
+              // Need this condition. It seems For a Param tag
+              // is an instance of Field. And we do not want
+              // to parse a Param as a Field.
+            } else if (currentTableIter.getValue() instanceof Field) {
+                final JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
+                final Field field = fields.getValue();
+                responseFields.put(nbFields, field);
+                nbFields++;
+                // data
+            } else if (currentTableIter.getValue() instanceof Data) {
+                final JAXBElement<Data> datas = (JAXBElement<Data>) currentTableIter;
+                final Data data = datas.getValue();
+                final TableData tableData = data.getTABLEDATA();
+                final List<Tr> trs = tableData.getTR();
+                for (Tr trsIter : trs) {
+                    final Map<Field, String> response = new HashMap<Field, String>();
+                    final List<Td> tds = trsIter.getTD();
+                    int nbTd = 0;
+                    for (Td tdIter : tds) {
+                        final String value = tdIter.getValue();
+                        response.put(responseFields.get(nbTd), value);
+                        nbTd++;
+                    }
+                    responses.add(response);
+                }
+            }
+        }
+        return responses;
+    }  
 }

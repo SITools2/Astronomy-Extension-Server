@@ -18,6 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -110,72 +111,6 @@ public class SIASearchQuery {
         final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
         final List<Resource> resources = votable.getRESOURCE();
         final Resource resource = resources.get(0);
-        return parseResponse(resource);
-    }
-
-    /**
-     * Parse Resource from VOTable.
-     * @param resourceIter Resource
-     * @return records
-     */
-    private List<Map<Field, String>> parseResponse(final Resource resourceIter) {
-        final List<Info> infos = resourceIter.getINFO();
-        for (Info info : infos) {
-            final String status = info.getValueAttribute();
-            if ("ERROR".equals(status)) {
-                throw new IllegalArgumentException(info.getValue());
-            }
-        }
-        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
-        final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
-        for (Object objectIter : objects) {
-            if (objectIter instanceof Table) {
-                final Table table = (Table) objectIter;
-                responses = parseTable(table);
-            }
-        }
-        return responses;
-    }
-    /**
-     * Parse table from VO.
-     * @param table table
-     * @return records
-     */
-    private List<Map<Field, String>> parseTable(final Table table) {
-        int nbFields = 0;
-        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
-        final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
-        final List<JAXBElement<?>> currentTable = table.getContent();
-        for (JAXBElement<?> currentTableIter : currentTable) {
-            // metadata case
-            if (currentTableIter.getValue() instanceof Param) {
-              // Need this condition. It seems For a Param tag
-              // is an instance of Field. And we do not want
-              // to parse a Param as a Field.
-            } else if (currentTableIter.getValue() instanceof Field) {
-                final JAXBElement<Field> fields = (JAXBElement<Field>) currentTableIter;
-                final Field field = fields.getValue();
-                responseFields.put(nbFields, field);
-                nbFields++;
-                // data
-            } else if (currentTableIter.getValue() instanceof Data) {
-                final JAXBElement<Data> datas = (JAXBElement<Data>) currentTableIter;
-                final Data data = datas.getValue();
-                final TableData tableData = data.getTABLEDATA();
-                final List<Tr> trs = tableData.getTR();
-                for (Tr trsIter : trs) {
-                    final Map<Field, String> response = new HashMap<Field, String>();
-                    final List<Td> tds = trsIter.getTD();
-                    int nbTd = 0;
-                    for (Td tdIter : tds) {
-                        final String value = tdIter.getValue();
-                        response.put(responseFields.get(nbTd), value);
-                        nbTd++;
-                    }
-                    responses.add(response);
-                }
-            }
-        }
-        return responses;
+        return Utility.parseResource(resource);
     }
 }

@@ -121,9 +121,9 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
     getVariants().add(new Variant(MediaType.valueOf("fits")));
     getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     getVariants().add(new Variant(MediaType.IMAGE_PNG));
-    final String mocs = getRequest().getResourceRef().getQueryAsForm().getFirstValue(SkyCoverageResourcePlugin.INPUT_PARAMETER);
-    final String[] mocArray = mocs.split(";");
+    final String mocs = getRequest().getResourceRef().getQueryAsForm().getFirstValue(SkyCoverageResourcePlugin.INPUT_PARAMETER);    
     if (!getRequest().getMethod().equals(Method.OPTIONS)) {
+      final String[] mocArray = mocs.split(";");
       try {
         procesSkyCoverage(mocArray);
       } catch (Exception ex) {
