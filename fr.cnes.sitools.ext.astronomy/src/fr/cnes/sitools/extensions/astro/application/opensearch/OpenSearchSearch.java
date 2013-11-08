@@ -234,7 +234,6 @@ public class OpenSearchSearch extends OpenSearchBase {
       if (isPoint(footprint)) {
         geometry.put(FeatureDataModel.GEOMETRY_TYPE, "Point");
         geometry.put(FeatureDataModel.GEOMETRY_COORDINATES, Arrays.asList(pointArray.get(0), pointArray.get(1)));
-        geometry.put(FeatureDataModel.PROPERTIES_CRS, referenceSystem);
       } else {
         geometry.put(FeatureDataModel.GEOMETRY_TYPE, "Polygon");
         final String[] points = footprint.split("],");

@@ -64,10 +64,10 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
       querySolr.createQueryBuilder();
       String query = querySolr.getSolrQueryRequest();
       query = query.concat("&rows=0&facet=true&facet.limit=-1&facet.mincount=1&wt=json"
-              + "&indent=true&facet.field=eqorder3&facet.field=eqorder4"
-              + "&facet.field=eqorder5&facet.field=eqorder6&facet.field=eqorder7"
-              + "&facet.field=eqorder8&facet.field=eqorder9&facet.field=eqorder10"
-              + "&facet.field=eqorder11&facet.field=eqorder12&facet.field=eqorder13");
+              + "&indent=true&facet.field=order3&facet.field=order4"
+              + "&facet.field=order5&facet.field=order6&facet.field=order7"
+              + "&facet.field=order8&facet.field=order9&facet.field=order10"
+              + "&facet.field=order11&facet.field=order12&facet.field=order13");
       LOG.log(Level.INFO, query);
       final ClientResource client = new ClientResource(query);
       final Representation rep = client.get();

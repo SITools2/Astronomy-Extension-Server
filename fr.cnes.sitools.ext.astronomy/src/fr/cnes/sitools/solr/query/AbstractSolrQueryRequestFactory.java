@@ -160,6 +160,7 @@ public abstract class AbstractSolrQueryRequestFactory {
         queryParametersToProcess.remove("startPage");
         queryParametersToProcess.remove("count");
         queryParametersToProcess.remove("format");
+        queryParametersToProcess.remove("coordSystem");
         String searchTerms = searchTermsConstraint(queryParametersToProcess);
         String geometry = geometryConstraint();
         String parameters = parameterConstraint(queryParametersToProcess);

@@ -4,6 +4,7 @@
     "features": [
         <#list features as feature>
         {
+            "type": "Feature",
             "geometry": {
                 "coordinates": ${feature.geometry.coordinates},
                 "type": "${feature.geometry.type}"

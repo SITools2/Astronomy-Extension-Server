@@ -75,9 +75,8 @@ Then we need to modify the schema.xml file in the SOLR core as follows:
 	<!-- no standard -->
 	<dynamicField name="properties.nostandard.*" type="text_ws" indexed="true" stored="true"/>
 	
-	<!-- Healpix index -->
-	<dynamicField name="galacorder*" type="slong" indexed="true" stored="true" multiValued="true"/>
-	<dynamicField name="eqorder*" type="slong" indexed="true" stored="true" multiValued="true"/>
+	<!-- Healpix index -->	
+	<dynamicField name="order*" type="slong" indexed="true" stored="true" multiValued="true"/>
         <field name="searchTerms" type="text" indexed="true" stored="false" multiValued="true" />
         <copyField source="properties.identifier" dest="searchTerms" />
         <copyField source="properties.description" dest="searchTerms" />
