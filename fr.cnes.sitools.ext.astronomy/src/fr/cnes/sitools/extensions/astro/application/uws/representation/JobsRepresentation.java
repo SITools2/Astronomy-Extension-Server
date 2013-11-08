@@ -25,6 +25,7 @@ import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerEx
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -100,7 +101,8 @@ public class JobsRepresentation extends fr.cnes.sitools.extensions.astro.applica
         final Date currentDate = new Date();
         final Jobs jobs = new Jobs();
         final List<ShortJobDescription> shortJobsDescription = jobs.getJobref();
-        for (final Map.Entry<String, AbstractJobTask> entryAbstractJobTask : jobTasks.entrySet()) { 
+        final Map<String, AbstractJobTask> tmpJobTask = new HashMap<String, AbstractJobTask>(jobTasks);
+        for (final Map.Entry<String, AbstractJobTask> entryAbstractJobTask : tmpJobTask.entrySet()) { 
             final String jobKey = entryAbstractJobTask.getKey();
             final AbstractJobTask jobTask = entryAbstractJobTask.getValue();
 
