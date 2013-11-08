@@ -36,8 +36,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -46,6 +48,7 @@ import javax.xml.bind.Unmarshaller;
 import net.ivoa.xml.votable.v1.Field;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.VOTABLE;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -59,6 +62,7 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -83,46 +87,6 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
     @Override
     public final void doInit() {
         super.doInit();
-        setAnnotated(true);
-        MediaType.register("application/x-votable+xml", "VOTable");
-        getMetadataService().addExtension("votable", MediaType.valueOf("application/x-votable+xml"));
-        getVariants().add(new Variant(MediaType.valueOf("application/x-votable+xml")));
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        if (!getRequest().getMethod().equals(Method.OPTIONS)) {
-        Validation validationForm = new InputsValidation(getRequest().getResourceRef().getQueryAsForm().getValuesMap());
-        validationForm = new NotNullAndNotEmptyValidation(validationForm, "coordSystem");
-        validationForm = new NotNullAndNotEmptyValidation(validationForm, "url");
-        final StatusValidation statusValidationForm = validationForm.validate();
-            if (statusValidationForm.isValid()) {
-                final Map<String, String> userInputParameters = validationForm.getMap();
-                this.setCoordinateSystem(AstroCoordinate.CoordinateSystem.valueOf(userInputParameters.get("coordSystem")));
-                try {
-                    this.setUrl(new URL(userInputParameters.get("url")));
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(Votable2GeoJsonResource.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "url parameter is not a valid URL");
-                }
-            } else {
-                LOG.log(Level.WARNING, "VOTable2GeoJSON service - Wrong parameters");
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Check your input parameters");
-            }
-        }
-    }
-
-    /**
-     * Returns the coordinate system.
-     * @return the coordinateSystem
-     */
-    protected final AstroCoordinate.CoordinateSystem getCoordinateSystem() {
-        return coordinateSystem;
-    }
-
-    /**
-     * Sets the coordinate system.
-     * @param coordinateSystemVal the coordinateSystem to set
-     */
-    protected final void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystemVal) {
-        this.coordinateSystem = coordinateSystemVal;
     }
 
     /**
@@ -130,20 +94,15 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
      * @return the GeoJSON representation
      * @throws IOException when a problem happens during the conversion
      */
-    @Get
-    public final Representation convertVotable2GeoJson() throws IOException {
+    @Post("form")
+    public final Representation convertVotable2GeoJson(final Representation entity) throws IOException {
         Representation rep;
         try {
+            final Form form = new Form(entity);
+            String result = form.getFirstValue("votable"); 
+            final String coordSystem = form.getFirstValue("coordSystem");
             final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
-            final Unmarshaller unMarshaller = ctx.createUnmarshaller();
-            final BufferedReader inputStream = new BufferedReader(new InputStreamReader(getUrl().openStream()));
-            final StringBuilder resultBuffer = new StringBuilder();
-            String urlContent;
-            while ((urlContent = inputStream.readLine()) != null) {
-                resultBuffer.append(urlContent);
-            }
-            inputStream.close();
-            String result = resultBuffer.toString();
+            final Unmarshaller unMarshaller = ctx.createUnmarshaller();                       
             if (result.contains("xmlns")) {
                 result = result.replace("http://www.ivoa.net/xml/VOTable/v1.1", "http://www.ivoa.net/xml/VOTable/v1.2");
             } else {
@@ -152,8 +111,8 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
             final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
             final List<Resource> resources = votable.getRESOURCE();
             final Resource resource = resources.get(0);
-            final List<Map<Field, String>> response = Utility.parseResource(resource);
-            final FeaturesDataModel dataModel = JsonDataModelDecorator.computeJsonDataModel(response, getCoordinateSystem());
+            final List<Map<Field, String>> response = Utility.parseResource(resource);            
+            final FeaturesDataModel dataModel = JsonDataModelDecorator.computeJsonDataModel(response, AstroCoordinate.CoordinateSystem.valueOf(coordSystem));
             rep =  new GeoJsonRepresentation(dataModel.getFeatures());
         } catch (JAXBException ex) {
             Logger.getLogger(Votable2GeoJsonResource.class.getName()).log(Level.SEVERE, null, ex);
@@ -166,37 +125,22 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
         setName("VOTable to GeoJson converter.");
         setDescription("Converts a VOTable to Json");
     }
-
-    /**
-     * Returns the URL of the VOTable.
-     * @return the url
-     */
-    protected final URL getUrl() {
-        return url;
-    }
-
-    /**
-     * Sets the URL of the VOTable.
-     * @param urlVal the url to set
-     */
-    protected final void setUrl(final URL urlVal) {
-        this.url = urlVal;
-    }
+    
     /**
      * Descibes the GET method in WADL.
      *
      * @param info information
      */
     @Override
-    protected final void describeGet(final MethodInfo info) {
+    protected final void describePost(final MethodInfo info) {
         this.addInfo(info);
         info.setIdentifier("Votable2GeoJSON");
         info.setDocumentation("Converts a VOTable to GeoJSon.");
 
         // objecName parameter
         final List<ParameterInfo> parametersInfo = new ArrayList<ParameterInfo>();
-        parametersInfo.add(new ParameterInfo("url", true, "String", ParameterStyle.QUERY,
-                "URL of the VOTable. The URL must be encoding when parameters exist."));
+        parametersInfo.add(new ParameterInfo("votable", true, "String", ParameterStyle.QUERY,
+                "The VOTable content."));
 
         // reference frame parameter
         final ParameterInfo paramCoordSys = new ParameterInfo("coordSystem", true, "String", ParameterStyle.QUERY,

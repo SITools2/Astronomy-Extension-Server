@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
+import java.nio.channels.FileLockInterruptionException;
 import java.util.logging.Logger;
 import org.restlet.data.Status;
 import org.restlet.resource.Post;
@@ -74,11 +75,9 @@ public class StoreObject extends SitoolsParameterizedResource {
             lock = fout.getChannel().lock();
             fout.write(object.getBytes());
         } catch (FileNotFoundException ex) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex); 
         } catch (IOException ex) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-        } catch (Exception ex) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);        
         } finally {
             try {
                 if (fout != null) {
