@@ -65,7 +65,7 @@ public class StoreObject extends SitoolsParameterizedResource {
      * @param object XML representation of the cache
      */
     @Post
-    public final void acceptObject(final String object) throws IOException {
+    public final void acceptObject(final String object) {
         LOG.finest(object);
         FileOutputStream fout = null;
         FileLock lock = null;
@@ -76,6 +76,8 @@ public class StoreObject extends SitoolsParameterizedResource {
         } catch (FileNotFoundException ex) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IOException ex) {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
+        } catch (Exception ex) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } finally {
             try {

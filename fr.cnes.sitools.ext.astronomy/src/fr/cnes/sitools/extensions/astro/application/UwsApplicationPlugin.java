@@ -65,6 +65,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.ApplicationInfo;
@@ -355,6 +356,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
 
     @Override
     public final Restlet createInboundRoot() {
+        getMetadataService().addExtension("fits", new MediaType("image/fits"));
         final Router router = new Router(getContext());
         router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
         router.attachDefault(JobsResource.class);
