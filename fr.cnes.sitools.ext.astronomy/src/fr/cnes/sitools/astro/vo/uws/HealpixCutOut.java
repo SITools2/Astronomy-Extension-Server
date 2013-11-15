@@ -53,7 +53,7 @@ import net.ivoa.xml.uws.v1.Results;
 import nom.tam.fits.FitsException;
 
 /**
- * Implements a FIT cutout in a UWS service.
+ * Implements a Healpix cutout in a UWS service.
  * <p>
  * Here is an example to run the cutout from a UWS service
  * <code>
@@ -68,10 +68,10 @@ import nom.tam.fits.FitsException;
 public class HealpixCutOut extends AbstractJobTask {
 
     @Override
-    public void run() {
+    public final void run() {
         try {
             setBlinker(Thread.currentThread());
-            setStartTime(Util.convertIntoXMLGregorian(new Date()));           
+            setStartTime(Util.convertIntoXMLGregorian(new Date()));
             setPhase(ExecutionPhase.EXECUTING);
             final List<String> filenameList = createJob();
             createResults(filenameList);
@@ -148,9 +148,9 @@ public class HealpixCutOut extends AbstractJobTask {
         final double lat1 = Double.valueOf(getParameterValue("lat1"));
         final double lat2 = Double.valueOf(getParameterValue("lat2"));
         final double lat3 = Double.valueOf(getParameterValue("lat3"));
-        final double lat4 = Double.valueOf(getParameterValue("lat4"));        
+        final double lat4 = Double.valueOf(getParameterValue("lat4"));
         final double rotation = Double.valueOf(getParameterValue("rotation"));
-        final String filename = getParameterValue("filename");        
+        final String filename = getParameterValue("filename");
         final AstroCoordinate.CoordinateSystem coordinateSystem = AstroCoordinate.CoordinateSystem.valueOf(getParameterValue("coordSystem"));
         final double[] fov = new double[]{long1, lat1, long2, lat2, long3, lat3, long4, lat4};
         final String path = this.getStoragePathJob().replace(getJobTaskId(), "");
@@ -167,7 +167,7 @@ public class HealpixCutOut extends AbstractJobTask {
        // }
         final String outputFileFits = getStoragePathJob() + File.separator + "result.fits";
         final File fileFits = new File(outputFileFits);
-        FileOutputStream fos = new FileOutputStream(fileFits);
+        final FileOutputStream fos = new FileOutputStream(fileFits);
         cutout.createCutoutFits(fos);
         try {
             fos.close();
@@ -200,7 +200,7 @@ public class HealpixCutOut extends AbstractJobTask {
         }
         setResults(uwsResults);
     }
-    
+
     @Override
     public final Job getCapabilities() {
         final ObjectFactory objFactory = new ObjectFactory();
@@ -246,22 +246,22 @@ public class HealpixCutOut extends AbstractJobTask {
         polygon.setLongitude4(longitude4);
         polygon.setRotation(rotation);
         geom.setPolygon(polygon);
-        InputsType.Keyword cdelt1 = new InputsType.Keyword();
+        final InputsType.Keyword cdelt1 = new InputsType.Keyword();
         cdelt1.setName("cdelt1");
         cdelt1.setDocumentation("Arcsec per pixel along X axis");
-        InputsType.Keyword cdelt2 = new InputsType.Keyword();
+        final InputsType.Keyword cdelt2 = new InputsType.Keyword();
         cdelt2.setName("cdelt2");
-        cdelt2.setDocumentation("Arcsec per pixel along X axis");        
+        cdelt2.setDocumentation("Arcsec per pixel along X axis");
         // Create inputs
         final InputsType inputs = new InputsType();
         inputs.getKeyword().add(cdelt1);
         inputs.getKeyword().add(cdelt2);
-        inputs.setGeometry(geom);        
-        // Create output        
+        inputs.setGeometry(geom);
+        // Create output
         final OutputsType outputs = new OutputsType();
-        Image image = new Image();
+        final Image image = new Image();
         image.setFormat(ImageFormatType.IMAGE_FITS);
-        outputs.getImage().add(image);        
+        outputs.getImage().add(image);
         // Create job
         job.setInputs(inputs);
         job.setOutputs(outputs);

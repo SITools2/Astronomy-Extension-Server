@@ -69,7 +69,7 @@ public class NameResolverResourceTest extends AbstractSitoolsServiceTestCase {
         System.out.println("getNameResolverResponse");
         ClientResource clientResource = new ClientResource(getHostUrl() + this.urlAttachment + "/plugin/nameResolver/m31/EQUATORIAL");
         JSONObject result = new JSONObject(clientResource.get(MediaType.APPLICATION_JSON).getText());
-        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"EQUATORIAL.ICRS\"},\"type\":\"name\"},\"credits\":\"CDS\",\"identifier\":\"CDS0\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.6847083,41.26875]}}],\"type\":\"FeatureCollection\"}");        
+        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"credits\":\"CDS\",\"identifier\":\"CDS0\"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.6847083,41.26875]}}],\"type\":\"FeatureCollection\"}");        
         assertEquals(expResult.toString(), result.toString());
     }
 }

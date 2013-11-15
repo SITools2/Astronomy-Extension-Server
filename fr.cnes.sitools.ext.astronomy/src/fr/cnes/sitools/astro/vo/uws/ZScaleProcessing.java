@@ -121,7 +121,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             errorSumm.setType(ErrorType.FATAL);
             errorSumm.setHasDetail(true);
             setError(errorSumm);
-            setPhase(ExecutionPhase.ERROR);            
+            setPhase(ExecutionPhase.ERROR);
         } catch (IOException ex) {
             Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();

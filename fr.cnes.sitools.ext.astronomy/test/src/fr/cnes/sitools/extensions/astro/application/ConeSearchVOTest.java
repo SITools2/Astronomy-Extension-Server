@@ -61,11 +61,11 @@ public class ConeSearchVOTest extends AbstractSitoolsServiceTestCase {
   @Test
   public void testSearch() throws IOException, JSONException {
     System.out.println("getVOConeSearch results");
-    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/EQUATORIAL/search?healpix=10&order=13&format=json");
+    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/search?healpix=10&order=12&coordSystem=EQUATORIAL&format=json");
     String result = clientResource.get().getText();
     JSONObject json = new JSONObject(result);
     long numberResult = json.getLong("totalResults");
-    assertEquals(50000, numberResult);
+    assertEquals(1, numberResult);
   }
   
   /**
@@ -74,7 +74,7 @@ public class ConeSearchVOTest extends AbstractSitoolsServiceTestCase {
   @Test
   public void testDico() throws IOException, JSONException {
     System.out.println("getDico");
-    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/dico/FUV");
+    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/dico/RAJ2000");
     String result = clientResource.get().getText();
     assertEquals(200, clientResource.getStatus().getCode());      
     assertTrue(!result.isEmpty());
@@ -89,6 +89,6 @@ public class ConeSearchVOTest extends AbstractSitoolsServiceTestCase {
     ClientResource clientResource = new ClientResource(getHostUrl() + request + "/moc");
     String resultTxt = clientResource.get(MediaType.TEXT_PLAIN).getText();  
     assertEquals(200, clientResource.getStatus().getCode()); 
-    assertEquals("38.74104817708333%", resultTxt);    
+    assertEquals("99.99930063883463%", resultTxt);    
   }   
 }

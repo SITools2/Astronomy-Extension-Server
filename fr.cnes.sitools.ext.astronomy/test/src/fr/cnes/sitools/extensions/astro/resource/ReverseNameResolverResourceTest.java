@@ -53,7 +53,7 @@ public class ReverseNameResolverResourceTest extends AbstractSitoolsServiceTestC
         pj = createProjectObject(projectName, this.urlAttachment);
         createProject(pj);
         activateProject(pj);
-        rm = createResourceModel(fr.cnes.sitools.extensions.astro.resource.ReverseNameResolverResourcePlugin.class.getName(), "reverseNameResolver", "/plugin/reverseNameResolver/{coordinates-order}");
+        rm = createResourceModel(fr.cnes.sitools.extensions.astro.resource.ReverseNameResolverResourcePlugin.class.getName(), "reverseNameResolver", "/plugin/reverseNameResolver/{coordSystem}/{coordinates-order}");
         create(rm, getBaseUrl() +SitoolsSettings.getInstance().getString(Consts.APP_PROJECTS_URL) +"/"+projectName);                      
     }
     
@@ -70,9 +70,9 @@ public class ReverseNameResolverResourceTest extends AbstractSitoolsServiceTestC
     @Test
     public void testGetReverseNameResolverResponse() throws Exception {
         System.out.println("getReverseNameResolverResponse");
-        ClientResource clientResource = new ClientResource(getHostUrl() + this.urlAttachment + "/plugin/reverseNameResolver/00:42:44.32%20+41:16:07.5;13");
+        ClientResource clientResource = new ClientResource(getHostUrl() + this.urlAttachment + "/plugin/reverseNameResolver/EQUATORIAL/00:42:44.32%20+41:16:07.5;13");
         JSONObject result = new JSONObject(clientResource.get(MediaType.APPLICATION_JSON).getText());
-        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"EQUATORIAL.ICRS\"},\"type\":\"name\"},\"title\":\"M  31 \",\"magnitude\":4.36,\"credits\":\"CDS\",\"seeAlso\":\"http://simbad.u-strasbg.fr/simbad/sim-id?Ident=M  31 \",\"type\":\"Galaxy\",\"identifier\":\"M  31 \"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.684708333333333,41.26875]}}],\"type\":\"FeatureCollection\"}");
+        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"title\":\"M  31 \",\"magnitude\":4.36,\"credits\":\"CDS\",\"seeAlso\":\"http://simbad.u-strasbg.fr/simbad/sim-id?Ident=M  31 \",\"type\":\"Galaxy\",\"identifier\":\"M  31 \"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.684708333333333,41.26875]}}],\"type\":\"FeatureCollection\"}");
         assertEquals(expResult.toString(), result.toString());
     }
 

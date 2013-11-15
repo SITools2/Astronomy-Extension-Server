@@ -61,7 +61,7 @@ public class SIAVOTest extends AbstractSitoolsServiceTestCase {
   @Test
   public void testSearch() throws IOException, JSONException {
     System.out.println("getVOSIA results");
-    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/EQUATORIAL/search?healpix=10&order=4&format=json");
+    ClientResource clientResource = new ClientResource(getHostUrl() + request + "/search?healpix=10&order=4&coordSystem=EQUATORIAL&format=json");
     String result = clientResource.get().getText();
     JSONObject json = new JSONObject(result);
     long numberResult = json.getLong("totalResults");

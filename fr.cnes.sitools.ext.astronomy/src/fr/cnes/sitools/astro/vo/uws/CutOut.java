@@ -70,10 +70,10 @@ import nom.tam.fits.FitsException;
 public class CutOut extends AbstractJobTask {
 
     @Override
-    public void run() {
+    public final void run() {
         try {
             setBlinker(Thread.currentThread());
-            setStartTime(Util.convertIntoXMLGregorian(new Date()));           
+            setStartTime(Util.convertIntoXMLGregorian(new Date()));
             setPhase(ExecutionPhase.EXECUTING);
             final List<String> filenameList = createJob();
             createResults(filenameList);
@@ -139,7 +139,7 @@ public class CutOut extends AbstractJobTask {
      * @throws FitsException when a Fits error happens
      * @throws FileNotFoundException when the file is not found
      */
-    private List<String> createJob() throws CutOutException, MalformedURLException, FitsException, FileNotFoundException {                
+    private List<String> createJob() throws CutOutException, MalformedURLException, FitsException, FileNotFoundException {
         final String uri = getParameterValue("uri");
         setOwnerId(getJobOwner(new URL(uri)));
         final double rightAscension = Double.valueOf(getParameterValue("ra"));
