@@ -26,13 +26,13 @@ import java.util.Map;
  * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class NumberValidation extends NotNullAndNotEmptyValidation {    
-    
+public class NumberValidation extends NotNullAndNotEmptyValidation {
+
     /**
      * Indicates if the keyword is required.
      */
     private boolean requiredKeyword;
-    
+
     /**
      * Constructs a validation decorator to check if the <code>keyword</code> is a number.
      * <p>
@@ -45,7 +45,7 @@ public class NumberValidation extends NotNullAndNotEmptyValidation {
         super(validation, keyword);
         setRequiredKeyword(true);
     }
-    
+
     /**
      * Constructs a validation decorator to check if the <code>keyword</code> is a number.
      * @param validation validation
@@ -56,8 +56,7 @@ public class NumberValidation extends NotNullAndNotEmptyValidation {
         this(validation, keyword);
         setRequiredKeyword(isRequired);
     }
-    
-    
+
     @Override
     protected Map<String, String> localValidation() {
         final String value = getMap().get(this.getKeywordToTest());
@@ -69,7 +68,7 @@ public class NumberValidation extends NotNullAndNotEmptyValidation {
         }
         return error;
     }
-   
+
     /**
      * Returns <code>True</code> when <code>value</code> is a number otherwise <code>False</code>.
      * @param value value to test
@@ -84,7 +83,7 @@ public class NumberValidation extends NotNullAndNotEmptyValidation {
             return false;
         }
     }
-    
+
     /**
      * @return the requiredKeyword
      */

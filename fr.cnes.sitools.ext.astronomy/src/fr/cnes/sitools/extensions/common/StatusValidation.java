@@ -29,19 +29,19 @@ import java.util.Set;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class StatusValidation {
-    
+
     /**
      * Error messages.
      */
     private Map<String, String> messages;
-    
+
     /**
      * Constructs an empty StatusValidation.
      */
     public StatusValidation() {
         this.messages = new HashMap<String, String>();
     }
-    
+
     /**
      * Constructs a StatusValidation with a set of error messages.
      * @param messageList error messages
@@ -50,7 +50,7 @@ public class StatusValidation {
         this.messages = new HashMap<String, String>();
         this.messages.putAll(messageList);
     }
-    
+
     /**
      * Returns <code>True</code> when there is no error message otherwide <code>False</code>.
      * @return <code>True</code> when there is no error message otherwide <code>False</code>
@@ -58,16 +58,16 @@ public class StatusValidation {
     public final boolean isValid() {
         return this.messages.isEmpty();
     }
-    
+
     /**
      * Adds an error.
      * @param key key
-     * @param message error 
+     * @param message error
      */
     public final void add(final String key, final String message) {
         this.messages.put(key, message);
     }
-    
+
     /**
      * Adds a set of errors.
      * @param messageList a set of errors
@@ -83,7 +83,7 @@ public class StatusValidation {
         }
         this.messages.putAll(messageList);
     }
-    
+
     /**
      * Returns the error messages.
      * @return the error messages
@@ -91,7 +91,7 @@ public class StatusValidation {
     public final Map<String, String> getMessages() {
         return this.messages;
     }
-    
+
     /**
      * Sets the whole error messages.
      * @param messageList the whole error messages
@@ -111,5 +111,4 @@ public class StatusValidation {
         }
         return builder.toString();
     }
-    
 }

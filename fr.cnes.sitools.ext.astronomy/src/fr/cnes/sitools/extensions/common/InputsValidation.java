@@ -25,8 +25,7 @@ import java.util.Map;
  * @see Package Decorator pattern
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class InputsValidation extends Validation {    
-    
+public class InputsValidation extends Validation {
     /**
      * Constructs an input validation with a map to validate.
      * @param userInputs input to validate
@@ -45,6 +44,6 @@ public class InputsValidation extends Validation {
     public final void processValidation() {
         if (getMap() == null) {
             throw new IllegalArgumentException("the map cannot be null.");
-        }        
-    }    
+        }
+    }
 }

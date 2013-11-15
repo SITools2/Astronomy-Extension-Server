@@ -61,7 +61,7 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
     @Override
     public final void doInit() {
         super.doInit();
-        parameters = ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap();       
+        parameters = ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getParametersMap();
     }
 
     /**

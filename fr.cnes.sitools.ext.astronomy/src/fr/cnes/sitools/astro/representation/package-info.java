@@ -10,7 +10,7 @@
  * <li>the cutOut representation</li>
  * <li>the FitsMoc representation</li>
  * <li>the DatabaseRequestModel</li>
- * <li>the RepresentationRuntimeException</li> 
+ * <li>the RepresentationRuntimeException</li>
  * </ul>
  */
 package fr.cnes.sitools.astro.representation;

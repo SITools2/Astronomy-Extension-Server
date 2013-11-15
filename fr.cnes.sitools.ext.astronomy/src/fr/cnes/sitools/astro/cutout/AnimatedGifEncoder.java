@@ -1,8 +1,14 @@
 package fr.cnes.sitools.astro.cutout;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
 
 /**
  * Class AnimatedGifEncoder - Encodes a GIF file consisting of one or

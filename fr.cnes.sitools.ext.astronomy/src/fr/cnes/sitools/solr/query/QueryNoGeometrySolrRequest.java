@@ -18,7 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.SearchGeometryEngine.Shape;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 import java.util.Map;
 
 /**

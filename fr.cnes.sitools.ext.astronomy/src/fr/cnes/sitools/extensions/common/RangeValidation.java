@@ -30,12 +30,12 @@ public class RangeValidation extends NumberValidation {
     /**
      * Minimum value that is allowed in the range.
      */
-    private double minValue;    
+    private double minValue;
     /**
      * Maximum value that is allowed in the range.
      */
     private double maxValue;
-    
+
     /**
      * Constructs a new Range validator decorator.
      * @param validation validation
@@ -94,5 +94,5 @@ public class RangeValidation extends NumberValidation {
      */
     protected final void setMaxValue(final double maxValueVal) {
         this.maxValue = maxValueVal;
-    }            
+    }
 }

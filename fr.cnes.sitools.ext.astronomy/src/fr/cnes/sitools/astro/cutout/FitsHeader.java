@@ -27,7 +27,7 @@ import nom.tam.fits.Header;
  * for WCS processing.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class FitsHeader implements WCSKeywordProvider{
+public class FitsHeader implements WCSKeywordProvider {
     /**
      * Logger.
      */
@@ -36,7 +36,7 @@ public class FitsHeader implements WCSKeywordProvider{
      * Initialize Header FITS.
      */
     private Header fitsHdr;
-    
+
     /**
      * Empty constructor.
      */

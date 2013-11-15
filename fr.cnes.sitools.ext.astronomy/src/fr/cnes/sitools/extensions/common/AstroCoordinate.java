@@ -59,11 +59,11 @@ public class AstroCoordinate {
    * Coordinate system.
    */
   private transient CoordinateSystem coordSystem;
-  
+
   /**
    * Provides complementary metadata.
    */
-  private transient Map<String, String> metadata = new HashMap<String, String>(); 
+  private transient Map<String, String> metadata = new HashMap<String, String>();
 
   /**
    * List of supported coordinate system.
@@ -78,7 +78,6 @@ public class AstroCoordinate {
      * Equatorial coordinates.
      */
     EQUATORIAL("equatorial.ICRS");
-    
     /**
      * Coordinates reference system.
      */
@@ -91,7 +90,7 @@ public class AstroCoordinate {
     CoordinateSystem(final String crsVal) {
         this.crs = crsVal;
     }
-    
+
     /**
      * Returns the coordinates reference system.
      * @return crs
@@ -99,7 +98,7 @@ public class AstroCoordinate {
     public String getCrs() {
         return this.crs;
     }
-    
+
   }
 
   /**
@@ -109,7 +108,7 @@ public class AstroCoordinate {
   protected AstroCoordinate(final AstroCoordinate astro) {
     this.ra = astro.getRaAsDecimal();
     this.dec = astro.getDecAsDecimal();
-    this.coordSystem = astro.getCoordinateSystem();    
+    this.coordSystem = astro.getCoordinateSystem();
   }
 
   /**
@@ -123,7 +122,7 @@ public class AstroCoordinate {
     this.dec = decVal;
     this.coordSystem = CoordinateSystem.EQUATORIAL;
   }
-  
+
   /**
    * Empty constructor.
    */
@@ -317,9 +316,9 @@ public class AstroCoordinate {
 
   /**
    * Converts the current object in the specified coordSystem.
-   * 
+   *
    * <p>A RuntimeException is raised when a problem occurs during the conversion, including a not supported coordinate system.</p>
-   * @param coordSystemVal final coordinate system 
+   * @param coordSystemVal final coordinate system
    */
   public final void processTo(final CoordinateSystem coordSystemVal) {
     AngularPosition angularPosition = new AngularPosition(getDecAsDecimal(), getRaAsDecimal());
@@ -334,7 +333,7 @@ public class AstroCoordinate {
           } catch (Exception ex) {
             throw new RuntimeException(ex);
           }
-        } 
+        }
         break;
       case GALACTIC:
         if (getCoordinateSystem() == CoordinateSystem.EQUATORIAL) {

@@ -34,7 +34,7 @@ import org.restlet.resource.ClientResource;
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class SingletonCacheHealpixDataAccess {    
+public class SingletonCacheHealpixDataAccess {
     /**
      * Cache configuration.
      */
@@ -42,7 +42,7 @@ public class SingletonCacheHealpixDataAccess {
     /**
      * Lock.
      */
-    private static final String LOCK = "LOCK";    
+    private static final String LOCK = "LOCK";
     /**
      * Logger.
      */

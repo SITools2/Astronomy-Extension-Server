@@ -18,8 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
-import fr.cnes.sitools.SearchGeometryEngine.Shape;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchSearch;
 import fr.cnes.sitools.util.Util;
@@ -30,15 +30,15 @@ import java.util.Set;
 /**
  * A factory for building a Solr Query request and a few utility methods to build
  * the SOLR string that is send to the SOLR server.
- * 
+ *
  * <p>
  * The choice of the implementation is based on the geometry (BBOX, Cone, ...)
  * </p>
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class AbstractSolrQueryRequestFactory {
-    
+
     /**
      * Maximal order of the Healpix index.
      */

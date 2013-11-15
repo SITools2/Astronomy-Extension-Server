@@ -18,7 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
-import fr.cnes.sitools.SearchGeometryEngine.Resampling;
+import fr.cnes.sitools.searchgeometryengine.Resampling;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

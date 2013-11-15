@@ -21,7 +21,7 @@ package fr.cnes.sitools.extensions.astro.application.opensearch;
 import fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchBase;
 import cds.moc.HealpixMoc;
 import cds.moc.MocCell;
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.astro.graph.CoordinateDecorator;
 import fr.cnes.sitools.astro.graph.GenericProjection;
 import fr.cnes.sitools.astro.graph.Graph;
@@ -136,7 +136,7 @@ public class MocDescription extends OpenSearchBase {
       } catch (Exception ex) {
         LOG.log(Level.SEVERE, null, ex);
         throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
-      } 
+      }
     }
   }
 

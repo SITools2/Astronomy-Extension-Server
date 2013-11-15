@@ -33,11 +33,11 @@ import java.util.Set;
  * Filters the access by delegating the responsability to an external database
  * <p>
  * A data storage is a directory from the file system that is put online on the web.
- * 
+ *
  * When the administrator configures a data storage, all files in this data storage are
  * available. This extension allows to configure the file to access by delegating
  * the access configuration to a SQL database.<br/>
- * 
+ *
  * To make it works, the database must contain two columns at least :<br/>
  * <ul>
  * <li>one for filename</li>
@@ -73,32 +73,26 @@ import java.util.Set;
  * @enduml
  */
 public class FineGrainedAccessRightPlugin extends FilterModel {
-    
     /**
      * Data source name that contains the table responsibles for the access rights.
      */
     public static final String DATASOURCE = "dataSourceName";
-    
     /**
      * Table name that contains filenameColumn and profilesColumns.
      */
     public static final String TABLE = "tableName";
-    
     /**
      * Filename column.
      */
     public static final String FILENAME = "filenameColumn";
-    
     /**
      * Profiles column.
      */
     public static final String PROFILES = "profilesColumn";
-    
     /**
      * Schema name.
      */
     public static final String SCHEMA = "schema";
-
     /**
      * Empty constructor.
      */
@@ -113,18 +107,16 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
         setFilterClassName(fr.cnes.sitools.extensions.security.FineGrainedAccessRight.class.getName());
         setConfigurationParameters();
     }
-    
     /**
      * Sets the configuration parameters for the administrator.
      */
     private void setConfigurationParameters() {
         final FilterParameter dataSource = new FilterParameter(
-                DATASOURCE, 
+                DATASOURCE,
                 "Data source name where the table that contains access right is located",
                 FilterParameterType.PARAMETER_INTERN);
         dataSource.setValueType("xs:string");
         addParam(dataSource);
-        
         final FilterParameter table = new FilterParameter(
                 TABLE,
                 "Table name that contains the access rights.",

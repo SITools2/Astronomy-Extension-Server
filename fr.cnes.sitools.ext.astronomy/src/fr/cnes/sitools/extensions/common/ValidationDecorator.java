@@ -46,13 +46,12 @@ public abstract class ValidationDecorator extends Validation {
     }
 
     @Override
-    public final void processValidation() {        
+    public final void processValidation() {
         this.orginal.processValidation();
         final StatusValidation currentVal = this.orginal.getStatusValidation();
         final Map<String, String> localError = localValidation();
         if (hasErrorInValidation(localError)) {
             currentVal.addAll(localValidation());
-            
         }
         setStatusValidation(currentVal);
     }
@@ -61,8 +60,8 @@ public abstract class ValidationDecorator extends Validation {
      * Returns the validation of a specific decorator.
      * @return the detected error
      */
-    protected abstract Map<String, String> localValidation();    
-    
+    protected abstract Map<String, String> localValidation();
+
     /**
      * Checks if an error happens during the validation of the specific decorator.
      * @param validation the returned String of the localValidation method

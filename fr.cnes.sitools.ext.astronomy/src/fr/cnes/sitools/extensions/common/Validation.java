@@ -29,22 +29,22 @@ import java.util.Map;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class Validation {
-    
+
     /**
      * Status of the validation.
      */
     private StatusValidation statusValidation = new StatusValidation();
-    
+
     /**
      * Elements to validate.
      */
-    private Map<String, String> map;    
-    
+    private Map<String, String> map;
+
     /**
      * Validates map.
      */
     protected abstract void processValidation();
-    
+
     /**
      * Returns the validation result.
      * @return the validation result
@@ -53,7 +53,7 @@ public abstract class Validation {
         processValidation();
         return this.statusValidation;
     }
-    
+
     /**
      * Returns the current validation status.
      * @return the current validation status
@@ -61,7 +61,7 @@ public abstract class Validation {
     protected final StatusValidation getStatusValidation() {
         return this.statusValidation;
     }
-    
+
     /**
      * Sets the current validation status.
      * @param currentValidation  the current validation status
@@ -84,6 +84,5 @@ public abstract class Validation {
      */
     public final void setMap(final Map<String, String> mapToValidate) {
         this.map = mapToValidate;
-    }       
-    
+    }
 }

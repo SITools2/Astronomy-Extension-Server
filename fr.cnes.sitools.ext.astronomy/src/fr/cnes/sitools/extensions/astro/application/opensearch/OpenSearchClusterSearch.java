@@ -18,7 +18,7 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
 import java.util.ArrayList;

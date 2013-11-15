@@ -18,13 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.SearchGeometryEngine.Cone;
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
-import fr.cnes.sitools.SearchGeometryEngine.GeometryIndex;
-import fr.cnes.sitools.SearchGeometryEngine.Index;
-import fr.cnes.sitools.SearchGeometryEngine.Point;
-import fr.cnes.sitools.SearchGeometryEngine.RingIndex;
-import fr.cnes.sitools.SearchGeometryEngine.Shape;
+import fr.cnes.sitools.searchgeometryengine.Cone;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
+import fr.cnes.sitools.searchgeometryengine.Index;
+import fr.cnes.sitools.searchgeometryengine.Point;
+import fr.cnes.sitools.searchgeometryengine.RingIndex;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
@@ -157,7 +157,7 @@ public class QueryConeSolrRequest extends AbstractSolrQueryRequestFactory {
      * @throws UnsupportedOperationException when NESTED is asked
      */
     private Index getIntersectedHealpixWithShape(Shape shape, Scheme healpixScheme) throws Exception {
-        Index index = GeometryIndex.createIndex(shape, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(healpixScheme.name()));
+        Index index = AbstractGeometryIndex.createIndex(shape, fr.cnes.sitools.searchgeometryengine.Scheme.valueOf(healpixScheme.name()));
         int nbHealpixOrder;
         switch (healpixScheme) {
             case RING:

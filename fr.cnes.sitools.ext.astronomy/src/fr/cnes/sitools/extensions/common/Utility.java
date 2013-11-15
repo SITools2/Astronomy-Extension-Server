@@ -49,7 +49,6 @@ public abstract class Utility {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(Utility.class.getName());
-  
 
   /**
    * Checks if an object is not null.
@@ -59,7 +58,7 @@ public abstract class Utility {
   public static boolean isSet(final Object obj) {
     return (obj == null) ? false : true;
   }
-  
+
   /**
    * Returns the right data type for a specific value.
    *
@@ -67,7 +66,7 @@ public abstract class Utility {
    * @param value value to convert
    * @return the right data type for a specific value
    */
-  public static Object getDataType(final net.ivoa.xml.votable.v1.DataType dataType, final String value) { 
+  public static Object getDataType(final net.ivoa.xml.votable.v1.DataType dataType, final String value) {
     Object response;
     final String valueTrim = value.trim();
     switch (dataType) {
@@ -98,7 +97,7 @@ public abstract class Utility {
 
   /**
    * Returns the right ascension in degree.
-   * 
+   *
    * This parser handles right ascension in degree or in h:m:s
    * @param iterDoc Map that contains the data
    * @param field field to retrieve from the iterdoc
@@ -114,7 +113,7 @@ public abstract class Utility {
     }
     return raValue;
   }
-  
+
   /**
    * Returns the declination in degree.
    *
@@ -215,16 +214,24 @@ public abstract class Utility {
     }
     return null;
   }
-  
-  public static Object array1DTo2D(Object data, int bitpix, int width, int height) {
-      Object obj = null;      
+
+  /**
+   * Converts a Fits data 1D to 2D.
+   * @param data data to convert
+   * @param bitpix bitpix value
+   * @param width number of pixels along X axis
+   * @param height number of pixels along Y axis
+   * @return the fits 2D
+   */
+  public static Object array1DTo2D(final Object data, final int bitpix, final int width, final int height) {      
+      Object obj;
       switch (bitpix) {
           case 8:
-              byte[] dataB = (byte[])data;
+              byte[] dataB = (byte[]) data;
               byte[][] resultB = new byte[height][width];
-              for (int i = 0; i<height; i++) {
-                for (int j=0 ; j<width; j++) {
-                    resultB[i][j] = dataB[i*width+j];
+              for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    resultB[i][j] = dataB[i * width + j];
                 }
               }
               obj = resultB;
@@ -232,9 +239,9 @@ public abstract class Utility {
           case 16:
               short[] dataS = (short[])data;
               short[][] resultS = new short[height][width];
-              for (int i = 0; i<height; i++) {
-                for (int j=0 ; j<width; j++) {
-                    resultS[i][j] = dataS[i*width+j];
+              for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    resultS[i][j] = dataS[i * width + j];
                 }
               }
               obj = resultS;
@@ -242,9 +249,9 @@ public abstract class Utility {
           case 32:
               int[] dataI = (int[])data;
               int[][] resultI = new int[height][width];
-              for (int i = 0; i<height; i++) {
-                for (int j=0 ; j<width; j++) {
-                    resultI[i][j] = dataI[i*width+j];
+              for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    resultI[i][j] = dataI[i * width + j];
                 }
               }
               obj = resultI;
@@ -252,9 +259,9 @@ public abstract class Utility {
           case -32:
               float[] dataF = (float[])data;
               float[][] resultF = new float[height][width];
-              for (int i = 0; i<height; i++) {
-                for (int j=0 ; j<width; j++) {
-                    resultF[i][j] = dataF[i*width+j];
+              for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    resultF[i][j] = dataF[i * width + j];
                 }
               }
               obj = resultF;
@@ -262,19 +269,19 @@ public abstract class Utility {
           case -64:
               double[] dataD = (double[])data;
               double[][] resultD = new double[height][width];
-              for (int i = 0; i<height; i++) {
-                for (int j=0 ; j<width; j++) {
-                    resultD[i][j] = dataD[i*width+j];
+              for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    resultD[i][j] = dataD[i * width + j];
                 }
               }
               obj = resultD;
               break;
           default:
-              break;           
+              throw new IllegalArgumentException("BitPix is not supported");
       }
-      return obj;              
+      return obj;
   }
-  
+
     /**
      * Parse Resource from VOTable.
      * @param resourceIter Resource
@@ -339,5 +346,5 @@ public abstract class Utility {
             }
         }
         return responses;
-    }  
+    }
 }

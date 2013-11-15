@@ -47,7 +47,7 @@ import java.util.regex.PatternSyntaxException;
  * </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
- * 
+ *
  * @startuml
  * title Access to files by matching a pattern in the URL
  * (use a data storage) as (datastorage)

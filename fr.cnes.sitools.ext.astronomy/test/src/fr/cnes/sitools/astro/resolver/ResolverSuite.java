@@ -1,6 +1,6 @@
 /*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ * Copyright 2010-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
  * This file is part of SITools2.
  *
  * This program is free software: you can redistribute it and/or modify

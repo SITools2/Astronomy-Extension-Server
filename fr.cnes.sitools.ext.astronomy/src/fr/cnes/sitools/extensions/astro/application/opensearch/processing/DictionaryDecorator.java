@@ -18,11 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
 
 /**
@@ -30,6 +33,10 @@ import net.ivoa.xml.votable.v1.Field;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class DictionaryDecorator extends VORequestDecorator {
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = Logger.getLogger(DictionaryDecorator.class.getName());    
     /**
      * Dictionary.
      */
@@ -48,7 +55,9 @@ public class DictionaryDecorator extends VORequestDecorator {
     public final Object getOutput() {
         final Object output = super.getOutput();
         final List<Map<Field, String>> model = (List<Map<Field, String>>) output;
-        if (model.isEmpty()) {           
+        if (!Utility.isSet(model)) {
+            LOG.log(Level.SEVERE, "the response from the server is null. This is not possible. Please, check if the server response is well parsed.");
+        } else if (model.isEmpty()) {           
         } else {
             fillDictionary(model.get(0).keySet());
         }

@@ -32,14 +32,13 @@ public class VoDictionary {
    * Unit.
    */
   private String unit;
-  
   /**
    * Constructor.
    */
   public VoDictionary() {
     this(null, null);
   }
-  
+
   /**
    * Constructor.
    * @param descriptionVal description
@@ -47,7 +46,7 @@ public class VoDictionary {
   public VoDictionary(final String descriptionVal) {
     this(descriptionVal, null);
   }
-  
+
   /**
    * Constructor.
    * @param descriptionVal description

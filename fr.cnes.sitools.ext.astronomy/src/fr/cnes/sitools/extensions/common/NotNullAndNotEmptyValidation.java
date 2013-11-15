@@ -34,12 +34,12 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
      * Keyword to test.
      */
     private String keywordToTest = null;
-    
+
     /**
      * Default value.
      */
     private transient String defaultValue = null;
-    
+
     /**
      * Indicates if the keyword is required.
      */
@@ -75,9 +75,9 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
         if (keyword == null || keyword.isEmpty()) {
             throw new IllegalArgumentException("keyword cannot be null or empty");
         }
-        this.keywordToTest = keyword;       
+        this.keywordToTest = keyword;
     }
-    
+
     /**
      * Constructor to check if a specific keyword value is not null and not
      * empty.
@@ -100,8 +100,8 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
             throw new IllegalArgumentException("keyword cannot be null or empty");
         }
         this.defaultValue = defaultKeywordValue;
-    }    
-    
+    }
+
     /**
      * Constructor to check if a specific keyword value is not null and not
      * empty.
@@ -119,16 +119,16 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
     public NotNullAndNotEmptyValidation(final Validation validation, final String keyword, final boolean isRequired) {
         this(validation, keyword);
         this.isRequiredKeyword = isRequired;
-    }    
+    }
 
     @Override
     protected Map<String, String> localValidation() {
-        final Map<String, String> errorKeywords = new HashMap<String, String>();        
+        final Map<String, String> errorKeywords = new HashMap<String, String>();
         if (getKeywordToTest() == null) {
             validateTheWholeMap(errorKeywords);
         } else {
             validateAKeyword(errorKeywords, this.isRequiredKeyword);
-        } 
+        }
         return errorKeywords;
     }
 
@@ -143,7 +143,7 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
             if (value == null || value.isEmpty()) {
                 errorKeywords.put(entry.getKey(), entry.getKey() + " cannot be null or empty");
             }
-        }       
+        }
     }
 
     /**

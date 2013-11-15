@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SpatialGeoValidation extends NumberArrayValidation {
-    
+
     /**
      * Index of the longitude coord in a polygon.
      */
@@ -51,7 +51,7 @@ public class SpatialGeoValidation extends NumberArrayValidation {
      * Last element of the range.
      */
     private static final int MAX = 1;
-    
+
     /**
      * Create a geospatial validation decorator.
      * @param validation validation
@@ -61,7 +61,7 @@ public class SpatialGeoValidation extends NumberArrayValidation {
      * @param raRangeVal RA range validity
      * @param decRangeVal DEC range validity
      */
-    public SpatialGeoValidation(final Validation validation, final String keyword, final int indexLongVal, final int indexLatVal, 
+    public SpatialGeoValidation(final Validation validation, final String keyword, final int indexLongVal, final int indexLatVal,
                                 final double[] raRangeVal, final double[] decRangeVal) {
         super(validation, keyword, ",", 2);
         setIndexLat(indexLatVal);
@@ -72,7 +72,7 @@ public class SpatialGeoValidation extends NumberArrayValidation {
 
     @Override
     protected Map<String, String> localValidation() {
-        final Map<String, String> error = super.localValidation();        
+        final Map<String, String> error = super.localValidation();
         final String value = getMap().get(this.getKeywordToTest());
         final String[] array = value.split(getSplitChar());
         if (error.isEmpty()) {
@@ -81,9 +81,9 @@ public class SpatialGeoValidation extends NumberArrayValidation {
             if (valRa < getRaRange()[MIN] || valRa > getRaRange()[MAX]) {
                 error.put(getKeywordToTest(), "RA (=" + valRa + ") must be in [" + getRaRange()[MIN] + "," + getRaRange()[MAX] + "]");
             }
-            if (valDec < getDecRange()[MIN] || valRa > getDecRange()[MAX]) {
+            if (valDec < getDecRange()[MIN] || valDec > getDecRange()[MAX]) {
                 error.put(getKeywordToTest(), "Dec (=" + valDec + ") must be in [" + getDecRange()[MIN] + "," + getDecRange()[MAX] + "]");
-            }            
+            }
         }
         return error;
     }
@@ -98,10 +98,10 @@ public class SpatialGeoValidation extends NumberArrayValidation {
 
     /**
      * Sets the indexLong.
-     * @param indexLong the indexLong to set
+     * @param indexLongVal the indexLong to set
      */
-    protected final void setIndexLong(final int indexLong) {
-        this.indexLong = indexLong;
+    protected final void setIndexLong(final int indexLongVal) {
+        this.indexLong = indexLongVal;
     }
 
     /**
@@ -146,9 +146,9 @@ public class SpatialGeoValidation extends NumberArrayValidation {
 
     /**
      * Sets the dec range.
-     * @param decRange the decRange to set
+     * @param decRangeVal the decRange to set
      */
-    protected final void setDecRange(final double[] decRange) {
-        this.decRange = decRange;
-    }         
+    protected final void setDecRange(final double[] decRangeVal) {
+        this.decRange = decRangeVal;
+    }
 }

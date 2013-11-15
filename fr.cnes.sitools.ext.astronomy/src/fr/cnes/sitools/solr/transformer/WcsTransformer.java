@@ -18,13 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.transformer;
 
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
-import fr.cnes.sitools.SearchGeometryEngine.GeometryIndex;
-import fr.cnes.sitools.SearchGeometryEngine.Index;
-import fr.cnes.sitools.SearchGeometryEngine.Point;
-import fr.cnes.sitools.SearchGeometryEngine.Polygon;
-import fr.cnes.sitools.SearchGeometryEngine.RingIndex;
-import fr.cnes.sitools.SearchGeometryEngine.Shape;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
+import fr.cnes.sitools.searchgeometryengine.Index;
+import fr.cnes.sitools.searchgeometryengine.Point;
+import fr.cnes.sitools.searchgeometryengine.Polygon;
+import fr.cnes.sitools.searchgeometryengine.RingIndex;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import healpix.core.HealpixIndex;
 import healpix.essentials.RangeSet;
@@ -299,7 +299,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
         skyPoints.add(new Point(point.x, point.y, CoordSystem.EQUATORIAL));
       }
       if (skyPoints.size() == 1) {
-        Index index = GeometryIndex.createIndex(skyPoints.get(0), fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
+        Index index = AbstractGeometryIndex.createIndex(skyPoints.get(0), fr.cnes.sitools.searchgeometryengine.Scheme.valueOf(Scheme.RING.name()));
         for (int order = minOrder; order <= maxOrder; order++) {
           ((RingIndex) index).setOrder(order);
           String pixelNumber = String.valueOf(index.getIndex());
@@ -319,7 +319,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
         }
       } else {
         Shape polygon = new Polygon(skyPoints);
-        Index index = GeometryIndex.createIndex(polygon, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
+        Index index = AbstractGeometryIndex.createIndex(polygon, fr.cnes.sitools.searchgeometryengine.Scheme.valueOf(Scheme.RING.name()));
         for (int order = minOrder; order <= maxOrder; order++) {
           row.put("order" + order, computeAtOrder(order, index));
         }
@@ -342,7 +342,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
         skyPoints.add(new Point(astro.getRaAsDecimal(),astro.getDecAsDecimal(), CoordSystem.GALACTIC));
       }
       if (skyPoints.size() == 1) {
-        Index index = GeometryIndex.createIndex(skyPoints.get(0), fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
+        Index index = AbstractGeometryIndex.createIndex(skyPoints.get(0), fr.cnes.sitools.searchgeometryengine.Scheme.valueOf(Scheme.RING.name()));
         for (int order = minOrder; order <= maxOrder; order++) {
           ((RingIndex) index).setOrder(order);
           String pixelNumber = String.valueOf(index.getIndex());
@@ -362,7 +362,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
         }
       } else {
         Shape polygon = new Polygon(skyPoints);
-        Index index = GeometryIndex.createIndex(polygon, fr.cnes.sitools.SearchGeometryEngine.Scheme.valueOf(Scheme.RING.name()));
+        Index index = AbstractGeometryIndex.createIndex(polygon, fr.cnes.sitools.searchgeometryengine.Scheme.valueOf(Scheme.RING.name()));
         for (int order = minOrder; order <= maxOrder; order++) {
           row.put("order" + order, computeAtOrder(order, index));
         }
@@ -398,7 +398,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
   private List<Long> computeAtOrder(final int order, final Index index) throws Exception {
     ((RingIndex) index).setOrder(order);
     Object obj = index.getIndex();
-    long[] result = GeometryIndex.decodeRangeSet((RangeSet) obj);
+    long[] result = AbstractGeometryIndex.decodeRangeSet((RangeSet) obj);
     switch (scheme) {
       case RING:
         break;

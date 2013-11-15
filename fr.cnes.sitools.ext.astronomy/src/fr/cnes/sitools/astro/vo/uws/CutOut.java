@@ -126,7 +126,7 @@ public class CutOut extends AbstractJobTask {
             errorSumm.setType(ErrorType.FATAL);
             errorSumm.setHasDetail(true);
             setError(errorSumm);
-            setPhase(ExecutionPhase.ERROR);           
+            setPhase(ExecutionPhase.ERROR);
         }
         // TODO : RuntimeException must be handled on UWS framework.
     }
@@ -183,7 +183,7 @@ public class CutOut extends AbstractJobTask {
         } else {
             filenameWithoutExt = filename.substring(slashIndex + 1);
         }
-        return filenameWithoutExt + "." + ext;
+        return filenameWithoutExt + "_cutout." + ext;
     }
 
     /**
@@ -201,7 +201,7 @@ public class CutOut extends AbstractJobTask {
      */
     private void createResults(final List<String> filenameList) {
         final Results uwsResults = new Results();
-        for (final String filename:filenameList) {
+        for (final String filename : filenameList) {
             final ResultReference resultReference = new ResultReference();
             resultReference.setId(filename);
             resultReference.setHref(getStoragePublicUrl() + "/" + getJobTaskId() + "/" + filename);
@@ -209,7 +209,7 @@ public class CutOut extends AbstractJobTask {
         }
         setResults(uwsResults);
     }
-    
+
     @Override
     public final Job getCapabilities() {
         final ObjectFactory objFactory = new ObjectFactory();
@@ -230,7 +230,7 @@ public class CutOut extends AbstractJobTask {
         circle.setLatitude(latitude);
         circle.setLongitude(longitude);
         circle.setRadius(radius);
-        geom.setCircle(circle);        
+        geom.setCircle(circle);
         // Create image where the geometry is applied
         final fr.cnes.sitools.xml.uws.v1.InputsType.Image imageInput = new fr.cnes.sitools.xml.uws.v1.InputsType.Image();
         imageInput.setName("uri");
@@ -240,7 +240,7 @@ public class CutOut extends AbstractJobTask {
         final InputsType inputs = new InputsType();
         inputs.setGeometry(geom);
         inputs.getImage().add(imageInput);
-        // Create output        
+        // Create output
         final OutputsType outputs = new OutputsType();
         Image image = new Image();
         image.setFormat(ImageFormatType.IMAGE_FITS);

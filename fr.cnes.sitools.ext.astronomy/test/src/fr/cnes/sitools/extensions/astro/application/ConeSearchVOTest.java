@@ -18,26 +18,14 @@
  */
 package fr.cnes.sitools.extensions.astro.application;
 
-import fr.cnes.sitools.extensions.astro.resource.*;
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import fr.cnes.sitools.project.model.Project;
-import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 import java.io.IOException;
-import java.io.InputStream;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 /**

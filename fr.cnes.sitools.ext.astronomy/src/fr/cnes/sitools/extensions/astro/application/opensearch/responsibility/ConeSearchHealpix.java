@@ -18,6 +18,7 @@
 package fr.cnes.sitools.extensions.astro.application.opensearch.responsibility;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
@@ -164,7 +165,7 @@ public class ConeSearchHealpix extends AbstractVORequest {
                 astroCoordinates.setCoordinateSystem(fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem.GALACTIC);
                 astroCoordinates.processTo(fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem.EQUATORIAL);
                 LOG.log(Level.FINEST, String.format("Coordinates transformation from galactic to equatorial frame (%s,%s) --> (%s,%s)",
-                        getRightAscension(), getDeclination(), astroCoordinates.getRaAsDecimal(), astroCoordinates.getDecAsDecimal()));                
+                        getRightAscension(), getDeclination(), astroCoordinates.getRaAsDecimal(), astroCoordinates.getDecAsDecimal()));
                 setRightAscension(astroCoordinates.getRaAsDecimal());
                 setDeclination(astroCoordinates.getDecAsDecimal());
                 break;
@@ -207,10 +208,10 @@ public class ConeSearchHealpix extends AbstractVORequest {
                 final ReservedWords ucdWord = ReservedWords.find(field.getUcd());
                 switch(ucdWord) {
                     case POS_EQ_RA_MAIN:
-                        rightAscension = Double.valueOf(column.getValue());
+                        rightAscension = Utility.parseRaVO(record, field);
                         break;
                     case POS_EQ_DEC_MAIN:
-                        declination = Double.valueOf(column.getValue());
+                        declination = Utility.parseDecVO(record, field);
                         break;
                     default:
                         break;

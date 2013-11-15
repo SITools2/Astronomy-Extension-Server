@@ -42,11 +42,11 @@ import org.restlet.security.Role;
 
 /**
  * Filters the access by delegating the responsability to an extrernal database.
- * 
+ *
  * <p>
  * Business class implementing the FineGrainedAccessRight plugin.
  * </p>
- * 
+ *
  * <br/>
  * <img src="../../../../../images/FineGrainedAccessRight.png"/>
  * <br/>
@@ -54,9 +54,9 @@ import org.restlet.security.Role;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  * @startuml
  * FineGrainedAccessRightPlugin o-- FineGrainedAccessRight : attachs
- * 
+ *
  * FineGrainedAccessRight : boolean authorize(final Request request, final Response response)
- * 
+ *
  * FineGrainedAccessRightPlugin : setConfigurationParameters()
  * FineGrainedAccessRightPlugin : Validator<FilterModel> getValidator()
  * @enduml
@@ -67,12 +67,10 @@ public class FineGrainedAccessRight extends Authorizer {
      * Application data model.
      */
     private final transient FilterModel filterModel;
-    
     /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(FineGrainedAccessRight.class.getName());
-    
     /**
      * Constructor.
      * @param context context
@@ -108,7 +106,7 @@ public class FineGrainedAccessRight extends Authorizer {
         StringBuilder prepareSt = new StringBuilder("SELECT count(*) as result FROM " + dsSchema + "\"" + table + "\" WHERE " + filename + " = ? AND ");
         prepareSt = prepareSt.append("( ");
         for (final Iterator<Role> it = roles.iterator(); it.hasNext();) {
-            it.next();            
+            it.next();
             prepareSt = prepareSt.append("? = ANY(").append(profile).append(")");
             if (it.hasNext()) {
                 prepareSt = prepareSt.append(" OR ");
@@ -120,7 +118,7 @@ public class FineGrainedAccessRight extends Authorizer {
 
     /**
      * Returns the filename from the request.
-     * 
+     *
      * <p>
      * The filename is given in the request after the application URI of the data storage.
      * </p>
@@ -129,9 +127,8 @@ public class FineGrainedAccessRight extends Authorizer {
      */
     private String getFilename(final Request request) {
         final String filename = request.getResourceRef().getRemainingPart(true);
-        return filename.substring(1, filename.length()); // remove the "/"        
+        return filename.substring(1, filename.length()); // remove the "/"
     }
-    
     /**
      * Sets the SQL parameters to the prepare statement.
      * @param stmt prepare statement

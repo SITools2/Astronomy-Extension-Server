@@ -28,7 +28,6 @@ import java.util.Set;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class InputsAttributesValidation extends Validation {
-    
     /**
      * Constructs an input validation with a map to validate.
      * @param attributes input to validate
@@ -39,13 +38,13 @@ public class InputsAttributesValidation extends Validation {
         for (Map.Entry<String, Object> entry : entries) {
             mapToTest.put(entry.getKey(), String.valueOf(entry.getValue()));
         }
-        setMap(mapToTest);        
+        setMap(mapToTest);
     }
 
     @Override
-    protected void processValidation() {
+    protected final void processValidation() {
         if (getMap() == null) {
             throw new IllegalArgumentException("the map cannot be null.");
-        }        
-    }    
+        }
+    }
 }

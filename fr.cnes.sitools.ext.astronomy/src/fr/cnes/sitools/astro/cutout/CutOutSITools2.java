@@ -422,7 +422,7 @@ public class CutOutSITools2 implements CutOutInterface {
      * <p>
      * The number of pixels along the Y axis is computed as the angular distance
      * along Y set by the cut area divided by the degree per pixel of the FITS image to cut.
-     * </p> 
+     * </p>
      * @return the number of pixels along the height axis as the result of the cutOut
      */
     private double computeOutputHeight() {

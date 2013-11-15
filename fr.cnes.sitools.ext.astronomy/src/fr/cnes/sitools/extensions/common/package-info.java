@@ -10,7 +10,7 @@
 <img src="../../../../../images/package-info-common.png"/>
 </p>
 @copyright 2011-2013 CNES
-@author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr> 
+@author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
 @startuml package-info-common.png
  scale 2/3
  abstract class Validation

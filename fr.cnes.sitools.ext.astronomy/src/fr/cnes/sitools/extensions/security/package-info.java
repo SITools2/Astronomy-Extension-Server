@@ -1,15 +1,15 @@
 /**
-This package contains the security classes for the data storage. 
+This package contains the security classes for the data storage.
 
  <p>
  A data storage is a directory from the file system that is put online on the web.
-  
+
  When the administrator configures a data storage, all files in this data storage are
  available.<br/><br/>
  The access to a datastorage can be restricted to a specific profile.
- However, only the access to specific extensions and the access to some files 
+ However, only the access to specific extensions and the access to some files
  for some users who are included in the same profile are not possible.
- Thus, the purpose of these extensions is to customize the access to the files 
+ Thus, the purpose of these extensions is to customize the access to the files
  by different ways:
  <ul>
  <li>by checking a pattern in the filename that is requested</li>
