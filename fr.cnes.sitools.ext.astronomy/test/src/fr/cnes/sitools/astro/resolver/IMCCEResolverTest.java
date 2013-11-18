@@ -28,15 +28,12 @@ import static org.junit.Assert.*;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class IMCCEResolverTest {
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of getCoordinates method, of class AbstractNameResolver.
      */
     @Test
-    public void testGetCoordinates() throws Exception {
+    public final void testGetCoordinates() throws Exception {
         System.out.println("getCoordinates");
         AbstractNameResolver imcce = new IMCCESsoResolver("mars","22-03-2013T15:55:00");
         NameResolverResponse response = imcce.getResponse();

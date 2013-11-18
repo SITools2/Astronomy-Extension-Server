@@ -18,8 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
-import fr.cnes.sitools.SearchGeometryEngine.Shape;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import healpix.core.HealpixIndex;
 import healpix.essentials.RangeSet;

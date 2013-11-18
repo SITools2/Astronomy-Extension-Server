@@ -28,16 +28,12 @@ import static org.junit.Assert.*;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class CDSResolverTest {
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of getCoordinates method, of class AbstractNameResolver.
      */
     @Test
-    public void testGetCoordinates() throws Exception {
+    public final void testGetCoordinates() throws Exception {
         System.out.println("getCoordinates");
         AbstractNameResolver cds = new CDSNameResolver("m31", CDSNameResolver.NameResolverService.all);
         NameResolverResponse response = cds.getResponse();
@@ -54,7 +50,7 @@ public class CDSResolverTest {
      * Test of getCreditsName method.
      */
     @Test
-    public void testGetCreditsName() {
+    public final void testGetCreditsName() {
         System.out.println("getCreditsName");
         AbstractNameResolver cds = new CDSNameResolver("m31", CDSNameResolver.NameResolverService.all);
         NameResolverResponse response = cds.getResponse();

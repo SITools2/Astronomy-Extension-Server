@@ -24,15 +24,11 @@ import static org.junit.Assert.*;
  */
 public class NameResolverTest {
 
-  @After
-  public void tearDown() {
-  }
-
   /**
    * Test of getCoordinates method, of class AbstractNameResolver.
    */
   @Test
-  public void testGetCoordinates() throws Exception {
+  public final void testGetCoordinates() throws Exception {
     System.out.println("getCoordinates");
     String objectName = "m31";
     AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);

@@ -9,9 +9,10 @@
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * SITools2 is distributed inputStream the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed inputStream the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with
  * SITools2. If not, see <http://www.gnu.org/licenses/>.
@@ -24,22 +25,13 @@ import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
 import fr.cnes.sitools.extensions.astro.application.opensearch.processing.JsonDataModelDecorator;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.InputsValidation;
-import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
-import fr.cnes.sitools.extensions.common.StatusValidation;
 import fr.cnes.sitools.extensions.common.Utility;
-import fr.cnes.sitools.extensions.common.Validation;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -50,7 +42,6 @@ import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.VOTABLE;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -60,8 +51,6 @@ import org.restlet.ext.wadl.ParameterStyle;
 import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
@@ -91,6 +80,7 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
 
     /**
      * Converts VOTable to GeoJSON.
+     *
      * @return the GeoJSON representation
      * @throws IOException when a problem happens during the conversion
      */
@@ -99,10 +89,10 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
         Representation rep;
         try {
             final Form form = new Form(entity);
-            String result = form.getFirstValue("votable"); 
+            String result = form.getFirstValue("votable");
             final String coordSystem = form.getFirstValue("coordSystem");
             final JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
-            final Unmarshaller unMarshaller = ctx.createUnmarshaller();                       
+            final Unmarshaller unMarshaller = ctx.createUnmarshaller();
             if (result.contains("xmlns")) {
                 result = result.replace("http://www.ivoa.net/xml/VOTable/v1.1", "http://www.ivoa.net/xml/VOTable/v1.2");
             } else {
@@ -111,21 +101,22 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
             final VOTABLE votable = (VOTABLE) unMarshaller.unmarshal(new ByteArrayInputStream(result.getBytes()));
             final List<Resource> resources = votable.getRESOURCE();
             final Resource resource = resources.get(0);
-            final List<Map<Field, String>> response = Utility.parseResource(resource);            
+            final List<Map<Field, String>> response = Utility.parseResource(resource);
             final FeaturesDataModel dataModel = JsonDataModelDecorator.computeJsonDataModel(response, AstroCoordinate.CoordinateSystem.valueOf(coordSystem));
-            rep =  new GeoJsonRepresentation(dataModel.getFeatures());
+            rep = new GeoJsonRepresentation(dataModel.getFeatures());
         } catch (JAXBException ex) {
             Logger.getLogger(Votable2GeoJsonResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
         }
         return rep;
     }
+
     @Override
     public final void sitoolsDescribe() {
         setName("VOTable to GeoJson converter.");
         setDescription("Converts a VOTable to Json");
     }
-    
+
     /**
      * Descibes the GET method in WADL.
      *

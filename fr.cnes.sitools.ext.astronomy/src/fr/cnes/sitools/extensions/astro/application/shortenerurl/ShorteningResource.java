@@ -69,7 +69,7 @@ public class ShorteningResource extends SitoolsParameterizedResource {
      */
     @Post("form")
     public final Representation acceptJob(final Representation entity) throws ResourceException {
-        final Form form = new Form(entity);       
+        final Form form = new Form(entity);
         final Parameter contextParameter = form.getFirst("context");
         checkContextParamExists(contextParameter);
         final String config = contextParameter.getValue();

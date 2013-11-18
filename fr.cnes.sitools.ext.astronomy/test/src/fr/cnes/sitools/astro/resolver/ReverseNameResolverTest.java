@@ -24,16 +24,12 @@ import static org.junit.Assert.*;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ReverseNameResolverTest {
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of getJsonResponse method, of class ReverseNameResolver.
      */
     @Test
-    public void testGetJsonResponse() throws NameResolverException {
+    public final void testGetJsonResponse() throws NameResolverException {
         System.out.println("getJsonResponse");
         ReverseNameResolver instance = new ReverseNameResolver("00:42:44.32 +41:16:07.5", 13, fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem.EQUATORIAL);
         String expResult = "M  31 ";

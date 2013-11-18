@@ -2,7 +2,7 @@
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,25 +20,34 @@ package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.List;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Test of CorotIdResolver object.
- * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
+ *
+ * @author malapert
  */
-public class CorotIdResolverTest {
-
+public class ConstellationNameResolverTest {      
+    
     /**
-     * Test of getCoordinates method, of class CorotIdResolver.
+     * Test of getResponse method, of class ConstellationNameResolver.
      */
     @Test
-    public final void testGetCoordinates() throws Exception {
-        System.out.println("getCoordinates");
-        CorotIdResolver instance = new CorotIdResolver("105290723");             
-        NameResolverResponse response = instance.getResponse();
-        List<AstroCoordinate> result = response.getAstroCoordinates();
-        assertEquals(279.88184, result.get(0).getRaAsDecimal(),0.001);
-        assertEquals(6.4019198, result.get(0).getDecAsDecimal(),0.001);        
+    public final void testGetResponse() {
+        System.out.println("getResponse");
+        ConstellationNameResolver instance = new ConstellationNameResolver("Scorpion");
+        NameResolverResponse expResult = null;
+        NameResolverResponse result = instance.getResponse();
+        assertNotNull(result);
+        assertEquals(1, result.getAstroCoordinates().size());
+        List<AstroCoordinate> results = result.getAstroCoordinates();
+        assertEquals(16.8, results.get(0).getRaAsDecimal(), 0.01);
+        assertEquals(-30, results.get(0).getDecAsDecimal(), 0.01);
+        assertEquals(AstroCoordinate.CoordinateSystem.EQUATORIAL, results.get(0).getCoordinateSystem());
+        assertEquals("SITools2", result.getCredits());
     }
 }
