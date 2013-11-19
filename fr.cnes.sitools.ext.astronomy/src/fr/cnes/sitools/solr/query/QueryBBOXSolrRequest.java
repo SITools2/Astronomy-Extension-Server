@@ -1,31 +1,32 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.searchgeometryengine.Index;
 import fr.cnes.sitools.searchgeometryengine.Point;
 import fr.cnes.sitools.searchgeometryengine.Polygon;
 import fr.cnes.sitools.searchgeometryengine.RingIndex;
 import fr.cnes.sitools.searchgeometryengine.Shape;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.util.Util;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
 
 /**
  * Creates a SOLR request based on a BBOX.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
@@ -68,6 +69,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Creates a BBOX request.
+     *
      * @param solrBaseUrl the SOLR server URL
      * @param queryParametersToProcess Query parameters to process
      * @param coordSystem Coordsystem of the geometry
@@ -77,7 +79,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
         this.solrBaseUrl = solrBaseUrl;
         this.queryParametersToProcess = queryParametersToProcess;
         this.coordSystem = coordSystem;
-        this.healpixScheme = healpixScheme;       
+        this.healpixScheme = healpixScheme;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
         Object obj = null;
         try {
             Index index = getIntersectedHealpixWithShape(shape, this.healpixScheme);
-            obj = index.getIndex();          
+            obj = index.getIndex();
         } catch (Exception ex) {
             Logger.getLogger(QueryBBOXSolrRequest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -112,9 +114,10 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
     protected void removeUserGeometryParameters(Map<String, Object> queryParameters) {
         queryParameters.remove(OpenSearchApplicationPlugin.GeometryShape.BBOX.getShape());
     }
-    
+
     /**
      * Returns the healpix numbers that intersect with the shape
+     *
      * @param shape shape
      * @return healpix number on RING scheme
      * @throws UnsupportedOperationException when NESTED is asked
@@ -122,17 +125,17 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
     private Index getIntersectedHealpixWithShape(Shape shape, Scheme healpixScheme) throws Exception {
         Index index = AbstractGeometryIndex.createIndex(shape, fr.cnes.sitools.searchgeometryengine.Scheme.valueOf(healpixScheme.name()));
         int nbHealpixOrder;
-        switch(healpixScheme) {
+        switch (healpixScheme) {
             case RING:
                 nbHealpixOrder = ((RingIndex) index).getOrder();
-                nbHealpixOrder = (nbHealpixOrder > MAX_ORDER) ? MAX_ORDER : nbHealpixOrder;                
+                nbHealpixOrder = (nbHealpixOrder > MAX_ORDER) ? MAX_ORDER : nbHealpixOrder;
                 ((RingIndex) index).setOrder(nbHealpixOrder);
                 this.setNbOrder(nbHealpixOrder);
                 break;
             case NESTED:
                 throw new UnsupportedOperationException("Not supported yet.");
-                //TODO : faire le buildSQLRequest en fonction de la multi-resolution
-                //break;
+            //TODO : faire le buildSQLRequest en fonction de la multi-resolution
+            //break;
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
         }
@@ -147,6 +150,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Returns the geometry constraint String.
+     *
      * @return the geometry constraint
      */
     @Override
@@ -181,6 +185,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Sets the Healpix object.
+     *
      * @param objHealpixVal the objHealpix to set
      */
     public final void setObjHealpix(final Object objHealpixVal) {
@@ -189,6 +194,7 @@ public class QueryBBOXSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Sets the Healpix order.
+     *
      * @param nbOrderVal the nbOrder to set
      */
     public final void setNbOrder(final int nbOrderVal) {

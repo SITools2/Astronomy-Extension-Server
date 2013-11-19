@@ -1,21 +1,22 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
@@ -28,9 +29,9 @@ import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.common.InputsAttributesValidation;
 import fr.cnes.sitools.extensions.common.InputsValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
@@ -63,17 +64,20 @@ import org.restlet.resource.ResourceException;
 /**
  * Searchs on different name resolvers and returns one or several names.
  *
- * <p> In this current version, there are three name resolver services. The
- * first one is based on CDS for stars and deep object. The second one is based
- * on solar system objects.And the last one is based on Corot <br/>
+ * <p>
+ * In this current version, there are three name resolver services. The first
+ * one is based on CDS for stars and deep object. The second one is based on
+ * solar system objects.And the last one is based on Corot <br/>
  * The cache directive is set to FOREVER for CDS and COROT. For IMMCE, the cache
  * is set to NO_CACHE</p>
  * <p>
- * <pre>
+ * <
+ * pre>
  * Example of requests:
  * - /plugin/nameResolver/mars/GALACTIC?nameResolver=IMCCE : Get Mars coordinates in GALACTIC frame
  * - /plugin/nameResolver/m31/EQUATORIAL?nameResolver=CDS : Get M31 coordinates in EQUATORIAL frame
  * </pre> </p>
+ *
  * @see NameResolverResourcePlugin the plugin
  * @see CDSNameResolver CDS name resolver
  * @see IMCCESsoResolver IMCCE resolver
@@ -122,7 +126,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             this.nameResolver = getParameterValue("nameResolver");
             this.epoch = getParameterValue("epoch");
         }
-        
+
         if (!getRequest().getMethod().equals(Method.OPTIONS)) {
             Validation validationAttributes = new InputsAttributesValidation(getRequestAttributes());
             validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "objectName");
@@ -142,7 +146,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
                 }
             } else {
                 LOG.log(Level.WARNING, "Name resolver service - Wrong parameters");
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Check your input parameters");                
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Check your input parameters");
             }
         }
     }
@@ -237,7 +241,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      * Returns the representation based on SITools2 db response.
      *
      * @return the representation
-     */    
+     */
     private Representation resolveConstellation() {
         final AbstractNameResolver sitools2 = new ConstellationNameResolver(objectName);
         final NameResolverResponse response = sitools2.getResponse();
@@ -258,7 +262,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         } else {
             LOG.log(Level.WARNING, null, response.getError());
             throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
-        }        
+        }
     }
 
     /**
@@ -315,7 +319,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             rep = resolveConstellation();
         } else if (this.nameResolver.equals("ALL")) {
             rep = callChainedResolver();
-        } 
+        }
         if (fileName != null && !"".equals(fileName)) {
             final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
             disp.setFilename(fileName);

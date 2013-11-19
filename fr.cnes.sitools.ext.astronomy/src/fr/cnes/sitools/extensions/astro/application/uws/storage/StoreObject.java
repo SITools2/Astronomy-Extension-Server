@@ -25,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
-import java.nio.channels.FileLockInterruptionException;
 import java.util.logging.Logger;
 import org.restlet.data.Status;
 import org.restlet.resource.Post;

@@ -18,20 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
-import fr.cnes.sitools.searchgeometryengine.MocIndex;
-import fr.cnes.sitools.searchgeometryengine.Cone;
-import fr.cnes.sitools.searchgeometryengine.Point;
-import fr.cnes.sitools.searchgeometryengine.Shape;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import cds.moc.HealpixMoc;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

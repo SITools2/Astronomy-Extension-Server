@@ -1,26 +1,27 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.solr.query;
 
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.searchgeometryengine.Shape;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import healpix.core.HealpixIndex;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
 
 /**
  * Creates a SOLR request based on a Healpix number.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
@@ -64,6 +65,7 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Constructs a new SOLR string based on Healpix number.
+     *
      * @param solrBaseUrl URL of the SOLR server
      * @param queryParameters User query parameters
      * @param coordSystem Coordinate system
@@ -107,20 +109,20 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
         switch (this.healpixScheme) {
             case RING:
                 for (int i = 0; i < healpixStringArray.length; i++) {
-                    healpixLongArray[i] = Long.valueOf(healpixStringArray[i]);
-                }
+                healpixLongArray[i] = Long.valueOf(healpixStringArray[i]);
+            }
                 healpix = Arrays.asList(healpixLongArray);
                 updateNest2Ring(nbOrder, healpix);
                 break;
             case NESTED:
                 for (int i = 0; i < healpixStringArray.length; i++) {
-                    healpixLongArray[i] = Long.valueOf(healpixStringArray[i]);
-                }
-                healpix = Arrays.asList(healpixLongArray);                
+                healpixLongArray[i] = Long.valueOf(healpixStringArray[i]);
+            }
+                healpix = Arrays.asList(healpixLongArray);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Healpix Scheme");
-        }      
+        }
         setNbOrder(nbHealpixOrder);
         setObjHealpix(healpix);
     }
@@ -164,6 +166,7 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Sets the Healpix object.
+     *
      * @param objHealpixVal the objHealpix to set
      */
     public final void setObjHealpix(final Object objHealpixVal) {
@@ -172,6 +175,7 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Sets the Healpix order.
+     *
      * @param nbOrderVal the nbOrder to set
      */
     public final void setNbOrder(final int nbOrderVal) {
@@ -180,6 +184,7 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Transform Healpix from NESTED to RING.
+     *
      * @param nbOrder Healpix order
      * @param healpix Healpix
      * @throws RuntimeException Error when transforming NESTED to RING

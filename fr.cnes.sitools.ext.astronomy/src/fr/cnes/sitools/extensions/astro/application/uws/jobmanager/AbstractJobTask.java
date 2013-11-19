@@ -1,21 +1,23 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed inputStream the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed inputStream the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application.uws.jobmanager;
 
 import fr.cnes.sitools.common.SitoolsSettings;
@@ -97,7 +99,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      */
     public static AbstractJobTask create(final UwsApplicationPlugin app, final String jobTaskId, final Representation entity) throws UniversalWorkerException {
         AbstractJobTask jobTask = null;
-        try {            
+        try {
             jobTask = (AbstractJobTask) Class.forName(app.getJobTaskImplementation()).newInstance();
             jobTask.doInit(app, jobTaskId, entity);
         } catch (InstantiationException ex) {
@@ -106,7 +108,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
             throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (ClassNotFoundException ex) {
             throw new UniversalWorkerException(Status.SERVER_ERROR_INTERNAL, ex);
-        } 
+        }
         return jobTask;
     }
 
@@ -119,7 +121,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      * @throws UniversalWorkerException
      */
     protected final void doInit(final UwsApplicationPlugin app, final String jobTaskId, final Representation entity) throws UniversalWorkerException {
-        final long delay = Long.parseLong(UwsApplicationPlugin.APP_DESTRUCTION_DELAY);        
+        final long delay = Long.parseLong(UwsApplicationPlugin.APP_DESTRUCTION_DELAY);
         final SitoolsSettings settings = (SitoolsSettings) app.getContext().getAttributes().get(ContextAttributes.SETTINGS);
         final String uwsAttachUrl = app.getAttachementRef();
         this.storagePublic = settings.getPublicHostDomain() + uwsAttachUrl;
@@ -157,9 +159,11 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      * <p>
      * The entity must be either MULTIPART_FORM_DATA or APPLICATION_WWW_FORM.
      * </p>
+     *
      * @param entity representation that is sent by the user
      * @return the form
-     * @throws UniversalWorkerException This style of representation is not implemented
+     * @throws UniversalWorkerException This style of representation is not
+     * implemented
      */
     private Form computeForm(final Representation entity) throws UniversalWorkerException {
         Form form = null;
@@ -192,7 +196,8 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
      *
      * @param form www-form-urlencoded form
      * @return Returns the ExecutionPhase
-     * @throws UniversalWorkerException only RUN value is accepted for PHASE keyword
+     * @throws UniversalWorkerException only RUN value is accepted for PHASE
+     * keyword
      */
     private ExecutionPhase setPhaseAtCreation(final Form form) throws UniversalWorkerException {
         if (Util.isSet(form) && Util.isSet(form.getFirst(Constants.PHASE))) {
@@ -245,12 +250,14 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
 
     /**
      * Returns the get capabilities of the runnable job.
+     *
      * @return the get capabilities of the runnable job
      */
     public abstract Job getCapabilities();
 
     /**
      * Returns the get Capabilities of the Runnable job.
+     *
      * @param className runnable class
      * @return the get Capabilities of the Runnable job
      */
@@ -359,7 +366,8 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
     }
 
     /**
-     * Sets the job phase and update the JobTaskManager when mustBeUpdated = true.
+     * Sets the job phase and update the JobTaskManager when mustBeUpdated =
+     * true.
      *
      * @param phaseVal Phase to set
      * @param mustBeUpdated true calls the JobTaskManager otherwise false
@@ -761,18 +769,31 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
 
     protected final void moveFile(final File fileToCopy) throws UniversalWorkerException {
         final String uri = "riap://application/jobCache/" + jobTaskId + "/" + fileToCopy.getName();
-        final ClientResource client = new ClientResource(uri);        
+        final ClientResource client = new ClientResource(uri);
         client.put(new OutputRepresentation(MediaType.ALL) {
 
             @Override
-            public void write(final OutputStream outputStream) throws IOException {
-                final FileInputStream fileOs = new FileInputStream(fileToCopy);
-                int c;
-                while ((c = fileOs.read()) != -1) {
-                    outputStream.write(c);
+            public void write(final OutputStream outputStream) {
+                FileInputStream fileOs = null;
+                try {
+                    fileOs = new FileInputStream(fileToCopy);
+                    int c;
+                    while ((c = fileOs.read()) != -1) {
+                        outputStream.write(c);
+                    }
+                    fileOs.close();
+                    outputStream.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    try {
+                        if (fileOs != null) {
+                            fileOs.close();
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-                fileOs.close();
-                outputStream.close();
             }
         });
         if (!client.getStatus().isSuccess()) {
@@ -794,7 +815,8 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
 
     /**
      * Creates user space.
-     * @throws UniversalWorkerException 
+     *
+     * @throws UniversalWorkerException
      */
     private void createUserSpace() throws UniversalWorkerException {
         final String uri = "riap://application/jobCache";
@@ -818,6 +840,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
 
     /**
      * Returns the storage public URL.
+     *
      * @return the storage public URL
      */
     protected final String getStoragePublicUrl() {
@@ -826,6 +849,7 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
 
     /**
      * Returns the storage path job.
+     *
      * @return the storage path job
      */
     protected final String getStoragePathJob() {

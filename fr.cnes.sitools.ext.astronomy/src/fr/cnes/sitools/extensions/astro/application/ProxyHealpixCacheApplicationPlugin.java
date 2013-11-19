@@ -19,14 +19,6 @@
  */
 package fr.cnes.sitools.extensions.astro.application;
 
-import java.util.Set;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.routing.Redirector;
-import org.restlet.routing.Router;
-import org.restlet.routing.Template;
 import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
@@ -37,10 +29,18 @@ import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import fr.cnes.sitools.proxy.RedirectorProxy;
 import java.util.HashSet;
+import java.util.Set;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.representation.Representation;
+import org.restlet.routing.Redirector;
+import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 
 /**
  * Plugin Application for Healpix server to redirect client request to target

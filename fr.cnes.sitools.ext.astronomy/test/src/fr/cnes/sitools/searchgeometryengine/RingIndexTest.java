@@ -18,16 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
-import fr.cnes.sitools.searchgeometryengine.Point;
-import fr.cnes.sitools.searchgeometryengine.Shape;
-import fr.cnes.sitools.searchgeometryengine.RingIndex;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

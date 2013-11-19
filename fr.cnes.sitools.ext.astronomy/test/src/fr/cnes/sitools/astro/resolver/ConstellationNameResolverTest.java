@@ -20,12 +20,9 @@ package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

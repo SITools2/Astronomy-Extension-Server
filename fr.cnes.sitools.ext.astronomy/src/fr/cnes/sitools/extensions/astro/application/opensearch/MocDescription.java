@@ -18,10 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchBase;
 import cds.moc.HealpixMoc;
 import cds.moc.MocCell;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.astro.graph.CoordinateDecorator;
 import fr.cnes.sitools.astro.graph.GenericProjection;
 import fr.cnes.sitools.astro.graph.Graph;
@@ -29,6 +27,7 @@ import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation
 import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
 import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
 import fr.cnes.sitools.astro.representation.PngRepresentation;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
 import java.awt.Color;

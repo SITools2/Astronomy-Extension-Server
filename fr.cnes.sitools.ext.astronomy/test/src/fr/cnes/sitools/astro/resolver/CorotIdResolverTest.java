@@ -20,8 +20,8 @@ package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.List;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Test of CorotIdResolver object.

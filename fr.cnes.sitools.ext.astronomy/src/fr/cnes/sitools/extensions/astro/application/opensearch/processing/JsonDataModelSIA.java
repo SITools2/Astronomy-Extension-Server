@@ -1,21 +1,22 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
 import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
@@ -39,10 +40,13 @@ import jsky.coords.WCSTransform;
 import net.ivoa.xml.votable.v1.Field;
 
 /**
- * Tansforms the server response in a data model that allowsto use the GeoJsonRepresentation.
+ * Tansforms the server response in a data model that allowsto use the
+ * GeoJsonRepresentation.
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvider {
+
     /**
      * Coordinate system.
      */
@@ -135,6 +139,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
 
     /**
      * Constructor.
+     *
      * @param responseVal server response
      * @param coordinateSystemVal coordinate system
      */
@@ -233,13 +238,13 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
             switch (getCoordinateSystem()) {
                 case GALACTIC:
                     for (int i = 0; i < polygonCelest.length; i = i + 2) {
-                        astroCoordinates.setRaAsDecimal(polygonCelest[i]);
-                        astroCoordinates.setDecAsDecimal(polygonCelest[i + 1]);
-                        astroCoordinates.setCoordinateSystem(AstroCoordinate.CoordinateSystem.EQUATORIAL);
-                        astroCoordinates.processTo(AstroCoordinate.CoordinateSystem.GALACTIC);
-                        polygonCelest[i] = astroCoordinates.getRaAsDecimal();
-                        polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();
-                    }
+                    astroCoordinates.setRaAsDecimal(polygonCelest[i]);
+                    astroCoordinates.setDecAsDecimal(polygonCelest[i + 1]);
+                    astroCoordinates.setCoordinateSystem(AstroCoordinate.CoordinateSystem.EQUATORIAL);
+                    astroCoordinates.processTo(AstroCoordinate.CoordinateSystem.GALACTIC);
+                    polygonCelest[i] = astroCoordinates.getRaAsDecimal();
+                    polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();
+                }
                     break;
                 case EQUATORIAL:
                     break;
@@ -298,6 +303,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
     private boolean hasPreview(final String format, final String url) {
         return (format != null && url != null && SimpleImageAccessProtocolLibrary.GraphicBrowser.contains(format));
     }
+
     /**
      * Computes for each corner of the camera its position in the sky.
      *
@@ -319,8 +325,10 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
         }
         return polygonCelest;
     }
+
     /**
      * Returns the coordinate system.
+     *
      * @return the coordinateSystem
      */
     protected final AstroCoordinate.CoordinateSystem getCoordinateSystem() {
@@ -329,6 +337,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
 
     /**
      * Sets the coordinate system.
+     *
      * @param coordinateSystemVal the coordinateSystem to set
      */
     protected final void setCoordinateSystem(final AstroCoordinate.CoordinateSystem coordinateSystemVal) {
@@ -337,6 +346,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
 
     /**
      * Returns the response.
+     *
      * @return the response
      */
     protected final List<Map<Field, String>> getResponse() {
@@ -345,6 +355,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
 
     /**
      * Sets the response.
+     *
      * @param responseVal the response to set
      */
     protected final void setResponse(final List<Map<Field, String>> responseVal) {

@@ -18,8 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.common.application.ContextAttributes;
 import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import static fr.cnes.sitools.extensions.astro.application.uws.common.Util.isSet;

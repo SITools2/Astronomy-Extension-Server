@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
 
 /**
- * JSON data model for Cone search
+ * JSON data model for Cone search.
  * @author malapert
  */
 class JsonDataModelCs extends AbstractJsonDataModel {

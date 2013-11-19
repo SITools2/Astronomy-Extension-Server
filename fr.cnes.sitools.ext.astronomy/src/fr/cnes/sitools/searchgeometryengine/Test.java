@@ -18,23 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
-import cds.moc.HealpixMoc;
-import fr.cnes.sitools.astro.graph.GenericProjection;
-import fr.cnes.sitools.astro.graph.Graph;
-import fr.cnes.sitools.astro.graph.HealpixFootprint;
-import fr.cnes.sitools.astro.graph.HealpixGridDecorator;
-import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation;
-import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
-import fr.cnes.sitools.astro.graph.Utility;
-import healpix.core.HealpixIndex;
-import healpix.core.base.set.LongList;
-import healpix.essentials.HealpixMapDouble;
-import healpix.essentials.RangeSet;
-import healpix.essentials.Scheme;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>

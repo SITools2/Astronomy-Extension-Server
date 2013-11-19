@@ -1,21 +1,22 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.extensions.security;
 
 import fr.cnes.sitools.common.SitoolsSettings;
@@ -50,12 +51,13 @@ import org.restlet.security.Role;
  * <br/>
  * <img src="../../../../../images/FineGrainedAccessRight.png"/>
  * <br/>
+ *
  * @see FineGrainedAccessRightPlugin The plugin that calls this class.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
- * @startuml
- * FineGrainedAccessRightPlugin o-- FineGrainedAccessRight : attachs
+ * @startuml FineGrainedAccessRightPlugin o-- FineGrainedAccessRight : attachs
  *
- * FineGrainedAccessRight : boolean authorize(final Request request, final Response response)
+ * FineGrainedAccessRight : boolean authorize(final Request request, final
+ * Response response)
  *
  * FineGrainedAccessRightPlugin : setConfigurationParameters()
  * FineGrainedAccessRightPlugin : Validator<FilterModel> getValidator()
@@ -71,8 +73,10 @@ public class FineGrainedAccessRight extends Authorizer {
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(FineGrainedAccessRight.class.getName());
+
     /**
      * Constructor.
+     *
      * @param context context
      */
     public FineGrainedAccessRight(final Context context) {
@@ -81,6 +85,7 @@ public class FineGrainedAccessRight extends Authorizer {
 
     /**
      * Returns the data source ID from its name.
+     *
      * @param dsName data source name
      * @param context context
      * @return the data source ID
@@ -94,6 +99,7 @@ public class FineGrainedAccessRight extends Authorizer {
 
     /**
      * Returns the prepare statement String.
+     *
      * @param table table name
      * @param schema schema name if PostgreSQL is used
      * @param filename filename column
@@ -120,8 +126,10 @@ public class FineGrainedAccessRight extends Authorizer {
      * Returns the filename from the request.
      *
      * <p>
-     * The filename is given in the request after the application URI of the data storage.
+     * The filename is given in the request after the application URI of the
+     * data storage.
      * </p>
+     *
      * @param request request
      * @return the filename
      */
@@ -129,8 +137,10 @@ public class FineGrainedAccessRight extends Authorizer {
         final String filename = request.getResourceRef().getRemainingPart(true);
         return filename.substring(1, filename.length()); // remove the "/"
     }
+
     /**
      * Sets the SQL parameters to the prepare statement.
+     *
      * @param stmt prepare statement
      * @param roles roles of the user
      * @param filename filename

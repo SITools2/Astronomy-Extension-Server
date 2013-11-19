@@ -1,21 +1,22 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.searchgeometryengine;
 
 import healpix.core.HealpixIndex;
@@ -37,6 +38,7 @@ import healpix.essentials.RangeSet;
  * </code>
  * </pre>
  * </p>
+ *
  * @author Jean-Christophe Malapert
  */
 public abstract class AbstractGeometryIndex {
@@ -49,7 +51,8 @@ public abstract class AbstractGeometryIndex {
     /**
      * Creates the index with a shape and a Healpix Scheme.
      *
-     * <p>A Runtime Exception is raised when a problem happens</p>
+     * <p>
+     * A Runtime Exception is raised when a problem happens</p>
      *
      * @param shape shape
      * @param scheme Healpix Scheme
@@ -68,6 +71,7 @@ public abstract class AbstractGeometryIndex {
 
             case NESTED:
                 index = new NestedIndex(shape);
+                break;
 
             default:
                 throw new RuntimeException("Cannot manage this scheme");
@@ -77,6 +81,7 @@ public abstract class AbstractGeometryIndex {
 
     /**
      * Returns the pixel resolution at a given order.
+     *
      * @param order Healpix order
      * @return the pixel resolution in arcsec
      */
@@ -86,6 +91,7 @@ public abstract class AbstractGeometryIndex {
 
     /**
      * Transforms a RangetSet in an array of long.
+     *
      * @param rangeSet rangeSet
      * @return an array of pixels at a given order
      */

@@ -43,7 +43,7 @@ import org.restlet.routing.Template;
 /**
  * Plugin to access to the Simple Cone Search service.
  *
- * <p> Application for AstroGlobWeb Module. This application queries a Simple Cone Search service by the use of (Healpix,order) parameters
+ * <p> Application for MIZAR Module. This application queries a Simple Cone Search service by the use of (Healpix,order) parameters
  * and it returns a GeoJson file.<br/> The cache directive is set to FOREVER </p>
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
@@ -303,7 +303,7 @@ public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
         final ApplicationPluginParameter imagePng = params.get("imagePng");
         try {
           if (!imagePng.getValue().isEmpty()) {
-            final URL url = new URL(imagePng.getValue());
+            new URL(imagePng.getValue());
           }
         } catch (MalformedURLException ex) {
           final ConstraintViolation constraint = new ConstraintViolation();
@@ -315,7 +315,7 @@ public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
         final ApplicationPluginParameter imageIcon = params.get("imageIcon");
         try {
           if (!imageIcon.getValue().isEmpty()) {
-            final URL url = new URL(imageIcon.getValue());
+            new URL(imageIcon.getValue());
           }
         } catch (MalformedURLException ex) {
           final ConstraintViolation constraint = new ConstraintViolation();

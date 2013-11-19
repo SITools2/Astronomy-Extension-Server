@@ -15,22 +15,12 @@
  */
 package fr.cnes.sitools.searchgeometryengine;
 
-import fr.cnes.sitools.searchgeometryengine.Polygon;
-import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
-import fr.cnes.sitools.searchgeometryengine.Point;
-import fr.cnes.sitools.searchgeometryengine.RingIndex;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import fr.cnes.sitools.searchgeometryengine.Index;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

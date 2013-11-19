@@ -1,7 +1,5 @@
 package edu.jhu.pha.sdss.fits;
 
-import java.util.Arrays;
-
 
 /**
    <PRE>

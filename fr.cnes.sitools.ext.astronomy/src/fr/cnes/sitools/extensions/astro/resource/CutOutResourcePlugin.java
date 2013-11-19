@@ -159,7 +159,6 @@ public class CutOutResourcePlugin extends ResourceModel {
         final Map<String, ResourceParameter> params = item.getParametersMap();
         final ResourceParameter fitsFile = params.get(FITS_FILE_INPUT_PARAMETER);
         final ResourceParameter hduNumber = params.get(HDU_NUMBER_INPUT_PARAMETER);
-        final ResourceParameter dataStorage = params.get(DATA_STORAGE_NAME_PARAMETER);
 
         if (!isSet(fitsFile.getValue())) {
           final ConstraintViolation constraint = new ConstraintViolation();

@@ -19,10 +19,10 @@
 
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
 import java.util.ArrayList;

@@ -19,9 +19,9 @@
 package fr.cnes.sitools.astro.resolver;
 
 import java.util.List;
-import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Test of CDS name resolver.

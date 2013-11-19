@@ -39,7 +39,7 @@ import org.restlet.routing.Template;
 /**
  * Plugin to access to observations from SOLR server.
  *
- * <p> Application for AstroGlobWeb Module. This application queries a SOLR
+ * <p> Application for MIZAR Module. This application queries a SOLR
  * server by the use of (Healpix,order) parameters and it returns a GeoJson
  * file. </p>.
  *
@@ -430,7 +430,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
                 final ApplicationPluginParameter imagePng = params.get("imagePng");
                 try {
                     if (!imagePng.getValue().isEmpty()) {
-                        final URL url = new URL(imagePng.getValue());
+                        new URL(imagePng.getValue());
                     }
                 } catch (MalformedURLException ex) {
                     final ConstraintViolation constraint = new ConstraintViolation();
@@ -442,7 +442,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
                 final ApplicationPluginParameter imageIcon = params.get("imageIcon");
                 try {
                     if (!imageIcon.getValue().isEmpty()) {
-                        final URL url = new URL(imageIcon.getValue());
+                        new URL(imageIcon.getValue());
                     }
                 } catch (MalformedURLException ex) {
                     final ConstraintViolation constraint = new ConstraintViolation();

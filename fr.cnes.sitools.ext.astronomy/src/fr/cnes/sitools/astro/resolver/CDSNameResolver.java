@@ -18,9 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
+import fr.cnes.sitools.astro.resolver.cds.Resolver;
 import fr.cnes.sitools.astro.resolver.cds.Sesame;
 import fr.cnes.sitools.astro.resolver.cds.Target;
-import fr.cnes.sitools.astro.resolver.cds.Resolver;
 import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

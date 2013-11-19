@@ -21,8 +21,6 @@ package cds.moc.examples;
 
 import java.io.BufferedInputStream;
 import java.net.URL;
-import java.nio.channels.spi.AbstractSelectableChannel;
-import java.util.Iterator;
 
 import cds.moc.Healpix;
 import cds.moc.HealpixMoc;

@@ -265,7 +265,9 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
    * @return Sr
    */
   public final double[] getSize() {
-    return this.size;
+      final double[] copySize = new double[this.size.length];
+      System.arraycopy(this.size, 0, copySize, 0, this.size.length);
+      return copySize;
   }
 
   /**

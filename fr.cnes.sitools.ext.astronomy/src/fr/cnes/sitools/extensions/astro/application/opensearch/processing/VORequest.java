@@ -19,9 +19,9 @@
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
 import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.RetrieveFromCache;
-import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.ConeSearchHealpix;
 import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.AbstractVORequest;
+import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.ConeSearchHealpix;
+import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.RetrieveFromCache;
 import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.SiaHealpix;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.CacheStrategy;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;

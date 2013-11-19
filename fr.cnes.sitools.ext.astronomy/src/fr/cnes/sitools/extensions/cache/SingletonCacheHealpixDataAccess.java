@@ -1,4 +1,5 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -14,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
+ * ***************************************************************************
+ */
 package fr.cnes.sitools.extensions.cache;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
@@ -35,18 +37,16 @@ import org.restlet.resource.ClientResource;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SingletonCacheHealpixDataAccess {
+
     /**
      * Cache configuration.
      */
     private final transient Representation cacheConf = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/ehcache.xml").get();
     /**
-     * Lock.
-     */
-    private static final String LOCK = "LOCK";
-    /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(SingletonCacheHealpixDataAccess.class.getName());
+
     /**
      * Constructs a cache.
      */
@@ -86,13 +86,16 @@ public class SingletonCacheHealpixDataAccess {
     public static String generateId(final String applicationId, final String order, final String healpixNumber, final AstroCoordinate.CoordinateSystem coordinateSystem) {
         return String.format("%s#%s#%s#%s", applicationId, order, healpixNumber, coordinateSystem.name());
     }
+
     /**
-     * Returns the cache according to the <code>cacheStrategy</code>.
+     * Returns the cache according to the
+     * <code>cacheStrategy</code>.
+     *
+     * @param cacheManager cache manager
      * @param cacheStrategy the cache strategy
      * @return the cache
      */
-    private static Cache getCache(final CacheStrategy cacheStrategy) {
-        final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
+    public static Cache getCache(final CacheManager cacheManager, final CacheStrategy cacheStrategy) {
         Cache cache;
         switch (cacheStrategy) {
             case CACHE_ENABLE_SOLAR_OBJECT:
@@ -111,56 +114,60 @@ public class SingletonCacheHealpixDataAccess {
         }
         return cache;
     }
+
     /**
-     * Returns <code>true</code> when the key <code>cacheID</code> is in
-     *  the cache otherwise <code>false</code>.
+     * Returns
+     * <code>true</code> when the key
+     * <code>cacheID</code> is in the cache otherwise
+     * <code>false</code>.
+     *
      * @param cacheID key to check
      * @param cacheStrategy cache strategy
-     * @return Returns <code>true</code> when the key <code>cacheID</code> is
-     *  in the cache otherwise <code>false</code>
+     * @return Returns <code>true</code> when the key <code>cacheID</code> is in
+     * the cache otherwise <code>false</code>
      */
-    public static boolean isKeyInCache(final String cacheID, final CacheStrategy cacheStrategy) {
-        synchronized (LOCK) {
-            boolean result;
-            if (Utility.isSet(cacheStrategy)) {
-                final Cache cache = getCache(cacheStrategy);
-                result = cache.isKeyInCache(cacheID);
-            } else {
-                result = false;
-            }
-            return result;
+    public static boolean isKeyInCache(final Cache cache, final String cacheID, final CacheStrategy cacheStrategy) {
+        boolean result;
+        if (Utility.isSet(cacheStrategy)) {
+            result = cache.isKeyInCache(cacheID);
+        } else {
+            result = false;
         }
+        return result;
     }
+
     /**
      * Returns the stored value from the cache.
+     *
+     * @param cache cache
      * @param cacheID ID to extract from the cache
      * @param cacheStrategy cache strategy
      * @return the stored value from the cache
      */
-    public static Object getFromCache(final String cacheID, final CacheStrategy cacheStrategy) {
+    public static Object getFromCache(final Cache cache, final String cacheID, final CacheStrategy cacheStrategy) {
         LOG.log(Level.FINER, "cacheID: {0} - strategy:{1}", new Object[]{cacheID, cacheStrategy.getName()});
-        synchronized (LOCK) {
-           final Cache cache = getCache(cacheStrategy);
-           return cache.get(cacheID).getObjectValue();
-        }
+        return cache.get(cacheID).getObjectValue();
     }
+
     /**
-     * Inserts the <code>valueToStore</code> in cache.
+     * Inserts the
+     * <code>valueToStore</code> in cache.
+     *
+     * @param cache cache
      * @param cacheID ID of the key in the cache.
      * @param cacheStrategy cache strategy
      * @param valueToStore value to store in the the cache
      */
-    public static void putInCache(final String cacheID, final CacheStrategy cacheStrategy, final Object valueToStore) {
-         synchronized (LOCK) {
-            final Cache cache = getCache(cacheStrategy);
-            final Element element = new Element(cacheID, valueToStore);
-            cache.put(element);
-         }
+    public static void putInCache(final Cache cache, final String cacheID, final CacheStrategy cacheStrategy, final Object valueToStore) {
+        final Element element = new Element(cacheID, valueToStore);
+        cache.put(element);
     }
+
     /**
      * Cache strategy.
      */
     public enum CacheStrategy {
+
         /**
          * Cache for static objects.
          */
@@ -177,15 +184,19 @@ public class SingletonCacheHealpixDataAccess {
          * Cache name.
          */
         private final String name;
+
         /**
          * Constructs a cache strategy.
+         *
          * @param nameVal cache name.
          */
         CacheStrategy(final String nameVal) {
             this.name = nameVal;
         }
+
         /**
          * Returns the cache name to use.
+         *
          * @return the cache name to use
          */
         public final String getName() {

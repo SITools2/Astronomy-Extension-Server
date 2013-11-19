@@ -12,7 +12,6 @@ import java.io.*;
 import java.util.Properties;
 import javax.swing.JComponent;
 import java.awt.Toolkit;
-import java.net.URL;
 
 /**
  * Simple class to save and reload user preferences.  Preferences in

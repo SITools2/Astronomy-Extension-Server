@@ -22,9 +22,10 @@ import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 

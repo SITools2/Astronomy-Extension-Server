@@ -1,4 +1,5 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -14,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
+ * ***************************************************************************
+ */
 package fr.cnes.sitools.extensions.cache;
 
 import java.io.IOException;
@@ -65,10 +67,7 @@ public class SingletonCacheShortnerURL {
      * Cache configuration.
      */
     private final transient Representation cacheConf = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/ehcache.xml").get();
-    /**
-     * Lock.
-     */
-    private static final String LOCK = "LOCK";
+
     /**
      * Constructsthe singleton.
      */
@@ -84,7 +83,7 @@ public class SingletonCacheShortnerURL {
      * Creates the cache.
      */
     public static void create() {
-        final SingletonCacheShortnerURL singletonCacheShortnerUrl = new SingletonCacheShortnerURL();
+        new SingletonCacheShortnerURL();
     }
 
     /**
@@ -105,10 +104,13 @@ public class SingletonCacheShortnerURL {
         final Random rand = new Random();
         return rand.nextInt(NUMBER_URLS + 1);
     }
+
     /**
      * Converts the input to the base.
+     *
      * @param input Identifier to convert
-     * @param baseChars the base that is used for the conversion (alphanumeric or alphanumeric_alt)
+     * @param baseChars the base that is used for the conversion (alphanumeric
+     * or alphanumeric_alt)
      * @return the input that is converted to the base
      */
     private static String toBase(final long input, final String baseChars) {
@@ -125,6 +127,7 @@ public class SingletonCacheShortnerURL {
 
     /**
      * The inverse algorithm of toBase.
+     *
      * @param input shortener id to convert to number
      * @param baseChars the base that is used
      * @return the shortener value that is converted to a number
@@ -143,52 +146,52 @@ public class SingletonCacheShortnerURL {
 
     /**
      * Stores a config and gets a shortening Id.
+     *
      * @param config config to store
      * @return a shortening Id
      */
     public static final String putConfig(final String config) {
-        synchronized (LOCK) {
-            int configId;
-            final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
-            final Cache cache = cacheMgt.getCache(CACHE_NAME);
-            do {
-                configId = generateId();
-            } while (cache.isKeyInCache(configId));
-            cache.put(new Element(configId, new ConfigCache(config)));
-            return toBase(configId, ALPHANUMERICALT);
-        }
+        int configId;
+        final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
+        final Cache cache = cacheMgt.getCache(CACHE_NAME);
+        do {
+            configId = generateId();
+        } while (cache.isKeyInCache(configId));
+        cache.put(new Element(configId, new ConfigCache(config)));
+        return toBase(configId, ALPHANUMERICALT);
     }
 
     /**
      * Returns an configCache from its shortening ID.
+     *
      * @param shorteningId
      * <p>
-     * Raise an IllegalArgumentException when <code>shorteningId</code> is not in the cache
+     * Raise an IllegalArgumentException when <code>shorteningId</code> is not
+     * in the cache
      * </p>
      * @return an URL
      */
     public static final String getConfig(final String shorteningId) {
-        synchronized (LOCK) {
-            String result;
-            final int storeId = fromBase(shorteningId, ALPHANUMERICALT);
-            final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
-            final Cache cache = cacheMgt.getCache(CACHE_NAME);
-            if (cache.isKeyInCache(storeId)) {
-                final ConfigCache configCache = (ConfigCache) cache.get(storeId).getObjectValue();
-                result = configCache.getConfig();
-                configCache.setNbClicks(configCache.getNbClicks() + 1);
-                cache.put(new Element(storeId, configCache));
-            } else {
-                throw new IllegalArgumentException("Cannot find the record in the cache");
-            }
-            return result;
+        String result;
+        final int storeId = fromBase(shorteningId, ALPHANUMERICALT);
+        final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
+        final Cache cache = cacheMgt.getCache(CACHE_NAME);
+        if (cache.isKeyInCache(storeId)) {
+            final ConfigCache configCache = (ConfigCache) cache.get(storeId).getObjectValue();
+            result = configCache.getConfig();
+            configCache.setNbClicks(configCache.getNbClicks() + 1);
+            cache.put(new Element(storeId, configCache));
+        } else {
+            throw new IllegalArgumentException("Cannot find the record in the cache");
         }
+        return result;
     }
 
     /**
      * Creates cache of the MIZAR config and also about its number of access.
      */
     private static class ConfigCache implements Serializable {
+
         /**
          * Serial version.
          */
@@ -204,15 +207,18 @@ public class SingletonCacheShortnerURL {
 
         /**
          * Constructor.
+         *
          * @param configVal URL
          */
         public ConfigCache(final String configVal) {
-          this(configVal, 0);
+            this(configVal, 0);
         }
+
         /**
          * Constructor.
+         *
          * @param configVal URL
-         * @param nbClicksVal  number of clicks that has been done on this URL.
+         * @param nbClicksVal number of clicks that has been done on this URL.
          */
         public ConfigCache(final String configVal, final int nbClicksVal) {
             setConfig(configVal);
@@ -221,13 +227,16 @@ public class SingletonCacheShortnerURL {
 
         /**
          * Sets the config.
+         *
          * @param configVal config
          */
         private void setConfig(final String configVal) {
             this.config = configVal;
         }
+
         /**
          * Returns the config.
+         *
          * @return the config
          */
         public final String getConfig() {
@@ -236,6 +245,7 @@ public class SingletonCacheShortnerURL {
 
         /**
          * Return the number of clicks.
+         *
          * @return the nbClicks
          */
         public final int getNbClicks() {
@@ -244,6 +254,7 @@ public class SingletonCacheShortnerURL {
 
         /**
          * Sets the number of clicks.
+         *
          * @param nbClicksVal the nbClicks to set
          */
         public final void setNbClicks(final int nbClicksVal) {

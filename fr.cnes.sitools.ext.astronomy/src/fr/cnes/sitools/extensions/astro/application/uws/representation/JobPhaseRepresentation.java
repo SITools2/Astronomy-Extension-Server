@@ -21,7 +21,6 @@ package fr.cnes.sitools.extensions.astro.application.uws.representation;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import net.ivoa.xml.uws.v1.ExecutionPhase;
 import org.restlet.resource.ResourceException;
 
 /**

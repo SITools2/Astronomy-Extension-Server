@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
 
 /**
  * Retrieves an element from the cache based on the cacheID.
@@ -98,9 +100,11 @@ public class RetrieveFromCache extends AbstractVORequest {
                                                                           String.valueOf(getOrder()),
                                                                           String.valueOf(getHealpix()),
                                                                           getCoordinateSystem());
-        LOG.log(Level.FINEST, "CacheID:", cacheID);        
-        if (isKeyInCache(cacheID, getCacheControl())) {
-            final List<Map<Field, String>> responseInCache = (List<Map<Field, String>>) getFromCache(cacheID, getCacheControl());
+        LOG.log(Level.FINEST, "CacheID:", cacheID);
+        final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
+        final Cache cache = SingletonCacheHealpixDataAccess.getCache(cacheManager, getCacheControl());
+        if (isKeyInCache(cache, cacheID, getCacheControl())) {
+            final List<Map<Field, String>> responseInCache = (List<Map<Field, String>>) getFromCache(cache, cacheID, getCacheControl());
             responseCache = responseInCache;
         } else if (getSuccessor() == null) {
             responseCache = null;

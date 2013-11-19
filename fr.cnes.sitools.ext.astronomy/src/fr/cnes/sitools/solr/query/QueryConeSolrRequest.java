@@ -1,31 +1,32 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
+ */
 package fr.cnes.sitools.solr.query;
 
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
+import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
 import fr.cnes.sitools.searchgeometryengine.Cone;
 import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
 import fr.cnes.sitools.searchgeometryengine.Index;
 import fr.cnes.sitools.searchgeometryengine.Point;
 import fr.cnes.sitools.searchgeometryengine.RingIndex;
 import fr.cnes.sitools.searchgeometryengine.Shape;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.logging.Logger;
 
 /**
  * Creates a SOLR request based on a Cone.
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class QueryConeSolrRequest extends AbstractSolrQueryRequestFactory {
@@ -67,6 +68,7 @@ public class QueryConeSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Constructs a new Solr string based on a cone.
+     *
      * @param solrBaseUrl URL of the SOLR server
      * @param queryParameters User query parameters
      * @param coordSystem Coordinate system
@@ -147,11 +149,12 @@ public class QueryConeSolrRequest extends AbstractSolrQueryRequestFactory {
             }
             //constraint = String.format("(%s)", constraint);
         }
-        return constraint;  
+        return constraint;
     }
 
     /**
      * Returns the healpix numbers that intersect with the shape.
+     *
      * @param shape shape
      * @return healpix number on RING scheme
      * @throws UnsupportedOperationException when NESTED is asked
@@ -179,6 +182,7 @@ public class QueryConeSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Sets a Healpix object.
+     *
      * @param objHealpixVal the objHealpix to set
      */
     public final void setObjHealpix(final Object objHealpixVal) {
@@ -187,6 +191,7 @@ public class QueryConeSolrRequest extends AbstractSolrQueryRequestFactory {
 
     /**
      * Sets the Healpix order.
+     *
      * @param nbOrderVal the nbOrder to set
      */
     public final void setNbOrder(final int nbOrderVal) {
