@@ -62,7 +62,7 @@ public class SingletonCacheHealpixDataAccess {
      * Creates the cache.
      */
     public static void create() {
-        final SingletonCacheHealpixDataAccess singletonCacheHealpixDataAccess = new SingletonCacheHealpixDataAccess();
+        new SingletonCacheHealpixDataAccess();
     }
 
     /**

@@ -44,7 +44,7 @@ import org.restlet.resource.ResourceException;
  * Provides a dictionary for open search services that use Virtual Observatory.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
-public class OpenSearchVODico extends SitoolsParameterizedResource {  
+public class OpenSearchVODico extends SitoolsParameterizedResource {
   /**
    * VO dictionary.
    */
@@ -74,18 +74,17 @@ public class OpenSearchVODico extends SitoolsParameterizedResource {
     }
     final VoDictionary voDico = this.dico.get(this.name);
     String output;
-    if (voDico.getDescription() != null && voDico.getUnit() != null) {
+    if (Utility.isSet(voDico.getDescription()) && Utility.isSet(voDico.getUnit())) {
       output = String.format("%s - unit: %s", voDico.getDescription(), voDico.getUnit());
-    } else if (voDico.getDescription() != null && voDico.getUnit() == null) {
+    } else if (Utility.isSet(voDico.getDescription())) {
       output = String.format("%s", voDico.getDescription());
-    } else if (voDico.getUnit() != null) {
+    } else if (Utility.isSet(voDico.getUnit())) {
       output = String.format("unit: %s", voDico.getUnit());
     } else {
       output = "No definition found";
     }
-    Representation rep = new StringRepresentation(output, MediaType.TEXT_PLAIN);
-    rep = useCacheBrowser(rep, cacheIsEnabled());
-    return rep;
+    final Representation rep = new StringRepresentation(output, MediaType.TEXT_PLAIN);
+    return useCacheBrowser(rep, cacheIsEnabled());
   }
   /**
    * Returns the representation with cache directives cache parameter is set to enable.
@@ -95,11 +94,13 @@ public class OpenSearchVODico extends SitoolsParameterizedResource {
    * @return the representation with the cache directive when the cache is enabled
    */
   private Representation useCacheBrowser(final Representation rep, final boolean isEnabled) {
-    Representation cachedRepresentation = rep;
+    Representation cachedRepresentation;
     if (isEnabled) {
       final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
       getResponse().setCacheDirectives(cache.getCacheDirectives());
       cachedRepresentation = cache.getRepresentation();
+    } else {
+        cachedRepresentation = rep;
     }
     return cachedRepresentation;
   }

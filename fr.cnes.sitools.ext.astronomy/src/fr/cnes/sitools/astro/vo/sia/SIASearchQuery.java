@@ -22,25 +22,15 @@ import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
-import net.ivoa.xml.votable.v1.Info;
-import net.ivoa.xml.votable.v1.Param;
 import net.ivoa.xml.votable.v1.Resource;
-import net.ivoa.xml.votable.v1.Table;
-import net.ivoa.xml.votable.v1.TableData;
-import net.ivoa.xml.votable.v1.Td;
-import net.ivoa.xml.votable.v1.Tr;
 import net.ivoa.xml.votable.v1.VOTABLE;
 import org.restlet.data.Method;
 import org.restlet.resource.ClientResource;
@@ -58,7 +48,7 @@ public class SIASearchQuery {
   /**
    * URL of the WS.
    */
-    private transient String url;
+    private final transient String url;
 
     /**
      * Create a SIA search query.

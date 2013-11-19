@@ -168,7 +168,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       dataModel.put("sqlColAlias", columnList);
 
       // Complete data model with data
-      final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();     
+      final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();
       final ConverterChained converterChained = datasetApp.getConverterChained();
       final TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
       ((DatabaseRequestModel) rows).setSize(count);
@@ -181,7 +181,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
         databaseRequest.close();
       } catch (SitoolsException ex1) {
           LOG.log(Level.FINER, null, ex1);
-      } finally {        
+      } finally {
         setVotableError(infos, "Query", "Error in query", "Error in input query: " + ex.getMessage());
         if (!infos.isEmpty()) {
           this.dataModel.put("infos", infos);
@@ -397,7 +397,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       field.setType(type);
       field.setXtype(xtype);
       field.setArraysize(arraysize);
-      AnyTEXT anyText = new AnyTEXT();
+      final AnyTEXT anyText = new AnyTEXT();
       anyText.getContent().add(descriptionValue);
       field.setDESCRIPTION(anyText);
       fieldList.add(field);

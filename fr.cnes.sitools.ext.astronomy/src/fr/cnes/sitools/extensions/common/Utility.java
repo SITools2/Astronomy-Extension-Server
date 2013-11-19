@@ -223,7 +223,7 @@ public abstract class Utility {
    * @param height number of pixels along Y axis
    * @return the fits 2D
    */
-  public static Object array1DTo2D(final Object data, final int bitpix, final int width, final int height) {      
+  public static Object array1DTo2D(final Object data, final int bitpix, final int width, final int height) {
       Object obj;
       switch (bitpix) {
           case 8:
@@ -295,12 +295,13 @@ public abstract class Utility {
                 throw new IllegalArgumentException(info.getValue());
             }
         }
-        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
+        final List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         final List<Object> objects = resourceIter.getLINKAndTABLEOrRESOURCE();
         for (Object objectIter : objects) {
             if (objectIter instanceof Table) {
                 final Table table = (Table) objectIter;
-                responses = parseTable(table);
+                responses.addAll(parseTable(table));
+                break;
             }
         }
         return responses;
@@ -312,7 +313,7 @@ public abstract class Utility {
      */
     private static List<Map<Field, String>> parseTable(final Table table) {
         int nbFields = 0;
-        List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
+        final List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();
         final List<JAXBElement<?>> currentTable = table.getContent();
         for (JAXBElement<?> currentTableIter : currentTable) {

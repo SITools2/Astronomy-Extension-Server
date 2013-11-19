@@ -146,6 +146,7 @@ public class PutInCacheIfNotDecorator extends VORequestDecorator {
     @Override
     public final Object getOutput() {
         final Object result = super.getOutput();
+        SingletonCacheHealpixDataAccess.getInstance();
         final String cacheID = SingletonCacheHealpixDataAccess.generateId(getApplicationID(), String.valueOf(getOrder()), String.valueOf(getHealpix()), getCoordinateSystem());
         if (Utility.isSet(result) && Utility.isSet(getCacheControl()) && !SingletonCacheHealpixDataAccess.isKeyInCache(cacheID, getCacheControl())) {
             SingletonCacheHealpixDataAccess.putInCache(cacheID, getCacheControl(), result);

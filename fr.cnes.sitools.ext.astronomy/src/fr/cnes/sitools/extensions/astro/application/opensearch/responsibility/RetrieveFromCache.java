@@ -98,7 +98,7 @@ public class RetrieveFromCache extends AbstractVORequest {
                                                                           String.valueOf(getOrder()),
                                                                           String.valueOf(getHealpix()),
                                                                           getCoordinateSystem());
-        LOG.log(Level.FINEST, "CacheID:", cacheID);
+        LOG.log(Level.FINEST, "CacheID:", cacheID);        
         if (isKeyInCache(cacheID, getCacheControl())) {
             final List<Map<Field, String>> responseInCache = (List<Map<Field, String>>) getFromCache(cacheID, getCacheControl());
             responseCache = responseInCache;
