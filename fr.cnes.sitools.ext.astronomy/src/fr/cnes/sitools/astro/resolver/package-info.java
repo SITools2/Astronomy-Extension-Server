@@ -57,7 +57,7 @@ features=[{<br/>
 }]<br/>
 }<br/>
 </pre>
-@copyright 2011-2013 CNES
+@copyright 2010-2013 CNES
 @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
 @startuml Resolver.png
 abstract class AbstractNameResolver {
