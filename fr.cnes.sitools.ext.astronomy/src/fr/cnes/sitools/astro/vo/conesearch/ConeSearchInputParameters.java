@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.dataset.DataSetApplication;
@@ -136,18 +139,18 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
         this.rightAscension = Double.valueOf(input.get(ConeSearchProtocolLibrary.RA));
         this.declination = Double.valueOf(input.get(ConeSearchProtocolLibrary.DEC));
         this.radius = Double.valueOf(input.get(ConeSearchProtocolLibrary.SR));
-        this.verb = Integer.valueOf(input.get(ConeSearchProtocolLibrary.VERB));        
-    } else {       
+        this.verb = Integer.valueOf(input.get(ConeSearchProtocolLibrary.VERB));
+    } else {
         final Map<String, String> errors = status.getMessages();
-        final Set<Entry<String, String>> entries = errors.entrySet();        
+        final Set<Entry<String, String>> entries = errors.entrySet();
         for (Entry<String, String> entry : entries) {
             final Info info = new Info();
             info.setID(entry.getKey());
             info.setName("Error in " + entry.getKey());
             info.setValueAttribute("Error in input " + entry.getKey() + ": " + entry.getValue());
             infos.add(info);
-            LOG.log(Level.FINEST, "{0}: {1}", new Object[]{entry.getKey(), entry.getValue()});            
-        }        
+            LOG.log(Level.FINEST, "{0}: {1}", new Object[]{entry.getKey(), entry.getValue()});
+        }
     }
     if (!infos.isEmpty()) {
       this.dataModel.put("infos", infos);

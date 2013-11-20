@@ -1,0 +1,132 @@
+<ApplicationPluginModel>
+  <id>37a59c78-cedf-4456-a410-356a1cbdb03c</id>
+  <name>VO OpenSearch Application</name>
+  <description>This application allows to configure an open search application based on a Cone Search Protocol or Simple Image Access Protocol.</description>
+  <className>fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin</className>
+  <classVersion>1.0</classVersion>
+  <classAuthor>J-C Malapert</classAuthor>
+  <classOwner>CNES</classOwner>
+  <parametersMap>
+    <entry>
+      <string>tags</string>
+      <ApplicationPluginParameter>
+        <name>tags</name>
+        <description>Contains a set of words that are used as keywords to identify and categorize this search content. Tags must be a single word and are delimited by the space character.</description>
+        <value></value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>protocol</string>
+      <ApplicationPluginParameter>
+        <name>protocol</name>
+        <description>Set the service protocol</description>
+        <value>SIMPLE_IMAGE_ACCESS_PROTOCOL</value>
+        <valueType>xs:enum[DETECT_AUTOMATICALLY,CONE_SEARCH_PROTOCOL,SIMPLE_IMAGE_ACCESS_PROTOCOL]</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>serviceURL</string>
+      <ApplicationPluginParameter>
+        <name>serviceURL</name>
+        <description>URL of the VO service</description>
+        <value>http://archives.esac.esa.int/hst/hst-vo/hla_sia?REQUEST=queryData&amp;</value>
+        <valueType>String</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>imagePng</string>
+      <ApplicationPluginParameter>
+        <name>imagePng</name>
+        <description>Contains a URL that identifies the location of an image that can be used in association with this search content.</description>
+        <value></value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>mocdescribe</string>
+      <ApplicationPluginParameter>
+        <name>mocdescribe</name>
+        <description>MOC URL</description>
+        <value></value>
+        <valueType>String</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>contact</string>
+      <ApplicationPluginParameter>
+        <name>contact</name>
+        <description>Contains an email address at which the maintener of the description document can be reached.</description>
+        <value></value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>category</string>
+      <ApplicationPluginParameter>
+        <name>category</name>
+        <description></description>
+        <value>user</value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>description</string>
+      <ApplicationPluginParameter>
+        <name>description</name>
+        <description>Contains a human-readable text description of the search engine.</description>
+        <value>SITools2 connector providing an open search capability</value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>imageIcon</string>
+      <ApplicationPluginParameter>
+        <name>imageIcon</name>
+        <description>Contains a URL that identifies the location of an image that can be used in association with this search content.</description>
+        <value></value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>syndicationRight</string>
+      <ApplicationPluginParameter>
+        <name>syndicationRight</name>
+        <description>Contains a value that indicates the degree to which the search result provided by this search engine can be queried, displayed, and redistributed.</description>
+        <value>open</value>
+        <valueType>xs:enum[open, closed]</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>longName</string>
+      <ApplicationPluginParameter>
+        <name>longName</name>
+        <description>Contains an extended human-readable title that identifies the search engine.</description>
+        <value></value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>shortName</string>
+      <ApplicationPluginParameter>
+        <name>shortName</name>
+        <description>Contains a brief human-readable title that identifies this search engine</description>
+        <value>SITools2 search</value>
+        <valueType>xs:string</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+    <entry>
+      <string>cacheable</string>
+      <ApplicationPluginParameter>
+        <name>cacheable</name>
+        <description>Set to true when the result can be cached</description>
+        <value>True</value>
+        <valueType>xs:enum[True,False]</valueType>
+      </ApplicationPluginParameter>
+    </entry>
+  </parametersMap>
+  <label>Sia</label>
+  <urlAttach>/sia</urlAttach>
+  <status>ACTIVE</status>
+  <category>USER_DYNAMIC</category>
+</ApplicationPluginModel>

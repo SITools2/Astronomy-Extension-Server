@@ -19,9 +19,6 @@ limitations under the License.
  */
 package com.jhlabs.map.proj;
 
-import java.awt.geom.*;
-import com.jhlabs.map.*;
-
 public class ModStereoProjection extends Projection {
 //
 //	private final static int MAX_ITER = 10;

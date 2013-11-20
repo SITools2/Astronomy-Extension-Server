@@ -1,16 +1,21 @@
-/******************************************************************************
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
- *******************************************************************************/
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 
 package fr.cnes.sitools.astro.representation;
 
@@ -28,7 +33,7 @@ import org.restlet.resource.ClientResource;
 
 /**
  * Creates an openSearch Description representation based on both a template and a data model.
- * 
+ *
  * <p>
  * Data model must have the following structure :
  * <pre>
@@ -47,7 +52,7 @@ import org.restlet.resource.ClientResource;
  *    |__ mocdescribe (optional)
  *    |__ dicodescribe (optional)
  *    |__ referenceSystem (required)
- * </pre> 
+ * </pre>
  * </p>
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
@@ -57,21 +62,25 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(OpenSearchDescriptionRepresentation.class.getName());
-  
   /**
    * Default Template file that is used for the representation.
    */
   public static final String DEFAULT_TEMPLATE = "openSearchDescription.ftl";
-  
   /**
    * Data model for the GeoJson representation.
    */
-  private final transient Map dataModel;
+  private Map dataModel;
   /**
    * Template file.
    */
-  private final transient String ftl;
+  private String ftl;
 
+  /**
+   * Empty constructor.
+   */
+  protected OpenSearchDescriptionRepresentation() {
+    super(MediaType.TEXT_XML);
+  }
   /**
    * Creates an OpenSearch description representation with a template and a data model as parameters.
    *
@@ -80,18 +89,17 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
    */
   public OpenSearchDescriptionRepresentation(final Map dataModelVal, final String ftlVal) {
     super(MediaType.TEXT_XML);
-    this.dataModel = dataModelVal;
-    this.ftl = ftlVal;
+    setDataModel(dataModelVal);
+    setFtl(ftlVal);
   }
-  
   /**
    * Creates an OpenSearch description representation with a data model and the default template file.
    *
-   * @param dataModelVal the data model  
+   * @param dataModelVal the data model
    */
   public OpenSearchDescriptionRepresentation(final Map dataModelVal) {
     this(dataModelVal, DEFAULT_TEMPLATE);
-  }  
+  }
 
   /**
    * Writes the representation.
@@ -102,10 +110,42 @@ public class OpenSearchDescriptionRepresentation extends OutputRepresentation {
   @Override
   public final void write(final OutputStream out) throws IOException {
         final Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
-                + ftl).get();
-        final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, dataModel, getMediaType());
-        LOG.log(Level.FINEST, ftl, tpl);
+                + getFtl()).get();
+        final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, getDataModel(), getMediaType());
+        LOG.log(Level.FINEST, getFtl(), tpl);
         out.write(tpl.getText().getBytes());
         out.flush();
   }
+
+    /**
+     * Returns the data model.
+     * @return the dataModel
+     */
+    protected final Map getDataModel() {
+        return dataModel;
+    }
+
+    /**
+     * Sets the data model.
+     * @param dataModelVal the dataModel to set
+     */
+    protected final void setDataModel(final Map dataModelVal) {
+        this.dataModel = dataModelVal;
+    }
+
+    /**
+     * Returns the template filename.
+     * @return the ftl
+     */
+    protected final String getFtl() {
+        return ftl;
+    }
+
+    /**
+     * Sets the template filename.
+     * @param ftlVal the ftl to set
+     */
+    protected final void setFtl(final String ftlVal) {
+        this.ftl = ftlVal;
+    }
 }

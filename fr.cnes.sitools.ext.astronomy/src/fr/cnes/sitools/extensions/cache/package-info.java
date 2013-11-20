@@ -13,7 +13,7 @@ Two cache systems are available:
 <code>
 // Creates a daily cache for the representation "rep"
 final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.DAILY, rep);
-// Sets the cache directive in the response 
+// Sets the cache directive in the response
 getResponse().setCacheDirectives(cache.getCacheDirectives());
 // Gets the cache representation
 cachedRepresentation = cache.getRepresentation();
@@ -24,7 +24,7 @@ cachedRepresentation = cache.getRepresentation();
 <code>
 // Creates a unique cache ID based on applicationID-order-Healpix
 final String cacheID = SingletonCacheHealpixDataAccess.generateId(applicationID, String.valueOf(userParameters.getOrder()), String.valueOf(userParameters.getHealpix()));
-// Retrieves the instance from the singleton 
+// Retrieves the instance from the singleton
 final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
 // Retrieves a cache configuration, which is defined in ehcache.xml
 final Cache cache = cacheManager.getCache("VOservices");
@@ -38,6 +38,6 @@ response = (List<Map<Field, String>>) cache.get(cacheID).getObjectValue();
 </pre>
 </p>
 @copyright 2011-2013 CNES
-@author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr> 
+@author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 package fr.cnes.sitools.extensions.cache;

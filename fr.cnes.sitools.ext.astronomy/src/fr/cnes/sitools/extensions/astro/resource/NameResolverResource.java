@@ -1,20 +1,21 @@
-/*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+/**
+ * *****************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
- * This file is a part of SITools2
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This file is part of SITools2.
  *
- * This program inputStream distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
  */
 package fr.cnes.sitools.extensions.astro.resource;
 
@@ -26,16 +27,17 @@ import fr.cnes.sitools.astro.resolver.CorotIdResolver;
 import fr.cnes.sitools.astro.resolver.IMCCESsoResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import fr.cnes.sitools.extensions.common.InputsAttributesValidation;
 import fr.cnes.sitools.extensions.common.InputsValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
 import fr.cnes.sitools.extensions.common.Validation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -62,17 +64,20 @@ import org.restlet.resource.ResourceException;
 /**
  * Searchs on different name resolvers and returns one or several names.
  *
- * <p> In this current version, there are three name resolver services. The
- * first one is based on CDS for stars and deep object. The second one is based
- * on solar system objects.And the last one is based on Corot <br/>
+ * <p>
+ * In this current version, there are three name resolver services. The first
+ * one is based on CDS for stars and deep object. The second one is based on
+ * solar system objects.And the last one is based on Corot <br/>
  * The cache directive is set to FOREVER for CDS and COROT. For IMMCE, the cache
  * is set to NO_CACHE</p>
  * <p>
- * <pre>
+ * <
+ * pre>
  * Example of requests:
  * - /plugin/nameResolver/mars/GALACTIC?nameResolver=IMCCE : Get Mars coordinates in GALACTIC frame
  * - /plugin/nameResolver/m31/EQUATORIAL?nameResolver=CDS : Get M31 coordinates in EQUATORIAL frame
  * </pre> </p>
+ *
  * @see NameResolverResourcePlugin the plugin
  * @see CDSNameResolver CDS name resolver
  * @see IMCCESsoResolver IMCCE resolver
@@ -121,12 +126,12 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             this.nameResolver = getParameterValue("nameResolver");
             this.epoch = getParameterValue("epoch");
         }
-        
+
         if (!getRequest().getMethod().equals(Method.OPTIONS)) {
             Validation validationAttributes = new InputsAttributesValidation(getRequestAttributes());
             validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "objectName");
             validationAttributes = new NotNullAndNotEmptyValidation(validationAttributes, "coordSystem");
-            StatusValidation status = validationAttributes.validate();
+            final StatusValidation status = validationAttributes.validate();
             if (status.isValid()) {
                 final Map<String, String> requestInputs = validationAttributes.getMap();
                 this.objectName = Reference.decode(requestInputs.get("objectName"));
@@ -141,7 +146,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
                 }
             } else {
                 LOG.log(Level.WARNING, "Name resolver service - Wrong parameters");
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Check your input parameters");                
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Check your input parameters");
             }
         }
     }
@@ -236,7 +241,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      * Returns the representation based on SITools2 db response.
      *
      * @return the representation
-     */    
+     */
     private Representation resolveConstellation() {
         final AbstractNameResolver sitools2 = new ConstellationNameResolver(objectName);
         final NameResolverResponse response = sitools2.getResponse();
@@ -257,7 +262,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         } else {
             LOG.log(Level.WARNING, null, response.getError());
             throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
-        }        
+        }
     }
 
     /**
@@ -314,7 +319,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
             rep = resolveConstellation();
         } else if (this.nameResolver.equals("ALL")) {
             rep = callChainedResolver();
-        } 
+        }
         if (fileName != null && !"".equals(fileName)) {
             final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);
             disp.setFilename(fileName);
@@ -333,38 +338,24 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      * @throws JSONException
      */
     private Map getDataModel(final String name, final List<AstroCoordinate> astroList, final String referenceFrame) {
-
-        final Map dataModel = new HashMap();
-        final ArrayList<Map> features = new ArrayList<Map>();
+        final FeaturesDataModel features = new FeaturesDataModel();
         int index = 0;
-        final Map feature = new HashMap();
-        final Map properties = new HashMap();
-        final Map geometry = new HashMap();
         for (AstroCoordinate astroIter : astroList) {
-            feature.clear();
-            properties.clear();
-            geometry.clear();
-            properties.put("identifier", name.concat(String.valueOf(index++)));
-            properties.put("credits", name);
+            final FeatureDataModel feature = new FeatureDataModel();
+            feature.setIdentifier(name.concat(String.valueOf(index++)));
+            feature.addProperty("credits", name);
             final Map<String, String> metadata = astroIter.getMatadata();
             final Set<Entry<String, String>> entries = metadata.entrySet();
             final Iterator<Entry<String, String>> iter = entries.iterator();
             while (iter.hasNext()) {
                 final Entry<String, String> entry = iter.next();
-                properties.put(entry.getKey(), entry.getValue());
+                feature.addProperty(entry.getKey(), entry.getValue());
             }
-            feature.put("properties", properties);
-            geometry.put("type", "Point");
-            geometry.put("coordinates", String.format("[%s,%s]", astroIter.getRaAsDecimal(), astroIter.getDecAsDecimal()));
-            geometry.put("crs", (CoordinateSystem.EQUATORIAL.name().equals(referenceFrame))
-                        ? CoordinateSystem.EQUATORIAL.name().concat(".ICRS")
-                        : CoordinateSystem.GALACTIC.name());
-            feature.put("geometry", geometry);
-            features.add(feature);
+            feature.createCrs(CoordinateSystem.valueOf(referenceFrame).getCrs());
+            feature.createGeometry(String.format("[%s,%s]", astroIter.getRaAsDecimal(), astroIter.getDecAsDecimal()), "Point");
+            features.addFeature(feature);
         }
-        dataModel.put("features", features);
-        dataModel.put("totalResults", features.size());
-        return dataModel;
+        return features.getFeatures();
     }
 
     /**

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -25,7 +23,7 @@ import org.junit.runners.Suite;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({fr.cnes.sitools.SearchGeometryEngine.SearchGeometryEngineSuite.class, 
+@Suite.SuiteClasses({fr.cnes.sitools.searchgeometryengine.SearchGeometryEngineSuite.class, 
   fr.cnes.sitools.astro.resolver.ResolverSuite.class, fr.cnes.sitools.extensions.astro.application.ApplicationSuite.class,
   fr.cnes.sitools.extensions.astro.resource.ResourceSuite.class})
 public class RootSuite {    

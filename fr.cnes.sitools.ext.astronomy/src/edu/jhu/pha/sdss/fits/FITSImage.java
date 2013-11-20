@@ -1,10 +1,24 @@
 package edu.jhu.pha.sdss.fits;
 
-import java.awt.*;
 
+import fr.cnes.sitools.astro.image.ZScale;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferUShort;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 
-import java.awt.image.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,9 +65,15 @@ public class FITSImage extends BufferedImage {
     public FITSImage(Fits fits, int scaleMethod)
             throws FitsException, DataTypeNotSupportedException,
             NoImageDataFoundException, IOException {
-        this(fits, createScaledImages(fits), scaleMethod);
+        this(fits, createScaledImages(fits, 1, 0), scaleMethod);
     }
 
+    public FITSImage(Fits fits, int hduImageNumber, int deepLevel, int scaleMethod)
+            throws FitsException, DataTypeNotSupportedException,
+            NoImageDataFoundException, IOException {
+        this(fits, createScaledImages(fits, hduImageNumber, deepLevel), scaleMethod);
+    }
+    
     public FITSImage(Fits fits, BufferedImage[] scaledImages, int scaleMethod)
             throws FitsException, DataTypeNotSupportedException,
             NoImageDataFoundException, IOException {
@@ -67,7 +87,7 @@ public class FITSImage extends BufferedImage {
 
         ImageHDU imageHDU = (ImageHDU) scaledImages[0].getProperty("imageHDU");
         if (imageHDU == null || !(imageHDU instanceof ImageHDU)) {
-            imageHDU = findFirstImageHDU(fits);
+            imageHDU = findImageHDU(fits, 1);
         }
         setImageHDU(imageHDU);
 
@@ -199,7 +219,7 @@ public class FITSImage extends BufferedImage {
             _min = min;
             _max = max;
             _sigma = sigma;
-            setScaledImages(createScaledImages(getImageHDU(), getHistogram(),
+            setScaledImages(createScaledImages(getImageHDU(), getImageHDU().getData(), getHistogram(),
                     min, max, sigma));
             setScaleMethod(getScaleMethod());
         }
@@ -444,36 +464,88 @@ public class FITSImage extends BufferedImage {
         return _scaledImages;
     }
 
-    protected static ImageHDU findFirstImageHDU(Fits fits)
+    protected static ImageHDU findImageHDU(Fits fits, int hduImageNumber)
             throws FitsException, IOException {
         ImageHDU result = null;
         BasicHDU basicHDU = fits.readHDU();
+        int hduImageFound = 0;
         while (basicHDU != null) {
             if (basicHDU instanceof ImageHDU && basicHDU.getData().getSize() != 0) {
-                result = (ImageHDU) basicHDU;
-                break;
-            } else {
-                basicHDU = fits.readHDU();
-            }
+                hduImageFound++;
+                if (hduImageFound == hduImageNumber) {
+                    result = (ImageHDU) basicHDU;
+                    break;
+                }
+            } 
+            basicHDU = fits.readHDU();            
         }
 
         return result;
     }
 
-    protected static BufferedImage[] createScaledImages(Fits fits)
+    protected static BufferedImage[] createScaledImages(Fits fits, int hduImageNumber, int deepLevel)
             throws FitsException, DataTypeNotSupportedException,
             NoImageDataFoundException, IOException {
         BufferedImage[] result = null;
-        ImageHDU imageHDU = findFirstImageHDU(fits);
+        ImageHDU imageHDU = findImageHDU(fits, hduImageNumber);
 
         if (imageHDU != null) {
-            result = createScaledImages(imageHDU);
+            result = createScaledImagesPatch(imageHDU, deepLevel);
         } else {
             throw new NoImageDataFoundException();
         }
 
         return result;
     }
+    
+    /**
+     * @return An array of BufferedImages from hdu with intensity values scaled
+     * to short range using linear, log, square root, and square scales, in that
+     * order.
+     */
+    public static BufferedImage[] createScaledImagesPatch(ImageHDU hdu, int deepLevel)
+            throws FitsException, DataTypeNotSupportedException {
+        int bitpix = hdu.getBitPix();
+        double bZero = hdu.getBZero();
+        double bScale = hdu.getBScale();
+        Object data;
+        Histogram hist = null;
+
+        switch (bitpix) {
+            case 8:
+                data = (hdu.getAxes().length == 3) ? ((byte[][][])hdu.getData().getData())[deepLevel] : (byte[][]) hdu.getData().getData();
+                hist = ScaleUtils.computeHistogram((byte[][]) data, bZero, bScale);
+                break;
+            case 16:
+                data = (hdu.getAxes().length == 3) ? ((short[][][])hdu.getData().getData())[deepLevel] : (short[][]) hdu.getData().getData();
+                hist = ScaleUtils.computeHistogram((short[][]) data, bZero, bScale);
+                break;
+            case 32:
+                data = (hdu.getAxes().length == 3) ? ((int[][][])hdu.getData().getData())[deepLevel] : (int[][]) hdu.getData().getData();
+                hist = ScaleUtils.computeHistogram((int[][]) data, bZero, bScale);
+                break;
+            case -32:
+                data = (hdu.getAxes().length == 3) ? ((float[][][])hdu.getData().getData())[deepLevel] : (float[][]) hdu.getData().getData();
+                hist = ScaleUtils.computeHistogram((float[][]) data, bZero, bScale);
+                break;
+            case -64:
+                data = (hdu.getAxes().length == 3) ? ((double[][][])hdu.getData().getData())[deepLevel] : (double[][]) hdu.getData().getData();
+                hist = ScaleUtils.computeHistogram((double[][]) data, bZero, bScale);
+                break;
+            default:
+                throw new DataTypeNotSupportedException(bitpix);
+        }
+        double contrast = 0.25;
+        int opt_size = 600;    /* desired number of pixels in sample   */
+
+        int len_stdline = 120;  /* optimal number of pixels per line    */
+
+        ZScale zscale = new ZScale(hdu, contrast, opt_size, len_stdline);
+        ZScale.ZscaleResult retval = zscale.compute();
+        return createScaledImages(hdu, data, hist,
+                retval.getZ1(), retval.getZ2(),
+                hist.estimateSigma());
+    }    
 
     /**
      * @return An array of BufferedImages from hdu with intensity values scaled
@@ -507,22 +579,21 @@ public class FITSImage extends BufferedImage {
             default:
                 throw new DataTypeNotSupportedException(bitpix);
         }
+    return createScaledImages(hdu, hdu.getData(), hist,
+                              hist.getMin(), hist.getMax(),
+                              hist.estimateSigma());
+    }    
 
-        return createScaledImages(hdu, hist,
-                hist.getMin(), hist.getMax(),
-                hist.estimateSigma());
-    }
-
-    public static BufferedImage[] createScaledImages(ImageHDU hdu, Histogram hist,
+    public static BufferedImage[] createScaledImages(ImageHDU hdu, Object data, Histogram hist,
             double min, double max,
             double sigma)
             throws FitsException, DataTypeNotSupportedException {
         int bitpix = hdu.getBitPix();
-        int width = hdu.getAxes()[1]; // yes, the axes are in the wrong order
-        int height = hdu.getAxes()[0];
+        int nbAxes = hdu.getAxes().length;
+        int width = hdu.getAxes()[nbAxes-1]; // yes, the axes are in the wrong order
+        int height = hdu.getAxes()[nbAxes-2];
         double bZero = hdu.getBZero();
         double bScale = hdu.getBScale();
-        Object data = hdu.getData().getData();
         short[][] scaledData = null;
 
         switch (bitpix) {

@@ -1,7 +1,6 @@
 package fr.cnes.sitools.test.common;
 
 import com.thoughtworks.xstream.XStream;
-
 import fr.cnes.sitools.AbstractSitoolsServerTestCase;
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.SitoolsXStreamRepresentation;
@@ -14,13 +13,11 @@ import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.server.Starter;
 import fr.cnes.sitools.tasks.AbstractTaskResourceTestCase;
 import fr.cnes.sitools.util.RIAPUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.logging.Logger;
-
 import org.junit.BeforeClass;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;

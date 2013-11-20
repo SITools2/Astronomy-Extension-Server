@@ -1,21 +1,21 @@
-/*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
- * 
- * This program is free software: you can redistribute it and/or modify
+ *
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program inputStream distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.cache;
 
 import java.util.ArrayList;
@@ -43,10 +43,9 @@ public class CacheBrowser {
    * Cache directives.
    */
   private transient List<CacheDirective> cacheDirectivesBrowser = null;
-  
   /**
    * Constructor.
-   * @param repVal representation to cache  
+   * @param repVal representation to cache
    */
   protected CacheBrowser(final Representation repVal) {
     this.rep = repVal;
@@ -83,7 +82,7 @@ public class CacheBrowser {
   public final Representation getRepresentation() {
     return this.rep;
   }
-  
+
   /**
    * Returns the cache directives.
    * @return the cache directives
@@ -121,7 +120,7 @@ public class CacheBrowser {
 
   /**
    * Creates the cache directive for the "nocache" choice.
-   */  
+   */
   private void createNoCache() {
     final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(CacheDirective.noCache());
@@ -130,8 +129,8 @@ public class CacheBrowser {
 
   /**
    * Creates the cache directive for the "cacheday" choice.
-   */  
-  private void createCacheDay() {    
+   */
+  private void createCacheDay() {
     final Calendar expiresOn = Calendar.getInstance();
     final long age = expiresOn.getTimeInMillis();
     expiresOn.add(Calendar.HOUR_OF_DAY, NUMBER_OF_HOURS_IN_DAY);
@@ -140,5 +139,5 @@ public class CacheBrowser {
     final List<CacheDirective> cacheDirectives = new ArrayList<CacheDirective>();
     cacheDirectives.add(maxAge);
     this.cacheDirectivesBrowser =  cacheDirectives;
-  }  
+  }
 }

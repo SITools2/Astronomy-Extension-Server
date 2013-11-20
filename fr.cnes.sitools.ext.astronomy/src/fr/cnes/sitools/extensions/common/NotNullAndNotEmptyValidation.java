@@ -1,23 +1,21 @@
-/**
- * **********************************************************************
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
- * ***********************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.common;
 
 import java.util.HashMap;
@@ -36,12 +34,12 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
      * Keyword to test.
      */
     private String keywordToTest = null;
-    
+
     /**
      * Default value.
      */
     private transient String defaultValue = null;
-    
+
     /**
      * Indicates if the keyword is required.
      */
@@ -77,9 +75,9 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
         if (keyword == null || keyword.isEmpty()) {
             throw new IllegalArgumentException("keyword cannot be null or empty");
         }
-        this.keywordToTest = keyword;       
+        this.keywordToTest = keyword;
     }
-    
+
     /**
      * Constructor to check if a specific keyword value is not null and not
      * empty.
@@ -102,8 +100,8 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
             throw new IllegalArgumentException("keyword cannot be null or empty");
         }
         this.defaultValue = defaultKeywordValue;
-    }    
-    
+    }
+
     /**
      * Constructor to check if a specific keyword value is not null and not
      * empty.
@@ -121,16 +119,16 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
     public NotNullAndNotEmptyValidation(final Validation validation, final String keyword, final boolean isRequired) {
         this(validation, keyword);
         this.isRequiredKeyword = isRequired;
-    }    
+    }
 
     @Override
     protected Map<String, String> localValidation() {
-        final Map<String, String> errorKeywords = new HashMap<String, String>();        
+        final Map<String, String> errorKeywords = new HashMap<String, String>();
         if (getKeywordToTest() == null) {
             validateTheWholeMap(errorKeywords);
         } else {
             validateAKeyword(errorKeywords, this.isRequiredKeyword);
-        } 
+        }
         return errorKeywords;
     }
 
@@ -145,7 +143,7 @@ public class NotNullAndNotEmptyValidation extends ValidationDecorator {
             if (value == null || value.isEmpty()) {
                 errorKeywords.put(entry.getKey(), entry.getKey() + " cannot be null or empty");
             }
-        }       
+        }
     }
 
     /**

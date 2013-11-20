@@ -1,22 +1,21 @@
 /**
- * **********************************************************************
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+ * *****************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
- * ***********************************************************************
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************
  */
 package fr.cnes.sitools.extensions.security;
 
@@ -44,21 +43,22 @@ import org.restlet.security.Role;
 
 /**
  * Filters the access by delegating the responsability to an extrernal database.
- * 
+ *
  * <p>
  * Business class implementing the FineGrainedAccessRight plugin.
  * </p>
- * 
+ *
  * <br/>
  * <img src="../../../../../images/FineGrainedAccessRight.png"/>
  * <br/>
+ *
  * @see FineGrainedAccessRightPlugin The plugin that calls this class.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
- * @startuml
- * FineGrainedAccessRightPlugin o-- FineGrainedAccessRight : attachs
- * 
- * FineGrainedAccessRight : boolean authorize(final Request request, final Response response)
- * 
+ * @startuml FineGrainedAccessRightPlugin o-- FineGrainedAccessRight : attachs
+ *
+ * FineGrainedAccessRight : boolean authorize(final Request request, final
+ * Response response)
+ *
  * FineGrainedAccessRightPlugin : setConfigurationParameters()
  * FineGrainedAccessRightPlugin : Validator<FilterModel> getValidator()
  * @enduml
@@ -69,14 +69,14 @@ public class FineGrainedAccessRight extends Authorizer {
      * Application data model.
      */
     private final transient FilterModel filterModel;
-    
     /**
      * Logger.
      */
     private static final Logger LOG = Logger.getLogger(FineGrainedAccessRight.class.getName());
-    
+
     /**
      * Constructor.
+     *
      * @param context context
      */
     public FineGrainedAccessRight(final Context context) {
@@ -85,6 +85,7 @@ public class FineGrainedAccessRight extends Authorizer {
 
     /**
      * Returns the data source ID from its name.
+     *
      * @param dsName data source name
      * @param context context
      * @return the data source ID
@@ -98,6 +99,7 @@ public class FineGrainedAccessRight extends Authorizer {
 
     /**
      * Returns the prepare statement String.
+     *
      * @param table table name
      * @param schema schema name if PostgreSQL is used
      * @param filename filename column
@@ -110,7 +112,7 @@ public class FineGrainedAccessRight extends Authorizer {
         StringBuilder prepareSt = new StringBuilder("SELECT count(*) as result FROM " + dsSchema + "\"" + table + "\" WHERE " + filename + " = ? AND ");
         prepareSt = prepareSt.append("( ");
         for (final Iterator<Role> it = roles.iterator(); it.hasNext();) {
-            it.next();            
+            it.next();
             prepareSt = prepareSt.append("? = ANY(").append(profile).append(")");
             if (it.hasNext()) {
                 prepareSt = prepareSt.append(" OR ");
@@ -122,31 +124,34 @@ public class FineGrainedAccessRight extends Authorizer {
 
     /**
      * Returns the filename from the request.
-     * 
+     *
      * <p>
-     * The filename is given in the request after the application URI of the data storage.
+     * The filename is given in the request after the application URI of the
+     * data storage.
      * </p>
+     *
      * @param request request
      * @return the filename
      */
     private String getFilename(final Request request) {
         final String filename = request.getResourceRef().getRemainingPart(true);
-        return filename.substring(1, filename.length()); // remove the "/"        
+        return filename.substring(1, filename.length()); // remove the "/"
     }
-    
+
     /**
      * Sets the SQL parameters to the prepare statement.
+     *
      * @param stmt prepare statement
      * @param roles roles of the user
      * @param filename filename
      * @throws SQLException SQL exception
      */
     private void setSqlParameters(final PreparedStatement stmt, final List<Role> roles, final String filename) throws SQLException {
-        stmt.setString(1, filename);        
+        stmt.setString(1, filename);
         int sqlParameterIndex = 2;
         for (Role role : roles) {
             stmt.setString(sqlParameterIndex++, role.getName());
-        }        
+        }
     }
 
     @Override

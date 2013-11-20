@@ -11,18 +11,18 @@ Three name resolvers are currently implemented:
  <li>CDS name resolver for objects</li>
  <li>IMCCE name resolver for asteroïd, planets, comets</li>
  <li>COROT ID name resolver for Corot objects</li>
-</ul> 
- 
+</ul>
+
 <img src="../../../../../images/Resolver.png"/>
 <br/><br/><br/>
 
 Here is an example how to use the CDS name resolver:<br/><br/>
 <code>
 AbstractNameResolver cds = new CDSNameResolver("m31", CDSNameResolver.NameResolverService.all);<br/>
-NameResolverResponse response = cds.getResponse(); 
+NameResolverResponse response = cds.getResponse();
 List<fr.cnes.sitools.extensions.common.AstroCoordinate> coordinates = response.getAstroCoordinates();<br/>
-</code><br/>  
- 
+</code><br/>
+
 <h2>Reverse Name Resolver</h2>
 One reverse name resolver is currently implemented:
 <ul>
@@ -48,7 +48,7 @@ features=[{<br/>
          seeAlso=http://simbad.u-strasbg.fr/simbad/sim-id?Ident=IC 1515 , <br/>
          type=Seyfert_2, <br/>
          identifier=IC 1515 <br/>
-     },<br/> 
+     },<br/>
      geometry={<br/>
          crs=EQUATORIAL.ICRS, <br/>
          type=Point, <br/>
@@ -57,7 +57,7 @@ features=[{<br/>
 }]<br/>
 }<br/>
 </pre>
-@copyright 2011-2013 CNES
+@copyright 2010-2013 CNES
 @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
 @startuml Resolver.png
 abstract class AbstractNameResolver {
@@ -69,7 +69,7 @@ abstract class AbstractNameResolver {
 
 class CDSNameResolver {
   CDSNameResolver(String objectNameVal, NameResolverService service)
-  getResponse() : NameResolverResponse  
+  getResponse() : NameResolverResponse
 }
 
 enum NameResolverService {
@@ -93,7 +93,7 @@ class IMCCESsoResolver {
   IMCCESsoResolver(String objectNameVal, String epochVal)
   getResponse() : NameResolverResponse
 }
- 
+
 AbstractNameResolver o-- NameResolverResponse
 CDSNameResolver ..> ConstellationNameResolver
 ConstellationNameResolver ..> IMCCESsoResolver

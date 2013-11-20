@@ -1,21 +1,21 @@
-/*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
@@ -40,7 +40,6 @@ public class NameResolverResponse {
    * Service's exception.
    */
   private transient NameResolverException exception;
-  
   /**
    * Constructs a new NameResolverRsponse with credits.
    * @param creditsVal Laboratory credits
@@ -49,14 +48,12 @@ public class NameResolverResponse {
     this.credits = creditsVal;
     this.astroCoordinates = new ArrayList<AstroCoordinate>();
   }
-  
   /**
    * Constructs a new NameResolverRsponse.
    */
   public NameResolverResponse() {
     this(null);
   }
-  
   /**
    * Sets the laboratory credits.
    * @param creditsVal the laboratory credits
@@ -64,7 +61,6 @@ public class NameResolverResponse {
   public final void setCredits(final String creditsVal) {
     this.credits = creditsVal;
   }
-  
   /**
    * Returns the laboratory credits.
    * @return the laboratory credtis
@@ -80,7 +76,6 @@ public class NameResolverResponse {
   public final void addAstoCoordinates(final List<AstroCoordinate> astroCoordinatesVal) {
     this.astroCoordinates.addAll(astroCoordinatesVal);
   }
-  
   /**
    * Adds a AstroCoordinate to the current list.
    * @param astroCoordinateVal AstroCoordinate
@@ -88,7 +83,6 @@ public class NameResolverResponse {
   public final void addAstoCoordinate(final AstroCoordinate astroCoordinateVal) {
     this.astroCoordinates.add(astroCoordinateVal);
   }
-  
   /**
    * Adds a AstroCoordinate with the right ascension and declination.
    * @param rightAscension right ascension
@@ -97,7 +91,6 @@ public class NameResolverResponse {
   public final void addAstroCoordinate(final double rightAscension, final double declination) {
     this.astroCoordinates.add(new AstroCoordinate(rightAscension, declination));
   }
-  
   /**
    * Return the list of coordinates.
    * @return the list of coordinates
@@ -105,7 +98,6 @@ public class NameResolverResponse {
   public final List<AstroCoordinate> getAstroCoordinates() {
     return this.astroCoordinates;
   }
-  
   /**
    * Sets the error.
    * @param exceptionVal exception
@@ -113,7 +105,6 @@ public class NameResolverResponse {
   public final void setError(final NameResolverException exceptionVal) {
     this.exception = exceptionVal;
   }
-  
   /**
    * Returns the error.
    * @return the error

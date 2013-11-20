@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.DatabaseRequestModel;
@@ -165,7 +168,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       dataModel.put("sqlColAlias", columnList);
 
       // Complete data model with data
-      final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();     
+      final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();
       final ConverterChained converterChained = datasetApp.getConverterChained();
       final TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
       ((DatabaseRequestModel) rows).setSize(count);
@@ -178,7 +181,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
         databaseRequest.close();
       } catch (SitoolsException ex1) {
           LOG.log(Level.FINER, null, ex1);
-      } finally {        
+      } finally {
         setVotableError(infos, "Query", "Error in query", "Error in input query: " + ex.getMessage());
         if (!infos.isEmpty()) {
           this.dataModel.put("infos", infos);
@@ -394,7 +397,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       field.setType(type);
       field.setXtype(xtype);
       field.setArraysize(arraysize);
-      AnyTEXT anyText = new AnyTEXT();
+      final AnyTEXT anyText = new AnyTEXT();
       anyText.getContent().add(descriptionValue);
       field.setDESCRIPTION(anyText);
       fieldList.add(field);

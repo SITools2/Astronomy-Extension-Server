@@ -2,7 +2,7 @@
  * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ConeSearchVOTest.class, SIAVOTest.class })
+@Suite.SuiteClasses({OpenSearchVOApplicationConeTest.class, OpenSearchVOApplicationSIATest.class , ShorteningUrlApplicationPluginTest.class})
 
 public class ApplicationSuite {
     

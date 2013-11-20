@@ -1,23 +1,21 @@
-/**
- * **********************************************************************
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES.
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
- ************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.security;
 
 import fr.cnes.sitools.common.validator.ConstraintViolation;
@@ -35,11 +33,11 @@ import java.util.Set;
  * Filters the access by delegating the responsability to an external database
  * <p>
  * A data storage is a directory from the file system that is put online on the web.
- * 
+ *
  * When the administrator configures a data storage, all files in this data storage are
  * available. This extension allows to configure the file to access by delegating
  * the access configuration to a SQL database.<br/>
- * 
+ *
  * To make it works, the database must contain two columns at least :<br/>
  * <ul>
  * <li>one for filename</li>
@@ -75,32 +73,26 @@ import java.util.Set;
  * @enduml
  */
 public class FineGrainedAccessRightPlugin extends FilterModel {
-    
     /**
      * Data source name that contains the table responsibles for the access rights.
      */
     public static final String DATASOURCE = "dataSourceName";
-    
     /**
      * Table name that contains filenameColumn and profilesColumns.
      */
     public static final String TABLE = "tableName";
-    
     /**
      * Filename column.
      */
     public static final String FILENAME = "filenameColumn";
-    
     /**
      * Profiles column.
      */
     public static final String PROFILES = "profilesColumn";
-    
     /**
      * Schema name.
      */
     public static final String SCHEMA = "schema";
-
     /**
      * Empty constructor.
      */
@@ -115,18 +107,16 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
         setFilterClassName(fr.cnes.sitools.extensions.security.FineGrainedAccessRight.class.getName());
         setConfigurationParameters();
     }
-    
     /**
      * Sets the configuration parameters for the administrator.
      */
     private void setConfigurationParameters() {
         final FilterParameter dataSource = new FilterParameter(
-                DATASOURCE, 
+                DATASOURCE,
                 "Data source name where the table that contains access right is located",
                 FilterParameterType.PARAMETER_INTERN);
         dataSource.setValueType("xs:string");
         addParam(dataSource);
-        
         final FilterParameter table = new FilterParameter(
                 TABLE,
                 "Table name that contains the access rights.",
@@ -153,7 +143,7 @@ public class FineGrainedAccessRightPlugin extends FilterModel {
                 "Sets the profiles column name that contains the profiles.",
                 FilterParameterType.PARAMETER_INTERN);
         profilesColumn.setValueType("xs:string");
-        addParam(profilesColumn);        
+        addParam(profilesColumn);
     }
 
     @Override

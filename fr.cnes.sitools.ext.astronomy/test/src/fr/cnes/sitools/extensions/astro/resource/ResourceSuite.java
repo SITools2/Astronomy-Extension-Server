@@ -31,7 +31,8 @@ import org.junit.runners.Suite;
   fr.cnes.sitools.extensions.astro.resource.ConeSearchResourceTest.class, 
   fr.cnes.sitools.extensions.astro.resource.CoverageResourceTest.class,
   ExportVOResourceTest.class,
-  fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResourceTest.class})
+  fr.cnes.sitools.extensions.astro.resource.ConeSearchSolarObjectResourceTest.class,
+  fr.cnes.sitools.extensions.astro.resource.Votable2GeoJsonResourcePluginTest.class})
 
 public class ResourceSuite {
     

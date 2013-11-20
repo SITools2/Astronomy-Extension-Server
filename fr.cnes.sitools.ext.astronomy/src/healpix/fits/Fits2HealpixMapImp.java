@@ -36,8 +36,6 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.ImageData;
-import nom.tam.fits.ImageHDU;
 import nom.tam.fits.TableHDU;
 import nom.tam.util.ColumnTable;
 

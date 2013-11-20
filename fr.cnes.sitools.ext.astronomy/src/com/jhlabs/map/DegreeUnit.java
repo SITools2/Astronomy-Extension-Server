@@ -16,8 +16,6 @@ limitations under the License.
 
 package com.jhlabs.map;
 
-import java.text.*;
-
 public class DegreeUnit extends Unit {
 	
 	static final long serialVersionUID = -3212757578604686538L;

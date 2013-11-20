@@ -16,7 +16,6 @@ limitations under the License.
 
 package com.jhlabs.map.proj;
 
-import java.awt.*;
 import java.awt.geom.*;
 
 public class LinearProjection extends Projection {

@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import fr.cnes.sitools.extensions.common.Utility;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -487,6 +488,34 @@ public class Field implements Serializable{
      */
     public void setType(String value) {
         this.type = value;
+    }    
+
+    /**
+     * Only id, name, ucd and utype are enoughe to know the Field is the same.
+     * @param obj object to compare
+     * @return True when the object is equals to this other false
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final Field other = (Field) obj;
+        return (this.id == other.id || this.id != null && this.id.equals(other.id))
+                && (this.name == other.name || this.name != null && this.name.equals(other.name))
+                && (this.ucd == other.ucd || this.ucd != null && this.ucd.equals(other.ucd))
+                && (this.utype == other.utype || this.utype != null && this.utype.equals(other.utype));
     }
 
+    @Override
+    public final int hashCode() {
+        int result = 7;
+        final int multiplier = 31;
+        result = multiplier * result + (Utility.isSet(this.name) ? this.name.hashCode() : 0);
+        result = multiplier * result + (Utility.isSet(this.id) ? this.id.hashCode() : 0);
+        result = multiplier * result + (Utility.isSet(this.ucd) ? this.ucd.hashCode() : 0);
+        result = multiplier * result + (Utility.isSet(this.utype) ? this.utype.hashCode(): 0);
+        return result;
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
@@ -14,9 +14,9 @@
 package fr.cnes.sitools.astro.resolver;
 
 import java.util.List;
-import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Test of NameResolver object.
@@ -24,15 +24,11 @@ import static org.junit.Assert.*;
  */
 public class NameResolverTest {
 
-  @After
-  public void tearDown() {
-  }
-
   /**
    * Test of getCoordinates method, of class AbstractNameResolver.
    */
   @Test
-  public void testGetCoordinates() throws Exception {
+  public final void testGetCoordinates() throws Exception {
     System.out.println("getCoordinates");
     String objectName = "m31";
     AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);

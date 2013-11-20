@@ -1,36 +1,34 @@
-/*
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ivoa.xml.votable.v1.Field;
@@ -89,10 +87,6 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    */
   private static final double MULT_FACT = 1.5;
   /**
-   * True when Healpix mode is used.
-   */
-  private final transient boolean isHealpixMode;
-  /**
    * Healpix is not defined.
    */
   private static final int NOT_DEFINED = -1;
@@ -104,7 +98,6 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    * Healpix index.
    */
   private transient HealpixIndex healpixIndex = null;
-  
   /**
    * Coordinate system in which the input is given and response is returned.
    */
@@ -138,7 +131,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     /**
      * ucd name.
      */
-    private final String name;   
+    private final String name;
 
     /**
      * Constructor.
@@ -167,21 +160,20 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     public static ReservedWords find(final String keyword) {
       ReservedWords response = ReservedWords.NONE;
       final ReservedWords[] words = ReservedWords.values();
-      for (int i = 0; i < words.length; i++) {
-        final ReservedWords word = words[i];
-        final String reservedName = word.getName();
-        if (keyword.equals(reservedName)) {
-          response = word;
-          break;
+        for (ReservedWords word : words) {
+            final String reservedName = word.getName();
+            if (keyword.equals(reservedName)) {
+                response = word;
+                break;
+            }
         }
-      }
       return response;
     }
   }
 
   /**
    * Constructs a query.
-   * 
+   *
    * When the reference frame is in galactic, the inputs are transformed in equatorial frame
    * to query the external web service that takes coordinates in equatorial frame.
    *
@@ -196,7 +188,6 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     this.rightAscension = raVal;
     this.declination = decVal;
     this.radius = radiusVal;
-    this.isHealpixMode = false;
     this.pixelToCheck = NOT_DEFINED;
     this.coordSystem = coordSystemVal;
     transformToCelestialCoordinates();
@@ -204,7 +195,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
 
   /**
    * Constructs a query.
-   * 
+   *
    * When the reference frame is in galactic, the inputs are transformed in equatorial frame
    * to query the external web service that takes coordinates in equatorial frame.
    *
@@ -224,11 +215,9 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     this.declination = MAX_DEC - Math.toDegrees(pointing.theta);
     this.radius = pixRes * ARCSEC_2_DEG * MULT_FACT;
     this.query = new ConeSearchQuery(URL.replace("<EPOCH>", time));
-    this.isHealpixMode = true;
-    this.coordSystem = coordSystemVal;    
-    transformToCelestialCoordinates();    
-  } 
-  
+    this.coordSystem = coordSystemVal;
+    transformToCelestialCoordinates();
+  }
   /**
    * Transforms coordinates in Equatorial when the reference frame is in Galactic.
    */
@@ -237,15 +226,13 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
         final AstroCoordinate astroCoordinates = new AstroCoordinate(this.rightAscension, this.declination);
         astroCoordinates.transformTo(CoordinateSystem.EQUATORIAL);
         this.rightAscension = astroCoordinates.getRaAsDecimal();
-        this.declination = astroCoordinates.getDecAsDecimal();          
-      }      
+        this.declination = astroCoordinates.getDecAsDecimal();
+      }
   }
 
   @Override
   public final GeoJsonRepresentation getResponse() {
-    final Map dataModel = new HashMap();
-
-    final List features = new ArrayList();
+    final FeaturesDataModel features = new FeaturesDataModel();
     List<Map<Field, String>> response;
     try {
       response = query.getResponseAt(rightAscension, declination, radius);
@@ -259,9 +246,8 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     for (Map<Field, String> record : response) {
       parseRecord(features, record);
     }
-    dataModel.put("features", features);
-    dataModel.put("totalResults", features.size());
-    return new GeoJsonRepresentation(dataModel);
+
+    return new GeoJsonRepresentation(features.getFeatures());
   }
 
   /**
@@ -270,20 +256,16 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    * @param features the response
    * @param record the records to set
    */
-  protected final void parseRecord(final List features, final Map<Field, String> record) {
-    final Map feature = new HashMap();
-    final Map geometry = new HashMap();
-    final Map properties = new HashMap();
+  protected final void parseRecord(final FeaturesDataModel features, final Map<Field, String> record) {
+    final FeatureDataModel feature = new FeatureDataModel();
     String coordinatesRa = null;
     String coordinatesDec = null;
 
-    final Set<Field> fields = record.keySet();
-    final Iterator<Field> iter = fields.iterator();
-    while (iter.hasNext()) {
-      final Field field = iter.next();
+    for (Map.Entry<Field, String> entryField : record.entrySet()) {
+      final Field field = entryField.getKey();
       final String ucd = field.getUcd();
       final net.ivoa.xml.votable.v1.DataType dataType = field.getDatatype();
-      final String value = record.get(field);
+      final String value = entryField.getValue();
       if (Utility.isSet(ucd) && Utility.isSet(value) && !value.isEmpty()) {
         final Object response = Utility.getDataType(dataType, value);
         final ReservedWords ucdWord = ReservedWords.find(ucd);
@@ -295,21 +277,21 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
             coordinatesDec = record.get(field);
             break;
           case IMAGE_TITLE:
-            String identifier = record.get(field);
-            properties.put("identifier", identifier);
-            properties.put("seeAlso", String.format("http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&Name===%s", identifier));
-            properties.put("credits", "IMCCE");
+            final String identifier = record.get(field);
+            feature.setIdentifier(identifier);
+            feature.addProperty("seeAlso", String.format("http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&Name===%s", identifier));
+            feature.addProperty("credits", "IMCCE");
             break;
           case CLASS:
-            properties.put("type", response);
+            feature.addProperty("type", response);
             break;
           default:
-            properties.put(field.getName(), response);
+            feature.addProperty(field.getName(), response);
             break;
         }
       } else {
         final Object response = Utility.getDataType(dataType, value);
-        properties.put(field.getName(), response);
+        feature.addProperty(field.getName(), response);
       }
     }
     final AstroCoordinate astroCoordinate = new AstroCoordinate(coordinatesRa, coordinatesDec);
@@ -318,16 +300,11 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     if (this.coordSystem == CoordinateSystem.GALACTIC) {
         astroCoordinate.transformTo(CoordinateSystem.GALACTIC);
     }
-    geometry.put("coordinates", String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()));
-    geometry.put("type", "Point");   
-    geometry.put("crs", this.coordSystem.getCrs());
-    feature.put("geometry", geometry);
-    feature.put("properties", properties);
+    feature.createGeometry(String.format("[%s,%s]", astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal()), "Point");
+    feature.createCrs(this.coordSystem.getCrs());
     if (isValid(feature)) {
-      if (!isHealpixMode) {
-        features.add(feature);
-      } else if (isPointIsInsidePixel(astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal())) {
-        features.add(feature);
+      if (isPointIsInsidePixel(astroCoordinate.getRaAsDecimal(), astroCoordinate.getDecAsDecimal())) {
+        features.addFeature(feature);
       } else {
         feature.clear();
       }
@@ -348,7 +325,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
     boolean result;
     try {
       final long healpixFromService = this.healpixIndex.ang2pix_nest(Math.PI / 2 - Math.toRadians(decSolarObj), Math.toRadians(raSolarObj));
-      result = (healpixFromService == this.pixelToCheck) ? true : false;
+      result = healpixFromService == this.pixelToCheck;
     } catch (Exception ex) {
       result = false;
       LOG.log(Level.WARNING, null, ex);
@@ -362,7 +339,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
    * @param feature data model
    * @return true when identifier os set
    */
-  private boolean isValid(final Map feature) {
-    return ((Map) feature.get("properties")).containsKey("identifier");
+  private boolean isValid(final FeatureDataModel feature) {
+    return feature.getProperties().containsKey("identifier");
   }
 }

@@ -1,18 +1,18 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
- * This directory is part of SITools2.
- * 
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of SITools2.
+ *
  * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -34,7 +34,7 @@ public abstract class AbstractSqlGeometryConstraint {
   protected static final int MIN = 0;
   /**
    * Index where the max value of a range is located.
-   */  
+   */
   protected static final int MAX = 1;
 
   /**
@@ -74,7 +74,7 @@ public abstract class AbstractSqlGeometryConstraint {
   /**
    * Detects when the SIA request has a collition with South pole.
    * @return True when the SIA request has a collition with South pole otherwise False
-   */    
+   */
   protected final boolean isSouthPoleCollision() {
     return (decUser - sizeArray[1] / 2.0 <= SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_DECLINATION) ? true : false;
   }
@@ -82,7 +82,7 @@ public abstract class AbstractSqlGeometryConstraint {
   /**
    * Detects when the SIA request has a collition with North pole.
    * @return True when the SIA request has a collition with North pole otherwise False
-   */  
+   */
   protected final boolean isNorthPoleCollision() {
     return (decUser + sizeArray[1] / 2.0 >= SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_DECLINATION) ? true : false;
   }
@@ -160,7 +160,6 @@ public abstract class AbstractSqlGeometryConstraint {
   protected final Object computeRange() {
     final List<Double[]> raRange = new ArrayList<Double[]>();
     final double[] decRange = new double[2];
-
     if (this.isPolesCollision()) {
       decRange[MIN] = SimpleImageAccessProtocolLibrary.MIN_VALUE_FOR_DECLINATION;
       decRange[MAX] = SimpleImageAccessProtocolLibrary.MAX_VALUE_FOR_DECLINATION;
