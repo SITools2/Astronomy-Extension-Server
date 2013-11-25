@@ -51,7 +51,7 @@ public class ConstellationNameResolver extends AbstractNameResolver {
     /**
      * Credits to return.
      */
-    private static final String CREDITS_NAME = "SITools2";
+    private static final String CREDITS_NAME = "Wikipedia";
 
     /**
      * Constellation database.
