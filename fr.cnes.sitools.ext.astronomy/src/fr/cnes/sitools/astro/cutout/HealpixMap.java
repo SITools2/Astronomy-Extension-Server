@@ -110,7 +110,7 @@ public class HealpixMap implements CutOutInterface {
 //        final String coordSystem = hduTable.getHeader().getStringValue("COORDSYS");
             setHdu(hduTable);
             setFovCoordinates(coordinates);
-            setWcs(new WcsComputation(coordinates, cdelt1, cdelt2, rotation, coordinateSystemInput));
+            setWcs(new WcsComputation(coordinates, cdelt1, cdelt2, 0, coordinateSystemInput));
         } catch (FitsException ex) {
             Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex.getMessage());
