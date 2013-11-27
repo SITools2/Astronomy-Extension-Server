@@ -75,7 +75,7 @@ public class HealpixMap implements CutOutInterface {
     /**
      * Coordinate system output.
      */
-    private AstroCoordinate.CoordinateSystem coordinateSystemOutput;    
+    private AstroCoordinate.CoordinateSystem coordinateSystemOutput;
     /**
      * HDU that contains the Planck data.
      */
@@ -98,7 +98,7 @@ public class HealpixMap implements CutOutInterface {
      * @param file FITS to cut
      * @throws IOException
      * @throws Exception
-     */    
+     */
     public HealpixMap(final double cdelt1, final double cdelt2, final double[] coordinates, final double rotation, final File file, final AstroCoordinate.CoordinateSystem coordinateSystemInput) throws CutOutException {
         try {
             setCdelt1(cdelt1);
@@ -110,7 +110,7 @@ public class HealpixMap implements CutOutInterface {
 //        final String coordSystem = hduTable.getHeader().getStringValue("COORDSYS");
             setHdu(hduTable);
             setFovCoordinates(coordinates);
-            setWcs(new WcsComputation(coordinates, cdelt1, cdelt2, 0, coordinateSystemInput));
+            setWcs(new WcsComputation(coordinates, cdelt1, cdelt2, rotation, coordinateSystemInput));
         } catch (FitsException ex) {
             Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex.getMessage());
@@ -145,7 +145,7 @@ public class HealpixMap implements CutOutInterface {
             throw new FitsException("binaryHdu not found");
         }
     }
-    
+
     private BasicHDU createPrimaryHDU(File filename, double cdelt1, double cdelt2, double[] fov, double rotation) throws HeaderCardException, FitsException {
         final Header hdr = new Header();
         hdr.addValue("SIMPLE", "T", "");
@@ -163,7 +163,7 @@ public class HealpixMap implements CutOutInterface {
         hdr.insertHistory("         - Reference system of the FOV: " + getCoordinateSystemInput());
         return Fits.makeHDU(hdr);
     }
-    
+
     private BasicHDU createExtension(Object data, String extName, String unit, WcsComputation wcs) throws FitsException {
         final BasicHDU hduExt = Fits.makeHDU(data);
         hduExt.addValue("EXTNAME", extName, "");
@@ -176,19 +176,18 @@ public class HealpixMap implements CutOutInterface {
         hduExt.addValue("CD2_1", wcs.getCd()[2], "partial of the declination w.r.t. x");
         hduExt.addValue("CD2_2", wcs.getCd()[3], "partial of the declination w.r.t. y");
         hduExt.addValue("CTYPE1", wcs.getCtype1(), "first coordinate type");
-        hduExt.addValue("CTYPE2", wcs.getCtype2(), "seconde coordinate type");        
+        hduExt.addValue("CTYPE2", wcs.getCtype2(), "seconde coordinate type");
         hduExt.addValue("CUNIT1", "deg", "Unit of the first axis");
         hduExt.addValue("CUNIT2", "deg", "Unit of the second axis");
         hduExt.addValue("UNIT", unit, "Unit of the density");
         return hduExt;
     }
 
-    
-    public Fits compute() throws FitsException, IllegalAccessException, Exception {        
+    public Fits compute() throws FitsException, IllegalAccessException, Exception {
         final Fits fitsOutput = new Fits();
         final Header hdr = getHdu().getHeader();
         final String pixType = (hdr.containsKey("PIXTYPE")) ? hdr.getStringValue("PIXTYPE") : "NONE";
-        if (! pixType.equals("HEALPIX")) {
+        if (!pixType.equals("HEALPIX")) {
             throw new CutOutException(getFile() + " is not a Healpix Map");
         }
         final String ordering = (hdr.containsKey("ORDERING")) ? hdr.getStringValue("ORDERING") : "NESTED";
@@ -205,11 +204,11 @@ public class HealpixMap implements CutOutInterface {
             final String unit = getHdu().getColumnMeta(col, "TUNIT");
             if ("I".equals(format)) {
                 short[][] dataShort = new short[this.getWcs().getNaxis2()][this.getWcs().getNaxis1()];
-                 for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
+                for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
                     for (int x = 1; x <= this.getWcs().getNaxis1(); x++) {
                         final Point2D.Double skyPos = this.getWcs().pix2wcs(x, y);
-                        switch(getCoordinateSystemInput()) {
-                            case GALACTIC:                                
+                        switch (getCoordinateSystemInput()) {
+                            case GALACTIC:
                                 break;
                             case EQUATORIAL:
                                 AstroCoordinate astro = new AstroCoordinate(skyPos.getX(), skyPos.getY());
@@ -221,7 +220,7 @@ public class HealpixMap implements CutOutInterface {
                         }
                         final long healpixPixel = index.ang2pix(new Pointing(Math.PI / 2.0 - Math.toRadians(skyPos.getY()), Math.toRadians(skyPos.getX())));
                         final Object[] row = this.getHdu().getRow((int) healpixPixel);
-                        final short[] val = (short[]) row[col];                        
+                        final short[] val = (short[]) row[col];
                         dataShort[y - 1][x - 1] = val[0];
                     }
                 }
@@ -232,7 +231,7 @@ public class HealpixMap implements CutOutInterface {
                 for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
                     for (int x = 1; x <= this.getWcs().getNaxis1(); x++) {
                         final Point2D.Double skyPos = this.getWcs().pix2wcs(x, y);
-                        switch(getCoordinateSystemInput()) {
+                        switch (getCoordinateSystemInput()) {
                             case GALACTIC:
                                 break;
                             case EQUATORIAL:
@@ -253,11 +252,11 @@ public class HealpixMap implements CutOutInterface {
                 fitsOutput.addHDU(createExtension(data, name, unit, getWcs()));
             } else if ("K".equals(format)) {
                 long[][] dataLong = new long[this.getWcs().getNaxis2()][this.getWcs().getNaxis1()];
-                 for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
+                for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
                     for (int x = 1; x <= this.getWcs().getNaxis1(); x++) {
                         final Point2D.Double skyPos = this.getWcs().pix2wcs(x, y);
-                        switch(getCoordinateSystemInput()) {
-                            case GALACTIC:                                
+                        switch (getCoordinateSystemInput()) {
+                            case GALACTIC:
                                 break;
                             case EQUATORIAL:
                                 AstroCoordinate astro = new AstroCoordinate(skyPos.getX(), skyPos.getY());
@@ -266,7 +265,7 @@ public class HealpixMap implements CutOutInterface {
                                 break;
                             default:
                                 throw new IllegalAccessException(getCoordinateSystemInput() + " is not supported");
-                        }                        
+                        }
                         final long healpixPixel = index.ang2pix(new Pointing(Math.PI / 2.0 - Math.toRadians(skyPos.getY()), Math.toRadians(skyPos.getX())));
                         final Object[] row = this.getHdu().getRow((int) healpixPixel);
                         final long[] val = (long[]) row[col];
@@ -280,8 +279,8 @@ public class HealpixMap implements CutOutInterface {
                 for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
                     for (int x = 1; x <= this.getWcs().getNaxis1(); x++) {
                         final Point2D.Double skyPos = this.getWcs().pix2wcs(x, y);
-                        switch(getCoordinateSystemInput()) {
-                            case GALACTIC:                                
+                        switch (getCoordinateSystemInput()) {
+                            case GALACTIC:
                                 break;
                             case EQUATORIAL:
                                 AstroCoordinate astro = new AstroCoordinate(skyPos.getX(), skyPos.getY());
@@ -290,7 +289,7 @@ public class HealpixMap implements CutOutInterface {
                                 break;
                             default:
                                 throw new IllegalAccessException(getCoordinateSystemInput() + " is not supported");
-                        }                        
+                        }
                         final long healpixPixel = index.ang2pix(new Pointing(Math.PI / 2.0 - Math.toRadians(skyPos.getY()), Math.toRadians(skyPos.getX())));
                         final Object[] row = this.getHdu().getRow((int) healpixPixel);
                         final float[] val = (float[]) row[col];
@@ -304,8 +303,8 @@ public class HealpixMap implements CutOutInterface {
                 for (int y = 1; y <= this.getWcs().getNaxis2(); y++) {
                     for (int x = 1; x <= this.getWcs().getNaxis1(); x++) {
                         final Point2D.Double skyPos = this.getWcs().pix2wcs(x, y);
-                        switch(getCoordinateSystemInput()) {
-                            case GALACTIC:                                
+                        switch (getCoordinateSystemInput()) {
+                            case GALACTIC:
                                 break;
                             case EQUATORIAL:
                                 AstroCoordinate astro = new AstroCoordinate(skyPos.getX(), skyPos.getY());
@@ -314,7 +313,7 @@ public class HealpixMap implements CutOutInterface {
                                 break;
                             default:
                                 throw new IllegalAccessException(getCoordinateSystemInput() + " is not supported");
-                        }                        
+                        }
                         final long healpixPixel = index.ang2pix(new Pointing(Math.PI / 2.0 - Math.toRadians(skyPos.getY()), Math.toRadians(skyPos.getX())));
                         final Object[] row = this.getHdu().getRow((int) healpixPixel);
                         final double[] val = (double[]) row[col];
@@ -462,8 +461,8 @@ public class HealpixMap implements CutOutInterface {
     @Override
     public void createCutoutFits(OutputStream outputStream) throws CutOutException {
         try {
-            Fits fits = compute();            
-            final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);        
+            Fits fits = compute();
+            final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
             fits.write(dataOutputStream);
         } catch (IllegalAccessException ex) {
             Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
