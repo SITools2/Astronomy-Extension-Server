@@ -130,6 +130,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
     try {
       final Object json = callImcce(objectName, epoch);
       final List<AstroCoordinate> astrocoordinates = processResponse(json);
+      if (astrocoordinates.isEmpty()) throw new NameResolverException(Status.SUCCESS_PARTIAL_CONTENT,"The server has send a response but no coordinates have been found.");
       response.addAstoCoordinates(astrocoordinates);
     } catch (NameResolverException ex) {
       if (getSuccessor() == null) {
