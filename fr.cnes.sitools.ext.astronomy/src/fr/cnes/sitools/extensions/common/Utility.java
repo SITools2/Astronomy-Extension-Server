@@ -320,7 +320,7 @@ public abstract class Utility {
      * @param table table
      * @return records
      */
-    private static List<Map<Field, String>> parseTable(final Table table) {
+    public static List<Map<Field, String>> parseTable(final Table table) {
         int nbFields = 0;
         final List<Map<Field, String>> responses = new ArrayList<Map<Field, String>>();
         final Map<Integer, Field> responseFields = new HashMap<Integer, Field>();

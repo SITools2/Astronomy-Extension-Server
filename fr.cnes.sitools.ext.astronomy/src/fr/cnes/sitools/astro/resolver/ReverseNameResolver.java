@@ -178,7 +178,8 @@ public class ReverseNameResolver {
         // building the query
         final String serviceToQueryTmp = TEMPLATE_REVERSE_NAME_RESOLVER.replace("<coordinates>", coordinates);
         final String serviceToQuery = serviceToQueryTmp.replace("<radius>", String.valueOf(radius));
-
+        LOG.log(Level.INFO, "Call reverse name resolver: {0}", serviceToQuery);
+        
         // requesting
         final ClientResourceProxy client = new ClientResourceProxy(serviceToQuery, Method.GET);
         final ClientResource clientResource = client.getClientResource();

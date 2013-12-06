@@ -37,6 +37,10 @@ import org.restlet.resource.ClientResource;
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class SingletonCacheShortnerURL {
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = Logger.getLogger(SingletonCacheShortnerURL.class.getName());
 
     /**
      * Maximum number of URLS that the service can manage.
@@ -177,11 +181,12 @@ public class SingletonCacheShortnerURL {
         final CacheManager cacheMgt = SingletonCacheShortnerURL.getInstance();
         final Cache cache = cacheMgt.getCache(CACHE_NAME);
         if (cache.isKeyInCache(storeId)) {
+            LOG.log(Level.INFO, "Cache is used for: {0}", storeId);
             final ConfigCache configCache = (ConfigCache) cache.get(storeId).getObjectValue();
             result = configCache.getConfig();
             configCache.setNbClicks(configCache.getNbClicks() + 1);
             cache.put(new Element(storeId, configCache));
-        } else {
+        } else {            
             throw new IllegalArgumentException("Cannot find the record in the cache");
         }
         return result;
