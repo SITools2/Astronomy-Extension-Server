@@ -1,4 +1,4 @@
-/*******************************************************************************
+ /*******************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -99,11 +99,11 @@ public class RetrieveFromCache extends AbstractVORequest {
         final String cacheID = SingletonCacheHealpixDataAccess.generateId(getApplicationID(),
                                                                           String.valueOf(getOrder()),
                                                                           String.valueOf(getHealpix()),
-                                                                          getCoordinateSystem());
-        LOG.log(Level.FINEST, "CacheID:", cacheID);
+                                                                          getCoordinateSystem());        
         final CacheManager cacheManager = SingletonCacheHealpixDataAccess.getInstance();
         final Cache cache = SingletonCacheHealpixDataAccess.getCache(cacheManager, getCacheControl());
         if (isKeyInCache(cache, cacheID, getCacheControl())) {
+            LOG.log(Level.INFO, "Cache is used in VO request for :", cacheID);
             final List<Map<Field, String>> responseInCache = (List<Map<Field, String>>) getFromCache(cache, cacheID, getCacheControl());
             responseCache = responseInCache;
         } else if (getSuccessor() == null) {

@@ -1,4 +1,4 @@
-/*******************************************************************************
+ /*******************************************************************************
  * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
@@ -42,9 +42,9 @@ public class ConstellationNameResolverTest {
         assertNotNull(result);
         assertEquals(1, result.getAstroCoordinates().size());
         List<AstroCoordinate> results = result.getAstroCoordinates();
-        assertEquals(16.8, results.get(0).getRaAsDecimal(), 0.01);
-        assertEquals(-30, results.get(0).getDecAsDecimal(), 0.01);
+        assertEquals(253.31, results.get(0).getRaAsDecimal(), 0.01);
+        assertEquals(-27.03, results.get(0).getDecAsDecimal(), 0.01);
         assertEquals(AstroCoordinate.CoordinateSystem.EQUATORIAL, results.get(0).getCoordinateSystem());
-        assertEquals("SITools2", result.getCredits());
+        assertEquals("Wikipedia", result.getCredits());
     }
 }
