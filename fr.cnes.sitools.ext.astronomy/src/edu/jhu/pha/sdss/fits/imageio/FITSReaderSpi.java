@@ -1,9 +1,7 @@
 package edu.jhu.pha.sdss.fits.imageio;
 
 import java.io.InputStream;
-import java.io.IOException;
 import java.util.Locale;
-import java.util.zip.GZIPInputStream;
 
 import javax.imageio.*;
 import javax.imageio.spi.*;

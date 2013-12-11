@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -58,7 +59,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "description",
     "fielDrefOrPARAMrefOrPARAM"
 })
-public class Group {
+public class Group implements Serializable {
 
     @XmlElement(name = "DESCRIPTION")
     protected AnyTEXT description;

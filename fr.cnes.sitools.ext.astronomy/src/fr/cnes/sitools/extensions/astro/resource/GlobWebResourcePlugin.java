@@ -1,20 +1,20 @@
-/******************************************************************************
- * Copyright 2011-2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
- * 
- * This program is free software: you can redistribute it and/or modify
+ *
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
@@ -33,25 +33,27 @@ import java.util.logging.Logger;
 
 /**
  * Provides the MIZAR configuration file.
- * 
- * <p>This service answers to the following scenario:<br/> 
- * As administrator, I want to change the GlobWeb configuration file by the administration pannel
- * in order to change easily the configuration file. 
+ *
+ * <p>
+ * This service answers to the following scenario:<br/>
+ * As administrator, I want to change the GlobWeb configuration file by the
+ * administration pannel in order to change easily the configuration file.
  * </p>
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class GlobWebResourcePlugin extends ResourceModel {
 
-  /**
-   * Logger.
-   */
-  private static final Logger LOG = Logger.getLogger(GlobWebResourcePlugin.class.getName());
-  /**
-   * Conf parameter that has been used in the administration panel to select the
-   * GlobWeb configuration file.
-   */
-  public static final String CONF_ADM = "conf";
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = Logger.getLogger(GlobWebResourcePlugin.class.getName());
+    /**
+     * Conf parameter that has been used in the administration panel to select
+     * the GlobWeb configuration file.
+     */
+    public static final String CONF_ADM = "conf";
+
     /**
      * Constructs the administation panel.
      */
@@ -64,15 +66,23 @@ public class GlobWebResourcePlugin extends ResourceModel {
         setDescription("Provides the configuration file of the Globweb module");
         setDataSetSelection(DataSetSelectionType.NONE);
         setResourceClassName(fr.cnes.sitools.extensions.astro.resource.GlobWebResource.class.getName());
-        ResourceParameter configurationFile = new ResourceParameter(CONF_ADM, "Filename located in <root>/data/freemarker", 
-                ResourceParameterType.PARAMETER_USER_INPUT);
-        configurationFile.setValueType("String");
-        this.addParam(configurationFile);
+        setConfiguration();
         this.completeAttachUrlWith("/globWeb");
     }
 
     /**
+     * Sets the configuration for the administrator.
+     */
+    private void setConfiguration() {
+        final ResourceParameter configurationFile = new ResourceParameter(CONF_ADM, "Filename located in <root>/data/freemarker",
+                ResourceParameterType.PARAMETER_USER_INPUT);
+        configurationFile.setValueType("String");
+        this.addParam(configurationFile);
+    }
+
+    /**
      * Validates.
+     *
      * @return error or warning
      */
     @Override
@@ -80,18 +90,18 @@ public class GlobWebResourcePlugin extends ResourceModel {
         return new Validator<ResourceModel>() {
             @Override
             public final Set<ConstraintViolation> validate(final ResourceModel item) {
-                Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
-                Map<String, ResourceParameter> params = item.getParametersMap();
-                ResourceParameter resourceParam = params.get(CONF_ADM);
+                final Set<ConstraintViolation> constraintList = new HashSet<ConstraintViolation>();
+                final Map<String, ResourceParameter> params = item.getParametersMap();
+                final ResourceParameter resourceParam = params.get(CONF_ADM);
                 if (!Util.isNotEmpty(resourceParam.getValue())) {
-                    ConstraintViolation constraint = new ConstraintViolation();
+                    final ConstraintViolation constraint = new ConstraintViolation();
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setMessage("The configuration filename must be set");
                     constraint.setValueName("conf");
-                    constraintList.add(constraint);                    
+                    constraintList.add(constraint);
                 }
                 return constraintList;
             }
         };
-    }    
+    }
 }

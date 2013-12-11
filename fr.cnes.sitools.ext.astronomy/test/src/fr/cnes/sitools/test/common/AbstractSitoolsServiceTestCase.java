@@ -1,35 +1,3 @@
-package fr.cnes.sitools.test.common;
-
-import com.thoughtworks.xstream.XStream;
-
-import fr.cnes.sitools.AbstractSitoolsServerTestCase;
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.common.SitoolsXStreamRepresentation;
-import fr.cnes.sitools.common.XStreamFactory;
-import fr.cnes.sitools.common.model.Resource;
-import fr.cnes.sitools.common.model.Response;
-import fr.cnes.sitools.project.model.Project;
-import fr.cnes.sitools.project.model.ProjectModule;
-import fr.cnes.sitools.server.Consts;
-import fr.cnes.sitools.server.Starter;
-import fr.cnes.sitools.tasks.AbstractTaskResourceTestCase;
-import fr.cnes.sitools.util.RIAPUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.logging.Logger;
-
-import org.junit.BeforeClass;
-import org.restlet.data.MediaType;
-import org.restlet.engine.Engine;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.xstream.XstreamRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
-
 /*******************************************************************************
  * Copyright 2012 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  * 
@@ -48,6 +16,35 @@ import org.restlet.resource.ClientResource;
  * You should have received a copy of the GNU General Public License
  * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+package fr.cnes.sitools.test.common;
+
+import com.thoughtworks.xstream.XStream;
+import fr.cnes.sitools.AbstractSitoolsServerTestCase;
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.SitoolsXStreamRepresentation;
+import fr.cnes.sitools.common.XStreamFactory;
+import fr.cnes.sitools.common.model.Resource;
+import fr.cnes.sitools.common.model.Response;
+import fr.cnes.sitools.project.model.Project;
+import fr.cnes.sitools.project.model.ProjectModule;
+import fr.cnes.sitools.server.Consts;
+import fr.cnes.sitools.server.Starter;
+import fr.cnes.sitools.tasks.AbstractTaskResourceTestCase;
+import fr.cnes.sitools.util.RIAPUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.logging.Logger;
+import org.junit.BeforeClass;
+import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.xstream.XstreamRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+
 /**
  *
  * @author malapert

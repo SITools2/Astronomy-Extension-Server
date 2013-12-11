@@ -4,12 +4,11 @@
 
 package jsky.coords;
 
-import jsky.util.StringUtil;
-
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import jsky.util.StringUtil;
 
 /**
  * Class representing a value of the form "deg:min:sec".

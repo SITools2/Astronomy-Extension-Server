@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
 import cds.moc.Array;
@@ -41,7 +44,7 @@ import java.util.logging.Logger;
  * ((HealpixMocDecorator)graph).importMOC(healpixMoc);
  * graph = new CircleDecorator(graph, 0.0, 0.0, 1, Scheme.RING, 10);
  * ((CircleDecorator)graph).setColor(Color.yellow); 
- * Utility.createJFrame(graph, 900, 500);
+ * Utility.createJFrame(graph, 900);
  * </code>
  * </pre></p>
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
@@ -55,27 +58,27 @@ public class HealpixMocDecorator extends HealpixGridDecorator {
   /**
    * MOC.
    */
-  private HealpixMoc moc = null;
-
+  private transient HealpixMoc moc = null;
+  
   /**
    * Constructs a MOC decorator.
    *
-   * @param g graph to decorate
+   * @param graph graph to decorate
    * @param color color of the MOC
    * @param alpha transparency
    * @throws Exception Healpix Exception
    */
-  public HealpixMocDecorator(Graph g, final Color color, float alpha) throws Exception {
-    super(g, 1, Scheme.NESTED, color, alpha);
+  public HealpixMocDecorator(final Graph graph, final Color color, final float alpha) throws Exception {
+    super(graph, 1, Scheme.NESTED, color, alpha);
   }
 
   /**
    * Cosntructs a MOC decorator.
-   * @param g graph to decorate
+   * @param graph graph to decorate
    * @throws Exception Healpix Exception
    */
-  public HealpixMocDecorator(final Graph g) throws Exception {
-    this(g, Color.RED, 0.5f);
+  public HealpixMocDecorator(final Graph graph) throws Exception {
+    this(graph, Color.RED, DEFAULT_TRANSPARENCY);
   }
 
   /**
@@ -87,52 +90,54 @@ public class HealpixMocDecorator extends HealpixGridDecorator {
   }
 
   @Override
-  public void paint(final Graphics g) {
-    getGraph().paint(g);
-    Graphics2D g2 = (Graphics2D) g;
-    Composite originalComposite = g2.getComposite();
-    g2.setComposite(makeComposite(this.getAlpha()));
-    drawPixels((Graphics2D) g, getColor());
-    g2.setComposite(originalComposite);
+  public void paint(final Graphics graphic) {
+    getGraph().paint(graphic);
+    final Graphics2D graphic2D = (Graphics2D) graphic;
+    final Composite originalComposite = graphic2D.getComposite();
+    graphic2D.setComposite(makeComposite(this.getAlpha()));
+    drawPixels((Graphics2D) graphic, getColor());
+    graphic2D.setComposite(originalComposite);
   }
 
   @Override
-  protected void drawPixels(final Graphics2D g2, final Color color) {
+  protected void drawPixels(final Graphics2D graphic2D, final Color color) {
     if (this.moc != null) {
-      g2.setPaint(color);      
-      int minOrder = this.moc.getMinLimitOrder();
-      int maxOrder = this.moc.getMaxLimitOrder();
+      graphic2D.setPaint(color);      
+      final int minOrder = this.moc.getMinLimitOrder();
+      final int maxOrder = this.moc.getMaxLimitOrder();
       for (int i = minOrder; i <= maxOrder; i++) {
-        long nside = (long) Math.pow(2.0D, (double) i);
+        final long nside = (long) Math.pow(2.0D, (double) i);
         try {
           getHealpixBase().setNside(nside);
         } catch (Exception ex) {
-          throw new RuntimeException(ex);
+          throw new GraphRuntimeException(ex);
         }
-        Array pixels = this.moc.getArray(i);
+        final Array pixels = this.moc.getArray(i);
         for (int j = 0; j < pixels.getSize(); j++) {
-          drawHealpixPolygon(g2, getHealpixBase(), pixels.get(j), getCoordinateTransformation());
+          drawHealpixPolygon(graphic2D, getHealpixBase(), pixels.get(j), getCoordinateTransformation());
         }
       }
     }
   }
   
   @Override
-  protected void drawHealpixPolygon(Graphics2D g2, final HealpixIndex healpix, long pix, final CoordinateTransformation coordinateTransformation) {
+  protected void drawHealpixPolygon(final Graphics2D graphic2D, final HealpixIndex healpix, final long pix, final CoordinateTransformation coordinateTransformation) {
     try {
-      int numberOfVectors = computeNumberPointsForPixel(getHealpixBase().getNside(), pix);
-      Vec3[] vectors = healpix.boundaries(pix, numberOfVectors);
+      final int numberOfVectors = computeNumberPointsForPixel(getHealpixBase().getNside(), pix);
+      final Vec3[] vectors = healpix.boundaries(pix, numberOfVectors);
       computeReferenceFrameTransformation(vectors, coordinateTransformation);
-      Coordinates[] shapes = splitHealpixPixelForDetectedBorder(vectors);
+      final Coordinates[] shapes = splitHealpixPixelForDetectedBorder(vectors);
 
+      final Polygon2D poly = new Polygon2D();
       for (int i = 0; i < shapes.length; i++) {
-        Coordinates shape = shapes[i];
-        List<Point2D.Double> pixels = shape.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
-        g2.draw(new Polygon2D(pixels));
-        g2.fill(new Polygon2D(pixels));
+        final Coordinates shape = shapes[i];
+        final List<Point2D.Double> pixels = shape.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
+        poly.setPoints(pixels);
+        graphic2D.draw(poly);
+        graphic2D.fill(poly);
       }
     } catch (Exception ex) {
-      LOG.log(Level.SEVERE, null, ex);
+      LOG.log(Level.FINER, null, ex);
     }
   }  
 }

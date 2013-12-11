@@ -384,7 +384,7 @@ public class RangeSet implements Externalizable
     boolean insert_a = (pos1&1)==0;
     boolean insert_b = (pos2&1)==0;
 
-    // cut off end
+    // cut out end
     sz=pos2+1;
     if (insert_b) r[sz++]=b;
 

@@ -6,7 +6,6 @@ package jsky.coords;
 
 import java.awt.geom.Point2D;
 
-import javax.swing.event.ChangeListener;
 
 
 /**

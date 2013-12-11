@@ -1,23 +1,28 @@
-/******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
- 
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
 import fr.cnes.sitools.astro.graph.Graph;
 import fr.cnes.sitools.astro.graph.Utility;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
@@ -41,23 +46,23 @@ public class PngRepresentation extends OutputRepresentation {
    * height of the PNG.
    */
   private int height;
-  /**
-   * width of the PNG.
-   */
-  private int width;
 
+  /**
+   * Empty constructor.
+   */
+  protected PngRepresentation() {
+    super(MediaType.IMAGE_PNG);
+  }
   /**
    * Creates a PNG representation.
    *
    * @param graphVal graph
-   * @param widthVal width in pixels
-   * @param heightVal heights in pixels
+   * @param heightVal height in pixels
    */
-  public PngRepresentation(final Graph graphVal, final int widthVal, final int heightVal) {
+  public PngRepresentation(final Graph graphVal, final int heightVal) {
     super(MediaType.IMAGE_PNG);
-    this.graph = graphVal;
-    this.width = widthVal;
-    this.height = heightVal;
+    setGraph(graphVal);
+    setHeight(heightVal);
   }
 
   /**
@@ -68,6 +73,39 @@ public class PngRepresentation extends OutputRepresentation {
    */
   @Override
   public final void write(final OutputStream out) throws IOException {
-    Utility.createPNG(graph, out, width, height);
+    LOG.log(Level.FINEST, "PNG size, h : {0}", getHeight());
+    Utility.createPNG(getGraph(), out, getHeight());
   }
+
+    /**
+     * Returns the graph.
+     * @return the graph
+     */
+    protected final Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * Sets the graph.
+     * @param graphVal the graph to set
+     */
+    protected final void setGraph(final Graph graphVal) {
+        this.graph = graphVal;
+    }
+
+    /**
+     * Returns the height.
+     * @return the height
+     */
+    protected final int getHeight() {
+        return height;
+    }
+
+    /**
+     * Sets the height in pixels.
+     * @param heightVal the height to set
+     */
+    protected final void setHeight(final int heightVal) {
+        this.height = heightVal;
+    }
 }

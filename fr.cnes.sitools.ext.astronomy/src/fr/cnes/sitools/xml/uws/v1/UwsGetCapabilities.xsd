@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://sitools.cnes.fr/xml/UWS/v1.0"
+    elementFormDefault="qualified" xmlns:tns="http://sitools.cnes.fr/xml/UWS/v1.0">
+    <xsd:simpleType name="imageFormatType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="image/fits"/>
+            <xsd:enumeration value="image/png"/>
+            <xsd:enumeration value="image/jpeg"/>
+            <xsd:enumeration value="image/gif"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="referenceFrameType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="EQUATORIAL"/>
+            <xsd:enumeration value="GALACTIC"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="Job">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Name" type="xsd:string"></xsd:element>
+                <xsd:element name="Title" type="xsd:string"></xsd:element>
+                <xsd:element name="Inputs" type="tns:inputsType"></xsd:element>
+                <xsd:element name="Outputs" type="tns:outputsType"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:complexType name="inputsType">
+        <xsd:sequence>
+            <xsd:element name="geometry" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:choice>
+                            <xsd:element name="circle">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="longitude">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="latitude">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="radius">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="healpix" maxOccurs="1">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="order">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="pixels" maxOccurs="1">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="polygon">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="longitude1">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="latitude1">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="longitude2">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="latitude2">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="longitude3">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="latitude3">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="longitude4">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="latitude4">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>                                                                                
+                                        <xsd:element name="rotation">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="documentation" type="xsd:string"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                                <xsd:attribute name="unit" type="xsd:string" default="deg"/>
+                                            </xsd:complexType>
+                                        </xsd:element>                                         
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>                            
+                        </xsd:choice>
+                    </xsd:sequence>
+                    <xsd:attribute name="referenceFrame" type="tns:referenceFrameType"/>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="image" maxOccurs="unbounded" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="documentation" type="xsd:string"/>
+                    </xsd:sequence>
+                    <xsd:attribute name="format" type="tns:imageFormatType"/>
+                    <xsd:attribute name="name" type="xsd:string" use="required"/>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="keyword" maxOccurs="unbounded" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="documentation" type="xsd:string"/>
+                    </xsd:sequence>
+                    <xsd:attribute name="name" type="xsd:string" use="required"/>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="outputsType">
+        <xsd:sequence>
+            <xsd:element name="image" maxOccurs="unbounded" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:attribute name="format" type="tns:imageFormatType"/>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="geoJson" minOccurs="0"/>
+            <xsd:element name="keyword" maxOccurs="unbounded" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

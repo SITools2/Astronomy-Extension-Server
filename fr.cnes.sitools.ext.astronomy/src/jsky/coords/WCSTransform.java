@@ -198,7 +198,8 @@ public class WCSTransform implements WorldCoordinateConverter {
         //this.ympix = 0.5 * this.nypix;
 //        this.mrot = 0.0;
 
-        this.equinox = head.getDoubleValue("EQUINOX");
+        // Modified for ICRS : for ICRS, equinox is implicit
+        this.equinox = head.getDoubleValue("EQUINOX",2000.0);
 
         if (head.findKey("PLTRAH")) {
             this.plate_fit = 1;
@@ -331,8 +332,8 @@ public class WCSTransform implements WorldCoordinateConverter {
                 }
                 if (wcstempLength > 4) {
                     // Chris S. changed this -- is it a zero- or one-based issue?
-                    //this.ptype = wcstemp.substring(4, 8);
-                    this.ptype = wcstemp.substring(3, 7);
+                    this.ptype = wcstemp.substring(4, 8);
+                    //this.ptype = wcstemp.substring(3, 7);
                 }
                 //  Find projection type
                 this.pcode = 0;  // default type is linear
@@ -793,7 +794,7 @@ public class WCSTransform implements WorldCoordinateConverter {
 
         // Set equinox from EQUINOX, EPOCH, or RADECSYS; default to 2000
         if ((head.findKey("EQUINOX"))) {
-            this.equinox = head.getDoubleValue("EQUINOX");
+            this.equinox = head.getDoubleValue("EQUINOX", 2000);
             ieq = 2000; // Allan: added 12-02-2009
         } else if ((head.findKey("EPOCH"))) {
             ieq = (int) head.getDoubleValue("EPOCH", 0.0);

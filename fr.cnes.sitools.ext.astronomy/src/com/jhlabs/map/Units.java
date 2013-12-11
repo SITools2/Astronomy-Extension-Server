@@ -16,9 +16,6 @@ limitations under the License.
 
 package com.jhlabs.map;
 
-import java.io.*;
-import java.text.*;
-
 public class Units {
 
 	// Angular units

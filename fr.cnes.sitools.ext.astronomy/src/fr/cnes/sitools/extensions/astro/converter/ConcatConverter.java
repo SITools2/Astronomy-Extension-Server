@@ -1,18 +1,18 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -53,11 +53,11 @@ public class ConcatConverter extends AbstractConverter {
         setClassAuthor("J-C Malapert");
         setClassOwner("CNES");
         setClassVersion("1.0");
-        ConverterParameter colIn = new ConverterParameter("ColIn", "Column on which the string will be concat",
+        final ConverterParameter colIn = new ConverterParameter("ColIn", "Column on which the string will be concat",
                 ConverterParameterType.CONVERTER_PARAMETER_IN);
-        ConverterParameter colOut = new ConverterParameter("ColOut", "Column where the result of this converter is set",
+        final ConverterParameter colOut = new ConverterParameter("ColOut", "Column where the result of this converter is set",
                 ConverterParameterType.CONVERTER_PARAMETER_OUT);
-        ConverterParameter stringToConcat = new ConverterParameter("StringToConcat",
+        final ConverterParameter stringToConcat = new ConverterParameter("StringToConcat",
                 "pattern of the string. %s is the column. When a cell from colIn is null then the function is not applied", ConverterParameterType.CONVERTER_PARAMETER_INTERN);
         stringToConcat.setValue("http://foo.com/%s/test/");
         stringToConcat.setValueType("String");
@@ -69,10 +69,10 @@ public class ConcatConverter extends AbstractConverter {
     @Override
     public final Record getConversionOf(final Record record) throws Exception {
         Record out = record;
-        Object attrIn = getInParam("ColIn", record).getValue();
-        AttributeValue attrOut = getOutParam("ColOut", record);
+        final Object attrIn = getInParam("ColIn", record).getValue();
+        final AttributeValue attrOut = getOutParam("ColOut", record);
         if (Util.isSet(attrIn)) {
-           String conversionResult = String.format(getInternParam("StringToConcat").getValue(), attrIn);
+           final String conversionResult = String.format(getInternParam("StringToConcat").getValue(), attrIn);
            attrOut.setValue(conversionResult);
         }
         LOG.log(Level.FINEST, "Conversion of record into {0}", out);
@@ -84,11 +84,11 @@ public class ConcatConverter extends AbstractConverter {
         return new Validator<AbstractConverter>() {
             @Override
             public final Set<ConstraintViolation> validate(final AbstractConverter item) {
-                Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
-                Map<String, ConverterParameter> params = item.getParametersMap();
+                final Set<ConstraintViolation> constraints = new HashSet<ConstraintViolation>();
+                final Map<String, ConverterParameter> params = item.getParametersMap();
                 ConverterParameter param = params.get("StringToConcat");
                 if (Util.isEmpty(param.getValue())) {
-                    ConstraintViolation constraint = new ConstraintViolation();
+                    final ConstraintViolation constraint = new ConstraintViolation();
                     constraint.setMessage("A pattern must be set ");
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setValueName(param.getName());
@@ -97,7 +97,7 @@ public class ConcatConverter extends AbstractConverter {
                 }
                 param = params.get("ColIn");
                 if (param.getAttachedColumn().isEmpty()) {
-                    ConstraintViolation constraint = new ConstraintViolation();
+                    final ConstraintViolation constraint = new ConstraintViolation();
                     constraint.setMessage("ColIn must be set");
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setValueName(param.getName());
@@ -105,7 +105,7 @@ public class ConcatConverter extends AbstractConverter {
                 }
                 param = params.get("ColOut");
                 if (param.getAttachedColumn().isEmpty()) {
-                    ConstraintViolation constraint = new ConstraintViolation();
+                    final ConstraintViolation constraint = new ConstraintViolation();
                     constraint.setMessage("ColOut must be set");
                     constraint.setLevel(ConstraintViolationLevel.CRITICAL);
                     constraint.setValueName(param.getName());

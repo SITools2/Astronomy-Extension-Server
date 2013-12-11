@@ -1,0 +1,60 @@
+<resourcePlugin>
+  <id>6796cfd2-9351-4e36-aa9f-b1f36e3cb55d</id>
+  <name>VOTable2GeoJson</name>
+  <description>Provides a capability to convert a VOTable to GeoJson</description>
+  <className>fr.cnes.sitools.extensions.astro.resource.Votable2GeoJsonResourcePlugin</className>
+  <classVersion>1.0</classVersion>
+  <classAuthor>J-C Malapert</classAuthor>
+  <classOwner>CNES</classOwner>
+  <parametersMap>
+    <entry>
+      <string>methods</string>
+      <resourceParameter>
+        <name>methods</name>
+        <description>List of methods implemented for this resource, separate by |</description>
+        <value>GET</value>
+        <valueType>xs:enum-multiple[GET, POST, PUT, DELETE]</valueType>
+        <type>PARAMETER_INTERN</type>
+        <sequence>2</sequence>
+      </resourceParameter>
+    </entry>
+    <entry>
+      <string>fileName</string>
+      <resourceParameter>
+        <name>fileName</name>
+        <description>The name of the file to generate. Fill it to download a file. Leave it Empty to view resource Representation.</description>
+        <value></value>
+        <valueType>xs:template</valueType>
+        <type>PARAMETER_USER_INPUT</type>
+        <sequence>3</sequence>
+      </resourceParameter>
+    </entry>
+    <entry>
+      <string>image</string>
+      <resourceParameter>
+        <name>image</name>
+        <description>The image url</description>
+        <value></value>
+        <valueType>xs:image</valueType>
+        <type>PARAMETER_INTERN</type>
+        <sequence>4</sequence>
+      </resourceParameter>
+    </entry>
+    <entry>
+      <string>url</string>
+      <resourceParameter>
+        <name>url</name>
+        <description>attachment url</description>
+        <value>/plugin/votable2geojson</value>
+        <valueType>xs:string</valueType>
+        <type>PARAMETER_ATTACHMENT</type>
+        <sequence>1</sequence>
+      </resourceParameter>
+    </entry>
+  </parametersMap>
+  <parent>654654654-68e4-4e2b-a921-6fd7de5dc4ef</parent>
+  <resourceClassName>fr.cnes.sitools.extensions.astro.resource.Votable2GeoJsonResource</resourceClassName>
+  <applicationClassName></applicationClassName>
+  <dataSetSelection>NONE</dataSetSelection>
+  <behavior>DISPLAY_IN_NEW_TAB</behavior>
+</resourcePlugin>

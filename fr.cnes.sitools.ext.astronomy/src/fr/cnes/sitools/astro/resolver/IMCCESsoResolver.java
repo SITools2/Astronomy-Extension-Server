@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
@@ -60,6 +63,11 @@ public class IMCCESsoResolver extends AbstractNameResolver {
    * Epoch for which the search is done.
    */
   private String epoch;
+  /**
+   * Empty constructor.
+   */
+  protected IMCCESsoResolver() {
+  }
 
   /**
    * Constructs a new IMCCE SsoDNet based on time.
@@ -68,25 +76,50 @@ public class IMCCESsoResolver extends AbstractNameResolver {
    * @param epochVal epoch for which the search is done
    */
   public IMCCESsoResolver(final String objectNameVal, final String epochVal) {
-    checkParameters(objectNameVal, epochVal);
-    this.objectName = objectNameVal;
-    this.epoch = epochVal;
+    setObjectName(objectNameVal);
+    setEpoch(epochVal);
+    checkInputParameters();
   }
-
   /**
-   * Checks the validity of input parameters.
-   * 
+   * Sets the object name.
+   * @param objectNameVal object name to set
+   */
+  protected final void setObjectName(final String objectNameVal) {
+      this.objectName = objectNameVal;
+  }
+  /**
+   * Returns the object name.
+   * @return the object name
+   */
+  protected final String getObjectName() {
+      return this.objectName;
+  }
+  /**
+   * Sets the epoch.
+   * @param epochVal the epoch to set
+   */
+  protected final void setEpoch(final String epochVal) {
+      this.epoch = epochVal;
+  }
+  /**
+   * Returns the epoch.
+   * @return the epoch
+   */
+  protected final String getEpoch() {
+      return this.epoch;
+  }
+  /**
+   * Checks if the input parameters are set.
+   *
    * <p>
    * Returns a IllegalArgumentException if one of the input parameters is <code>null</code> or empty.
    * </p>
-   * @param objectNameVal object name
-   * @param epochVal epoch for which the search is done
    */
-  private void checkParameters(final String objectNameVal, final String epochVal) {
-    if (objectNameVal == null || objectNameVal.isEmpty()) {
+  protected final void checkInputParameters() {
+    if (getObjectName() == null || getObjectName().isEmpty()) {
       throw new IllegalArgumentException("Object name must be set.");
     }
-    if (epochVal == null || epochVal.isEmpty()) {
+    if (getEpoch() == null || getEpoch().isEmpty()) {
       throw new IllegalArgumentException("cannot find the service.");
     }
   }
@@ -95,14 +128,15 @@ public class IMCCESsoResolver extends AbstractNameResolver {
   public final NameResolverResponse getResponse() {
     NameResolverResponse response = new NameResolverResponse(CREDITS_NAME);
     try {
-      Object json = callImcce(objectName, epoch);
-      List<AstroCoordinate> astrocoordinates = processResponse(json);      
+      final Object json = callImcce(objectName, epoch);
+      final List<AstroCoordinate> astrocoordinates = processResponse(json);
+      if (astrocoordinates.isEmpty()) throw new NameResolverException(Status.SUCCESS_PARTIAL_CONTENT,"The server has send a response but no coordinates have been found.");
       response.addAstoCoordinates(astrocoordinates);
     } catch (NameResolverException ex) {
-      if (this.successor != null) {
-        response = this.successor.getResponse();
+      if (getSuccessor() == null) {
+        response.setError(ex);
       } else {
-        response.setError(ex);       
+        response = getSuccessor().getResponse();
       }
     } finally {
       return response;
@@ -123,17 +157,17 @@ public class IMCCESsoResolver extends AbstractNameResolver {
     assert epochVal != null;
     Object json;
     // building the query
-    String service = TEMPLATE_NAME_RESOLVER.replace("<name>", objectNameVal);
-    service = service.replace("<epoch>", epochVal);
+    final String serviceTmp = TEMPLATE_NAME_RESOLVER.replace("<name>", objectNameVal);
+    final String service = serviceTmp.replace("<epoch>", epochVal);
     LOG.log(Level.INFO, "Call IMCCE name resolver: {0}", service);
 
     //requesting
-    ClientResourceProxy clientProxy = new ClientResourceProxy(service, Method.GET);
-    ClientResource client = clientProxy.getClientResource();   
-    Client clientHTTP = new Client(Protocol.HTTP);
+    final ClientResourceProxy clientProxy = new ClientResourceProxy(service, Method.GET);
+    final ClientResource client = clientProxy.getClientResource();
+    final Client clientHTTP = new Client(Protocol.HTTP);
     clientHTTP.setConnectTimeout(AbstractNameResolver.SERVER_TIMEOUT);
-    client.setNext(clientHTTP);    
-    Status status = client.getStatus();
+    client.setNext(clientHTTP);
+    final Status status = client.getStatus();
 
     // when the response is fine, we process the response
     if (status.isSuccess()) {
@@ -167,21 +201,21 @@ public class IMCCESsoResolver extends AbstractNameResolver {
    * @throws NameResolverException
    */
   private List<AstroCoordinate> processResponse(final Object json) throws NameResolverException {
-    List<AstroCoordinate> astroCoordinates = new ArrayList<AstroCoordinate>();
+    final List<AstroCoordinate> astroCoordinates = new ArrayList<AstroCoordinate>();
     if (json instanceof JSONObject) {
-      JSONObject jsonObj = (JSONObject) json;
+      final JSONObject jsonObj = (JSONObject) json;
       astroCoordinates.add(extractCoordinatesFromRecord(jsonObj));
     } else {
-      JSONArray jsonArray = (JSONArray) json;      
-      int length = jsonArray.length();
+      final JSONArray jsonArray = (JSONArray) json;
+      final int length = jsonArray.length();
       for (int i = 0; i < length; i++) {
         try {
-          JSONObject jsonObj = jsonArray.getJSONObject(i);
+          final JSONObject jsonObj = jsonArray.getJSONObject(i);
           astroCoordinates.add(extractCoordinatesFromRecord(jsonObj));
         } catch (JSONException ex) {
           throw new NameResolverException(Status.SERVER_ERROR_INTERNAL, ex);
         }
-      }      
+      }
     }
     return astroCoordinates;
   }
@@ -200,9 +234,9 @@ public class IMCCESsoResolver extends AbstractNameResolver {
       if (!jsonObj.has("type") || !jsonObj.has("ra") || !jsonObj.has("dec")) {
         throw new NameResolverException(Status.CLIENT_ERROR_NOT_FOUND, "Not found");
       }
-      double ra = Double.valueOf(jsonObj.getString("ra"));
-      double dec = Double.valueOf(jsonObj.getString("dec"));
-      AstroCoordinate astroCoord = new AstroCoordinate(ra, dec);
+      final double rightAscension = Double.valueOf(jsonObj.getString("ra"));
+      final double declination = Double.valueOf(jsonObj.getString("dec"));
+      final AstroCoordinate astroCoord = new AstroCoordinate(rightAscension, declination);
       astroCoord.addMetadata("type", jsonObj.getString("type"));
       return astroCoord;
     } catch (JSONException ex) {

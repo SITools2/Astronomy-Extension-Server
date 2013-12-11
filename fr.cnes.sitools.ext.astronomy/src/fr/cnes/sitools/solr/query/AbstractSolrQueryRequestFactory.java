@@ -1,44 +1,44 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- * 
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
  * This file is part of SITools2.
- * 
+ *
  * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.SearchGeometryEngine.CoordSystem;
-import fr.cnes.sitools.SearchGeometryEngine.Shape;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchSearch;
+import fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchSearch;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 import fr.cnes.sitools.util.Util;
 import healpix.essentials.Scheme;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * A factory for building a Solr Query request and a few utility methods to build
- * the SOLR string that is send to the SOLR server.
- * 
+ * A factory for building a Solr Query request and a few utility methods to
+ * build the SOLR string that is send to the SOLR server.
+ *
  * <p>
  * The choice of the implementation is based on the geometry (BBOX, Cone, ...)
  * </p>
- * 
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public abstract class AbstractSolrQueryRequestFactory {
-    
+
     /**
      * Maximal order of the Healpix index.
      */
@@ -50,6 +50,7 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Returns a new instance of the SOLR query String.
+     *
      * @param queryParameters User query parameters
      * @param coordSystem Coordinate system
      * @param solrBaseUrl URL of the SOLR server
@@ -71,8 +72,9 @@ public abstract class AbstractSolrQueryRequestFactory {
     }
 
     /**
-     * Creates a SOLR query, which is stored in <code>query</code> parameter.
-     * 
+     * Creates a SOLR query, which is stored in
+     * <code>query</code> parameter.
+     *
      * <p>
      * This method is doing the following steps:
      * <ul>
@@ -82,7 +84,7 @@ public abstract class AbstractSolrQueryRequestFactory {
      * <li>Transforms a Shape into Healpix pixels</li>
      * <li>Deletes the Geometry parameters</li>
      * <li>Computes and stores the Query String to send to SOLR</li>
-     * </ul>     
+     * </ul>
      * Each step is overidden by a subclass.
      * </p>
      */
@@ -106,18 +108,21 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Returns the Solr Server URL.
+     *
      * @return the URL of the SOLR server
      */
     protected abstract String getSolrServer();
 
     /**
      * Returns the user parameters to process.
+     *
      * @return the updated parameters list to process
      */
     protected abstract Map<String, Object> getUserParametersToProcess();
 
     /**
      * Returns the Shape that has been created based on user query parameters.
+     *
      * @param queryParametersToProcess Query parameters
      * @return a shape representing the geometry at a positional search
      */
@@ -125,24 +130,28 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Transforms the shape into a Healpix object.
+     *
      * @param shape shape representing the geometry of the positional search
      */
     protected abstract void computeHealpix(Shape shape);
 
     /**
      * Updates the list of query parameters by removing the geometry parameters.
+     *
      * @param queryParameters query parameters
      */
     protected abstract void removeUserGeometryParameters(Map<String, Object> queryParameters);
 
     /**
      * Returns the SOLR contraint part for the geometry.
+     *
      * @return the SOLR constrain for the geometry
      */
     protected abstract String geometryConstraint();
 
     /**
      * Returns the Solr request String.
+     *
      * @return the Solr request
      */
     public final String getSolrQueryRequest() {
@@ -151,6 +160,7 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Returns the Solr request String.
+     *
      * @param queryParametersToProcess User query parameters
      * @return the solr request
      */
@@ -160,6 +170,7 @@ public abstract class AbstractSolrQueryRequestFactory {
         queryParametersToProcess.remove("startPage");
         queryParametersToProcess.remove("count");
         queryParametersToProcess.remove("format");
+        queryParametersToProcess.remove("coordSystem");
         String searchTerms = searchTermsConstraint(queryParametersToProcess);
         String geometry = geometryConstraint();
         String parameters = parameterConstraint(queryParametersToProcess);
@@ -190,13 +201,14 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Returns the search term constraint part that has been built.
+     *
      * @param queryParameters Query parameters
      * @return search terms constraint
      */
     protected final String searchTermsConstraint(Map<String, Object> queryParameters) {
         String result = "";
         if (Util.isSet(queryParameters.get("q"))) {
-            result = "searchTerms:" + String.valueOf(queryParameters.get("q"));
+            result = "searchTerms:" + queryParameters.get("q");
             queryParameters.remove("q");
         }
         return result;
@@ -204,6 +216,7 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Returns the parameter constraint part that has been built.
+     *
      * @param queryParametersToProcess User query parameters
      * @return parameter constraint
      */
@@ -231,6 +244,7 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Returns the first item number of the request.
+     *
      * @param queryParametersToProcess User query parameters
      * @return the start
      */
@@ -246,6 +260,7 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Parse shape based on comma.
+     *
      * @param shape shape
      * @return an array of parameters
      */
@@ -255,10 +270,12 @@ public abstract class AbstractSolrQueryRequestFactory {
 
     /**
      * Escape a String according to SOLR syntax.
+     *
      * @param s String to espace if needed
-     * @return  Returns an escaped SOLR query
-     * @see http://lucene.apache.org/java/docs/queryparsersyntax.html#Escaping%20Special%20Characters
-
+     * @return Returns an escaped SOLR query
+     * @see
+     * http://lucene.apache.org/java/docs/queryparsersyntax.html#Escaping%20Special%20Characters
+     *
      */
     public static String escapeQueryChars(final String s) {
         StringBuilder sb = new StringBuilder();

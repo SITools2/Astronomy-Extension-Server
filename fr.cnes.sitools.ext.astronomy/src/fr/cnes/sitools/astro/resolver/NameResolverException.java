@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
 import java.util.logging.Logger;
@@ -28,11 +31,16 @@ public class NameResolverException extends Exception {
    * Logger.
    */
   private static final Logger LOG = Logger.getLogger(NameResolverException.class.getName());
-  
   /**
    * Status of the Exception.
    */
   private Status status;
+  /**
+   * Constructs a new NameResolverException with a Status.
+   */
+  public NameResolverException() {
+    this.status = Status.SUCCESS_OK;
+  }
 
   /**
    * Constructs a new NameResolverException with a Status.
@@ -79,5 +87,13 @@ public class NameResolverException extends Exception {
    */
   public final Status getStatus() {
     return this.status;
-  }   
+  }
+
+    /**
+     * Sets the status.
+     * @param statusVal the status to set
+     */
+    public final void setStatus(final Status statusVal) {
+        this.status = statusVal;
+    }
 }

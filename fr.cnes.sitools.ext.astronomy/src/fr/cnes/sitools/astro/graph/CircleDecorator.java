@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
 import healpix.core.HealpixIndex;
@@ -54,7 +57,7 @@ public class CircleDecorator extends HealpixGridDecorator {
   /**
    * Index representing by a set of pixels range.
    */
-  private RangeSet range;
+  private transient RangeSet range;
   
   /**
    * Default alpha composite sets to 0.2.
@@ -65,53 +68,53 @@ public class CircleDecorator extends HealpixGridDecorator {
    * Constructs a new circle on the <code>graph</code> layer with a <code>color</code>
    * and an <code>alpha</code> composite. 
    * 
-   * <p>The circle is defined by its center (<code>ra</code>, <code>dec</code>) and its
+   * <p>The circle is defined by its center (<code>rightAscension</code>, <code>declination</code>) and its
    * <code>radius</code> in decimal degree. The circle is computed as Healpix pixels at
    * <code>nside</code> with the <code>scheme</code>.</p>
    *
    * @param graph graph component to decore
-   * @param ra Right Ascension of the center in decimal degree
-   * @param dec Declination of the center in decimal degree
+   * @param rightAscension Right Ascension of the center in decimal degree
+   * @param declination Declination of the center in decimal degree
    * @param radius radius in decimal degree
    * @param nside nside
    * @param scheme scheme
    * @param color color
    * @param alpha alpha composite [0..1]
-   * @throws Exception Exception
+   * @throws GraphException Exception
    */
-  public CircleDecorator(final Graph graph, final double ra, final double dec, final double radius, final int nside, final Scheme scheme,
-                         final Color color, final float alpha) throws Exception {
+  public CircleDecorator(final Graph graph, final double rightAscension, final double declination, final double radius, final int nside, final Scheme scheme,
+                         final Color color, final float alpha) throws GraphException {
     super(graph, nside, scheme, color, alpha);
-    this.range = computeIntersect(ra, dec, radius);
+    this.range = computeIntersect(rightAscension, declination, radius);
   }
 
   /**
    * Constructs a new circle on the <code>graph</code> layer with a <code>color</code>
    * and an <code>alpha</code> composite. 
    * 
-   * <p>The circle is defined by its center (<code>ra</code>, <code>dec</code>) and its
+   * <p>The circle is defined by its center (<code>rigthAscension</code>, <code>declination</code>) and its
    * <code>radius</code> in decimal degree. The circle is computed as Healpix pixels at
    * <code>order</code> with the <code>scheme</code>.</p>
    *
    * @param graph graph component to decore
-   * @param ra Right Ascension of the center in decimal degree
-   * @param dec Declination of the center in decimal degree
+   * @param rigthAscension Right Ascension of the center in decimal degree
+   * @param declination Declination of the center in decimal degree
    * @param radius radius in decimal degree
    * @param scheme scheme
    * @param order order
    * @param color color
    * @param alpha alpha composite [0..1]
-   * @throws Exception if the transformation into Healpix pixels failed.
+   * @throws GraphException if the transformation into Healpix pixels failed.
    */
-  public CircleDecorator(final Graph graph, final double ra, final double dec, final double radius, final Scheme scheme, int order,
-                         final Color color, final float alpha) throws Exception {
-    this(graph, ra, dec, radius, (int) Math.pow(2, order), scheme, color, alpha);
+  public CircleDecorator(final Graph graph, final double rigthAscension, final double declination, final double radius, final Scheme scheme, final int order,
+                         final Color color, final float alpha) throws GraphException {
+    this(graph, rigthAscension, declination, radius, (int) Math.pow(2, order), scheme, color, alpha);
   }
 
   /**
    * Constructs a new circle on the <code>graph</code> layer. 
    *
-   * <p>The circle is defined by its center (<code>ra</code>, <code>dec</code>) and its
+   * <p>The circle is defined by its center (<code>rightAscension</code>, <code>declination</code>) and its
    * <code>radius</code> in decimal degree. The circle is computed as Healpix pixels at
    * <code>order</code> with the <code>scheme</code>.</p>
    *
@@ -119,40 +122,45 @@ public class CircleDecorator extends HealpixGridDecorator {
    * Moreover <code>DEFAULT_ALPHA_COMOSITE</code> is used by default.</p>
    *
    * @param graph graph component to decore
-   * @param ra Right Ascension of the center in decimal degree
-   * @param dec Declination of the center in decimal degree
+   * @param rightAscension Right Ascension of the center in decimal degree
+   * @param declination Declination of the center in decimal degree
    * @param radius radius in decimal degree
    * @param scheme scheme
    * @param order order
-   * @throws Exception Exception if the transformation into Healpix pixels failed.
+   * @throws GraphException Exception if the transformation into Healpix pixels failed.
    */
-  public CircleDecorator(final Graph graph, final double ra, final double dec, final double radius,
-                         final Scheme scheme, final int order) throws Exception {
-    this(graph, ra, dec, radius, (int) Math.pow(2, order), scheme, Color.CYAN, DEFAULT_ALPHA_COMOSITE);
+  public CircleDecorator(final Graph graph, final double rightAscension, final double declination, final double radius,
+                         final Scheme scheme, final int order) throws GraphException {
+    this(graph, rightAscension, declination, radius, (int) Math.pow(2, order), scheme, Color.CYAN, DEFAULT_ALPHA_COMOSITE);
   }
 
   /**
    * Computes and returns the Healpix pixels that intersect with the circle.
    *
-   * @param ra Right Ascension of the cirlce's center in decimal degree
-   * @param dec Declination of the circle's center in decimal degree
+   * @param rightAscension Right Ascension of the cirlce's center in decimal degree
+   * @param declination Declination of the circle's center in decimal degree
    * @param radius radius in decimal degree
    * @return Returns the ranges of intersected pixels
-   * @throws Exception if Healpix transformation failed.
+   * @throws GraphException if Healpix transformation failed.
    */
-  private RangeSet computeIntersect(final double ra, final double dec, final double radius) throws Exception {
-    Pointing point = new Pointing(Math.toRadians(Graph.DEC_MAX - dec), Math.toRadians(ra));
-    return this.getHealpixBase().queryDisc(point, Math.toRadians(radius));
+  private RangeSet computeIntersect(final double rightAscension, final double declination, final double radius) throws GraphException {
+    final Pointing point = new Pointing(Math.toRadians(Graph.DEC_MAX - declination), Math.toRadians(rightAscension));
+      try {
+          return this.getHealpixBase().queryDisc(point, Math.toRadians(radius));
+      } catch (Exception ex) {
+          LOG.log(Level.FINER, null, ex);
+          throw new GraphException(ex);
+      }
   }
 
   @Override
-  protected final void drawPixels(final Graphics2D g2, final Color color) {
-    g2.setPaint(color);
+  protected final void drawPixels(final Graphics2D graphic2D, final Color color) {
+    graphic2D.setPaint(color);
     try {
-      RangeSet.ValueIterator iter = this.range.valueIterator();
+      final RangeSet.ValueIterator iter = this.range.valueIterator();
       while (iter.hasNext()) {
-        long pixel = iter.next();
-        drawHealpixPolygon(g2, getHealpixBase(), pixel, getCoordinateTransformation());
+        final long pixel = iter.next();
+        drawHealpixPolygon(graphic2D, getHealpixBase(), pixel, getCoordinateTransformation());
       }
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);
@@ -166,23 +174,25 @@ public class CircleDecorator extends HealpixGridDecorator {
    * When the pixel area is "large", intermediate points on boundaries pixel are automatically computed
    * to smooth the boundary of the pixel on the plot.</p>
    *
-   * @param g2 graph component to decore
+   * @param graphic2D graph component to decore
    * @param healpix Healpix index
    * @param pix Pixel to draw
    * @param coordinateTransformation Coordinate transformation
    */
   @Override
-  protected final void drawHealpixPolygon(final Graphics2D g2, final HealpixIndex healpix, final long pix, final CoordinateTransformation coordinateTransformation) {
+  protected final void drawHealpixPolygon(final Graphics2D graphic2D, final HealpixIndex healpix, final long pix, final CoordinateTransformation coordinateTransformation) {
     try {
-      int numberOfVectors = computeNumberPointsForPixel(getHealpixBase().getNside(), pix);
-      Vec3[] vectors = healpix.boundaries(pix, numberOfVectors);
+      final int numberOfVectors = computeNumberPointsForPixel(getHealpixBase().getNside(), pix);
+      final Vec3[] vectors = healpix.boundaries(pix, numberOfVectors);
       computeReferenceFrameTransformation(vectors, coordinateTransformation);
-      Coordinates[] shapes = splitHealpixPixelForDetectedBorder(vectors);
+      final Coordinates[] shapes = splitHealpixPixelForDetectedBorder(vectors);
+      final Polygon2D poly = new Polygon2D();
       for (int i = 0; i < shapes.length; i++) {
-        Coordinates shape = shapes[i];
-        List<Point2D.Double> pixels = shape.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
-        g2.draw(new Polygon2D(pixels));
-        g2.fill(new Polygon2D(pixels));
+        final Coordinates shape = shapes[i];
+        final List<Point2D.Double> pixels = shape.getPixelsFromProjection(this.getProjection(), getRange(), getPixelWidth(), getPixelHeight());
+        poly.setPoints(pixels);
+        graphic2D.draw(poly);
+        graphic2D.fill(poly);
       }
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, null, ex);

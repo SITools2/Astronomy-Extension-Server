@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
@@ -32,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "encodingType")
 @XmlEnum
-public enum EncodingType {
+public enum EncodingType implements Serializable {
 
     @XmlEnumValue("gzip")
     GZIP("gzip"),

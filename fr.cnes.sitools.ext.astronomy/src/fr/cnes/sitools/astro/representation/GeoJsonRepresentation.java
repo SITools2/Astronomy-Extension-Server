@@ -1,21 +1,27 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -35,9 +41,14 @@ import org.restlet.resource.ClientResource;
  *              |__ geometry
  *              |       |__ coordinates (mandatory)
  *              |       |__ type (mandatory)
- *              |       |__ crs (mandatory)
  *              |__ properties
- *              |       |__ keyword/value(List) (identifier is mandatory)
+ *              |       |__ identifier (mandatory)
+ *              |       |__ quicklook
+ *              |       |__ crs (mandatory)
+ *              |       |   |__ properties
+ *              |       |       |__ name
+ *              |       |__ date-obs
+ *              |       |__ keyword/value(List)
  *              |__ services
  *                      |__ download
  *                              |__ mimetype
@@ -59,12 +70,18 @@ public class GeoJsonRepresentation extends OutputRepresentation {
   /**
    * Data model for the GeoJson representation.
    */
-  private final Map dataModel;
+  private Map dataModel;
   /**
    * Template file.
    */
-  private final String ftl;
+  private String ftl;
 
+  /**
+   * Empty constructor.
+   */
+  protected GeoJsonRepresentation() {
+      super(MediaType.APPLICATION_JSON);
+  }
   /**
    * Creates a GeoJson representation with a data model and a template as parameter.
    *
@@ -75,8 +92,8 @@ public class GeoJsonRepresentation extends OutputRepresentation {
    */
   public GeoJsonRepresentation(final Map dataModelVal, final String ftlVal) {
     super(MediaType.APPLICATION_JSON);
-    this.dataModel = dataModelVal;
-    this.ftl = ftlVal;
+    setDataModel(dataModelVal);
+      setFtl(ftlVal);
   }
 
   /**
@@ -96,10 +113,43 @@ public class GeoJsonRepresentation extends OutputRepresentation {
    */
   @Override
   public final void write(final OutputStream out) throws IOException {
-    Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
-            + ftl).get();
-    TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, dataModel, getMediaType());
+    final Representation metadataFtl = new ClientResource(LocalReference.createClapReference(getClass().getPackage()) + "/"
+            + getFtl()).get();
+    final TemplateRepresentation tpl = new TemplateRepresentation(metadataFtl, getDataModel(), getMediaType());
+    LOG.log(Level.FINEST, getFtl(), getDataModel());
     out.write(tpl.getText().getBytes());
     out.flush();
   }
+
+    /**
+     * Returns the data model.
+     * @return the dataModel
+     */
+    protected final Map getDataModel() {
+        return dataModel;
+    }
+
+    /**
+     * Sets the data model.
+     * @param dataModelVal the dataModel to set
+     */
+    protected final void setDataModel(final Map dataModelVal) {
+        this.dataModel = dataModelVal;
+    }
+
+    /**
+     * Returns the template filename.
+     * @return the ftl
+     */
+    protected final String getFtl() {
+        return ftl;
+    }
+
+    /**
+     * Sets the template filename.
+     * @param ftlVal the ftl to set
+     */
+    protected final void setFtl(final String ftlVal) {
+        this.ftl = ftlVal;
+    }
 }

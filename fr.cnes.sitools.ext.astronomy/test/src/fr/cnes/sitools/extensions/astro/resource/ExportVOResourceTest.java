@@ -1,33 +1,22 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
- * This program is free software: you can redistribute it and/or modify
+ * This file is part of SITools2.
+ *
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
@@ -36,11 +25,20 @@ import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import net.ivoa.xml.votable.v1.VOTABLE;
+import org.junit.After;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
 import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
 /**
  *
@@ -109,7 +107,7 @@ public class ExportVOResourceTest extends AbstractSitoolsServiceTestCase {
       ClientResource clientResource = new ClientResource(getHostUrl() + ExportVOResourceTest.request);
       Representation rep = clientResource.get();
       String result = rep.getText();
-      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.VotableFactory.class});
+      JAXBContext ctx = JAXBContext.newInstance(new Class[]{net.ivoa.xml.votable.v1.ObjectFactory.class});
       Unmarshaller um = ctx.createUnmarshaller();
       VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
       assertNotNull(votable);

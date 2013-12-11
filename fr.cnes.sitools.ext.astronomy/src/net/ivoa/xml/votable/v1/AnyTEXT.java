@@ -8,6 +8,7 @@
 
 package net.ivoa.xml.votable.v1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -41,7 +42,7 @@ import org.w3c.dom.Element;
 @XmlType(name = "anyTEXT", propOrder = {
     "content"
 })
-public class AnyTEXT {
+public class AnyTEXT implements Serializable {
 
     @XmlMixed
     @XmlAnyElement

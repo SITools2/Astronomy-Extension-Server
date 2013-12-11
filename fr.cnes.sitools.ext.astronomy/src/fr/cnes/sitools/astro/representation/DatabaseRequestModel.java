@@ -1,20 +1,21 @@
-/*******************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************/
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
 import fr.cnes.sitools.common.exception.SitoolsException;
@@ -41,11 +42,11 @@ import java.util.logging.Logger;
  * <p><pre>
  * Example usage:
  *
- * in your Java source: 
- * <code>TemplateSequenceModel rows = new DatabaseRequestModel(rs); 
+ * in your Java source:
+ * <code>TemplateSequenceModel rows = new DatabaseRequestModel(resultSet);
  * root.put("rows",rows);</code>
  *
- * in your .ftl 
+ * in your .ftl
  * <code><#list rows as row> ${row["column1"]} - ${row["column2"]}
  * <#/list></code>
  * </pre>
@@ -61,15 +62,22 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
     /**
      * DB Result set.
      */
-    private DatabaseRequest rs = null;
+    private DatabaseRequest request;
     /**
      * SITools2 converters.
      */
-    private ConverterChained converterChained = null;
+    private ConverterChained converterChained;
     /**
      * Number of rows.
      */
-    private int size;
+    private transient int sizeValue;
+
+    /**
+     * Empty constructor.
+     */
+    protected DatabaseRequestModel() {
+        setSize(0);
+    }
 
     /**
      * Creates a DatabaseRequest Model instance.
@@ -78,15 +86,15 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      * @param converterChainedVal the converter object
      */
     public DatabaseRequestModel(final DatabaseRequest rsVal, final ConverterChained converterChainedVal) {
-        this.rs = rsVal;
-        this.converterChained = converterChainedVal;
-        this.size = rs.getTotalCount();
+        setRequest(rsVal);
+        setConverterChained(converterChainedVal);
+        setSize(request.getTotalCount());
 
         // we need to close the connection here
         // otherwise the connection will not be free.
-        if (this.size == 0) {
+        if (this.size() == 0) {
             try {
-                this.rs.close();
+                this.request.close();
             } catch (SitoolsException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
@@ -98,42 +106,42 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      * @param sizeVal number of rows
      */
     public final void setSize(final int sizeVal) {
-        this.size = sizeVal;
+        this.sizeValue = sizeVal;
     }
 
     /**
      * Returns a row of the template model.
-     * @param i row number
+     * @param rowNumber row number
      * @return the template model
      * @throws TemplateModelException Exception
      */
     @Override
-    public final TemplateModel get(final int i) throws TemplateModelException {
-        TemplateModel model = null;
+    public final TemplateModel get(final int rowNumber) throws TemplateModelException {
+        TemplateModel model;
         try {
-            boolean nextResult = rs.nextResult();
+            final boolean nextResult = getRequest().nextResult();
             if (nextResult) {
-                model = new Row(rs, this.converterChained);
+                model = new Row(getRequest(), this.getConverterChained());
+            } else {
+                model = null;
             }
         } catch (SitoolsException ex) {
             try {
-                this.rs.close();
+                this.getRequest().close();
             } catch (SitoolsException ex1) {
                 LOG.log(Level.WARNING, null, ex1);
-            } finally {
-                throw new TemplateModelException(ex.toString());
             }
+            throw new TemplateModelException(ex);
         }
 
         // this is the last record and we need to close the connection
-        if (i == this.size() - 1) {
+        if (rowNumber == this.size() - 1) {
             try {
-                this.rs.close();
+                this.getRequest().close();
             } catch (SitoolsException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
-
         return model;
     }
 
@@ -143,7 +151,42 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
      */
     @Override
     public final int size()  {
-        return this.size;
+        return this.sizeValue;
+    }
+
+    /**
+     * Returns the database request.
+     * @return the request
+     */
+    protected final DatabaseRequest getRequest() {
+        return request;
+    }
+
+    /**
+     * Sets the database request.
+     * @param requestVal the database request to set
+     */
+    protected final void setRequest(final DatabaseRequest requestVal) {
+        this.request = requestVal;
+    }
+
+    /**
+     * Returns the converter.
+     * @return the converterChained
+     */
+    protected final ConverterChained getConverterChained() {
+        return converterChained;
+    }
+
+    /**
+     * Sets the converter.
+     * <p>
+     * We set the transfer function that could be defined in SITools2.
+     * </p>
+     * @param converterChainedVal the converterChained to set
+     */
+    protected final void setConverterChained(final ConverterChained converterChainedVal) {
+        this.converterChained = converterChainedVal;
     }
 
     /**
@@ -154,15 +197,21 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
         /**
          * Database result set.
          */
-        private DatabaseRequest rs = null;
+        private DatabaseRequest resultSet;
         /**
          * Mapping with database columns.
          */
-        private Map map = null;
+        private Map map;
         /**
          * SITools2 converter.
          */
-        private ConverterChained converterChained = null;
+        private ConverterChained converterChained;        
+        /**
+         * Emprty constructor.
+         */
+        protected Row() {
+            this.map = new HashMap();
+        }
 
         /**
          * Contructs a new row.
@@ -171,26 +220,76 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          * @throws SitoolsException Exception
          */
         public Row(final DatabaseRequest rsVal, final ConverterChained converterChainedVal) throws SitoolsException {
-            this.rs = rsVal;
-            this.converterChained = converterChainedVal;
-            this.map = new HashMap();
+            setResultSet(rsVal);
+            setConverterChained(converterChainedVal);
+            setMap(new HashMap());
             init();
         }
 
         /**
-         * Creates a HashMap of the different attributes from a record. 
-         * 
+         * Sets the result set.
+         * @param databaseRequestVal resultset to set
+         */
+        protected final void setResultSet(final DatabaseRequest databaseRequestVal) {
+            this.resultSet = databaseRequestVal;
+        }
+
+        /**
+         * Returns the resultSet.
+         * @return the resultSet
+         */
+        protected final DatabaseRequest getResultSet() {
+            return this.resultSet;
+        }
+
+        /**
+         * Returns the converter.
+         * @return the converterChained
+         */
+        protected final ConverterChained getConverterChained() {
+            return converterChained;
+        }
+
+        /**
+         * Sets the converter.
+         * @param converterChainedVal the converterChained to set
+         */
+        protected final void setConverterChained(final ConverterChained converterChainedVal) {
+            this.converterChained = converterChainedVal;
+        }
+
+        /**
+         * Sets the mapping.
+         * @param mapVal the mapping
+         */
+        protected final void setMap(final Map mapVal) {
+            this.map = mapVal;
+        }
+
+        /**
+         * Returns the mapping.
+         * @return the mapping
+         */
+        protected final Map getMap() {
+            return this.map;
+        }
+
+        /**
+         * Creates a HashMap of the different attributes from a record.
+         *
          * <p>
          * The key of the hash map is the columnAlias
          * </p>
          * @throws SitoolsException Exception
          */
-        private void init() throws SitoolsException {
-            Record record = this.rs.getRecord();
+        protected final void init() throws SitoolsException {
+            Record record;
             if (Util.isSet(converterChained)) {
-                record = converterChained.getConversionOf(record);
+                record = converterChained.getConversionOf(this.resultSet.getRecord());
+            } else {
+                record = this.resultSet.getRecord();
             }
-            List<AttributeValue> attValueList = record.getAttributeValues();
+            final List<AttributeValue> attValueList = record.getAttributeValues();
             for (AttributeValue iter : attValueList) {
                 this.map.put(iter.getName(), iter.getValue());
             }
@@ -204,8 +303,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final TemplateModel get(final String columnAlias) throws TemplateModelException {
-            TemplateModel model = new SimpleScalar(String.valueOf(this.map.get(columnAlias)));
-            return model;
+            return new SimpleScalar(String.valueOf(getMap().get(columnAlias)));
         }
 
         /**
@@ -215,16 +313,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
          */
         @Override
         public final boolean isEmpty() throws TemplateModelException {
-            boolean isEmpty = false;
-            if (this.rs == null) {
-                isEmpty = true;
-                try {
-                    this.rs.close();
-                } catch (SitoolsException ex) {
-                    LOG.log(Level.WARNING, null, ex);
-                }
-            }
-            return isEmpty;
+            return (getResultSet() == null);
         }
-    }    
+    }
 }

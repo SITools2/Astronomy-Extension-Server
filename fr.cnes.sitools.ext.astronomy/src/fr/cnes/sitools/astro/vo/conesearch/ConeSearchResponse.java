@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- * ****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
 import fr.cnes.sitools.astro.representation.DatabaseRequestModel;
@@ -58,7 +61,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
   /**
    * Data model that constains the conesearch response.
    */
-  private Map dataModel = new HashMap();
+  private final transient Map dataModel = new HashMap();
 
   /**
    * Constructor.
@@ -78,7 +81,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
    */
   private void createResponse(final ConeSearchInputParameters inputParameters, final ResourceModel model) {
     // createResponse
-    String dictionaryName = model.getParameterByName(ConeSearchProtocolLibrary.DICTIONARY).getValue();
+    final String dictionaryName = model.getParameterByName(ConeSearchProtocolLibrary.DICTIONARY).getValue();
 
     inputParameters.getDatasetApplication().getLogger().log(Level.FINEST, "DICO: {0}", dictionaryName);
 
@@ -95,7 +98,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
    * @param modelVal parameters from administration
    */
   private void setVotableParametersFromConfiguration(final ResourceModel modelVal) {
-    List<Param> params = new ArrayList<Param>();
+    final List<Param> params = new ArrayList<Param>();
     setVotableParam(params, modelVal, ConeSearchProtocolLibrary.COVERAGE, DataType.CHAR);
     setVotableParam(params, modelVal, ConeSearchProtocolLibrary.EPOCH, DataType.CHAR);
     setVotableParam(params, modelVal, ConeSearchProtocolLibrary.INSTRUMENT, DataType.CHAR);
@@ -111,17 +114,17 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
   }
 
   /**
-   * Set Votable Param.
+   * Sets Votable Param.
    *
    * @param params List of params
    * @param model data model
    * @param parameterName parameter name
    * @param datatype datatype
    */
-  private void setVotableParam(List<Param> params, final ResourceModel model, final String parameterName, final DataType datatype) {
-    String parameterValue = model.getParameterByName(parameterName).getValue();
+  private void setVotableParam(final List<Param> params, final ResourceModel model, final String parameterName, final DataType datatype) {
+    final String parameterValue = model.getParameterByName(parameterName).getValue();
     if (Util.isNotEmpty(parameterValue)) {
-      Param param = new Param();
+      final Param param = new Param();
       param.setName(parameterName);
       param.setValue(parameterValue);
       param.setDatatype(datatype);
@@ -139,9 +142,9 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
    */
   private void setVotableResource(final DataSetApplication datasetApp, final ConeSearchInputParameters inputParameters,
           final ResourceModel model, final String dictionaryName) {
-    List<Info> infos = new ArrayList<Info>();
-    List<Field> fieldList = new ArrayList<Field>();
-    List<String> columnList = new ArrayList<String>();
+    final List<Info> infos = new ArrayList<Info>();
+    final List<Field> fieldList = new ArrayList<Field>();
+    final List<String> columnList = new ArrayList<String>();
     DatabaseRequest databaseRequest = null;
 
     try {
@@ -151,7 +154,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       mappingList = checkRequiredMapping(mappingList, inputParameters.getVerb());
 
       // Get query parameters
-      DatabaseRequestParameters dbParams = setQueryParameters(datasetApp, model, inputParameters);
+      final DatabaseRequestParameters dbParams = setQueryParameters(datasetApp, model, inputParameters);
       databaseRequest = DatabaseRequestFactory.getDatabaseRequest(dbParams);
 
       // Execute query
@@ -165,20 +168,20 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       dataModel.put("sqlColAlias", columnList);
 
       // Complete data model with data
-      int count = databaseRequest.getCount();
-      count = (count > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : count;
-      ConverterChained converterChained = datasetApp.getConverterChained();
-      TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
+      final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();
+      final ConverterChained converterChained = datasetApp.getConverterChained();
+      final TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
       ((DatabaseRequestModel) rows).setSize(count);
       setVotableOK(infos);
       dataModel.put("infos", infos);
       dataModel.put("rows", rows);
     } catch (SitoolsException ex) {
+      LOG.log(Level.FINER, null, ex);
       try {
         databaseRequest.close();
       } catch (SitoolsException ex1) {
+          LOG.log(Level.FINER, null, ex1);
       } finally {
-        datasetApp.getLogger().log(Level.FINEST, "ERROR: {0}", ex.getMessage());
         setVotableError(infos, "Query", "Error in query", "Error in input query: " + ex.getMessage());
         if (!infos.isEmpty()) {
           this.dataModel.put("infos", infos);
@@ -188,7 +191,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
   }
 
   /**
-   * Set Query parameters to the database.
+   * Sets Query parameters to the database.
    *
    * @param datasetApp Dataset Application
    * @param model Data model
@@ -202,14 +205,14 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
     final String zCol = model.getParameterByName(ConeSearchProtocolLibrary.Z).getValue();
 
     // Get the dataset
-    DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil(datasetApp, inputParameters.getRequest(),
+    final DataSetExplorerUtil dsExplorerUtil = new DataSetExplorerUtil(datasetApp, inputParameters.getRequest(),
             inputParameters.getContext());
 
     // Get query parameters
-    DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
+    final DatabaseRequestParameters dbParams = dsExplorerUtil.getDatabaseParams();
 
     // Get dataset records
-    int nbRecordsInDataSet = datasetApp.getDataSet().getNbRecords();
+    final int nbRecordsInDataSet = datasetApp.getDataSet().getNbRecords();
 
     // Get max records that is defined by admin
     int nbMaxRecords = Integer.valueOf(model.getParameterByName(ConeSearchProtocolLibrary.MAX_RECORDS).getValue());
@@ -218,36 +221,36 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
     // Set max records
     dbParams.setPaginationExtend(nbMaxRecords);
 
-    double[] xyz = computeXyzFromRaDec(inputParameters.getRa(), inputParameters.getDec());
-    double zmin = ((inputParameters.getDec() - inputParameters.getSr()) <= -90) ? -1 : Math.sin(Math
+    final double[] xyz = computeXyzFromRaDec(inputParameters.getRa(), inputParameters.getDec());
+    final double zmin = ((inputParameters.getDec() - inputParameters.getSr()) <= -90) ? -1 : Math.sin(Math
             .toRadians(inputParameters.getDec() - inputParameters.getSr()));
-    double zmax = ((inputParameters.getDec() + inputParameters.getSr()) >= 90) ? 1 : Math.sin(Math
+    final double zmax = ((inputParameters.getDec() + inputParameters.getSr()) >= 90) ? 1 : Math.sin(Math
             .toRadians(inputParameters.getDec() + inputParameters.getSr()));
 
     // Create predicat definition
-    String predicatDefinition = String.format(" AND %s <= %s AND %s >= %s AND %s*%s + %s*%s + %s*%s >= %s", zCol,
+    final String predicatDefinition = String.format(" AND %s <= %s AND %s >= %s AND %s*%s + %s*%s + %s*%s >= %s", zCol,
             String.valueOf(zmax), zCol, String.valueOf(zmin), xCol, xyz[0], yCol, xyz[1], zCol, xyz[2],
             String.valueOf(Math.cos(Math.toRadians(inputParameters.getSr()))));
 
-    Predicat predicat = new Predicat();
+    final Predicat predicat = new Predicat();
     predicat.setStringDefinition(predicatDefinition);
-    List<Predicat> predicatList = dbParams.getPredicats();
+    final List<Predicat> predicatList = dbParams.getPredicats();
     predicatList.add(predicat);
     dbParams.setPredicats(predicatList);
     return dbParams;
   }
 
   /**
-   * Set the votable error.
+   * Sets the votable error.
    *
-   * @param infos
-   * @param id
-   * @param name
-   * @param value
+   * @param infos infos
+   * @param id id
+   * @param name name
+   * @param value value
    */
-  private void setVotableError(List<Info> infos, final String id, final String name, final String value) {
+  private void setVotableError(final List<Info> infos, final String id, final String name, final String value) {
     if (Util.isNotEmpty(name)) {
-      Info info = new Info();
+      final Info info = new Info();
       info.setID(id);
       info.setName(name);
       info.setValueAttribute(value);
@@ -260,8 +263,8 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
    *
    * @param infos infos
    */
-  private void setVotableOK(List<Info> infos) {
-    Info info = new Info();
+  private void setVotableOK(final List<Info> infos) {
+    final Info info = new Info();
     info.setName("QUERY_STATUS");
     info.setValueAttribute("OK");
     infos.add(info);
@@ -274,18 +277,15 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
 
   /**
    * Computes Equatorial to cartesian.
-   * @param ra right ascension
-   * @param dec declination
+   * @param rightAscension right ascension
+   * @param declination declination
    * @return (x,y,z) coordinates
    */
-  private double[] computeXyzFromRaDec(final double ra, final double dec) {
-    double[] matrix = new double[3];
-    double z = Math.sin(Math.toRadians(dec));
-    double y = Math.cos(Math.toRadians(dec)) * Math.sin(Math.toRadians(ra));
-    double x = Math.cos(Math.toRadians(dec)) * Math.cos((Math.toRadians(ra)));
-    matrix[0] = x;
-    matrix[1] = y;
-    matrix[2] = z;
+  private double[] computeXyzFromRaDec(final double rightAscension, final double declination) {
+    final double[] matrix = new double[]{
+    Math.cos(Math.toRadians(declination)) * Math.cos(Math.toRadians(rightAscension)),
+    Math.cos(Math.toRadians(declination)) * Math.sin(Math.toRadians(rightAscension)),
+    Math.sin(Math.toRadians(declination))};
     return matrix;
   }
 
@@ -302,14 +302,14 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
     List<ColumnConceptMappingDTO> colConceptMappingDTOList = null;
 
     // Get the list of dictionnaries related to the datasetApplication
-    List<DictionaryMappingDTO> dicoMappingList = datasetApp.getDictionaryMappings();
+    final List<DictionaryMappingDTO> dicoMappingList = datasetApp.getDictionaryMappings();
     if (!Util.isSet(dicoMappingList) || dicoMappingList.isEmpty()) {
       throw new SitoolsException("No mapping with VO concepts has been done. please contact the administrator");
     }
 
     // For each dictionary, find the interesting one and return the mapping SQLcolumn/concept
     for (DictionaryMappingDTO dicoMappingIter : dicoMappingList) {
-      String dicoName = dicoMappingIter.getDictionaryName();
+      final String dicoName = dicoMappingIter.getDictionaryName();
       if (dicoToFind.equals(dicoName)) {
         colConceptMappingDTOList = dicoMappingIter.getMapping();
         break;
@@ -325,10 +325,9 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
    * @param columnList List of SQL column
    * @param mappingList List of SQL column/concept
    */
-  private void setFields(List<Field> fieldList, List<String> columnList, final List<ColumnConceptMappingDTO> mappingList) {
+  private void setFields(final List<Field> fieldList, final List<String> columnList, final List<ColumnConceptMappingDTO> mappingList) {
 
     for (ColumnConceptMappingDTO mappingIter : mappingList) {
-
       String id = null;
       String name = null;
       String ucd = null;
@@ -343,7 +342,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       String arraysize = null;
       String descriptionValue = null;
       columnList.add(mappingIter.getColumnAlias());
-      Concept concept = mappingIter.getConcept();
+      final Concept concept = mappingIter.getConcept();
       if (concept.getName() != null) {
         name = concept.getName();
       }
@@ -383,7 +382,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       if (concept.getDescription() != null) {
         descriptionValue = concept.getDescription();
       }
-      Field field = new Field();
+      final Field field = new Field();
       field.setID(id);
       field.setName(name);
       field.setUcd(ucd);
@@ -398,7 +397,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
       field.setType(type);
       field.setXtype(xtype);
       field.setArraysize(arraysize);
-      AnyTEXT anyText = new AnyTEXT();
+      final AnyTEXT anyText = new AnyTEXT();
       anyText.getContent().add(descriptionValue);
       field.setDESCRIPTION(anyText);
       fieldList.add(field);
@@ -414,14 +413,14 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
    * @return Returns the new mapping according to VERB
    * @throws SitoolsException columns with UCD ID_MAIN, POS_EQ_RA_MAIN, POS_EQ_DEC_MAIN must be mapped
    */
-  private List<ColumnConceptMappingDTO> checkRequiredMapping(final List<ColumnConceptMappingDTO> mappingList, int verb)
+  private List<ColumnConceptMappingDTO> checkRequiredMapping(final List<ColumnConceptMappingDTO> mappingList, final int verb)
           throws SitoolsException {
     final int nbConceptToMap = ConeSearchProtocolLibrary.REQUIRED_UCD_CONCEPTS.size();
     int nbConcept = 0;
-    List<ColumnConceptMappingDTO> conceptToMap = new ArrayList<ColumnConceptMappingDTO>(mappingList);
+    final List<ColumnConceptMappingDTO> conceptToMap = new ArrayList<ColumnConceptMappingDTO>(mappingList);
     for (ColumnConceptMappingDTO mappingIter : mappingList) {
-      Concept concept = mappingIter.getConcept();
-      String ucdValue = concept.getPropertyFromName("ucd").getValue();
+      final Concept concept = mappingIter.getConcept();
+      final String ucdValue = concept.getPropertyFromName("ucd").getValue();
       if (Util.isNotEmpty(ucdValue) && ConeSearchProtocolLibrary.REQUIRED_UCD_CONCEPTS.contains(ucdValue)) {
         nbConcept++;
       } else if (verb == 1) {
@@ -432,8 +431,6 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
     if (nbConceptToMap != nbConcept) {
       throw new SitoolsException("columns with UCD ID_MAIN, POS_EQ_RA_MAIN, POS_EQ_DEC_MAIN must be mapped");
     }
-
     return conceptToMap;
-
   }
 }

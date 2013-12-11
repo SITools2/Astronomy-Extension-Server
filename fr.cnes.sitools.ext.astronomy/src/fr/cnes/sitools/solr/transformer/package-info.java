@@ -1,6 +1,6 @@
 /**
 This package contains classes for inserting metadadata in a SOLR server.
- 
+
 Metadata is stored in a SGBD, so we need to configure the SOLR xml file. This file
 is used to parse the SGBG by the Solr DataImportHandler. An example of this file is given
 as follows:
@@ -8,7 +8,7 @@ as follows:
 <code>
 <dataConfig>
     <dataSource  type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/cnes_test?schema=fuse" user="<login>" password="<pwd>" />
-    <document name="headers">           
+    <document name="headers">
         <entity name="headers" query="select * from fuse.headers" transformer="fr.cnes.sitools.solr.transformer.WcsTransformer" minOrder="3" maxOrder="13" scheme="NESTED">
             <field column="targname" name="properties.title"/>
             <field column="dataset" name="properties.identifier" />
@@ -41,8 +41,8 @@ Then we need to modify the schema.xml file in the SOLR core as follows:
 <pre>
 <code>
  <fields>
-	<!-- general properties -->
-	<field name="properties.identifier" type="string" indexed="true" stored="true" />        
+        <!-- general properties -->
+	<field name="properties.identifier" type="string" indexed="true" stored="true" />
         <field name="properties.title" type="text_ws" indexed="true" stored="true"/>
         <field name="properties.description" type="text_ws" indexed="true" stored="true"/>
         <field name="properties.ele" type="sdouble" indexed="true" stored="true"/>
@@ -74,15 +74,13 @@ Then we need to modify the schema.xml file in the SOLR core as follows:
         <field name="properties.dateobs" type="date" indexed="true" stored="true"/>
 	<!-- no standard -->
 	<dynamicField name="properties.nostandard.*" type="text_ws" indexed="true" stored="true"/>
-	
 	<!-- Healpix index -->
 	<dynamicField name="order*" type="slong" indexed="true" stored="true" multiValued="true"/>
-
         <field name="searchTerms" type="text" indexed="true" stored="false" multiValued="true" />
         <copyField source="properties.identifier" dest="searchTerms" />
         <copyField source="properties.description" dest="searchTerms" />
-        <copyField source="properties.nostandard.*" dest="searchTerms" />        
- </fields> 
+        <copyField source="properties.nostandard.*" dest="searchTerms" />
+ </fields>
 </code>
 </pre>
 */

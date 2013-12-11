@@ -29,7 +29,7 @@ graph = new CircleDecorator(graph, 0, 0, 20, 4, Scheme.RING, Color.CYAN, 0.5f);
 </code>
 </pre>
 
-@copyright 2011, 2012 CNES
+@copyright 2010-2013 CNES
 @author Jean-Christophe Malapert
 */
 package fr.cnes.sitools.astro.graph;

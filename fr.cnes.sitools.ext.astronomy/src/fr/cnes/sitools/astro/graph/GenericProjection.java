@@ -1,18 +1,21 @@
-/**
- * *****************************************************************************
- * Copyright 2011-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SITools2. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************************
- */
+ * You should have received a copy of the GNU General Public License
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
 import com.jhlabs.map.MapMath;
@@ -48,7 +51,6 @@ public class GenericProjection extends Graph {
   public GenericProjection(final ProjectionType projectionType) {
     this.setProjection(ProjectionFactory.fromPROJ4Specification(new String[]{"+proj=" + projectionType.getProjectionCode()}));
     this.setRange(analyzeRange());
-    setupImageSize();
   }
 
   /**
@@ -61,10 +63,10 @@ public class GenericProjection extends Graph {
     double ymax = -1 * DEFAULT_VALUE;
     double xmin = DEFAULT_VALUE;
     double xmax = -1 * DEFAULT_VALUE;
-    double[] rangePixels = new double[NUMBER_VALUES_RANGE];
+    final double[] rangePixels = new double[NUMBER_VALUES_RANGE];
     for (int i = Graph.LAT_MIN; i <= Graph.LAT_MAX; i++) {
       for (int j = Graph.LONG_MIN; j <= Graph.LONG_MAX; j++) {
-        Point2D.Double point2D = new Point2D.Double();
+        final Point2D.Double point2D = new Point2D.Double();
         try {
           this.getProjection().project(MapMath.degToRad(j), MapMath.degToRad(i), point2D);
         } catch (ProjectionException ex) {
@@ -88,16 +90,5 @@ public class GenericProjection extends Graph {
     rangePixels[Y_MIN] = ymin;
     rangePixels[Y_MAX] = ymax;
     return rangePixels;
-  }
-
-  /**
-   * Sets up image size with a fixed height.
-   */
-  private void setupImageSize() {
-    double deltaX = getRange()[X_MAX] - getRange()[X_MIN];
-    double deltaY = getRange()[Y_MAX] - getRange()[Y_MIN];
-    double ratio = Math.abs(deltaX / deltaY);
-    int height = getPixelHeight();
-    setPixelWidth((int) Math.ceil(height * ratio));
   }
 }

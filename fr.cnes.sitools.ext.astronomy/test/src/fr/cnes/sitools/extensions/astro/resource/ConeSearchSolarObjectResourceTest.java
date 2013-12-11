@@ -1,27 +1,25 @@
-/*
- * Copyright 2013 - CENTRE NATIONAL d'ETUDES SPATIALES
+ /*******************************************************************************
+ * Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * This program is free software: you can redistribute it and/or modify
+ * SITools2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SITools2 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
-import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 import java.io.IOException;
@@ -30,11 +28,9 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
-import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -45,10 +41,10 @@ import org.restlet.resource.ClientResource;
  */
 public class ConeSearchSolarObjectResourceTest extends AbstractSitoolsServiceTestCase {
 
-  private final String urlAttachment = "/plugin/solarObjects";
+  private final String urlAttachment = "/plugin/solarObjects/{coordSystem}";
   private ResourceModel rm;
   private static final String datasetId = "cc659853-d130-4434-b52b-89ec57db3735";
-  private static final String request = "/fuse/plugin/solarObjects?healpix=8&order=8&EPOCH=2013-01-23T18:31:00";
+  private static final String request = "/fuse/plugin/solarObjects/EQUATORIAL?healpix=8&order=8&EPOCH=2013-01-23T18:31:00";
 
   public ConeSearchSolarObjectResourceTest() {
   }
