@@ -109,7 +109,7 @@
 
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
             <zipgroupfileset dir="dist" includes="*.jar"/>           
-            <zipgroupfileset dir="dist/lib" includes="ehcache-2.7.0.jar,fits.jar,jai_codec.jar,jai_core.jar,jai_imageio.jar,mlibwrapper_jai.jar"/>
+            <zipgroupfileset dir="lib" includes="ehcache-2.7.0.jar,fits.jar,jai_codec.jar,jai_core.jar,jai_imageio.jar,mlibwrapper_jai.jar"/>
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
