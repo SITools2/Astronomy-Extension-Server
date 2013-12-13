@@ -222,6 +222,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
                             response = Utility.getDataType(dataType, value);
                             dataModel.addProperty(field.getName(), response);
                         } catch (NumberFormatException ex) {
+                            //TO DO : need to parse for not a value number
                             LOG.log(Level.SEVERE, "No number has been provided for " + field.getName() +" - skip the attribute", ex);
                         }
                         break;
