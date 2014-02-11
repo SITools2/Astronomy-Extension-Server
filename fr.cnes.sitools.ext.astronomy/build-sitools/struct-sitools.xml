@@ -117,7 +117,7 @@
 			<include name="**/*.zip"/>
 		</fileset>
 	</path>
-	
+	<property name="compile.classpath" refid="compile.classpath"/>
 	
 
 <!-- Tous les fichiers ressource -->

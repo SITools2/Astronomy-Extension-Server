@@ -7,9 +7,18 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
+<!DOCTYPE project [
+   <!ENTITY struct  SYSTEM "build-sitools/struct-sitools.xml">
+]>
 <project name="Astronomy-Extension-v2" default="default" basedir=".">
     <description>Builds, tests, and runs the project Astronomy-Extension-v2.</description>
+    <!-- Import des properties -->
+    &struct;
+    <property name="platforms.JDK_1.6.home" value="${java.home}" />
+    <property name="libs.SITools2.classpath" value="${compile.classpath}" />
+    <property name="platform.javadoc" value="No" />
     <import file="nbproject/build-impl.xml"/>
+
     <!--
 
     There exist several targets which are by default empty and which can be 
