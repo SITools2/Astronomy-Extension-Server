@@ -111,6 +111,9 @@ public abstract class Utility {
         double raValue;
         if (Utility.isSet(field.getUnit()) && field.getUnit().contains("h:m:s")) {
             raValue = AstroCoordinate.parseRa(valRa);
+        } else if (valRa.contains(" ")) {
+            LOG.log(Level.WARNING, "No unit is given for RA, we suppose the unit is h:m:s");
+            raValue = AstroCoordinate.parseRa(valRa);
         } else {
             raValue = Double.valueOf(valRa);
         }
@@ -130,6 +133,9 @@ public abstract class Utility {
         final String valDec = iterDoc.get(field);
         double decValue;
         if (Utility.isSet(field.getUnit()) && field.getUnit().contains("d:m:s")) {
+            decValue = AstroCoordinate.parseDec(valDec);
+        } else if (valDec.contains(" ")) {
+            LOG.log(Level.WARNING, "No unit is given for DEC, we suppose the unit is d:m:s");
             decValue = AstroCoordinate.parseDec(valDec);
         } else {
             decValue = Double.valueOf(valDec);
