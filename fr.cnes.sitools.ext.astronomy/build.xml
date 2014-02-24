@@ -79,8 +79,10 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <!-- directory where the whole zip is created -->
+    <property name="store.dir" value="store"/>
+    
     <!-- task definition -->
-
     <taskdef name="plantuml"
          classname="net.sourceforge.plantuml.ant.PlantUmlTask"
          classpath="lib/plantuml.jar" />
@@ -97,6 +99,11 @@
         </plantuml>
     </target>
     
+    <!-- Remove the whole zip -->
+    <target name="-post-clean" description="Clean the whole zip.">        
+        <delete dir="${store.dir}"/>
+    </target>
+    
     <!-- store all dependencies in a unique JAR -->
     <target name="default" depends="jar" description="Build the project.">
 
@@ -107,8 +114,6 @@
         <property name="store.jar.name" value="fr.cnes.sitools.ext.astronomy"/>
 
         <!-- don't edit below this line -->
-
-        <property name="store.dir" value="store"/>
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
 
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
