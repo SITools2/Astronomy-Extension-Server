@@ -98,7 +98,7 @@
     </target>
     
     <!-- store all dependencies in a unique JAR -->
-    <target name="package-for-store" depends="jar">
+    <target name="default" depends="jar" description="Build the project.">
 
         <!-- Change the value of this property to be the name of your JAR,
              minus the .jar extension. It should not have spaces.
@@ -131,6 +131,9 @@
         </zip>
 
         <delete file="${store.dir}/temp_final.jar"/>
-
-    </target>    
+        <delete dir="dist/lib"/>
+        <copy todir="dist/lib" >  
+            <fileset dir="lib" includes="**"/>  
+        </copy>
+    </target> 
 </project>
