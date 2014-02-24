@@ -27,6 +27,6 @@ Edit the `build.properties` file and update the `ROOT_DIRECTORY` value to the SI
 
 ### Installing the plugin
 
-Copy the contain in the `dist` directory to `<ROOT_DIRECTORY>/workspace/fr.cnes.sitools.core/ext/`
+Copy the contain from the `dist` directory to `<ROOT_DIRECTORY>/workspace/fr.cnes.sitools.core/ext/`
 
 	$ cp -r dist/* <ROOT_DIRECTORY>/workspace/fr.cnes.sitools.core/ext/ 
