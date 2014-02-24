@@ -19,14 +19,14 @@ TO DO : define the list of services
 
 Build the sources using ant
 
-  	$ cd Astronomy-Extension-v2/fr.cnes.sitools.ext.astronomy
+	$ cd Astronomy-Extension-v2/fr.cnes.sitools.ext.astronomy
   
 Edit the `build.properties` file and update the `ROOT_DIRECTORY` value to the SITools2 path, then run ant
 
-        $ ant
+	$ ant
 
 ### Installing the plugin
 
 Copy the contain in the `dist` directory to `<ROOT_DIRECTORY>/workspace/fr.cnes.sitools.core/ext/`
 
-        $ cp -r dist/* <ROOT_DIRECTORY>/workspace/fr.cnes.sitools.core/ext/ 
+	$ cp -r dist/* <ROOT_DIRECTORY>/workspace/fr.cnes.sitools.core/ext/ 
