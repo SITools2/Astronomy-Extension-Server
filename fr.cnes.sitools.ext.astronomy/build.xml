@@ -137,11 +137,46 @@
         </zip>
 
         <delete file="${store.dir}/temp_final.jar"/>
-        -->
+       -->        
+    </target>
+    
+    <target name="-post-jar" description="Post jar">
         <delete dir="dist/lib"/>
         <copy todir="dist/lib" >  
             <fileset dir="lib" includes="**"/>  
-        </copy>
-        
-    </target> 
+        </copy>  
+    </target>   
+
+    <target name="-init-macrodef-copylibs">
+        <macrodef name="copylibs" uri="http://www.netbeans.org/ns/j2se-project/3">
+            <attribute default="${manifest.file}" name="manifest"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
+                <pathconvert property="run.classpath.without.build.classes.dir">
+                    <path path="${run.classpath}"/>
+                    <map from="${build.classes.dir.resolved}" to=""/>
+                </pathconvert>
+                <pathconvert pathsep=" " property="jar.classpath">
+                    <path path="${run.classpath.without.build.classes.dir}"/>
+                    <chainedmapper>
+                        <flattenmapper/>
+                        <filtermapper>
+                            <replacestring from=" " to="%20"/>
+                        </filtermapper>
+                        <globmapper from="*" to="lib/*"/>
+                    </chainedmapper>
+                </pathconvert>
+                <taskdef classname="org.netbeans.modules.java.j2seproject.copylibstask.CopyLibs" classpath="${libs.CopyLibs.classpath}" name="copylibs"/>
+                <copylibs compress="${jar.compress}" excludeFromCopy="${copylibs.excludes}" index="${jar.index}" indexMetaInf="${jar.index.metainf}" jarfile="${dist.jar}" manifest="@{manifest}" rebase="${copylibs.rebase}" runtimeclasspath="${run.classpath.without.build.classes.dir}">
+                    <fileset dir="${build.classes.dir}"/>
+                    <manifest>
+                        <attribute name="Class-Path" value="lib/ehcache-2.7.0.jar lib/fits.jar lib/jai_codec.jar lib/jai_core.jar lib/jai_imageio.jar lib/mlibwrapper_jai.jar lib/plantuml.jar"/>
+                        <customize/>
+                    </manifest>
+                </copylibs>
+            </sequential>
+        </macrodef>
+    </target>	
+    
 </project>
