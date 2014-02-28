@@ -386,11 +386,11 @@ public class ConeSearchHealpix extends AbstractVORequest {
         /**
          * Right Ascension.
          */
-        POS_EQ_RA_MAIN(Arrays.asList("POS_EQ_RA_MAIN", "pos.eq.ra;meta.main")),
+        POS_EQ_RA_MAIN(Arrays.asList("POS_EQ_RA_MAIN", "pos.eq.ra;meta.main", "pos.eq.ra")),
         /**
          * Declination.
          */
-        POS_EQ_DEC_MAIN(Arrays.asList("POS_EQ_DEC_MAIN", "pos.eq.dec;meta.main")),
+        POS_EQ_DEC_MAIN(Arrays.asList("POS_EQ_DEC_MAIN", "pos.eq.dec;meta.main", "pos.eq.dec")),
         /**
          * ID.
          */

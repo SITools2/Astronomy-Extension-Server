@@ -160,8 +160,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
     }
 
     /**
-     * Parses a row and returns the
-     * <code>feature</code> data model.
+     * Parses a row and returns the <code>feature</code> data model.
      *
      * @param row row to be parsed
      * @return the data model for one record
@@ -220,11 +219,12 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
                         break;
                     default:
                         try {
-                        response = Utility.getDataType(dataType, value);
-                        dataModel.addProperty(field.getName(), response);
-                    } catch (NumberFormatException ex) {
-                        dataModel.addProperty(field.getName(), value);
-                    }
+                            response = Utility.getDataType(dataType, value);
+                            dataModel.addProperty(field.getName(), response);
+                        } catch (NumberFormatException ex) {
+                            //TO DO : need to parse for not a value number
+                            LOG.log(Level.SEVERE, "No number has been provided for " + field.getName() +" - skip the attribute", ex);
+                        }
                         break;
                 }
             }
@@ -237,13 +237,13 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
             switch (getCoordinateSystem()) {
                 case GALACTIC:
                     for (int i = 0; i < polygonCelest.length; i = i + 2) {
-                    astroCoordinates.setRaAsDecimal(polygonCelest[i]);
-                    astroCoordinates.setDecAsDecimal(polygonCelest[i + 1]);
-                    astroCoordinates.setCoordinateSystem(AstroCoordinate.CoordinateSystem.EQUATORIAL);
-                    astroCoordinates.processTo(AstroCoordinate.CoordinateSystem.GALACTIC);
-                    polygonCelest[i] = astroCoordinates.getRaAsDecimal();
-                    polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();
-                }
+                        astroCoordinates.setRaAsDecimal(polygonCelest[i]);
+                        astroCoordinates.setDecAsDecimal(polygonCelest[i + 1]);
+                        astroCoordinates.setCoordinateSystem(AstroCoordinate.CoordinateSystem.EQUATORIAL);
+                        astroCoordinates.processTo(AstroCoordinate.CoordinateSystem.GALACTIC);
+                        polygonCelest[i] = astroCoordinates.getRaAsDecimal();
+                        polygonCelest[i + 1] = astroCoordinates.getDecAsDecimal();
+                    }
                     break;
                 case EQUATORIAL:
                     break;
