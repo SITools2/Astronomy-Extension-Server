@@ -7,9 +7,18 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
+<!DOCTYPE project [
+   <!ENTITY struct  SYSTEM "build-sitools/struct-sitools.xml">
+]>
 <project name="Astronomy-Extension-v2" default="default" basedir=".">
     <description>Builds, tests, and runs the project Astronomy-Extension-v2.</description>
+    <!-- Import des properties -->
+    &struct;
+    <property name="platforms.JDK_1.6.home" value="${java.home}" />
+    <property name="libs.SITools2.classpath" value="${compile.classpath}" />
+    <property name="platform.javadoc" value="No" />
     <import file="nbproject/build-impl.xml"/>
+
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -70,8 +79,10 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <!-- directory where the whole zip is created -->
+    <property name="store.dir" value="store"/>
+    
     <!-- task definition -->
-
     <taskdef name="plantuml"
          classname="net.sourceforge.plantuml.ant.PlantUmlTask"
          classpath="lib/plantuml.jar" />
@@ -88,18 +99,22 @@
         </plantuml>
     </target>
     
+    <!-- Remove the whole zip -->
+    <target name="-post-clean" description="Clean the whole zip.">        
+        <delete dir="${store.dir}"/>
+    </target>
+    
     <!-- store all dependencies in a unique JAR -->
-    <target name="package-for-store" depends="jar">
+    <target name="default" depends="jar" description="Build the project.">
 
         <!-- Change the value of this property to be the name of your JAR,
              minus the .jar extension. It should not have spaces.
              <property name="store.jar.name" value="fr.cnes.sitools.ext.astronomy"/>
-        -->
+        
         <property name="store.jar.name" value="fr.cnes.sitools.ext.astronomy"/>
-
+        -->
         <!-- don't edit below this line -->
-
-        <property name="store.dir" value="store"/>
+        <!--
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
 
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
@@ -109,7 +124,7 @@
 
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
             <zipgroupfileset dir="dist" includes="*.jar"/>           
-            <zipgroupfileset dir="dist/lib" includes="ehcache-2.7.0.jar,fits.jar,jai_codec.jar,jai_core.jar,jai_imageio.jar,mlibwrapper_jai.jar"/>
+            <zipgroupfileset dir="lib" includes="ehcache-2.7.0.jar,fits.jar,jai_codec.jar,jai_core.jar,jai_imageio.jar,mlibwrapper_jai.jar"/>
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
@@ -122,6 +137,46 @@
         </zip>
 
         <delete file="${store.dir}/temp_final.jar"/>
+       -->        
+    </target>
+    
+    <target name="-post-jar" description="Post jar">
+        <delete dir="dist/lib"/>
+        <copy todir="dist/lib" >  
+            <fileset dir="lib" includes="**"/>  
+        </copy>  
+    </target>   
 
-    </target>    
+    <target name="-init-macrodef-copylibs">
+        <macrodef name="copylibs" uri="http://www.netbeans.org/ns/j2se-project/3">
+            <attribute default="${manifest.file}" name="manifest"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
+                <pathconvert property="run.classpath.without.build.classes.dir">
+                    <path path="${run.classpath}"/>
+                    <map from="${build.classes.dir.resolved}" to=""/>
+                </pathconvert>
+                <pathconvert pathsep=" " property="jar.classpath">
+                    <path path="${run.classpath.without.build.classes.dir}"/>
+                    <chainedmapper>
+                        <flattenmapper/>
+                        <filtermapper>
+                            <replacestring from=" " to="%20"/>
+                        </filtermapper>
+                        <globmapper from="*" to="lib/*"/>
+                    </chainedmapper>
+                </pathconvert>
+                <taskdef classname="org.netbeans.modules.java.j2seproject.copylibstask.CopyLibs" classpath="${libs.CopyLibs.classpath}" name="copylibs"/>
+                <copylibs compress="${jar.compress}" excludeFromCopy="${copylibs.excludes}" index="${jar.index}" indexMetaInf="${jar.index.metainf}" jarfile="${dist.jar}" manifest="@{manifest}" rebase="${copylibs.rebase}" runtimeclasspath="${run.classpath.without.build.classes.dir}">
+                    <fileset dir="${build.classes.dir}"/>
+                    <manifest>
+                        <attribute name="Class-Path" value="lib/ehcache-2.7.0.jar lib/fits.jar lib/jai_codec.jar lib/jai_core.jar lib/jai_imageio.jar lib/mlibwrapper_jai.jar lib/plantuml.jar"/>
+                        <customize/>
+                    </manifest>
+                </copylibs>
+            </sequential>
+        </macrodef>
+    </target>	
+    
 </project>

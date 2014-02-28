@@ -81,7 +81,14 @@ class JsonDataModelCs extends AbstractJsonDataModel {
                 final String ucd = field.getUcd();
                 final String value = iterDoc.get(field);
                 if (Utility.isSet(value) && !value.isEmpty()) {
-                    final Object responseDataType = Utility.getDataType(dataType, value);
+                    final Object responseDataType;
+                    try {
+                        responseDataType = Utility.getDataType(dataType, value);
+                    } catch (NumberFormatException ex) {
+                        //TO DO : need to parse for not a value number
+                        LOG.log(Level.SEVERE, "No number has been provided for " + field.getName() +" - skip the attribute", ex);
+                        continue;
+                    }
                     final ConeSearchHealpix.ReservedWords ucdWord = ConeSearchHealpix.ReservedWords.find(ucd);
                     switch (ucdWord) {
                         case POS_EQ_RA_MAIN:
