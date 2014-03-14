@@ -18,15 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
-import com.jhlabs.map.MapMath;
-import com.jhlabs.map.proj.Projection;
-import com.jhlabs.map.proj.ProjectionException;
 import healpix.tools.SpatialVector;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import com.jhlabs.map.MapMath;
+import com.jhlabs.map.proj.Projection;
+import com.jhlabs.map.proj.ProjectionException;
 
 /**
  * This class implements a shape based on coordinates.
@@ -38,7 +42,7 @@ public class Coordinates {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(Coordinates.class.getName());
+  private static final Logger LOG = Engine.getLogger(Coordinates.class.getName());
   /**
    * List of points along X.
    */

@@ -19,6 +19,33 @@
  */
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.wadl.DocumentationInfo;
+import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
+import org.restlet.ext.wadl.RepresentationInfo;
+import org.restlet.ext.wadl.ResponseInfo;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Get;
+import org.restlet.resource.ResourceException;
+
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.representation.VOTableRepresentation;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
@@ -39,29 +66,6 @@ import fr.cnes.sitools.extensions.common.StatusValidation;
 import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.extensions.common.Validation;
 import fr.cnes.sitools.extensions.common.VoDictionary;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.ivoa.xml.votable.v1.Field;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Status;
-import org.restlet.ext.wadl.DocumentationInfo;
-import org.restlet.ext.wadl.MethodInfo;
-import org.restlet.ext.wadl.ParameterInfo;
-import org.restlet.ext.wadl.ParameterStyle;
-import org.restlet.ext.wadl.RepresentationInfo;
-import org.restlet.ext.wadl.ResponseInfo;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Get;
-import org.restlet.resource.ResourceException;
 
 /**
  * Computes the VO request.
@@ -72,7 +76,7 @@ public class OpenSearchVOSearch extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(OpenSearchVOSearch.class.getName());
+    private static final Logger LOG = Engine.getLogger(OpenSearchVOSearch.class.getName());
     /**
      * URL service.
      */

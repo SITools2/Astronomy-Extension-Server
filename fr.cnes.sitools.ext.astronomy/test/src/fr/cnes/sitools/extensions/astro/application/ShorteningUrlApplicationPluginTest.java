@@ -18,11 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
-import static fr.cnes.sitools.AbstractSitoolsServerTestCase.setMediaTest;
-import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
-import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.Form;
@@ -30,6 +30,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 
 /**
  *

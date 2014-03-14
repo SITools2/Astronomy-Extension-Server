@@ -19,8 +19,11 @@
 package fr.cnes.sitools.astro.cutout;
 
 import java.util.logging.Logger;
+
 import jsky.coords.WCSKeywordProvider;
 import nom.tam.fits.Header;
+
+import org.restlet.engine.Engine;
 
 /**
  * Implements the WCS Keyword Provider interface to use this object
@@ -31,7 +34,7 @@ public class FitsHeader implements WCSKeywordProvider {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FitsHeader.class.getName());
+    private static final Logger LOG = Engine.getLogger(FitsHeader.class.getName());
     /**
      * Initialize Header FITS.
      */

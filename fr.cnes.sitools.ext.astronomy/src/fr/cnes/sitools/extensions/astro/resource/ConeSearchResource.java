@@ -19,15 +19,14 @@
 
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.dataset.DataSetApplication;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
@@ -36,6 +35,10 @@ import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Get;
+
+import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.dataset.DataSetApplication;
 
 /**
  * Executes the cone search and displays the result.
@@ -48,7 +51,7 @@ public class ConeSearchResource extends SitoolsParameterizedResource {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(ConeSearchResource.class.getName());
+  private static final Logger LOG = Engine.getLogger(ConeSearchResource.class.getName());
 
   /**
    * Initialize.

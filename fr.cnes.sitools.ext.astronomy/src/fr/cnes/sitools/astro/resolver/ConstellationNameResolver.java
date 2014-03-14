@@ -18,18 +18,22 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.astro.resolver.constellations.Wrapper;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import org.restlet.data.LocalReference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.astro.resolver.constellations.Wrapper;
 
 /**
  * Queries the SITools2 database and returns the coordinates of one constellation
@@ -42,7 +46,7 @@ public class ConstellationNameResolver extends AbstractNameResolver {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ConstellationNameResolver.class.getName());
+    private static final Logger LOG = Engine.getLogger(ConstellationNameResolver.class.getName());
     /**
      * Constellation name to find.
      */

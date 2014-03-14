@@ -18,15 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
-import fr.cnes.sitools.extensions.common.Utility;
-import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 
 /**
  * Computes the dictionary from the server response.
@@ -38,7 +42,7 @@ public class DictionaryDecorator extends VORequestDecorator {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(DictionaryDecorator.class.getName());
+    private static final Logger LOG = Engine.getLogger(DictionaryDecorator.class.getName());
     /**
      * Dictionary.
      */

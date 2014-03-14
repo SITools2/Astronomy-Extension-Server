@@ -18,12 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
-import fr.cnes.sitools.dataset.DataSetApplication;
-import fr.cnes.sitools.extensions.common.InputsValidation;
-import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
-import fr.cnes.sitools.extensions.common.RangeValidation;
-import fr.cnes.sitools.extensions.common.StatusValidation;
-import fr.cnes.sitools.extensions.common.Validation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,9 +27,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Info;
+
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.dataset.DataSetApplication;
+import fr.cnes.sitools.extensions.common.InputsValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.RangeValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
 
 /**
  * This object provides methods to handle input parameters for the cone search protocol.
@@ -47,7 +51,7 @@ public class ConeSearchInputParameters implements ConeSearchDataModelInterface {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(ConeSearchInputParameters.class.getName());
+  private static final Logger LOG = Engine.getLogger(ConeSearchInputParameters.class.getName());
   /**
    * Default verbosity mode.
    */

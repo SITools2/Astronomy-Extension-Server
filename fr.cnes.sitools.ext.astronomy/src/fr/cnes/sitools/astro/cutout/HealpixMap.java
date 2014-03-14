@@ -18,11 +18,10 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutout;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
+
 import java.awt.geom.Point2D;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -31,13 +30,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * Creates a map from Planck data.
@@ -111,10 +115,10 @@ public class HealpixMap implements CutOutInterface {
             setFovCoordinates(coordinates);
             setWcs(new WcsComputation(coordinates, cdelt1, cdelt2, rotation, coordinateSystemInput));
         } catch (FitsException ex) {
-            Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex.getMessage());
         } catch (Exception ex) {
-            Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex.getMessage());
         }
     }
@@ -464,10 +468,10 @@ public class HealpixMap implements CutOutInterface {
             final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
             fits.write(dataOutputStream);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex);
         } catch (Exception ex) {
-            Logger.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(HealpixMap.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex);
         }
     }

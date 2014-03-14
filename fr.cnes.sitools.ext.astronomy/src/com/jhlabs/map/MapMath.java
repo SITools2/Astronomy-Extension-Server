@@ -22,8 +22,10 @@ limitations under the License.
  */
 package com.jhlabs.map;
 
-import java.awt.geom.*;
-import com.jhlabs.map.proj.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
+import com.jhlabs.map.proj.ProjectionException;
 
 public class MapMath {
 

@@ -23,8 +23,10 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
@@ -99,7 +101,7 @@ public class VOTableRepresentation extends OutputRepresentation {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(VOTableRepresentation.class.getName());
+  private static final Logger LOG = Engine.getLogger(VOTableRepresentation.class.getName());
   /**
    * Default template file = votable.ftl.
    */

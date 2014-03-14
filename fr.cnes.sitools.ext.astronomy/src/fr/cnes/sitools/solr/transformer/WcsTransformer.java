@@ -29,6 +29,7 @@ import fr.cnes.sitools.searchgeometryengine.Shape;
 import healpix.core.HealpixIndex;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,12 +37,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
+
 import org.apache.solr.handler.dataimport.Context;
 import org.apache.solr.handler.dataimport.DataImportHandlerException;
 import org.apache.solr.handler.dataimport.DataImporter;
 import org.apache.solr.handler.dataimport.Transformer;
+import org.restlet.engine.Engine;
 
 /**
  * Computes some geographical parameters from the Word Coordinates System (WCS)
@@ -92,7 +96,7 @@ public class WcsTransformer extends Transformer implements WCSKeywordProvider {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(WcsTransformer.class.getName());
+    private static final Logger LOG = Engine.getLogger(WcsTransformer.class.getName());
     /**
      * Origin of FITS along X.
      */

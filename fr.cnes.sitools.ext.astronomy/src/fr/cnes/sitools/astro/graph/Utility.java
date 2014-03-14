@@ -20,6 +20,7 @@ package fr.cnes.sitools.astro.graph;
 
 import healpix.essentials.HealpixMapDouble;
 import healpix.essentials.Scheme;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
@@ -35,9 +36,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+
+import org.restlet.engine.Engine;
 
 /**
  * Utility class to create PNG or JFrame representation.
@@ -68,7 +71,7 @@ public final class Utility {
             isCreated = ImageIO.write(bufferImage, "png", file);
         } catch (IOException ex) {
             isCreated = false;
-            Logger.getLogger(Utility.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(Utility.class.getName()).log(Level.SEVERE, null, ex);
         }
         return isCreated;
     }
@@ -96,7 +99,7 @@ public final class Utility {
             isCreated = ImageIO.write(bufferedImage, "png", out);
         } catch (IOException ex) {
             isCreated = false;
-            Logger.getLogger(Utility.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(Utility.class.getName()).log(Level.SEVERE, null, ex);
         }
         return isCreated;
     }    

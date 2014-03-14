@@ -25,9 +25,12 @@ import healpix.essentials.Pointing;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
 import healpix.tools.SpatialVector;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
 
 /**
  * This index is used to find pixels at a given order.
@@ -39,7 +42,7 @@ public final class RingIndex implements Index {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(RingIndex.class.getName());
+  private static final Logger LOG = Engine.getLogger(RingIndex.class.getName());
   /**
    * Typical choice of fact.
    */
@@ -98,7 +101,7 @@ public final class RingIndex implements Index {
           throw new RuntimeException("Shape : " + getShape() + " not found");
       }
     } catch (Exception ex) {
-      Logger.getLogger(RingIndex.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(RingIndex.class.getName()).log(Level.SEVERE, null, ex);
       throw new RuntimeException(ex);
     }
     return result;

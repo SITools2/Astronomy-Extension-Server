@@ -18,6 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.exception.SitoolsException;
 import fr.cnes.sitools.dataset.converter.business.ConverterChained;
 import fr.cnes.sitools.dataset.database.DatabaseRequest;
@@ -29,11 +37,6 @@ import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateSequenceModel;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class makes easier the use of DatabaseRequest object in Freemarker.<br/> The
@@ -58,7 +61,7 @@ public class DatabaseRequestModel implements TemplateSequenceModel {
   /**
    * Logger.
    */
-    private static final Logger LOG = Logger.getLogger(DatabaseRequestModel.class.getName());
+    private static final Logger LOG = Engine.getLogger(DatabaseRequestModel.class.getName());
     /**
      * DB Result set.
      */

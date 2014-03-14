@@ -18,12 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
-import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
-import fr.cnes.sitools.server.Consts;
-import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,11 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
 import net.ivoa.xml.votable.v1.Resource;
@@ -44,14 +42,21 @@ import net.ivoa.xml.votable.v1.TableData;
 import net.ivoa.xml.votable.v1.Td;
 import net.ivoa.xml.votable.v1.Tr;
 import net.ivoa.xml.votable.v1.VOTABLE;
+
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.plugins.resources.model.ResourceModel;
+import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
+import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
+import fr.cnes.sitools.server.Consts;
+import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 
 /**
  *
@@ -115,11 +120,11 @@ public class ConeSearchResourceTest extends AbstractSitoolsServiceTestCase {
       create(rm, getBaseUrl());
 
     } catch (ClassNotFoundException ex) {
-      Logger.getLogger(ConeSearchResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ConeSearchResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InstantiationException ex) {
-      Logger.getLogger(ConeSearchResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ConeSearchResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(ConeSearchResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ConeSearchResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 

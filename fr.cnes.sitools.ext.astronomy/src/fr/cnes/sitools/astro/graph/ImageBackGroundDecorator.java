@@ -18,10 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
-import com.jhlabs.map.MapMath;
-import com.jhlabs.map.proj.ProjectionException;
 import healpix.core.AngularPosition;
 import healpix.tools.CoordTransform;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -32,7 +31,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
+import org.restlet.engine.Engine;
+
+import com.jhlabs.map.MapMath;
+import com.jhlabs.map.proj.ProjectionException;
 
 /**
  * Another concrete decorator for adding an image as a background.<br/> This
@@ -55,7 +60,7 @@ public class ImageBackGroundDecorator extends AbstractGraphDecorator {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ImageBackGroundDecorator.class.getName());
+    private static final Logger LOG = Engine.getLogger(ImageBackGroundDecorator.class.getName());
     /**
      * Image filename to project.
      */

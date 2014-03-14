@@ -21,7 +21,13 @@
 package healpix.core;
 
 import healpix.core.base.set.LongRangeSet;
-import healpix.essentials.*;
+import healpix.essentials.HealpixBase;
+import healpix.essentials.HealpixProc;
+import healpix.essentials.HealpixUtils;
+import healpix.essentials.Pointing;
+import healpix.essentials.RangeSet;
+import healpix.essentials.Scheme;
+import healpix.essentials.Vec3;
 import healpix.tools.Constants;
 import healpix.tools.SpatialVector;
 

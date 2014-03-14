@@ -18,19 +18,22 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
 
 /**
  * Publishes the MIZAR configuration file.
@@ -47,7 +50,7 @@ public class GlobWebResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(GlobWebResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(GlobWebResource.class.getName());
 
     /**
      * Initialize the configuration file.

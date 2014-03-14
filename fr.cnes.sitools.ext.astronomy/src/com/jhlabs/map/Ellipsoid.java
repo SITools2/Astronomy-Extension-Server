@@ -15,7 +15,7 @@ limitations under the License.
  */
 package com.jhlabs.map;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * A class representing a geographic ellipsoid.

@@ -20,8 +20,8 @@
  */
 package healpix.core;
 
-import healpix.tools.SpatialVector;
 import healpix.essentials.Pointing;
+import healpix.tools.SpatialVector;
 
 import java.text.DecimalFormat;
 

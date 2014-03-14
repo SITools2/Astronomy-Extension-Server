@@ -18,12 +18,15 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
-import com.jhlabs.map.MapMath;
-import com.jhlabs.map.proj.ProjectionException;
-import com.jhlabs.map.proj.ProjectionFactory;
 import java.awt.geom.Point2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import com.jhlabs.map.MapMath;
+import com.jhlabs.map.proj.ProjectionException;
+import com.jhlabs.map.proj.ProjectionFactory;
 
 /**
  * Concrete component of the decorator pattern.
@@ -37,7 +40,7 @@ public class GenericProjection extends Graph {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(GenericProjection.class.getName());
+  private static final Logger LOG = Engine.getLogger(GenericProjection.class.getName());
   /**
    * Default value for initialization.
    */

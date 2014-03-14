@@ -35,6 +35,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
+
 /**
  *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
@@ -48,7 +50,7 @@ public class Polygon2D implements Shape {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(Polygon2D.class.getName());
+    private static final Logger LOG = Engine.getLogger(Polygon2D.class.getName());
     /**
      * Number of points in the polygon.
      */

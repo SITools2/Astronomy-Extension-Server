@@ -18,22 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import static fr.cnes.sitools.extensions.astro.application.uws.common.Util.isSet;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import fr.cnes.sitools.extensions.astro.application.uws.representation.JobsRepresentation;
-import fr.cnes.sitools.xml.uws.v1.InputsType;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Polygon;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Image;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Keyword;
-import fr.cnes.sitools.xml.uws.v1.Job;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -49,6 +38,20 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
+import fr.cnes.sitools.extensions.astro.application.uws.representation.JobsRepresentation;
+import fr.cnes.sitools.xml.uws.v1.InputsType;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Polygon;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Image;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Keyword;
+import fr.cnes.sitools.xml.uws.v1.Job;
 
 /**
  * Handles jobs.

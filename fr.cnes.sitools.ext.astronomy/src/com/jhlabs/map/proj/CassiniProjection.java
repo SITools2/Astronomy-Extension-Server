@@ -21,8 +21,9 @@ limitations under the License.
  */
 package com.jhlabs.map.proj;
 
-import java.awt.geom.*;
-import com.jhlabs.map.*;
+import java.awt.geom.Point2D;
+
+import com.jhlabs.map.MapMath;
 
 public class CassiniProjection extends CylindricalProjection {
 

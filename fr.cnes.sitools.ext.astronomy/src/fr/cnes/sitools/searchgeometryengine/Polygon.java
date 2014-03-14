@@ -19,11 +19,14 @@
 package fr.cnes.sitools.searchgeometryengine;
 
 import healpix.essentials.Vec3;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
 
 /**
  * Contains methods to create a polygon
@@ -37,7 +40,7 @@ public class Polygon implements Shape {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(Polygon.class.getName());
+  private static final Logger LOG = Engine.getLogger(Polygon.class.getName());
   /**
    * Numerical precision for double operation.
    */

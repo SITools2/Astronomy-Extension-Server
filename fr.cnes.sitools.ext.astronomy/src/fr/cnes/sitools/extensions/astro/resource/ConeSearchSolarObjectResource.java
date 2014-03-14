@@ -18,23 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.astro.vo.conesearch.ConeSearchSolarObjectQuery;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
-import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
-import fr.cnes.sitools.extensions.common.InputsValidation;
-import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
-import fr.cnes.sitools.extensions.common.StatusValidation;
-import fr.cnes.sitools.extensions.common.Validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
@@ -44,6 +38,15 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.astro.vo.conesearch.ConeSearchSolarObjectQuery;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
+import fr.cnes.sitools.extensions.common.InputsValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
 
 /**
  * Queries the skybot service from IMCCE and returns the result.
@@ -84,7 +87,7 @@ public class ConeSearchSolarObjectResource extends SitoolsParameterizedResource 
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ConeSearchSolarObjectResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(ConeSearchSolarObjectResource.class.getName());
     /**
      * Healpix input parameter.
      */

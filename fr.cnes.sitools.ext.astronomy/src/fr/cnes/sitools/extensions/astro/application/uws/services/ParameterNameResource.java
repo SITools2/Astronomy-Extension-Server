@@ -18,14 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import fr.cnes.sitools.extensions.astro.application.uws.representation.JobParameterNameRepresentation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
+
 import net.ivoa.xml.uws.v1.ExecutionPhase;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -37,6 +35,11 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
+import fr.cnes.sitools.extensions.astro.application.uws.representation.JobParameterNameRepresentation;
 
 /**
  * Resource to handle ParameterName.

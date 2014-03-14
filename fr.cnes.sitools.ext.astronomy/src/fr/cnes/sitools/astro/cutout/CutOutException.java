@@ -20,6 +20,8 @@ package fr.cnes.sitools.astro.cutout;
 
 import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
+
 /**
  * Exception.
  * @author Jean-Christophe Malapert
@@ -28,7 +30,7 @@ public class CutOutException extends Exception {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(CutOutException.class.getName());
+    private static final Logger LOG = Engine.getLogger(CutOutException.class.getName());
     /**
      * Constructor.
      */

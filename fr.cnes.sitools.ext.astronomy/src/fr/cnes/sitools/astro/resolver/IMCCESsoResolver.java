@@ -18,13 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,8 +31,12 @@ import org.restlet.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.util.ClientResourceProxy;
 
 /**
  * Queries the IMCCESsoResolver name resolver and returns the list of coordinates for a given name.<br/> A IMCCESsoResolver lets you a sky
@@ -46,7 +49,7 @@ public class IMCCESsoResolver extends AbstractNameResolver {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(IMCCESsoResolver.class.getName());
+  private static final Logger LOG = Engine.getLogger(IMCCESsoResolver.class.getName());
   /**
    * Template URL for the IMCCE resolver service.
    */

@@ -18,15 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
-import cds.moc.HealpixMoc;
-import cds.moc.MocCell;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import cds.moc.HealpixMoc;
+import cds.moc.MocCell;
 
 /**
  * Nested Index for hierarchical resolution.
@@ -54,7 +58,7 @@ public class MocIndex implements Index {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(MocIndex.class.getName());
+  private static final Logger LOG = Engine.getLogger(MocIndex.class.getName());
 
   /**
    * Cronstructs a new Index based with a shape.

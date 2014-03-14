@@ -58,7 +58,7 @@
 
 package jsky.coords;
 
-import java.awt.geom.*;
+import java.awt.geom.Point2D;
 
 @SuppressWarnings({"SuspiciousNameCombination"})
 public class wcscon {

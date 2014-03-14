@@ -18,27 +18,32 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import net.ivoa.xml.votable.v1.VOTABLE;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import net.ivoa.xml.votable.v1.VOTABLE;
-import org.junit.After;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
-import org.junit.Test;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
 /**
  *
@@ -84,11 +89,11 @@ public class ExportVOResourceTest extends AbstractSitoolsServiceTestCase {
 
       create(rm, getBaseUrl());
     } catch (ClassNotFoundException ex) {
-      Logger.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InstantiationException ex) {
-      Logger.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
@@ -112,9 +117,9 @@ public class ExportVOResourceTest extends AbstractSitoolsServiceTestCase {
       VOTABLE votable = (VOTABLE) um.unmarshal(new ByteArrayInputStream(result.getBytes()));
       assertNotNull(votable);
     } catch (JAXBException ex) {
-      Logger.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
-      Logger.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ExportVOResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 }

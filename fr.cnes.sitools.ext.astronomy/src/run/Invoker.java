@@ -10,12 +10,15 @@ package run;
  *
  * @author Jean-Christophe Malapert
  */
-import fr.cnes.sitools.astro.resolver.NameResolverException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import nom.tam.fits.FitsException;
+
 import org.json.JSONException;
+
+import fr.cnes.sitools.astro.resolver.NameResolverException;
 
 public class Invoker {
 

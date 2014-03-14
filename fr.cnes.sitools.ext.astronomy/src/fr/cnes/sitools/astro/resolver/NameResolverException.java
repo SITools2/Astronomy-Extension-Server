@@ -19,7 +19,9 @@
 package fr.cnes.sitools.astro.resolver;
 
 import java.util.logging.Logger;
+
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 
 /**
  * Name Resolver Exception.
@@ -30,7 +32,7 @@ public class NameResolverException extends Exception {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(NameResolverException.class.getName());
+  private static final Logger LOG = Engine.getLogger(NameResolverException.class.getName());
   /**
    * Status of the Exception.
    */

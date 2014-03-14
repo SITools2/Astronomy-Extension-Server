@@ -18,6 +18,23 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.ivoa.xml.votable.v1.AnyTEXT;
+import net.ivoa.xml.votable.v1.DataType;
+import net.ivoa.xml.votable.v1.Field;
+import net.ivoa.xml.votable.v1.Info;
+import net.ivoa.xml.votable.v1.Param;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.astro.representation.DatabaseRequestModel;
 import fr.cnes.sitools.common.exception.SitoolsException;
 import fr.cnes.sitools.dataset.DataSetApplication;
@@ -33,19 +50,6 @@ import fr.cnes.sitools.dictionary.model.Concept;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.util.Util;
 import freemarker.template.TemplateSequenceModel;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.ivoa.xml.votable.v1.AnyTEXT;
-import net.ivoa.xml.votable.v1.DataType;
-import net.ivoa.xml.votable.v1.Field;
-import net.ivoa.xml.votable.v1.Info;
-import net.ivoa.xml.votable.v1.Param;
 
 /**
  * Votable response for cone search.
@@ -57,7 +61,7 @@ public class ConeSearchResponse implements ConeSearchDataModelInterface {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(ConeSearchResponse.class.getName());
+  private static final Logger LOG = Engine.getLogger(ConeSearchResponse.class.getName());
   /**
    * Data model that constains the conesearch response.
    */

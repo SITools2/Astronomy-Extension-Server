@@ -18,15 +18,16 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
+
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
 
 /**
  * Initializes all resources.

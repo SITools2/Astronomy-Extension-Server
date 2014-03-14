@@ -18,11 +18,10 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.responsibility;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -32,7 +31,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * Queries a CSP service based on Healpix parameters and the coordinate system.
@@ -109,7 +114,7 @@ public class ConeSearchHealpix extends AbstractVORequest {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ConeSearchHealpix.class.getName());
+    private static final Logger LOG = Engine.getLogger(ConeSearchHealpix.class.getName());
     /**
      * Empty constructor.
      */

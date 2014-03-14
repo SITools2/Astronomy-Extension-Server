@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.engine.Engine;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
@@ -39,7 +41,7 @@ public class OpenSearchDescribe extends OpenSearchBase {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchDescribe.class.getName());
+  private static final Logger LOG = Engine.getLogger(OpenSearchDescribe.class.getName());
 
   @Override
   public final void doInit() {
@@ -77,12 +79,12 @@ public class OpenSearchDescribe extends OpenSearchBase {
           filterArray.put(filter);
         }
       } catch (JSONException ex) {
-        Logger.getLogger(OpenSearchDescribe.class.getName()).log(Level.SEVERE, null, ex);
+        Engine.getLogger(OpenSearchDescribe.class.getName()).log(Level.SEVERE, null, ex);
       }
       try {
         filters.put("filters", filterArray);
       } catch (JSONException ex) {
-        Logger.getLogger(OpenSearchDescribe.class.getName()).log(Level.SEVERE, null, ex);
+        Engine.getLogger(OpenSearchDescribe.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
     final JsonRepresentation jsonRep = new JsonRepresentation(filters);

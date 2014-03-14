@@ -24,7 +24,7 @@ limitations under the License.
  */
 package com.jhlabs.map.proj;
 
-import java.awt.geom.*;
+import java.awt.geom.Point2D;
 
 public class TCEAProjection extends CylindricalProjection {
 

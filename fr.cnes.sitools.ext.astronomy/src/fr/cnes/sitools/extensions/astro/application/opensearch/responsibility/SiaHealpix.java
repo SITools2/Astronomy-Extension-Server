@@ -18,13 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.responsibility;
 
-import fr.cnes.sitools.astro.vo.conesearch.ConeSearchException;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +33,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.astro.vo.conesearch.ConeSearchException;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * Queries a SIA service based on Healpix parameters and the coordinate system.
@@ -133,7 +138,7 @@ public class SiaHealpix extends AbstractVORequest implements WCSKeywordProvider 
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(SiaHealpix.class.getName());
+    private static final Logger LOG = Engine.getLogger(SiaHealpix.class.getName());
 
     /**
      * Empty constructor.

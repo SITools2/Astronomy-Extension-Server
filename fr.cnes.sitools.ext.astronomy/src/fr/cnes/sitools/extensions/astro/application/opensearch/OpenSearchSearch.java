@@ -19,12 +19,8 @@
 
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,16 +30,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 
 /**
  * Search resource for OpenSearch.
@@ -55,7 +59,7 @@ public class OpenSearchSearch extends OpenSearchBase {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchSearch.class.getName());
+  private static final Logger LOG = Engine.getLogger(OpenSearchSearch.class.getName());
   /**
    * Default count.
    */

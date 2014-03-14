@@ -18,6 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -27,10 +34,6 @@ import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import fr.cnes.sitools.util.Util;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Configures the VO export service.
@@ -68,7 +71,7 @@ public class ExportVOResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ExportVOResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(ExportVOResourcePlugin.class.getName());
     /**
      * Dictionary parameter that is used in the administration panel.
      */

@@ -18,9 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
 import org.junit.Test;
 
 /**

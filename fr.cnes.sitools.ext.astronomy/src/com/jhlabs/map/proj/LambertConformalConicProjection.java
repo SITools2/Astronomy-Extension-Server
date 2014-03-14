@@ -16,9 +16,10 @@ limitations under the License.
 
 package com.jhlabs.map.proj;
 
+import java.awt.geom.Point2D;
+
 import com.jhlabs.map.Ellipsoid;
-import java.awt.geom.*;
-import com.jhlabs.map.*;
+import com.jhlabs.map.MapMath;
 
 public class LambertConformalConicProjection extends ConicProjection {
 

@@ -18,6 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
+import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jsky.coords.WCSTransform;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -27,13 +38,6 @@ import fr.cnes.sitools.dataset.converter.model.ConverterParameterType;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
 import fr.cnes.sitools.util.Util;
-import java.awt.geom.Point2D;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jsky.coords.WCSTransform;
 
 /**
  * Computes the central position of a shape based on WCS inputs.
@@ -48,7 +52,7 @@ public class CenterPositionConverter extends PolygonConverter {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CenterPositionConverter.class.getName());
+  private static final Logger LOG = Engine.getLogger(CenterPositionConverter.class.getName());
 
   /**
    * Constucts the converter.

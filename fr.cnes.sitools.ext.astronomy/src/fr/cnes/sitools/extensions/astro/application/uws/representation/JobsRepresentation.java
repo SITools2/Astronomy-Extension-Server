@@ -18,25 +18,30 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.QNameMap;
-import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
+
 import net.ivoa.xml.uws.v1.JobSummary;
 import net.ivoa.xml.uws.v1.Jobs;
 import net.ivoa.xml.uws.v1.ShortJobDescription;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.QNameMap;
+
+import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
 
 /**
  * Representation for ShortJobDescription object.

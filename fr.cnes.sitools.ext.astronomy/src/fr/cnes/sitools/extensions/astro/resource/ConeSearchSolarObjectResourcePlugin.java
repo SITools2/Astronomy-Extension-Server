@@ -18,9 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import java.util.logging.Logger;
 
 /**
  * Configures the Solar object service.
@@ -66,7 +69,7 @@ public class ConeSearchSolarObjectResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ConeSearchSolarObjectResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(ConeSearchSolarObjectResourcePlugin.class.getName());
 
     /**
      * Constructs the administration panel.

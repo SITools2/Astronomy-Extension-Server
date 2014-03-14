@@ -27,12 +27,16 @@ import fr.cnes.sitools.extensions.common.Utility;
 import healpix.core.HealpixIndex;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
+
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
+
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -45,7 +49,7 @@ public class ConeSearchSolarObjectQuery implements ConeSearchQueryInterface {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(ConeSearchSolarObjectQuery.class.getName());
+  private static final Logger LOG = Engine.getLogger(ConeSearchSolarObjectQuery.class.getName());
   /**
    * Query.
    */

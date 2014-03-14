@@ -20,12 +20,16 @@ package fr.cnes.sitools.extensions.common;
 
 import healpix.core.AngularPosition;
 import healpix.tools.CoordTransform;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import jsky.coords.DMS;
 import jsky.coords.HMS;
+
+import org.restlet.engine.Engine;
 
 /**
  * Contains utility methods to store astronomical coordinates.<br/>
@@ -38,7 +42,7 @@ public class AstroCoordinate {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(AstroCoordinate.class.getName());
+    private static final Logger LOG = Engine.getLogger(AstroCoordinate.class.getName());
     /**
      * Converts hours in degrees.
      */

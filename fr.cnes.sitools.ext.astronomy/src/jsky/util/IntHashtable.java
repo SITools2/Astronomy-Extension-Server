@@ -9,7 +9,9 @@
 
 package jsky.util;
 
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /// A Hashtable that uses ints as the keys.
 // <P>

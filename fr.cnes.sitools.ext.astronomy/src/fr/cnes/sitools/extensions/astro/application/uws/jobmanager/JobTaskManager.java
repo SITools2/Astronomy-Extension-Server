@@ -18,25 +18,30 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.jobmanager;
 
-import com.thoughtworks.xstream.XStream;
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
-import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
+
 import net.ivoa.xml.uws.v1.ErrorSummary;
 import net.ivoa.xml.uws.v1.ExecutionPhase;
 import net.ivoa.xml.uws.v1.Parameters;
 import net.ivoa.xml.uws.v1.Results;
+
 import org.restlet.Context;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import com.thoughtworks.xstream.XStream;
+
+import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
+import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
 
 /**
  * {Insert class description here}

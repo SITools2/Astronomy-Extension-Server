@@ -18,22 +18,26 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jsky.coords.DMS;
+import jsky.coords.HMS;
+
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.resource.ClientResource;
+
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
 import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import fr.cnes.sitools.util.ClientResourceProxy;
 import fr.cnes.sitools.util.Util;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jsky.coords.DMS;
-import jsky.coords.HMS;
-import org.restlet.data.Method;
-import org.restlet.data.Status;
-import org.restlet.resource.ClientResource;
 
 /**
  * Queries the CDS reverse name resolver and returns the object name for a given sky position and a radius. <br/>
@@ -45,7 +49,7 @@ public class ReverseNameResolver {
   /**
    * Logger.
    */
-    private static final Logger LOG = Logger.getLogger(ReverseNameResolver.class.getName());
+    private static final Logger LOG = Engine.getLogger(ReverseNameResolver.class.getName());
    /**
     * Template URL for the CDS reverse name resolver service.
     */

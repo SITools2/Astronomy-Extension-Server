@@ -18,12 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
-import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.SiaHealpix;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import java.awt.geom.Point2D;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,9 +28,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.SiaHealpix;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * Tansforms the server response in a data model that allowsto use the
@@ -57,7 +61,7 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(JsonDataModelSIA.class.getName());
+    private static final Logger LOG = Engine.getLogger(JsonDataModelSIA.class.getName());
     /**
      * Index in polygonCelest array of the X coordinate of the first point of
      * the polygon.
@@ -268,14 +272,14 @@ class JsonDataModelSIA extends AbstractJsonDataModel implements WCSKeywordProvid
             try {
                 dataModel.setQuicklook(new URL(download));
             } catch (MalformedURLException ex) {
-                Logger.getLogger(SiaHealpix.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(SiaHealpix.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (hasFileToDownload(format, download)) {
             try {
                 dataModel.createServices(format, new URL(download));
             } catch (MalformedURLException ex) {
-                Logger.getLogger(SiaHealpix.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(SiaHealpix.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return dataModel;

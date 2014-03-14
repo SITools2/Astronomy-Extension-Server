@@ -18,8 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,9 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;
@@ -37,6 +37,9 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 
 /**
  * Open search description.
@@ -47,7 +50,7 @@ public class OpenSearchDescription extends OpenSearchBase {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchDescription.class.getName());
+  private static final Logger LOG = Engine.getLogger(OpenSearchDescription.class.getName());
 
   /**
    * Data model.

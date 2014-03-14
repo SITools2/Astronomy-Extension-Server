@@ -18,12 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.processing.JsonDataModelDecorator;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -32,15 +26,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import net.ivoa.xml.votable.v1.Field;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.VOTABLE;
+
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.OptionInfo;
@@ -52,6 +50,13 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
+import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.processing.JsonDataModelDecorator;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
+
 /**
  *
  * @author malapert
@@ -61,7 +66,7 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(Votable2GeoJsonResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(Votable2GeoJsonResource.class.getName());
     /**
      * Coordinate system.
      */
@@ -103,7 +108,7 @@ public class Votable2GeoJsonResource extends SitoolsParameterizedResource {
             final FeaturesDataModel dataModel = JsonDataModelDecorator.computeJsonDataModel(response, AstroCoordinate.CoordinateSystem.valueOf(coordSystem));
             rep = new GeoJsonRepresentation(dataModel.getFeatures());
         } catch (JAXBException ex) {
-            Logger.getLogger(Votable2GeoJsonResource.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(Votable2GeoJsonResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
         }
         return rep;

@@ -18,6 +18,21 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.engine.Engine;
+import org.restlet.routing.Router;
+import org.restlet.routing.Template;
+
 import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
@@ -27,18 +42,6 @@ import fr.cnes.sitools.extensions.common.VoDictionary;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.routing.Router;
-import org.restlet.routing.Template;
 
 /**
  * Plugin to access to the Simple Cone Search service.
@@ -53,7 +56,7 @@ public class OpenSearchVOApplicationPlugin extends AbstractApplicationPlugin {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchVOApplicationPlugin.class.getName());
+  private static final Logger LOG = Engine.getLogger(OpenSearchVOApplicationPlugin.class.getName());
   /**
    * Maximum of characters that is allowed for the short name by the open search standard.
    */

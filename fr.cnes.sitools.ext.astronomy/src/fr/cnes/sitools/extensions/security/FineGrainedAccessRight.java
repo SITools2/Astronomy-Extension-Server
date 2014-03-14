@@ -18,14 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.security;
 
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.common.application.ContextAttributes;
-import fr.cnes.sitools.datasource.jdbc.business.SitoolsSQLDataSourceFactory;
-import fr.cnes.sitools.datasource.jdbc.model.JDBCDataSource;
-import fr.cnes.sitools.plugins.filters.model.FilterModel;
-import fr.cnes.sitools.server.Consts;
-import fr.cnes.sitools.util.RIAPUtils;
-import fr.cnes.sitools.util.Util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,11 +26,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.engine.Engine;
 import org.restlet.security.Authorizer;
 import org.restlet.security.Role;
+
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.application.ContextAttributes;
+import fr.cnes.sitools.datasource.jdbc.business.SitoolsSQLDataSourceFactory;
+import fr.cnes.sitools.datasource.jdbc.model.JDBCDataSource;
+import fr.cnes.sitools.plugins.filters.model.FilterModel;
+import fr.cnes.sitools.server.Consts;
+import fr.cnes.sitools.util.RIAPUtils;
+import fr.cnes.sitools.util.Util;
 
 /**
  * Filters the access by delegating the responsability to an extrernal database.
@@ -71,7 +74,7 @@ public class FineGrainedAccessRight extends Authorizer {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FineGrainedAccessRight.class.getName());
+    private static final Logger LOG = Engine.getLogger(FineGrainedAccessRight.class.getName());
 
     /**
      * Constructor.

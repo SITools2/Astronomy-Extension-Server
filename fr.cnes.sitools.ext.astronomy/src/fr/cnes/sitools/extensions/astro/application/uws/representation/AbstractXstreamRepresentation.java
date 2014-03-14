@@ -18,16 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.logging.Level;
+
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.representation.WriterRepresentation;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.xml.QNameMap;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.logging.Level;
-import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.representation.WriterRepresentation;
 
 /**
  * Abstract Xstream Representation.

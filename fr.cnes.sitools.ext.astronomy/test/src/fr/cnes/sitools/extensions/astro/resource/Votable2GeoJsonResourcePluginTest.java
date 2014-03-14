@@ -18,11 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
+
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,6 +31,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
 
 /**
  *

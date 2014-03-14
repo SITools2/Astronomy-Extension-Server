@@ -8,6 +8,7 @@ package jsky.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -19,8 +20,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.Reader;
 
 
 /**

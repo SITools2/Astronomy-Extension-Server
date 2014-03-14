@@ -18,21 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
-import fr.cnes.sitools.astro.resolver.NameResolverException;
-import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
-import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 import healpix.core.HealpixIndex;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
@@ -42,6 +39,13 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
+import fr.cnes.sitools.astro.resolver.NameResolverException;
+import fr.cnes.sitools.astro.resolver.ReverseNameResolver;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.common.AstroCoordinate.CoordinateSystem;
 
 /**
  * Finds the object's name based on a cone search.
@@ -58,7 +62,7 @@ public class ReverseNameResolverResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ReverseNameResolverResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(ReverseNameResolverResource.class.getName());
     /**
      * Arsec 2 degree conversion.
      */

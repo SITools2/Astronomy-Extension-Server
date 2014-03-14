@@ -18,11 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
-import cds.moc.HealpixMoc;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
+
+import java.util.logging.Level;
+
 import org.junit.Test;
+import org.restlet.engine.Engine;
+
+import cds.moc.HealpixMoc;
 
 /**
  *
@@ -46,7 +49,7 @@ public class NestedIndexTest {
             System.out.println(result.getType()+ ""+result.isSurface());
             assertEquals(expResult, result);
         } catch (Exception ex) {
-            Logger.getLogger(NestedIndexTest.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(NestedIndexTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

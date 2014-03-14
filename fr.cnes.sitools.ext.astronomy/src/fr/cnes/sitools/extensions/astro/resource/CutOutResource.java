@@ -18,6 +18,32 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import static fr.cnes.sitools.extensions.common.Utility.isSet;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
+
 import fr.cnes.sitools.astro.cutout.CutOutException;
 import fr.cnes.sitools.astro.cutout.CutOutInterface;
 import fr.cnes.sitools.astro.cutout.CutOutSITools2;
@@ -34,33 +60,12 @@ import fr.cnes.sitools.dataset.database.DatabaseRequestParameters;
 import fr.cnes.sitools.dataset.database.common.DataSetExplorerUtil;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
-import static fr.cnes.sitools.extensions.common.Utility.isSet;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.proxy.ProxySettings;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.service.storage.model.StorageDirectory;
 import fr.cnes.sitools.util.RIAPUtils;
 import fr.cnes.sitools.util.Util;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Disposition;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Status;
-import org.restlet.ext.wadl.MethodInfo;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
 
 /**
  * Cuts a FITS file according to a search area.
@@ -72,7 +77,7 @@ public class CutOutResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(CutOutResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(CutOutResource.class.getName());
     /**
      * Right ascension as input.
      */
@@ -190,12 +195,12 @@ public class CutOutResource extends SitoolsParameterizedResource {
             final AttributeValue attributeValue = this.getInParam(this.getModel().getParameterByName(CutOutResourcePlugin.FITS_FILE_INPUT_PARAMETER), record);
             fileIdentifier = String.valueOf(attributeValue.getValue());
         } catch (SitoolsException ex) {
-            Logger.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 databaseRequest.close();
             } catch (SitoolsException ex) {
-                Logger.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return fileIdentifier;
@@ -241,13 +246,13 @@ public class CutOutResource extends SitoolsParameterizedResource {
             }            
             cutOut = new CutOutSITools2(fits, rightAscension, declination, radius, hduNumber, cubeIndex);
         } catch (FitsException ex) {
-            Logger.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (CutOutException ex) {
-            Logger.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         }
 

@@ -18,15 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
-import fr.cnes.sitools.astro.representation.VOTableRepresentation;
-import fr.cnes.sitools.dataset.DataSetApplication;
-import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.astro.representation.VOTableRepresentation;
+import fr.cnes.sitools.dataset.DataSetApplication;
+import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 
 /**
  * Library implementing the Cone Search Protocol.
@@ -38,7 +41,7 @@ public class ConeSearchProtocolLibrary {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ConeSearchProtocolLibrary.class.getName());
+    private static final Logger LOG = Engine.getLogger(ConeSearchProtocolLibrary.class.getName());
     /**
      * RA min.
      */

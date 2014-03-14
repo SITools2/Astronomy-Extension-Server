@@ -18,6 +18,10 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.security;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -25,9 +29,6 @@ import fr.cnes.sitools.plugins.filters.model.FilterModel;
 import fr.cnes.sitools.plugins.filters.model.FilterParameter;
 import fr.cnes.sitools.plugins.filters.model.FilterParameterType;
 import fr.cnes.sitools.util.Util;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Filters the access by delegating the responsability to an external database

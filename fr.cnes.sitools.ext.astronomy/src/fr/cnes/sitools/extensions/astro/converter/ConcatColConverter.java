@@ -18,6 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -27,11 +35,6 @@ import fr.cnes.sitools.dataset.converter.model.ConverterParameterType;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
 import fr.cnes.sitools.util.Util;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Concats two columns.
@@ -43,7 +46,7 @@ public class ConcatColConverter extends AbstractConverter {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(ConcatColConverter.class.getName());
+  private static final Logger LOG = Engine.getLogger(ConcatColConverter.class.getName());
 
   /**
    * Constucts the converter.

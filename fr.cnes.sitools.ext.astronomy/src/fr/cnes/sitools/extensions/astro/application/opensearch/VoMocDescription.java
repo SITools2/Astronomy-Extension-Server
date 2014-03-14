@@ -18,14 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import cds.moc.HealpixMoc;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
-import fr.cnes.sitools.extensions.common.ApplicationPluginParameterValidation;
-import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
-import fr.cnes.sitools.extensions.common.StatusValidation;
-import fr.cnes.sitools.extensions.common.Validation;
-import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,9 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
@@ -45,6 +39,15 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+
+import cds.moc.HealpixMoc;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
+import fr.cnes.sitools.extensions.common.ApplicationPluginParameterValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
+import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
+import fr.cnes.sitools.util.ClientResourceProxy;
 
 /**
  * Retrieves and transforms a HEALPix Multi-Order Coverage map in different representations.
@@ -69,7 +72,7 @@ public class VoMocDescription extends MocDescription {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(VoMocDescription.class.getName());
+  private static final Logger LOG = Engine.getLogger(VoMocDescription.class.getName());
 
   @Override
   public final void doInit() {

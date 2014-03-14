@@ -18,15 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
-import fr.cnes.sitools.extensions.common.Utility;
-import fr.cnes.sitools.extensions.common.VoDictionary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.wadl.DocumentationInfo;
@@ -39,6 +35,12 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.extensions.common.VoDictionary;
 
 /**
  * Provides a dictionary for open search services that use Virtual Observatory.

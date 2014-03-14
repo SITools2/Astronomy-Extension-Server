@@ -18,14 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutout;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * cut out Service from CDS.
@@ -35,7 +38,7 @@ public class CutOutCDS implements CutOutInterface {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(CutOutCDS.class.getName());
+    private static final Logger LOG = Engine.getLogger(CutOutCDS.class.getName());
 
     /**
      * CDS service to get a preview.

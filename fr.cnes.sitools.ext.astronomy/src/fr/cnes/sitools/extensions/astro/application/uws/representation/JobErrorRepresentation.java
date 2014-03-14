@@ -18,10 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
+import net.ivoa.xml.uws.v1.ErrorSummary;
+
+import org.restlet.resource.ResourceException;
+
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import org.restlet.resource.ResourceException;
 
 /**
  * Representation for ErrorSummary object.

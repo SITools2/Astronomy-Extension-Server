@@ -18,7 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.client;
 
-import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -26,13 +25,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
+
 import net.ivoa.xml.uws.v1.ErrorSummary;
 import net.ivoa.xml.uws.v1.ExecutionPhase;
 import net.ivoa.xml.uws.v1.JobSummary;
@@ -40,11 +40,15 @@ import net.ivoa.xml.uws.v1.Jobs;
 import net.ivoa.xml.uws.v1.Parameters;
 import net.ivoa.xml.uws.v1.Results;
 import net.ivoa.xml.uws.v1.ShortJobDescription;
+
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
 
 /**
  * Generic UWS client
@@ -165,10 +169,10 @@ public class ClientUWS {
                 JAXBElement<JobSummary> response = (JAXBElement<JobSummary>) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
                 jobSummaryResponse = response.getValue();
             } catch (IOException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (JAXBException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (ResourceException ex) {
                 throw new ClientUWSException(ex);
@@ -253,10 +257,10 @@ public class ClientUWS {
                 Unmarshaller um = ctx.createUnmarshaller();
                 jobsResponse = (Jobs) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
             } catch (IOException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (JAXBException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } finally {
                 client.release();
@@ -391,10 +395,10 @@ public class ClientUWS {
                 JAXBElement<ErrorSummary> response = (JAXBElement<ErrorSummary>) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
                 errorSummaryResponse = response.getValue();
             } catch (IOException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (JAXBException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } finally {
                 client.release();
@@ -426,10 +430,10 @@ public class ClientUWS {
                 JAXBElement<JobSummary> response = (JAXBElement<JobSummary>) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
                 jobSummaryResponse = response.getValue();
             } catch (IOException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (JAXBException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } finally {
                 client.release();
@@ -461,10 +465,10 @@ public class ClientUWS {
                 Results response = (Results) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
                 resultsResponse = response;
             } catch (IOException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (JAXBException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } finally {
                 client.release();
@@ -496,10 +500,10 @@ public class ClientUWS {
                 Parameters response = (Parameters) um.unmarshal(new ByteArrayInputStream(client.get().getText().getBytes()));
                 parametersResponse = response;
             } catch (IOException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } catch (JAXBException ex) {
-                Logger.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(ClientUWS.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ClientUWSException(ex);
             } finally {
                 client.release();

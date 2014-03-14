@@ -18,14 +18,16 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
+import healpix.essentials.Scheme;
+
+import java.util.Map;
+import java.util.Set;
+
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.extensions.astro.application.opensearch.OpenSearchSearch;
 import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.searchgeometryengine.Shape;
 import fr.cnes.sitools.util.Util;
-import healpix.essentials.Scheme;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A factory for building a Solr Query request and a few utility methods to

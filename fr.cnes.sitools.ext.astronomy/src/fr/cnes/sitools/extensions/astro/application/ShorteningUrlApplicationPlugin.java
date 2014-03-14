@@ -18,15 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
+import java.util.logging.Logger;
+
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.engine.Engine;
+import org.restlet.routing.Router;
+import org.restlet.routing.Template;
+
 import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.extensions.cache.SingletonCacheShortnerURL;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
-import java.util.logging.Logger;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.routing.Router;
-import org.restlet.routing.Template;
 
 /**
  * Plugin that provides a shortner URL based on a MIZAR context.
@@ -48,7 +51,7 @@ public class ShorteningUrlApplicationPlugin extends AbstractApplicationPlugin {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(OpenSearchApplicationPlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(OpenSearchApplicationPlugin.class.getName());
 
     /**
      * Constructor.

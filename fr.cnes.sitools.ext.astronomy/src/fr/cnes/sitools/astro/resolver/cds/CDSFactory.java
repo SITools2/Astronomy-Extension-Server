@@ -11,12 +11,15 @@ package fr.cnes.sitools.astro.resolver.cds;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
+
+import org.restlet.engine.Engine;
 
 
 /**
@@ -305,6 +308,6 @@ public class CDSFactory {
     public JAXBElement<Veqr> createResolverZ(Veqr value) {
         return new JAXBElement<Veqr>(_ResolverZ_QNAME, Veqr.class, Resolver.class, value);
     }
-    private static final Logger LOG = Logger.getLogger(CDSFactory.class.getName());
+    private static final Logger LOG = Engine.getLogger(CDSFactory.class.getName());
 
 }

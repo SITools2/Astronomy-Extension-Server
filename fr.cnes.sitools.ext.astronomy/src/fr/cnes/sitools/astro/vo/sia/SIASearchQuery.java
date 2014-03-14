@@ -18,22 +18,27 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
-import fr.cnes.sitools.extensions.common.Utility;
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import net.ivoa.xml.votable.v1.Field;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.VOTABLE;
+
 import org.restlet.data.Method;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.util.ClientResourceProxy;
 
 /**
  *
@@ -43,7 +48,7 @@ public class SIASearchQuery {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(SIASearchQuery.class.getName());
+  private static final Logger LOG = Engine.getLogger(SIASearchQuery.class.getName());
 
   /**
    * URL of the WS.

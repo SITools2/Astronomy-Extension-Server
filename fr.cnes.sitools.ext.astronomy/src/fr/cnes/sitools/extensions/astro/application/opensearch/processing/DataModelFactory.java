@@ -18,15 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
-import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.ConeSearchHealpix;
-import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.SiaHealpix;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.ConeSearchHealpix;
+import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.SiaHealpix;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Factory to create the data model from SIAP or CSP.
@@ -37,7 +41,7 @@ public abstract class DataModelFactory {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(DataModelFactory.class.getName());
+    private static final Logger LOG = Engine.getLogger(DataModelFactory.class.getName());
 
     /**
      * Returns the right implementation of the data model.

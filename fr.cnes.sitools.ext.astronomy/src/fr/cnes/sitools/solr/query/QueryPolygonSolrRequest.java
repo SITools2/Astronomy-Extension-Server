@@ -18,6 +18,16 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
+import healpix.essentials.RangeSet;
+import healpix.essentials.Scheme;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
 import fr.cnes.sitools.searchgeometryengine.AbstractGeometryIndex;
 import fr.cnes.sitools.searchgeometryengine.CoordSystem;
@@ -26,13 +36,6 @@ import fr.cnes.sitools.searchgeometryengine.Point;
 import fr.cnes.sitools.searchgeometryengine.Polygon;
 import fr.cnes.sitools.searchgeometryengine.RingIndex;
 import fr.cnes.sitools.searchgeometryengine.Shape;
-import healpix.essentials.RangeSet;
-import healpix.essentials.Scheme;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Creates a SOLR request based on a polygon.
@@ -112,7 +115,7 @@ public class QueryPolygonSolrRequest extends AbstractSolrQueryRequestFactory {
             Index index = getIntersectedHealpixWithShape(shape, this.healpixScheme);
             obj = index.getIndex();
         } catch (Exception ex) {
-            Logger.getLogger(QueryBBOXSolrRequest.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(QueryBBOXSolrRequest.class.getName()).log(Level.SEVERE, null, ex);
         }
         setObjHealpix(obj);
     }

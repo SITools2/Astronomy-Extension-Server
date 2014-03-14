@@ -18,17 +18,20 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.storage;
 
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.util.logging.Logger;
+
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
 
 /**
  * Resource that handles the system cache.
@@ -48,7 +51,7 @@ public class StoreObject extends SitoolsParameterizedResource {
     /**
     * Logger.
     */
-    private static final Logger LOG = Logger.getLogger(StoreObject.class.getName());
+    private static final Logger LOG = Engine.getLogger(StoreObject.class.getName());
     
 
     @Override

@@ -18,6 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
@@ -28,10 +35,6 @@ import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import fr.cnes.sitools.util.Util;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Plugin for publishing a dataset through the Simple Image Access Protocol.
@@ -66,7 +69,7 @@ public class SimpleImageAccessResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(SimpleImageAccessResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(SimpleImageAccessResourcePlugin.class.getName());
 
     /**
      * Constructs the configuration panel of the plugin.

@@ -18,6 +18,32 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.ivoa.xml.votable.v1.AnyTEXT;
+import net.ivoa.xml.votable.v1.DataType;
+import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.wadl.DocumentationInfo;
+import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
+import org.restlet.ext.wadl.RepresentationInfo;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Get;
+import org.restlet.resource.ResourceException;
+
 import fr.cnes.sitools.astro.representation.DatabaseRequestModel;
 import fr.cnes.sitools.astro.representation.VOTableRepresentation;
 import fr.cnes.sitools.common.exception.SitoolsException;
@@ -33,28 +59,6 @@ import fr.cnes.sitools.dataset.dto.DictionaryMappingDTO;
 import fr.cnes.sitools.dataset.model.Column;
 import fr.cnes.sitools.dictionary.model.Concept;
 import freemarker.template.TemplateSequenceModel;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.ivoa.xml.votable.v1.AnyTEXT;
-import net.ivoa.xml.votable.v1.DataType;
-import net.ivoa.xml.votable.v1.Field;
-import org.restlet.data.Disposition;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.ext.wadl.DocumentationInfo;
-import org.restlet.ext.wadl.MethodInfo;
-import org.restlet.ext.wadl.ParameterInfo;
-import org.restlet.ext.wadl.ParameterStyle;
-import org.restlet.ext.wadl.RepresentationInfo;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Get;
-import org.restlet.resource.ResourceException;
 
 /**
  * Gets selected rows from the dataset and export them as a VOTable.
@@ -72,7 +76,7 @@ public class ExportVOResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ExportVOResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(ExportVOResource.class.getName());
     /**
      * Name of the dictionary that has been used to map VO concepts with
      * dataset's attributes.

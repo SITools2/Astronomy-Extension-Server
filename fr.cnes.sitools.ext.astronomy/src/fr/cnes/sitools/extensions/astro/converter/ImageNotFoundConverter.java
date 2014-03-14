@@ -18,6 +18,15 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.application.ContextAttributes;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
@@ -32,12 +41,6 @@ import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.service.storage.model.StorageDirectory;
 import fr.cnes.sitools.util.RIAPUtils;
 import fr.cnes.sitools.util.Util;
-import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Add a default image when a image on the data storage is not found.
@@ -48,7 +51,7 @@ public class ImageNotFoundConverter extends AbstractConverter {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ImageNotFoundConverter.class.getName());
+    private static final Logger LOG = Engine.getLogger(ImageNotFoundConverter.class.getName());
 
     /**
      * Constructor.

@@ -19,8 +19,6 @@
 package fr.cnes.sitools.astro.cutout;
 
 
-import edu.jhu.pha.sdss.fits.FITSImage;
-import fr.cnes.sitools.extensions.common.Utility;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
@@ -32,12 +30,13 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.media.jai.Interpolation;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.operator.TransposeDescriptor;
+
 import jsky.coords.WCSKeywordProvider;
 import jsky.coords.WCSTransform;
 import nom.tam.fits.BasicHDU;
@@ -49,6 +48,11 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.Cursor;
+
+import org.restlet.engine.Engine;
+
+import edu.jhu.pha.sdss.fits.FITSImage;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
   Class for handling cutOutProcessing feature on FITS file.
@@ -575,16 +579,16 @@ public class CutOutSITools2 implements CutOutInterface {
                 throw new CutOutException(ex);
             }
       } catch (IOException ex) {
-            Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex);
         } catch (FitsException ex) {
-            Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex);
         } catch (FITSImage.DataTypeNotSupportedException ex) {
-            Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex);
         } catch (FITSImage.NoImageDataFoundException ex) {
-            Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
             throw new CutOutException(ex);
         }
     }
@@ -633,14 +637,14 @@ public class CutOutSITools2 implements CutOutInterface {
             try {
                 dataOutputStream.close();
             } catch (IOException ex) {
-                Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (FitsException ex) {
             if (dataOutputStream != null) {
                 try {
                     dataOutputStream.close();
                 } catch (IOException ex1) {
-                    Logger.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex1);
+                    Engine.getLogger(CutOutSITools2.class.getName()).log(Level.SEVERE, null, ex1);
                 }
             }
             throw new CutOutException(ex);

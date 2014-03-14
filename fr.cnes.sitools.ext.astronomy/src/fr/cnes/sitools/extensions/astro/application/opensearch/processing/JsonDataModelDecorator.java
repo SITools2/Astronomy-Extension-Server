@@ -18,12 +18,16 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Transforms the response from the VO server to JSON.
@@ -38,7 +42,7 @@ public class JsonDataModelDecorator extends VORequestDecorator {
    /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(JsonDataModelDecorator.class.getName());
+    private static final Logger LOG = Engine.getLogger(JsonDataModelDecorator.class.getName());
     /**
      * Constructor.
      * @param decorateVORequestVal VO response

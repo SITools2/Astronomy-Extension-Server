@@ -19,8 +19,11 @@
 package fr.cnes.sitools.searchgeometryengine;
 
 import healpix.core.AngularPosition;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
 
 /**
  * Contains methods to create a point on the sphere in EQUATORIAL or GEOCENTRIC frame.
@@ -95,7 +98,7 @@ public class Point extends AngularPosition implements Shape {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(Point.class.getName());
+  private static final Logger LOG = Engine.getLogger(Point.class.getName());
 
   /**
    * A point is build by two values : the longitude and the latitude in the reference frame.

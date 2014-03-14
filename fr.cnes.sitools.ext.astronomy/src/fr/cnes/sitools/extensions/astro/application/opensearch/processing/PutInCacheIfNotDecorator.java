@@ -18,13 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
+import java.util.logging.Logger;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
 import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.CacheStrategy;
 import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import fr.cnes.sitools.extensions.common.Utility;
-import java.util.logging.Logger;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 
 /**
  * Puts the VO result from the server in a cache.
@@ -56,7 +60,7 @@ public class PutInCacheIfNotDecorator extends VORequestDecorator {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(PutInCacheIfNotDecorator.class.getName());
+    private static final Logger LOG = Engine.getLogger(PutInCacheIfNotDecorator.class.getName());
 
     /**
      * Constructor.

@@ -18,18 +18,22 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
-import fr.cnes.sitools.astro.representation.VOTableRepresentation;
-import fr.cnes.sitools.dataset.DataSetApplication;
-import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.DataType;
+
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.astro.representation.VOTableRepresentation;
+import fr.cnes.sitools.dataset.DataSetApplication;
+import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 
 /**
  *
@@ -40,7 +44,7 @@ public class SimpleImageAccessProtocolLibrary {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(SimpleImageAccessProtocolLibrary.class.getName());
+  private static final Logger LOG = Engine.getLogger(SimpleImageAccessProtocolLibrary.class.getName());
 
   /**
    *

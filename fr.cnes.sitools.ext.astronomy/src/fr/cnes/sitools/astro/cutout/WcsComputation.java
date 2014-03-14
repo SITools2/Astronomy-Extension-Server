@@ -18,11 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutout;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import healpix.core.HealpixIndex;
 import healpix.tools.SpatialVector;
+
 import java.awt.geom.Point2D;
+
 import jsky.coords.WCSTransform;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Create WCS.

@@ -18,9 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.cutout;
 
-import edu.jhu.pha.sdss.fits.FITSImage;
-import edu.jhu.pha.sdss.fits.Histogram;
-import edu.jhu.pha.sdss.fits.ScaleUtils;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -33,8 +30,15 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.logging.Logger;
+
 import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
+
+import org.restlet.engine.Engine;
+
+import edu.jhu.pha.sdss.fits.FITSImage;
+import edu.jhu.pha.sdss.fits.Histogram;
+import edu.jhu.pha.sdss.fits.ScaleUtils;
 
 /**
  * Scales FITS images.
@@ -44,7 +48,7 @@ public class FITSBufferedImage extends FITSImage {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FITSBufferedImage.class.getName());
+    private static final Logger LOG = Engine.getLogger(FITSBufferedImage.class.getName());
     /**
      * BYTE datatype in FITS.
      */

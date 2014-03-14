@@ -18,6 +18,26 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
+import org.restlet.resource.ResourceException;
+
 import cds.moc.HealpixMoc;
 import fr.cnes.sitools.common.exception.SitoolsException;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
@@ -30,23 +50,6 @@ import fr.cnes.sitools.dataset.database.common.DataSetExplorerUtil;
 import fr.cnes.sitools.dataset.model.Column;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.json.JSONObject;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.FileRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Put;
-import org.restlet.resource.ResourceException;
 
 /**
  *
@@ -57,7 +60,7 @@ public class FootprintResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FootprintResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(FootprintResource.class.getName());
     private transient String featureType;
     private transient String search;
     private transient File directory;

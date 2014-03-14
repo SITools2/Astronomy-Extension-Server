@@ -8,8 +8,14 @@
 package jsky.util;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
 
 
 /**
@@ -29,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class I18N {
 
-    private static final Logger LOG = Logger.getLogger(I18N.class.getName());
+    private static final Logger LOG = Engine.getLogger(I18N.class.getName());
 
     // Maps package names to resource bundles.
     // (Note that the ResourceBundle class itself has an internal cache.)

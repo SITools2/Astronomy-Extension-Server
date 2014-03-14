@@ -18,6 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.engine.Engine;
+import org.restlet.routing.Router;
+import org.restlet.routing.Template;
+
 import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
@@ -25,16 +38,6 @@ import fr.cnes.sitools.common.validator.Validator;
 import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.routing.Router;
-import org.restlet.routing.Template;
 
 /**
  * Plugin to access to observations from SOLR server.
@@ -50,7 +53,7 @@ public class OpenSearchApplicationPlugin extends AbstractApplicationPlugin {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(OpenSearchApplicationPlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(OpenSearchApplicationPlugin.class.getName());
 
     /**
      * Supported keywords by open search.

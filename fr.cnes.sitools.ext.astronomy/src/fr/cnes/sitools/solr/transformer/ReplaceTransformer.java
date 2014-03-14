@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.solr.handler.dataimport.Context;
 import org.apache.solr.handler.dataimport.DataImporter;
 import org.apache.solr.handler.dataimport.Transformer;
+import org.restlet.engine.Engine;
 
 /**
  * Replaces a string by another one using the DIH transformer.
@@ -54,7 +56,7 @@ public class ReplaceTransformer extends Transformer {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ReplaceTransformer.class.getName());
+    private static final Logger LOG = Engine.getLogger(ReplaceTransformer.class.getName());
 
     /**
      * Returns the transformation that is applied in this method.

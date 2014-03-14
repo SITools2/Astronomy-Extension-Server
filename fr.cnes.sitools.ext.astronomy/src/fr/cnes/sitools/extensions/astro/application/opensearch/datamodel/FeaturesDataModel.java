@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
+
 /**
  * Data model of the collection of feature.
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
@@ -32,7 +34,7 @@ public class FeaturesDataModel {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(FeaturesDataModel.class.getName());    
+  private static final Logger LOG = Engine.getLogger(FeaturesDataModel.class.getName());    
     /**
      * Total result of records in the response.
      */

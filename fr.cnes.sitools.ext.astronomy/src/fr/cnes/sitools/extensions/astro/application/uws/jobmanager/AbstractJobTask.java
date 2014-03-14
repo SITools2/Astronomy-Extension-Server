@@ -18,13 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.jobmanager;
 
-import fr.cnes.sitools.common.SitoolsSettings;
-import fr.cnes.sitools.common.application.ContextAttributes;
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
-import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
-import fr.cnes.sitools.xml.uws.v1.Job;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,17 +31,19 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
 import net.ivoa.xml.uws.v1.ErrorSummary;
 import net.ivoa.xml.uws.v1.ExecutionPhase;
 import net.ivoa.xml.uws.v1.JobSummary;
 import net.ivoa.xml.uws.v1.JobSummary.JobInfo;
 import net.ivoa.xml.uws.v1.Parameters;
 import net.ivoa.xml.uws.v1.Results;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -57,10 +52,19 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.application.ContextAttributes;
+import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
+import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
+import fr.cnes.sitools.xml.uws.v1.Job;
 
 /**
  * The AbstractJobTask handles a specific JobTask and contains the needed
@@ -267,19 +271,19 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
             final Method m = c.getDeclaredMethod("getCapabilities", null);
             job = (Job) m.invoke(obj, null);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchMethodException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
         }
         return job;
     }
@@ -746,17 +750,17 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
                     os.write(buffer, 0, bytesRead);
                 }
             } catch (IOException ex) {
-                Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 try {
                     is.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                    Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 try {
                     os.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                    Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 client.release();
             }
@@ -782,14 +786,14 @@ public abstract class AbstractJobTask implements JobTaskRunnable {
                     fileOs.close();
                     outputStream.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                    Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
                 } finally {
                     try {
                         if (fileOs != null) {
                             fileOs.close();
                         }
                     } catch (IOException ex) {
-                        Logger.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
+                        Engine.getLogger(AbstractJobTask.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }

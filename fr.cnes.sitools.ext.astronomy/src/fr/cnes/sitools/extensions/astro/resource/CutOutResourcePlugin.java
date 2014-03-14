@@ -18,6 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -26,10 +33,6 @@ import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Configures the Images cutOut service.
@@ -48,7 +51,7 @@ public class CutOutResourcePlugin extends ResourceModel {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CutOutResourcePlugin.class.getName());
+  private static final Logger LOG = Engine.getLogger(CutOutResourcePlugin.class.getName());
 
   /**
    * RA keyword input parameter.

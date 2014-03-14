@@ -23,10 +23,13 @@ import java.io.Serializable;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+
 import org.restlet.data.LocalReference;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
@@ -39,7 +42,7 @@ public class SingletonCacheShortnerURL {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(SingletonCacheShortnerURL.class.getName());
+    private static final Logger LOG = Engine.getLogger(SingletonCacheShortnerURL.class.getName());
 
     /**
      * Maximum number of URLS that the service can manage.
@@ -78,7 +81,7 @@ public class SingletonCacheShortnerURL {
         try {
             CacheManager.create(cacheConf.getStream());
         } catch (IOException ex) {
-            Logger.getLogger(SingletonCacheShortnerURL.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(SingletonCacheShortnerURL.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

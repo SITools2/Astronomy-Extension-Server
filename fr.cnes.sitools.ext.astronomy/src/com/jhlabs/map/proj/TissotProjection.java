@@ -24,8 +24,9 @@ limitations under the License.
  */
 package com.jhlabs.map.proj;
 
-import com.jhlabs.map.MapMath;
 import java.awt.geom.Point2D;
+
+import com.jhlabs.map.MapMath;
 
 public class TissotProjection extends ConicProjection {
 

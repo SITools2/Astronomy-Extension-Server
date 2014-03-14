@@ -18,12 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
-import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
-import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
-import fr.cnes.sitools.server.Consts;
-import fr.cnes.sitools.util.RIAPUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,12 +27,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
+import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
+import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
+import fr.cnes.sitools.server.Consts;
+import fr.cnes.sitools.util.RIAPUtils;
 
 /**
  * Base Resource that computes the Solr indexes from Luke.
@@ -49,7 +52,7 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchBase.class.getName());
+  private static final Logger LOG = Engine.getLogger(OpenSearchBase.class.getName());
   
   /**
    * List of indexed fields.

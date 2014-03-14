@@ -18,11 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
-import java.util.logging.Logger;
 
 /**
  * A name resolver service provides object coordinates from its name.
@@ -68,7 +71,7 @@ public class NameResolverResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(NameResolverResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(NameResolverResourcePlugin.class.getName());
 
     /**
      * Constructor of the administration panel.

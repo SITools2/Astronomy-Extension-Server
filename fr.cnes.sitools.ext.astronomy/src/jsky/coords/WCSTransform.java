@@ -42,6 +42,7 @@
 package jsky.coords;
 
 import java.awt.geom.Point2D;
+
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 

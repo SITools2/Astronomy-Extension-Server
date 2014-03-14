@@ -18,22 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.uws;
 
-import fr.cnes.sitools.astro.image.ZScale;
-import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
-import fr.cnes.sitools.xml.uws.v1.ImageFormatType;
-import fr.cnes.sitools.xml.uws.v1.InputsType;
-import fr.cnes.sitools.xml.uws.v1.InputsType.Keyword;
-import fr.cnes.sitools.xml.uws.v1.Job;
-import fr.cnes.sitools.xml.uws.v1.ObjectFactory;
-import fr.cnes.sitools.xml.uws.v1.OutputsType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.xml.datatype.DatatypeConfigurationException;
+
 import net.ivoa.xml.uws.v1.ErrorSummary;
 import net.ivoa.xml.uws.v1.ErrorType;
 import net.ivoa.xml.uws.v1.ExecutionPhase;
@@ -43,6 +35,18 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.astro.image.ZScale;
+import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
+import fr.cnes.sitools.xml.uws.v1.ImageFormatType;
+import fr.cnes.sitools.xml.uws.v1.InputsType;
+import fr.cnes.sitools.xml.uws.v1.InputsType.Keyword;
+import fr.cnes.sitools.xml.uws.v1.Job;
+import fr.cnes.sitools.xml.uws.v1.ObjectFactory;
+import fr.cnes.sitools.xml.uws.v1.OutputsType;
 
 /**
  * Computes the zscale of a FITS image.
@@ -98,7 +102,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             setPhase(ExecutionPhase.COMPLETED);
             setEndTime(Util.convertIntoXMLGregorian(new Date()));
         } catch (DatatypeConfigurationException ex) {
-            Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -106,7 +110,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (FitsException ex) {
-            Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -114,7 +118,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -122,7 +126,7 @@ public class ZScaleProcessing extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (IOException ex) {
-            Logger.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(ZScaleProcessing.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);

@@ -19,7 +19,7 @@ limitations under the License.
  */
 package com.jhlabs.map.proj;
 
-import com.jhlabs.map.*;
+import com.jhlabs.map.MapMath;
 
 public class LambertEqualAreaConicProjection extends AlbersProjection {
 

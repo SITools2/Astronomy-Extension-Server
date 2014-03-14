@@ -18,17 +18,20 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import fr.cnes.sitools.searchgeometryengine.Shape;
 import healpix.core.HealpixIndex;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.searchgeometryengine.Shape;
 
 /**
  * Creates a SOLR request based on a Healpix number.
@@ -198,7 +201,7 @@ public class QueryPixelSolrRequest extends AbstractSolrQueryRequestFactory {
                 healpix.set(0, healpixNumber);
             }
         } catch (Exception ex) {
-            Logger.getLogger(QueryPixelSolrRequest.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(QueryPixelSolrRequest.class.getName()).log(Level.SEVERE, null, ex);
             throw new RuntimeException("Error when transforming NESTED to RING");
         }
     }

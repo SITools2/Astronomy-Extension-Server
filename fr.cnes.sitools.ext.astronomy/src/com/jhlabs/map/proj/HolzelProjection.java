@@ -21,7 +21,7 @@ limitations under the License.
  */
 package com.jhlabs.map.proj;
 
-import java.awt.geom.*;
+import java.awt.geom.Point2D;
 
 /**
  * Hoelzel Projection. Based on Proj4.

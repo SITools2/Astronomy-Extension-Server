@@ -18,6 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.astro.vo.conesearch.ConeSearchProtocolLibrary;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
@@ -28,10 +35,6 @@ import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
 import fr.cnes.sitools.util.Util;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Configures the cone search service.
@@ -77,7 +80,7 @@ public class ConeSearchResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ConeSearchResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(ConeSearchResourcePlugin.class.getName());
     /**
      * Maximum radius = 180 degrees.
      */

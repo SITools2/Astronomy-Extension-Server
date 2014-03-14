@@ -18,22 +18,27 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.conesearch;
 
-import fr.cnes.sitools.extensions.common.Utility;
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import net.ivoa.xml.votable.v1.Field;
 import net.ivoa.xml.votable.v1.Resource;
 import net.ivoa.xml.votable.v1.VOTABLE;
+
 import org.restlet.data.Method;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.extensions.common.Utility;
+import fr.cnes.sitools.util.ClientResourceProxy;
 
 /**
  * This object provides an implementation to retrieve data through the Cone Search Protocol.
@@ -45,7 +50,7 @@ public class ConeSearchQuery {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(ConeSearchQuery.class.getName());
+  private static final Logger LOG = Engine.getLogger(ConeSearchQuery.class.getName());
   /**
    * Service url.
    */

@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBElement;
+
 import net.ivoa.xml.votable.v1.Data;
 import net.ivoa.xml.votable.v1.Field;
 import net.ivoa.xml.votable.v1.Info;
@@ -38,6 +40,8 @@ import net.ivoa.xml.votable.v1.Table;
 import net.ivoa.xml.votable.v1.TableData;
 import net.ivoa.xml.votable.v1.Td;
 import net.ivoa.xml.votable.v1.Tr;
+
+import org.restlet.engine.Engine;
 
 /**
  * Utility class.
@@ -49,7 +53,7 @@ public abstract class Utility {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(Utility.class.getName());
+    private static final Logger LOG = Engine.getLogger(Utility.class.getName());
 
     /**
      * Checks if an object is not null.

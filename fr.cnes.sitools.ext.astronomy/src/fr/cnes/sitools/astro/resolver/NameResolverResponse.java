@@ -18,9 +18,10 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Provides the response of the server.

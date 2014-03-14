@@ -18,7 +18,22 @@
  ******************************************************************************/
 package fr.cnes.sitools.test.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import org.junit.BeforeClass;
+import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.xstream.XstreamRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+
 import com.thoughtworks.xstream.XStream;
+
 import fr.cnes.sitools.AbstractSitoolsServerTestCase;
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.common.SitoolsXStreamRepresentation;
@@ -31,19 +46,6 @@ import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.server.Starter;
 import fr.cnes.sitools.tasks.AbstractTaskResourceTestCase;
 import fr.cnes.sitools.util.RIAPUtils;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.logging.Logger;
-import org.junit.BeforeClass;
-import org.restlet.data.MediaType;
-import org.restlet.engine.Engine;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.xstream.XstreamRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
 
 /**
  *
@@ -186,7 +188,7 @@ public abstract class AbstractSitoolsServiceTestCase extends AbstractTaskResourc
             rep.setXstream(xstream);
             return rep;
         } else {
-            Logger.getLogger(AbstractSitoolsServiceTestCase.class.getName()).warning("Only JSON or XML supported in tests");
+            Engine.getLogger(AbstractSitoolsServiceTestCase.class.getName()).warning("Only JSON or XML supported in tests");
             return null; // TODO complete test with ObjectRepresentation
         }
     }
@@ -212,7 +214,7 @@ public abstract class AbstractSitoolsServiceTestCase extends AbstractTaskResourc
     public static Response getResponse(MediaType media, Representation representation, Class<?> dataClass, boolean isArray) {
         try {
             if (!media.isCompatible(getMediaTest()) && !media.isCompatible(MediaType.APPLICATION_XML)) {
-                Logger.getLogger(AbstractSitoolsServiceTestCase.class.getName()).warning("Only JSON or XML supported in tests");
+                Engine.getLogger(AbstractSitoolsServiceTestCase.class.getName()).warning("Only JSON or XML supported in tests");
                 return null;
             }
 
@@ -250,7 +252,7 @@ public abstract class AbstractSitoolsServiceTestCase extends AbstractTaskResourc
 
                 return response;
             } else {
-                Logger.getLogger(AbstractSitoolsServiceTestCase.class.getName()).warning("Only JSON or XML supported in tests");
+                Engine.getLogger(AbstractSitoolsServiceTestCase.class.getName()).warning("Only JSON or XML supported in tests");
                 return null; // TODO complete test with ObjectRepresentation
             }
         } finally {

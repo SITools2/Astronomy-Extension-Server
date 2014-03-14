@@ -14,8 +14,8 @@
 
 package jsky.util;
 
-import java.util.*;
-import java.lang.*;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /**
  * Modified version of the jdk1.2 StringTokenizer class

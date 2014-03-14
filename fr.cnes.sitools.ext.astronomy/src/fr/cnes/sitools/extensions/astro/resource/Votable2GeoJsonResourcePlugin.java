@@ -18,9 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import java.util.logging.Logger;
 
 /**
  * Provides a services to convert a VOTable to GeoSJON.
@@ -32,7 +35,7 @@ public class Votable2GeoJsonResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(Votable2GeoJsonResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(Votable2GeoJsonResourcePlugin.class.getName());
 
     /**
      * Constructs the administation panel.

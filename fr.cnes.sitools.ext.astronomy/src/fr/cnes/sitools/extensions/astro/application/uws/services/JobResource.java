@@ -18,12 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import fr.cnes.sitools.extensions.astro.application.uws.representation.JobRepresentation;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -41,6 +38,11 @@ import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
+import fr.cnes.sitools.extensions.astro.application.uws.representation.JobRepresentation;
 
 /**
  * Resource to handle a submitted job.

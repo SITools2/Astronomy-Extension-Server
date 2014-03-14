@@ -19,7 +19,12 @@
  */
 
 package cds.moc;
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.NoSuchElementException;
 
 /** Class for dealing with sets of integer ranges.

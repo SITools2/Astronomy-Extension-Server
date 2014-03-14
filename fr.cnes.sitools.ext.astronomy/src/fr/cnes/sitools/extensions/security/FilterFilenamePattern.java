@@ -18,11 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.security;
 
-import fr.cnes.sitools.plugins.filters.model.FilterModel;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.security.Authorizer;
+
+import fr.cnes.sitools.plugins.filters.model.FilterModel;
 
 /**
  * Authorizes the file access to a datastorage when the url matches the pattern of the file.

@@ -18,8 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.solr.query;
 
-import fr.cnes.sitools.searchgeometryengine.Shape;
 import java.util.Map;
+
+import fr.cnes.sitools.searchgeometryengine.Shape;
 
 /**
  * Creates a SOLR request based on no geometry parameters.

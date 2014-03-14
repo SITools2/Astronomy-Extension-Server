@@ -16,7 +16,10 @@ limitations under the License.
 
 package com.jhlabs.map;
 
-import java.text.*;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 
 /**
  * A NumberFormat for formatting Angles in various commonly-found mapping styles.

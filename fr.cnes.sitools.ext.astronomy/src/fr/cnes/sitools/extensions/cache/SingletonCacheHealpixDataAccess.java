@@ -18,17 +18,21 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.cache;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+
 import org.restlet.data.LocalReference;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * Singleton for server cache based on Healpix.
@@ -44,7 +48,7 @@ public class SingletonCacheHealpixDataAccess {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(SingletonCacheHealpixDataAccess.class.getName());
+    private static final Logger LOG = Engine.getLogger(SingletonCacheHealpixDataAccess.class.getName());
 
     /**
      * Constructs a cache.

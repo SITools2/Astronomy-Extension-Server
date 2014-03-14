@@ -18,14 +18,16 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
-import com.jhlabs.map.proj.Projection;
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.JApplet;
+
+import com.jhlabs.map.proj.Projection;
 
 /**
  * Graph component of a decorator pattern.

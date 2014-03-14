@@ -4,14 +4,16 @@
 
 package jsky.util;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
-import java.awt.*;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 
 /**

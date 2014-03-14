@@ -18,14 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
-import fr.cnes.sitools.astro.graph.Graph;
-import fr.cnes.sitools.astro.graph.Utility;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
 import org.restlet.representation.OutputRepresentation;
+
+import fr.cnes.sitools.astro.graph.Graph;
+import fr.cnes.sitools.astro.graph.Utility;
 
 /**
  * PNG representation.
@@ -37,7 +40,7 @@ public class PngRepresentation extends OutputRepresentation {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(PngRepresentation.class.getName());
+  private static final Logger LOG = Engine.getLogger(PngRepresentation.class.getName());
   /**
    * Graph.
    */

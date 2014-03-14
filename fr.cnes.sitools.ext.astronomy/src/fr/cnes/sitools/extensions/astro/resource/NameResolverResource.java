@@ -18,6 +18,33 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.wadl.DocumentationInfo;
+import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.OptionInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
+import org.restlet.ext.wadl.RepresentationInfo;
+import org.restlet.ext.wadl.ResponseInfo;
+import org.restlet.representation.Representation;
+import org.restlet.resource.Get;
+import org.restlet.resource.ResourceException;
+
 import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
 import fr.cnes.sitools.astro.resolver.CDSNameResolver;
@@ -36,29 +63,6 @@ import fr.cnes.sitools.extensions.common.InputsValidation;
 import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
 import fr.cnes.sitools.extensions.common.StatusValidation;
 import fr.cnes.sitools.extensions.common.Validation;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.restlet.data.Disposition;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.ext.wadl.DocumentationInfo;
-import org.restlet.ext.wadl.MethodInfo;
-import org.restlet.ext.wadl.OptionInfo;
-import org.restlet.ext.wadl.ParameterInfo;
-import org.restlet.ext.wadl.ParameterStyle;
-import org.restlet.ext.wadl.RepresentationInfo;
-import org.restlet.ext.wadl.ResponseInfo;
-import org.restlet.representation.Representation;
-import org.restlet.resource.Get;
-import org.restlet.resource.ResourceException;
 
 /**
  * Searchs on different name resolvers and returns one or several names.
@@ -89,7 +93,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(NameResolverResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(NameResolverResource.class.getName());
     /**
      * Name resolver that is configured by the administrator.
      */

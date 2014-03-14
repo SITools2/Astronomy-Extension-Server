@@ -18,6 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
+import org.restlet.data.MediaType;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -25,11 +27,11 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.QNameMap;
+
 import fr.cnes.sitools.xml.uws.v1.InputsType;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Circle;
 import fr.cnes.sitools.xml.uws.v1.InputsType.Geometry.Healpix;
 import fr.cnes.sitools.xml.uws.v1.Job;
-import org.restlet.data.MediaType;
 
 /**
  * Representation for the service capabilities.

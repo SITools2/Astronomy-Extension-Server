@@ -18,11 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.shortenerurl;
 
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.cache.SingletonCacheShortnerURL;
-import fr.cnes.sitools.extensions.common.Utility;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
@@ -42,6 +40,10 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.cache.SingletonCacheShortnerURL;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * Resource that handles the shortener URL.

@@ -23,12 +23,15 @@ import healpix.essentials.Pointing;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
 import healpix.essentials.Vec3;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
 
 /**
  * Provides methods to decorate the graph by a circle.
@@ -52,7 +55,7 @@ public class CircleDecorator extends HealpixGridDecorator {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CircleDecorator.class.getName());
+  private static final Logger LOG = Engine.getLogger(CircleDecorator.class.getName());
   
   /**
    * Index representing by a set of pixels range.

@@ -18,6 +18,29 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.uws;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import net.ivoa.xml.uws.v1.ErrorSummary;
+import net.ivoa.xml.uws.v1.ErrorType;
+import net.ivoa.xml.uws.v1.ExecutionPhase;
+import net.ivoa.xml.uws.v1.ResultReference;
+import net.ivoa.xml.uws.v1.Results;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.astro.cutout.CutOutException;
 import fr.cnes.sitools.astro.cutout.CutOutSITools2;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
@@ -34,25 +57,6 @@ import fr.cnes.sitools.xml.uws.v1.ObjectFactory;
 import fr.cnes.sitools.xml.uws.v1.OutputsType;
 import fr.cnes.sitools.xml.uws.v1.OutputsType.Image;
 import fr.cnes.sitools.xml.uws.v1.ReferenceFrameType;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.datatype.DatatypeConfigurationException;
-import net.ivoa.xml.uws.v1.ErrorSummary;
-import net.ivoa.xml.uws.v1.ErrorType;
-import net.ivoa.xml.uws.v1.ExecutionPhase;
-import net.ivoa.xml.uws.v1.ResultReference;
-import net.ivoa.xml.uws.v1.Results;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 
 /**
  * Implements a FIT cutout in a UWS service.
@@ -80,7 +84,7 @@ public class CutOut extends AbstractJobTask {
             setEndTime(Util.convertIntoXMLGregorian(new Date()));
             setPhase(ExecutionPhase.COMPLETED);
         } catch (DatatypeConfigurationException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -88,7 +92,7 @@ public class CutOut extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (FitsException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -96,7 +100,7 @@ public class CutOut extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (CutOutException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -104,7 +108,7 @@ public class CutOut extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -112,7 +116,7 @@ public class CutOut extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (IOException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -120,7 +124,7 @@ public class CutOut extends AbstractJobTask {
             setError(errorSumm);
             setPhase(ExecutionPhase.ERROR);
         } catch (Error error) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, error);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, error);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(error.getMessage());
             errorSumm.setType(ErrorType.FATAL);
@@ -153,7 +157,7 @@ public class CutOut extends AbstractJobTask {
         try {
             fos.close();
         } catch (IOException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
         }
         final String outputFileFits = getStoragePathJob() + File.separator + getNameFrom(new URL(uri), "fits");
         final File fileFits = new File(outputFileFits);
@@ -162,7 +166,7 @@ public class CutOut extends AbstractJobTask {
         try {
             fos.close();
         } catch (IOException ex) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, ex);
         }
         return Arrays.asList(getNameFrom(new URL(uri), "fits"), getNameFrom(new URL(uri), "jpeg"));
     }

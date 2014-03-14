@@ -16,8 +16,9 @@ limitations under the License.
 
 package com.jhlabs.map.proj;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 /**
  * A projection which does nothing. Use this for drawing non-geographical overlays.

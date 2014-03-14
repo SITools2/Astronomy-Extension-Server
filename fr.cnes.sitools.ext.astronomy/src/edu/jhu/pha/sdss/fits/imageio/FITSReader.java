@@ -2,16 +2,20 @@ package edu.jhu.pha.sdss.fits.imageio;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.imageio.*;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.stream.*;
+import javax.imageio.stream.ImageInputStream;
 
-
-import edu.jhu.pha.sdss.fits.*;
 import nom.tam.fits.Fits;
+import edu.jhu.pha.sdss.fits.FITSImage;
+import edu.jhu.pha.sdss.fits.SlowFITSImage;
 
 /**
    Written by Samuel Carliles 2004.

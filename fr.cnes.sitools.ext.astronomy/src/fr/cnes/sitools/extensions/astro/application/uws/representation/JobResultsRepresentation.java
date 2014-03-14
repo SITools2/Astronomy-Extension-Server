@@ -18,14 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
+import java.util.List;
+
+import org.restlet.data.MediaType;
+import org.restlet.resource.ResourceException;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.QNameMap;
+
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import java.util.List;
-import org.restlet.data.MediaType;
-import org.restlet.resource.ResourceException;
 
 /**
  * Representation for Results object.

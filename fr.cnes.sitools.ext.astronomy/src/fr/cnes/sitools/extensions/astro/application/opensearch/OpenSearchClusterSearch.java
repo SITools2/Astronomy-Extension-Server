@@ -18,16 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -40,6 +41,9 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
+
 /**
  * Provides a search capability on observations by the use of (healpix,order) parameters.
  *
@@ -50,7 +54,7 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OpenSearchClusterSearch.class.getName());
+  private static final Logger LOG = Engine.getLogger(OpenSearchClusterSearch.class.getName());
 
   @Get
   @Override
@@ -75,7 +79,7 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
       json.setIndenting(true);
       return json;
     } catch (Exception ex) {
-      Logger.getLogger(OpenSearchSearch.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(OpenSearchSearch.class.getName()).log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ex);
     }
   }

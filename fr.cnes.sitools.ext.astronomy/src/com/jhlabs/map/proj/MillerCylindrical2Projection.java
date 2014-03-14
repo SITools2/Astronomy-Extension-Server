@@ -16,8 +16,9 @@ limitations under the License.
 
 package com.jhlabs.map.proj;
 
+import java.awt.geom.Point2D;
+
 import com.jhlabs.map.MapMath;
-import java.awt.geom.*;
 
 /**
  * Miller's second cylindrical projection, which is not used as often as his

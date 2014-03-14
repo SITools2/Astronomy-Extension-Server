@@ -11,9 +11,10 @@
  */
 package fr.cnes.sitools.astro.image;
 
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
 import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.ArrayFuncs;

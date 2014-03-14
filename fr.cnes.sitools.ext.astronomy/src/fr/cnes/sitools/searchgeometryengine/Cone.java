@@ -21,6 +21,8 @@ package fr.cnes.sitools.searchgeometryengine;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
+
 /**
  * This object contains methods to create a cone.
  *
@@ -57,7 +59,7 @@ import java.util.logging.Logger;
  */
 public class Cone implements Shape {
     /** Logger. */
-    private static final Logger LOG = Logger.getLogger(Cone.class.getName());
+    private static final Logger LOG = Engine.getLogger(Cone.class.getName());
     /** Center of the disk on the sphere. */
     private Point center;
     /** Radius of the disk in radians. */

@@ -18,6 +18,24 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.representation;
 
+import java.util.Date;
+import java.util.UUID;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import net.ivoa.xml.uws.v1.ErrorSummary;
+import net.ivoa.xml.uws.v1.ErrorType;
+import net.ivoa.xml.uws.v1.JobSummary;
+import net.ivoa.xml.uws.v1.Parameter;
+import net.ivoa.xml.uws.v1.ResultReference;
+
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -25,25 +43,12 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.QNameMap;
+
 import fr.cnes.sitools.extensions.astro.application.uws.common.Constants;
 import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
 import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.JobTaskManager;
-import java.util.Date;
-import java.util.UUID;
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
-import net.ivoa.xml.uws.v1.ErrorSummary;
-import net.ivoa.xml.uws.v1.ErrorType;
-import net.ivoa.xml.uws.v1.JobSummary;
-import net.ivoa.xml.uws.v1.Parameter;
-import net.ivoa.xml.uws.v1.ResultReference;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
 
 /**
  * Representation for JobSummary object.

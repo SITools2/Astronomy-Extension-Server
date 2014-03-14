@@ -18,6 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
+import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jsky.coords.WCSKeywordProvider;
+import jsky.coords.WCSTransform;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -27,15 +40,6 @@ import fr.cnes.sitools.dataset.converter.model.ConverterParameterType;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
 import fr.cnes.sitools.util.Util;
-import java.awt.geom.Point2D;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jsky.coords.WCSKeywordProvider;
-import jsky.coords.WCSTransform;
 
 /**
  * Computes the footprint from WCS inputs.
@@ -46,7 +50,7 @@ public class PolygonConverter extends AbstractConverter implements WCSKeywordPro
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(PolygonConverter.class.getName());
+  private static final Logger LOG = Engine.getLogger(PolygonConverter.class.getName());
   
   /**
    * P1 X.

@@ -18,8 +18,45 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import net.ivoa.xml.uws.v1.ExecutionPhase;
+
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.wadl.ApplicationInfo;
+import org.restlet.ext.wadl.DocumentationInfo;
+import org.restlet.ext.wadl.GrammarsInfo;
+import org.restlet.ext.wadl.IncludeInfo;
+import org.restlet.representation.Representation;
+import org.restlet.resource.Directory;
+import org.restlet.resource.ResourceException;
+import org.restlet.routing.Router;
+import org.restlet.routing.Template;
+import org.xml.sax.SAXException;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+
 import fr.cnes.sitools.common.model.Category;
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
@@ -47,37 +84,6 @@ import fr.cnes.sitools.plugins.applications.business.AbstractApplicationPlugin;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import fr.cnes.sitools.xml.uws.v1.Job;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import net.ivoa.xml.uws.v1.ExecutionPhase;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.ext.wadl.ApplicationInfo;
-import org.restlet.ext.wadl.DocumentationInfo;
-import org.restlet.ext.wadl.GrammarsInfo;
-import org.restlet.ext.wadl.IncludeInfo;
-import org.restlet.representation.Representation;
-import org.restlet.resource.Directory;
-import org.restlet.resource.ResourceException;
-import org.restlet.routing.Router;
-import org.restlet.routing.Template;
-import org.xml.sax.SAXException;
 
 /**
  * Provides a UWS service as a SITools2 plugin.
@@ -140,7 +146,7 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
    /**
     * Logger.
     */
-    private static final Logger LOG = Logger.getLogger(UwsApplicationPlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(UwsApplicationPlugin.class.getName());
     /**
      * Constructor.
      */

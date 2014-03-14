@@ -18,18 +18,23 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.responsibility;
 
-import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
-import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.CacheStrategy;
 import static fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.getFromCache;
 import static fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.isKeyInCache;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
+
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess;
+import fr.cnes.sitools.extensions.cache.SingletonCacheHealpixDataAccess.CacheStrategy;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Retrieves an element from the cache based on the cacheID.
@@ -65,7 +70,7 @@ public class RetrieveFromCache extends AbstractVORequest {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(RetrieveFromCache.class.getName());
+    private static final Logger LOG = Engine.getLogger(RetrieveFromCache.class.getName());
 
     /**
      * Empty constructor.

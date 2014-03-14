@@ -18,8 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.datamodel;
 
-import static fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel.PROPERTIES;
-import static fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel.PROPERTIES_ID;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;

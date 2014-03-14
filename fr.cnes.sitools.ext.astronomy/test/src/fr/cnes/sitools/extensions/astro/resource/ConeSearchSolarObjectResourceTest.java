@@ -18,22 +18,25 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.logging.Level;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
 /**
  *
@@ -63,11 +66,11 @@ public class ConeSearchSolarObjectResourceTest extends AbstractSitoolsServiceTes
               "SolarObject", this.urlAttachment);
       create(rm, getBaseUrl());
     } catch (ClassNotFoundException ex) {
-      Logger.getLogger(ConeSearchSolarObjectResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ConeSearchSolarObjectResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InstantiationException ex) {
-      Logger.getLogger(ConeSearchSolarObjectResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ConeSearchSolarObjectResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(ConeSearchSolarObjectResourceTest.class.getName()).log(Level.SEVERE, null, ex);
+      Engine.getLogger(ConeSearchSolarObjectResourceTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 

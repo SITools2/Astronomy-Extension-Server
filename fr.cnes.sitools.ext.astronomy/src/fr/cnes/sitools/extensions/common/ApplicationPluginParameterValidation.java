@@ -18,11 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.common;
 
-import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 
 /**
  * Concrete component providing the plugin parameters to validate.

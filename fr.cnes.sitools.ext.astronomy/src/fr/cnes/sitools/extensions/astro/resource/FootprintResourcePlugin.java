@@ -18,12 +18,15 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.dataset.DataSetApplication;
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameter;
 import fr.cnes.sitools.plugins.resources.model.ResourceParameterType;
-import java.util.logging.Logger;
 
 /**
  * Provides some footprint capabilities.
@@ -35,7 +38,7 @@ public class FootprintResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FootprintResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(FootprintResourcePlugin.class.getName());
 
     /**
      * Constructs the administration panel.

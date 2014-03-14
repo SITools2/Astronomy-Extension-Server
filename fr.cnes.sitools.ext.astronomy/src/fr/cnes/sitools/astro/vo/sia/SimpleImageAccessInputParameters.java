@@ -18,14 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
-import fr.cnes.sitools.dataset.DataSetApplication;
-import fr.cnes.sitools.extensions.common.InputsValidation;
-import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
-import fr.cnes.sitools.extensions.common.SpatialGeoValidation;
-import fr.cnes.sitools.extensions.common.StatusValidation;
-import fr.cnes.sitools.extensions.common.Validation;
-import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import fr.cnes.sitools.util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,14 +26,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.AnyTEXT;
 import net.ivoa.xml.votable.v1.DataType;
 import net.ivoa.xml.votable.v1.Info;
 import net.ivoa.xml.votable.v1.Option;
 import net.ivoa.xml.votable.v1.Param;
 import net.ivoa.xml.votable.v1.Values;
+
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.dataset.DataSetApplication;
+import fr.cnes.sitools.extensions.common.InputsValidation;
+import fr.cnes.sitools.extensions.common.NotNullAndNotEmptyValidation;
+import fr.cnes.sitools.extensions.common.SpatialGeoValidation;
+import fr.cnes.sitools.extensions.common.StatusValidation;
+import fr.cnes.sitools.extensions.common.Validation;
+import fr.cnes.sitools.plugins.resources.model.ResourceModel;
+import fr.cnes.sitools.util.Util;
 
 /**
  * Input parameters for SIA.
@@ -52,7 +56,7 @@ public class SimpleImageAccessInputParameters implements DataModelInterface {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(SimpleImageAccessInputParameters.class.getName());
+  private static final Logger LOG = Engine.getLogger(SimpleImageAccessInputParameters.class.getName());
   /**
    * Init value for right ascension parameter of the user input.
    */

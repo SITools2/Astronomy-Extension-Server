@@ -18,22 +18,26 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.restlet.data.MediaType;
+import org.restlet.resource.ClientResource;
+
 import fr.cnes.sitools.common.SitoolsSettings;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.project.model.Project;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
-import java.io.IOException;
-import java.io.InputStream;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
-import org.junit.Test;
-import org.restlet.data.MediaType;
-import org.restlet.resource.ClientResource;
 
 /**
  *

@@ -9,6 +9,7 @@
 package net.ivoa.xml.votable.v1;
 
 import java.io.Serializable;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;

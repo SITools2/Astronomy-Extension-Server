@@ -18,15 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.representation;
 
-import fr.cnes.sitools.astro.cutout.CutOutException;
-import fr.cnes.sitools.astro.cutout.CutOutInterface;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
 import org.restlet.representation.OutputRepresentation;
+
+import fr.cnes.sitools.astro.cutout.CutOutException;
+import fr.cnes.sitools.astro.cutout.CutOutInterface;
 
 /**
  * Creates a cutOut on a FITS image.
@@ -37,7 +40,7 @@ public class CutOutRepresentation extends OutputRepresentation {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CutOutRepresentation.class.getName());
+  private static final Logger LOG = Engine.getLogger(CutOutRepresentation.class.getName());
   /**
    * Interface.
    */

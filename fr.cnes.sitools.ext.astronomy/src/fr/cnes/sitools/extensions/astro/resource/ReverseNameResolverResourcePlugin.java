@@ -18,9 +18,12 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import java.util.logging.Logger;
 
 /**
  * Plugin for the reverse name resolver service from CDS.
@@ -61,7 +64,7 @@ public class ReverseNameResolverResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ReverseNameResolverResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(ReverseNameResolverResourcePlugin.class.getName());
 
     /**
      * Cronstructs the administration panel.

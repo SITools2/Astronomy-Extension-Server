@@ -18,20 +18,17 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
-import fr.cnes.sitools.extensions.cache.CacheBrowser;
-import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;
@@ -39,6 +36,12 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.astro.representation.OpenSearchDescriptionRepresentation;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.OpenSearchVOApplicationPlugin;
+import fr.cnes.sitools.extensions.cache.CacheBrowser;
+import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 
 /**
  * Description resource for Cone search description.
@@ -48,7 +51,7 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(OpenSearchVODescription.class.getName());
+    private static final Logger LOG = Engine.getLogger(OpenSearchVODescription.class.getName());
     /**
      * Data model.
      */

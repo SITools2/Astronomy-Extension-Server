@@ -18,16 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.resource;
 
-import cds.moc.HealpixMoc;
-import fr.cnes.sitools.astro.graph.CoordinateDecorator;
-import fr.cnes.sitools.astro.graph.GenericProjection;
-import fr.cnes.sitools.astro.graph.Graph;
-import fr.cnes.sitools.astro.graph.HealpixGridDecorator;
-import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
-import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
-import fr.cnes.sitools.astro.representation.PngRepresentation;
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -35,10 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -52,6 +44,17 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
+import cds.moc.HealpixMoc;
+import fr.cnes.sitools.astro.graph.CoordinateDecorator;
+import fr.cnes.sitools.astro.graph.GenericProjection;
+import fr.cnes.sitools.astro.graph.Graph;
+import fr.cnes.sitools.astro.graph.HealpixGridDecorator;
+import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
+import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
+import fr.cnes.sitools.astro.representation.PngRepresentation;
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.util.ClientResourceProxy;
+
 /**
  * Computes a sky coverage based on Healpix MOCs as input parameters.
  *
@@ -63,7 +66,7 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(SkyCoverageResource.class.getName());
+    private static final Logger LOG = Engine.getLogger(SkyCoverageResource.class.getName());
     /**
      * Size of a FITS block (1024 bytes).
      */

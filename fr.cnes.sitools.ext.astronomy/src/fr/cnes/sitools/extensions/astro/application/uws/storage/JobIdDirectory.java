@@ -18,20 +18,23 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.storage;
 
-import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
-import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
-import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
+import fr.cnes.sitools.extensions.astro.application.UwsApplicationPlugin;
+import fr.cnes.sitools.extensions.astro.application.uws.common.UniversalWorkerException;
 
 /**
  * Provides capabilities to handle the storage of a jobID.
@@ -54,7 +57,7 @@ public class JobIdDirectory extends SitoolsParameterizedResource {
     /**
     * Logger.
     */
-    private static final Logger LOG = Logger.getLogger(JobIdDirectory.class.getName());
+    private static final Logger LOG = Engine.getLogger(JobIdDirectory.class.getName());
 
     /**
      * File/directory handling.

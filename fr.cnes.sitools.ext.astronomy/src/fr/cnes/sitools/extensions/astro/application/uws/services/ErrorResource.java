@@ -18,9 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.extensions.astro.application.uws.representation.JobErrorRepresentation;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -34,6 +34,8 @@ import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.uws.representation.JobErrorRepresentation;
 
 /**
  * Resource to handle errors.

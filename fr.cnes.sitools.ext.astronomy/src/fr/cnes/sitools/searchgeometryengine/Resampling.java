@@ -18,11 +18,14 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
-import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.astro.vo.sia.SimpleImageAccessProtocolLibrary;
 
 /**
  * Resamples a polygon.
@@ -49,7 +52,7 @@ public class Resampling {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(Resampling.class.getName());
+  private static final Logger LOG = Engine.getLogger(Resampling.class.getName());
 
   /**
    * Constructs a Resampling with polygon.

@@ -26,6 +26,7 @@ import healpix.essentials.Scheme;
 import healpix.essentials.Vec3;
 import healpix.tools.CoordTransform;
 import healpix.tools.SpatialVector;
+
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
@@ -34,6 +35,8 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
 
 /**
  * This object provides methods for decorate a graph by a grid.
@@ -58,7 +61,7 @@ public class HealpixGridDecorator extends AbstractGraphDecorator {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(HealpixGridDecorator.class.getName());
+  private static final Logger LOG = Engine.getLogger(HealpixGridDecorator.class.getName());
   /**
    * Default value for transparency.
    */

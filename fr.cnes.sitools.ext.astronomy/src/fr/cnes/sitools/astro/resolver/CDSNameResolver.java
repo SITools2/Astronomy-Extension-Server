@@ -18,25 +18,29 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.astro.resolver.cds.Resolver;
-import fr.cnes.sitools.astro.resolver.cds.Sesame;
-import fr.cnes.sitools.astro.resolver.cds.Target;
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import org.restlet.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.astro.resolver.cds.Resolver;
+import fr.cnes.sitools.astro.resolver.cds.Sesame;
+import fr.cnes.sitools.astro.resolver.cds.Target;
+import fr.cnes.sitools.util.ClientResourceProxy;
 
 /**
  * Queries the CDS name resolver and returns the list of coordinates for a given name.<br/>
@@ -51,7 +55,7 @@ public class CDSNameResolver extends AbstractNameResolver {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CDSNameResolver.class.getName());
+  private static final Logger LOG = Engine.getLogger(CDSNameResolver.class.getName());
   /**
    * Template URL for the CDS name resolver service.
    */

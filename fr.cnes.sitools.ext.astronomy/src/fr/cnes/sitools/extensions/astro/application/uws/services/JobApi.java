@@ -18,16 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.uws.services;
 
-import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
-import fr.cnes.sitools.extensions.astro.application.uws.representation.CapabilitiesRepresentation;
-import fr.cnes.sitools.xml.uws.v1.Job;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.extensions.astro.application.uws.jobmanager.AbstractJobTask;
+import fr.cnes.sitools.extensions.astro.application.uws.representation.CapabilitiesRepresentation;
+import fr.cnes.sitools.xml.uws.v1.Job;
 
 /**
  * Provides a semantic description to make interaction with MIZAR.
@@ -54,10 +56,10 @@ public class JobApi extends BaseJobResource {
             setStatus(Status.SUCCESS_OK);
             return new CapabilitiesRepresentation(job);
         } catch (SecurityException ex) {
-            Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         }
     }
@@ -75,10 +77,10 @@ public class JobApi extends BaseJobResource {
             setStatus(Status.SUCCESS_OK);
             return new CapabilitiesRepresentation(job, MediaType.APPLICATION_JSON);
         } catch (SecurityException ex) {
-            Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(JobApi.class.getName()).log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         }
     }

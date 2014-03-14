@@ -18,8 +18,6 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.graph;
 
-import com.jhlabs.map.MapMath;
-import com.jhlabs.map.proj.ProjectionException;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
@@ -28,6 +26,11 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import com.jhlabs.map.MapMath;
+import com.jhlabs.map.proj.ProjectionException;
 
 /**
  * Provides methods to decorate the Graph by a coordinates grid.
@@ -51,7 +54,7 @@ public class CoordinateDecorator extends AbstractGraphDecorator {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(CoordinateDecorator.class.getName());
+    private static final Logger LOG = Engine.getLogger(CoordinateDecorator.class.getName());
     /**
      * Opacity from 0.0 to 1.0.
      */

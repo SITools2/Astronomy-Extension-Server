@@ -18,10 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.sia;
 
-import fr.cnes.sitools.searchgeometryengine.Resampling;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.searchgeometryengine.Resampling;
 
 /**
  * Constructs SQL predicat for Overlaps mode intersection.
@@ -31,7 +34,7 @@ public class OverlapsModeIntersection extends AbstractSqlGeometryConstraint {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(OverlapsModeIntersection.class.getName());
+  private static final Logger LOG = Engine.getLogger(OverlapsModeIntersection.class.getName());
   /**
    * Default value for resampling along right ascension axis.
    */

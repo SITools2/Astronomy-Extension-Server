@@ -7,8 +7,9 @@
 
 package com.jhlabs.map.proj;
 
-import com.jhlabs.map.MapMath;
 import java.awt.geom.Point2D;
+
+import com.jhlabs.map.MapMath;
 
 /**
  * Ported from Proj4 by Bernhard Jenny, Institute of Cartography, ETH Zurich.

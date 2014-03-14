@@ -18,9 +18,11 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Test of AstroCoordinate object.

@@ -18,10 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import java.util.List;
 import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import org.junit.Test;
+
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
 
 /**
  * Test of CorotIdResolver object.

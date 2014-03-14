@@ -18,17 +18,9 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
-import fr.cnes.sitools.common.validator.ConstraintViolation;
-import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
-import fr.cnes.sitools.common.validator.Validator;
-import fr.cnes.sitools.dataset.converter.business.AbstractConverter;
-import fr.cnes.sitools.dataset.converter.model.ConverterParameter;
-import fr.cnes.sitools.dataset.converter.model.ConverterParameterType;
-import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
-import fr.cnes.sitools.datasource.jdbc.model.Record;
-import fr.cnes.sitools.util.Util;
 import healpix.core.AngularPosition;
 import healpix.tools.CoordTransform;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -40,6 +32,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.common.validator.ConstraintViolation;
+import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
+import fr.cnes.sitools.common.validator.Validator;
+import fr.cnes.sitools.dataset.converter.business.AbstractConverter;
+import fr.cnes.sitools.dataset.converter.model.ConverterParameter;
+import fr.cnes.sitools.dataset.converter.model.ConverterParameterType;
+import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
+import fr.cnes.sitools.datasource.jdbc.model.Record;
+import fr.cnes.sitools.util.Util;
 
 /**
  * Converts a coordinates system to another one.
@@ -55,7 +59,7 @@ public class CoordinatesTransformationConverter extends AbstractConverter {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CoordinatesTransformationConverter.class.getName());
+  private static final Logger LOG = Engine.getLogger(CoordinatesTransformationConverter.class.getName());
 
   /**
    * Constructs a converter.

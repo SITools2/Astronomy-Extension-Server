@@ -16,7 +16,7 @@ limitations under the License.
 
 package com.jhlabs.map.proj;
 
-import com.jhlabs.map.*;
+import com.jhlabs.map.MapMath;
 
 /**
  * The superclass for all azimuthal map projections

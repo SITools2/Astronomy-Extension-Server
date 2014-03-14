@@ -30,12 +30,27 @@ to register().
  */
 package com.jhlabs.map.proj;
 
-import java.io.*;
-import java.util.*;
-import com.jhlabs.map.*;
 import java.awt.geom.Point2D;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StreamTokenizer;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
+import com.jhlabs.map.AngleFormat;
+import com.jhlabs.map.Ellipsoid;
+import com.jhlabs.map.MapMath;
+import com.jhlabs.map.Unit;
+import com.jhlabs.map.Units;
 
 public class ProjectionFactory {
 
@@ -460,9 +475,9 @@ public class ProjectionFactory {
             register("wintri", WinkelTripelProjection.class);
             register("car", LinearProjection.class);
         } catch (InstantiationException ex) {
-            Logger.getLogger(ProjectionFactory.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(ProjectionFactory.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(ProjectionFactory.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(ProjectionFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

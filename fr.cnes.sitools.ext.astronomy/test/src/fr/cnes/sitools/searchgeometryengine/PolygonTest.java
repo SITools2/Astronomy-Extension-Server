@@ -18,11 +18,13 @@
  ******************************************************************************/
 package fr.cnes.sitools.searchgeometryengine;
 
+import static org.junit.Assert.assertEquals;
 import healpix.essentials.RangeSet;
 import healpix.essentials.Scheme;
+
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 /**

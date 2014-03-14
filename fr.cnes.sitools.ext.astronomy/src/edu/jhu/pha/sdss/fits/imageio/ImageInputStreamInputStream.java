@@ -1,9 +1,10 @@
 package edu.jhu.pha.sdss.fits.imageio;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.zip.GZIPInputStream;
+
 import javax.imageio.stream.ImageInputStream;
 
 public class ImageInputStreamInputStream extends PushbackInputStream {

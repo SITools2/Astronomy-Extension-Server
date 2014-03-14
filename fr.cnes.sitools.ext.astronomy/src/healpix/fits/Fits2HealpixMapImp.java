@@ -20,9 +20,9 @@
 package healpix.fits;
 
 import healpix.core.AngularPosition;
-import healpix.essentials.Scheme;
 import healpix.core.dm.HealpixMap;
 import healpix.core.dm.HealpixMapImp;
+import healpix.essentials.Scheme;
 
 import java.util.Iterator;
 

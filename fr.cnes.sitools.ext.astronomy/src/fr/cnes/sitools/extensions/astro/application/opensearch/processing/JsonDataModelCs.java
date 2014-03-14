@@ -18,17 +18,21 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch.processing;
 
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
-import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.ConeSearchHealpix;
-import fr.cnes.sitools.extensions.common.AstroCoordinate;
-import fr.cnes.sitools.extensions.common.Utility;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.ivoa.xml.votable.v1.Field;
+
+import org.restlet.engine.Engine;
+
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeatureDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.datamodel.FeaturesDataModel;
+import fr.cnes.sitools.extensions.astro.application.opensearch.responsibility.ConeSearchHealpix;
+import fr.cnes.sitools.extensions.common.AstroCoordinate;
+import fr.cnes.sitools.extensions.common.Utility;
 
 /**
  * JSON data model for Cone search.
@@ -46,7 +50,7 @@ class JsonDataModelCs extends AbstractJsonDataModel {
    /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(JsonDataModelCs.class.getName());
+    private static final Logger LOG = Engine.getLogger(JsonDataModelCs.class.getName());
     /**
      * Constructor.
      * @param responseVal server response

@@ -19,14 +19,17 @@
 
 package fr.cnes.sitools.astro.representation;
 
-import cds.moc.HealpixMoc;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
 import org.restlet.representation.OutputRepresentation;
+
+import cds.moc.HealpixMoc;
 
 /**
  * FITS Representation for Healpix multi-resolution order.
@@ -41,7 +44,7 @@ public class FitsMocRepresentation extends OutputRepresentation {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(FitsMocRepresentation.class.getName());
+    private static final Logger LOG = Engine.getLogger(FitsMocRepresentation.class.getName());
     /**
      * output filename.
      */

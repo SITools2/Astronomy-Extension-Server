@@ -19,9 +19,12 @@
  */
 package fr.cnes.sitools.extensions.astro.resource;
 
+import java.util.logging.Logger;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.plugins.resources.model.DataSetSelectionType;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
-import java.util.logging.Logger;
 
 /**
  * Configures the coverage service by the use of Healpix MOC.
@@ -65,7 +68,7 @@ public class SkyCoverageResourcePlugin extends ResourceModel {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(SkyCoverageResourcePlugin.class.getName());
+    private static final Logger LOG = Engine.getLogger(SkyCoverageResourcePlugin.class.getName());
 
     /**
      * Name of the service's input parameter to get all MOCs URL.

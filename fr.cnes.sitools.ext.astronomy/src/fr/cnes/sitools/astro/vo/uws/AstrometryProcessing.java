@@ -18,6 +18,20 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.vo.uws;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import net.ivoa.xml.uws.v1.ErrorSummary;
+import net.ivoa.xml.uws.v1.ErrorType;
+import net.ivoa.xml.uws.v1.ExecutionPhase;
+
+import org.restlet.data.Form;
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.extensions.astro.application.uws.client.ClientUWS;
 import fr.cnes.sitools.extensions.astro.application.uws.client.ClientUWSException;
 import fr.cnes.sitools.extensions.astro.application.uws.common.Util;
@@ -27,16 +41,6 @@ import fr.cnes.sitools.xml.uws.v1.InputsType;
 import fr.cnes.sitools.xml.uws.v1.Job;
 import fr.cnes.sitools.xml.uws.v1.ObjectFactory;
 import fr.cnes.sitools.xml.uws.v1.OutputsType;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.datatype.DatatypeConfigurationException;
-import net.ivoa.xml.uws.v1.ErrorSummary;
-import net.ivoa.xml.uws.v1.ErrorType;
-import net.ivoa.xml.uws.v1.ExecutionPhase;
-import org.restlet.data.Form;
 
 /**
  * Astrometric calibration for FITS images.
@@ -103,7 +107,7 @@ public class AstrometryProcessing extends AbstractJobTask {
                 setError(uws.getJobError(jobId));
             }
         } catch (ClientUWSException ex) {
-            Logger.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
             setPhase(ExecutionPhase.ERROR);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
@@ -111,7 +115,7 @@ public class AstrometryProcessing extends AbstractJobTask {
             errorSumm.setHasDetail(true);
             setError(errorSumm);
         } catch (InterruptedException ex) {
-            Logger.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
             setPhase(ExecutionPhase.ERROR);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
@@ -119,7 +123,7 @@ public class AstrometryProcessing extends AbstractJobTask {
             errorSumm.setHasDetail(true);
             setError(errorSumm);
         } catch (DatatypeConfigurationException ex) {
-            Logger.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Engine.getLogger(AstrometryProcessing.class.getName()).log(Level.SEVERE, null, ex);
             setPhase(ExecutionPhase.ERROR);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(ex.getMessage());
@@ -127,7 +131,7 @@ public class AstrometryProcessing extends AbstractJobTask {
             errorSumm.setHasDetail(true);
             setError(errorSumm);
         } catch (Error error) {
-            Logger.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, error);
+            Engine.getLogger(CutOut.class.getName()).log(Level.SEVERE, null, error);
             final ErrorSummary errorSumm = new ErrorSummary();
             errorSumm.setMessage(error.getMessage());
             errorSumm.setType(ErrorType.FATAL);

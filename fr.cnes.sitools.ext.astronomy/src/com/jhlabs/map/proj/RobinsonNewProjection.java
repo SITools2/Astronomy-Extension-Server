@@ -8,9 +8,10 @@
 package com.jhlabs.map.proj;
 
 //import Jama.Matrix;
-import com.jhlabs.map.MapMath;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+
+import com.jhlabs.map.MapMath;
 
 /**
  *

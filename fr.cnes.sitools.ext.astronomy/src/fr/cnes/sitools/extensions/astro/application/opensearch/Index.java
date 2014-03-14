@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
+
 /**
  * Index set from Solr index. The index contains the following fields: - index name - data type - map of top terms - boolean showing when
  * the index is stored in Solr - boolean showing when top terms can be categorized
@@ -35,7 +37,7 @@ public class Index {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(Index.class.getName());
+  private static final Logger LOG = Engine.getLogger(Index.class.getName());
   /**
    * This constant defines the maximal number of disctinct values in a category.
    * When a parameter is a category, then distinct values are computed for this parameter.

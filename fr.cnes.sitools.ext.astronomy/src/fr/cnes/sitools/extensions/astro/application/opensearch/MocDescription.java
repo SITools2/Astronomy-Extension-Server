@@ -18,18 +18,8 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application.opensearch;
 
-import cds.moc.HealpixMoc;
-import cds.moc.MocCell;
-import fr.cnes.sitools.astro.graph.CoordinateDecorator;
-import fr.cnes.sitools.astro.graph.GenericProjection;
-import fr.cnes.sitools.astro.graph.Graph;
-import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation;
-import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
-import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
-import fr.cnes.sitools.astro.representation.PngRepresentation;
-import fr.cnes.sitools.searchgeometryengine.CoordSystem;
-import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 import healpix.essentials.Scheme;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,12 +29,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -57,6 +49,18 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
+
+import cds.moc.HealpixMoc;
+import cds.moc.MocCell;
+import fr.cnes.sitools.astro.graph.CoordinateDecorator;
+import fr.cnes.sitools.astro.graph.GenericProjection;
+import fr.cnes.sitools.astro.graph.Graph;
+import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation;
+import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
+import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
+import fr.cnes.sitools.astro.representation.PngRepresentation;
+import fr.cnes.sitools.searchgeometryengine.CoordSystem;
+import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
 
 /**
  * Computes a HEALPix Multi-Order Coverage map in different formats from a SOLR server and represents it.
@@ -74,7 +78,7 @@ public class MocDescription extends OpenSearchBase {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(MocDescription.class.getName());
+  private static final Logger LOG = Engine.getLogger(MocDescription.class.getName());
   /**
    * Converts normalized number to percent.
    */

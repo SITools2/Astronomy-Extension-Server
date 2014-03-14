@@ -20,10 +20,10 @@
 package healpix.core.dm;
 
 import healpix.core.AngularPosition;
+import healpix.core.dm.util.HealpixTool;
 import healpix.essentials.HealpixBase;
 import healpix.essentials.Pointing;
 import healpix.essentials.Scheme;
-import healpix.core.dm.util.HealpixTool;
 import healpix.tools.Constants;
 
 import java.io.FileOutputStream;

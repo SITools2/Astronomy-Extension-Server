@@ -18,6 +18,18 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.converter;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jsky.coords.DMS;
+
+import org.restlet.engine.Engine;
+
 import fr.cnes.sitools.common.validator.ConstraintViolation;
 import fr.cnes.sitools.common.validator.ConstraintViolationLevel;
 import fr.cnes.sitools.common.validator.Validator;
@@ -27,14 +39,6 @@ import fr.cnes.sitools.dataset.converter.model.ConverterParameterType;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
 import fr.cnes.sitools.util.Util;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jsky.coords.DMS;
 
 /**
  * DmsConversion provides transformation from decimal degree to sexagesimal notation for latitude axis.
@@ -47,7 +51,7 @@ public class DmsConversion extends AbstractConverter {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(DmsConversion.class.getName());
+  private static final Logger LOG = Engine.getLogger(DmsConversion.class.getName());
 
   /**
    * Constructs a converter.

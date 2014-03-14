@@ -3,8 +3,8 @@ package edu.jhu.pha.sdss.fits.imageio;
 import java.io.InputStream;
 import java.util.Locale;
 
-import javax.imageio.*;
-import javax.imageio.spi.*;
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 
 /**

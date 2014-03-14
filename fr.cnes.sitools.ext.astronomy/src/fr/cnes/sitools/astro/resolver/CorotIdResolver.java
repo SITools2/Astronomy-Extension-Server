@@ -18,10 +18,10 @@
  ******************************************************************************/
 package fr.cnes.sitools.astro.resolver;
 
-import fr.cnes.sitools.util.ClientResourceProxy;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,8 +31,11 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+
+import fr.cnes.sitools.util.ClientResourceProxy;
 
 /**
  * Queries the Corot name resolver and returns the list of coordinates for a given identifier.<br/> A CorotIdResolver lets you get a sky
@@ -45,7 +48,7 @@ public class CorotIdResolver extends AbstractNameResolver {
   /**
    * Logger.
    */
-  private static final Logger LOG = Logger.getLogger(CorotIdResolver.class.getName());
+  private static final Logger LOG = Engine.getLogger(CorotIdResolver.class.getName());
   /**
    * Credits to return for CDS.
    */
