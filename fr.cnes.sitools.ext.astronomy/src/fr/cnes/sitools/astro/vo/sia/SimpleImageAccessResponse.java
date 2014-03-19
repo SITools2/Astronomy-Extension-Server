@@ -37,6 +37,8 @@ import net.ivoa.xml.votable.v1.Param;
 import org.restlet.engine.Engine;
 
 import fr.cnes.sitools.astro.representation.DatabaseRequestModel;
+import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.common.application.ContextAttributes;
 import fr.cnes.sitools.common.exception.SitoolsException;
 import fr.cnes.sitools.dataset.DataSetApplication;
 import fr.cnes.sitools.dataset.converter.business.ConverterChained;
@@ -68,21 +70,55 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    * Data model.
    */
   private final transient Map dataModel = new HashMap();
-
+ 
+  /**
+   * Url of the service Cut Out.
+   */
+  private final String urlServicesCutOut;
+  /**
+   *  Part of the API url of SiTools2.
+   */
+  private final static String API_STRING_LIST_BOX = "?1=1&amp;p[0]=LISTBOXMULTIPLE|";
+  /**
+   * Boolean to know if it a Cut out service or not. 
+   */
+  private final boolean siaCut;
+  /**
+   * Right Ascenscion of the cut out.
+   */
+  private final double raCut;
+  /**
+   * Declination of the cut out.
+   */
+  private final double decCut;
+  /**
+   * Size of cut out.
+   */
+  private final String  sizesCut;  
+  
   /**
    * Constructor.
    *
-   * @param inputParameters input parameters
+   * @param inputParameters input paraCutmeters
    * @param model data model
    */
   public SimpleImageAccessResponse(final SimpleImageAccessInputParameters inputParameters, final ResourceModel model) {
-    createResponse(inputParameters, model);
+    this.siaCut = model.getParameterByName("Image service").getValue().equals(SimpleImageAccessProtocolLibrary.ImageService.IMAGE_CUTOUT_SERVICE.getServiceName());
+    final SitoolsSettings sitoolsSettings = (SitoolsSettings) inputParameters.getContext().getAttributes().get(ContextAttributes.SETTINGS);
+    final String urlHostDomain = sitoolsSettings.getString("Starter.PUBLIC_HOST_DOMAIN");
+    final String urlPlugInCutOut = model.getParameterByName("urlCutOutService").getValue();
+    final String urlDs = inputParameters.getDatasetApplication().getDataSet().getSitoolsAttachementForUsers();
+    this.raCut = inputParameters.getRa();
+    this.decCut = inputParameters.getDec();
+    this.urlServicesCutOut = urlHostDomain+urlDs+urlPlugInCutOut+API_STRING_LIST_BOX;
+    this.sizesCut = inputParameters.getRequest().getResourceRef().getQueryAsForm().getFirstValue(SimpleImageAccessProtocolLibrary.SIZE);
+    createResponse(inputParameters, model);   
   }
 
   /**
    * Creates VOTable response.
    *
-   * @param inputParameters Input parameters
+   * @param inputParameters Input paraCutmeters
    * @param model data model
    */
   private void createResponse(final SimpleImageAccessInputParameters inputParameters, final ResourceModel model) {
@@ -99,10 +135,10 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Sets VOTable parameters coming from administration configuration.
+   * Sets VOTable paraCutmeters coming from administraCuttion configuraCuttion.
    *
    * @param dataModel data model to set
-   * @param model parameters from administration
+   * @param model paraCutmeters from administraCuttion
    */
   private void setVotableParametersFromConfiguration(final Map dataModel, final ResourceModel model) {
     final List<Param> params = new ArrayList<Param>();
@@ -123,11 +159,11 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Sets Votable Param.
+   * Sets Votable ParaCutm.
    *
-   * @param params List of params
+   * @param params List of paraCutms
    * @param model data model
-   * @param parameterName parameter name
+   * @param parameterName paraCutmeter name
    * @param datatype datatype
    */
   private void setVotableParam(final List<Param> params, final ResourceModel model, final String parameterName,
@@ -146,7 +182,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
    * Creates the response based on Table.
    *
    * @param datasetApp Dataset application
-   * @param inputParameters Input Parameters
+   * @param inputParameters Input ParaCutmeters
    * @param model data model
    * @param dictionaryName Cone search dictionary
    */
@@ -170,14 +206,34 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
       databaseRequest.createRequest();
 
       datasetApp.getLogger().log(Level.FINEST, "DB request: {0}", databaseRequest.getRequestAsString());
-
+      
+      // Get primaryKey and put in the dataModel
+      final String primaryKeyName = databaseRequest.getPrimaryKeys().get(0);
+      dataModel.put("primaryKey",databaseRequest.getPrimaryKeys().get(0));
+      
       // complete data model with fields
       setFields(fieldList, columnList, mappingList);
       dataModel.put("fields", fieldList);
       dataModel.put("sqlColAlias", columnList);
 
+      Map conceptColAlias = new HashMap();
+      for (ColumnConceptMappingDTO map:mappingList) {
+        conceptColAlias.put(map.getColumnAlias(), map.getConcept().getPropertyFromName("ucd").getValue());
+      }
+      dataModel.put("mappingColAliasConceptSql", conceptColAlias);
+      
+      //complete data model with boolean siaCut.
+      dataModel.put("siaCut", this.siaCut);
+      if(this.siaCut){
+        //Create the map of cut file
+        Map mapPartFileCutUrl = createFileCutUrl(primaryKeyName);
+        // complete dataModel with it.
+        dataModel.put("fileCutUrl", mapPartFileCutUrl);
+      }
+      
       // Complete data model with data
       final int count = (databaseRequest.getCount() > dbParams.getPaginationExtend()) ? dbParams.getPaginationExtend() : databaseRequest.getCount();     
+      dataModel.put("nrows", count);      
       final ConverterChained converterChained = datasetApp.getConverterChained();
       final TemplateSequenceModel rows = new DatabaseRequestModel(databaseRequest, converterChained);
       ((DatabaseRequestModel) rows).setSize(count);
@@ -202,12 +258,12 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   }
 
   /**
-   * Set Query parameters to the database.
+   * Set Query paraCutmeters to the database.
    *
    * @param datasetApp Dataset Application
    * @param model Data model
-   * @param inputParameters Input Parameters
-   * @return DatabaseRequestParamerters object
+   * @param inputParameters Input ParaCutmeters
+   * @return DatabaseRequestParaCutmerters object
    */
   private DatabaseRequestParameters setQueryParameters(final DataSetApplication datasetApp, final ResourceModel model,
           final SimpleImageAccessInputParameters inputParameters, List<ColumnConceptMappingDTO> mappingList) {
@@ -405,7 +461,7 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
   /**
    * Checks required mapping and filter columns to map according to VERB.
    *
-   * @param mappingList list of mapping defined by the administrator
+   * @param mappingList list of mapping defined by the administraCuttor
    * @param verb VERB of Cone search protocol
    * @return Returns the new mapping according to VERB
    * @throws SitoolsException columns with UCD ID_MAIN, POS_EQ_RA_MAIN, POS_EQ_DEC_MAIN must be mapped
@@ -437,4 +493,20 @@ public class SimpleImageAccessResponse implements SimpleImageAccessDataModelInte
     return conceptToMap;
 
   }
+
+    /**
+     * Create the template of the url of cut file in a hashMap with 3 parts.
+     * @param primaryKeyName
+     * @return HashMap of the url of cut file
+     */
+    private Map createFileCutUrl(String primaryKeyName){
+        Map mapPartFileCutUrl = new HashMap();
+        String mapPartFileCutUrl1 = this.urlServicesCutOut+primaryKeyName+"%7C";
+        String mapPartFileCutUrl2 = "&amp;fileName=";
+        String mapPartFileCutUrl3 = "&amp;RA="+this.raCut+"&amp;DEC="+this.decCut+"&amp;Radius="+this.sizesCut+"&amp;OutputFormat=FITS";
+        mapPartFileCutUrl.put("1", mapPartFileCutUrl1);
+        mapPartFileCutUrl.put("2", mapPartFileCutUrl2);
+        mapPartFileCutUrl.put("3", mapPartFileCutUrl3);
+        return mapPartFileCutUrl;
+    }  
 }
