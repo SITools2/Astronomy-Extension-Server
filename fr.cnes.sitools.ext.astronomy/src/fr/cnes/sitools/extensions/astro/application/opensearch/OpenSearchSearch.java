@@ -213,7 +213,6 @@ public class OpenSearchSearch extends OpenSearchBase {
      *
      * @param footprint footprint
      * @return the first point
-     * @throws JSONException Exception
      */
     private JsonNode getFirstPoint(final String footprint) throws IOException {
         return Utility.mapper.readValue(footprint, JsonNode.class);     
@@ -224,7 +223,6 @@ public class OpenSearchSearch extends OpenSearchBase {
      *
      * @param json JSON output from SOLR
      * @return Return the openSearch response
-     * @throws JSONException Exception
      */
     private JsonNode buildJsonResponse(final JsonNode json) throws IOException {        
         JsonNode responseService = Utility.mapper.createObjectNode();

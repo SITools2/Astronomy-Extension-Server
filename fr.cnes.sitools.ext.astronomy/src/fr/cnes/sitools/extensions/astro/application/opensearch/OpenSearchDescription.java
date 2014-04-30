@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
@@ -66,10 +65,9 @@ public class OpenSearchDescription extends OpenSearchBase {
    * builds and returns the template URL.
    *
    * @return the template
-   * @throws JSONException Exception
    * @throws IOException Exception
    */
-  private String buildTemplateURL() throws JSONException, IOException {
+  private String buildTemplateURL() throws IOException {
     final String description = "%s/search?q={searchTerms}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;count={count?}&amp;%s&amp;format=json%s";
     String fields = "";
     final List<Index> indexedFields = getIndexedFields();
@@ -95,10 +93,9 @@ public class OpenSearchDescription extends OpenSearchBase {
    * builds and returns the cluster template URL.
    *
    * @return Return the template
-   * @throws JSONException Exception
    * @throws IOException Exception
    */
-  private String buildClusterTemplateURL() throws JSONException, IOException {
+  private String buildClusterTemplateURL() throws IOException {
     final String description = "%s/cluster/search?q={searchTerms}&amp;startPage={startPage?}&amp;startIndex={startIndex?}&amp;count={count?}&amp;%s&amp;format=json%s";
     String fields = "";
     final List<Index> indexedFields = getIndexedFields();
@@ -124,10 +121,9 @@ public class OpenSearchDescription extends OpenSearchBase {
    * builds and returns template URL.
    *
    * @return the template
-   * @throws JSONException Exception
    * @throws IOException Exception
    */
-  private String buildTemplateMOC() throws JSONException, IOException {
+  private String buildTemplateMOC() throws IOException {
     final String description = "%s/moc?q={searchTerms}&amp;%s&amp;format=json%s";
     String fields = "";
     final List<Index> indexedFields = getIndexedFields();
@@ -152,10 +148,9 @@ public class OpenSearchDescription extends OpenSearchBase {
   /**
    * Fills the data model.
    *
-   * @throws JSONException Exception
    * @throws IOException Exception
    */
-  private void fillDataModel() throws JSONException, IOException {
+  private void fillDataModel() throws IOException {
     this.dataModel.put("shortName", getPluginParameters().get("shortName").getValue());
     this.dataModel.put("description", getPluginParameters().get("description").getValue());
     this.dataModel.put("templateURL", buildTemplateURL());
@@ -192,9 +187,6 @@ public class OpenSearchDescription extends OpenSearchBase {
     try {
       fillDataModel();
       return new OpenSearchDescriptionRepresentation(dataModel, "openSearchDescription.ftl");
-    } catch (JSONException ex) {
-      LOG.log(Level.SEVERE, null, ex);
-      throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
     } catch (IOException ex) {
       LOG.log(Level.SEVERE, null, ex);
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

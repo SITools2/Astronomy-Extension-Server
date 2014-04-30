@@ -69,7 +69,6 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
     /**
      * Builds and returns athe template URL.
      * @return Return the template
-     * @throws JSONException Exception
      * @throws IOException Exception
      */
     private String buildTemplateURL() throws IOException {
@@ -80,7 +79,6 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
 
     /**
      * Fills the data model.
-     * @throws JSONException Exception
      * @throws IOException Exception
      */
     private void fillDataModel() throws IOException {
