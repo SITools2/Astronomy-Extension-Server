@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ===================================
+==  Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+==  
+==  This file is part of SITools2.
+==  
+==  SITools2 is free software: you can redistribute it and/or modify
+==  it under the terms of the GNU General Public License as published by
+==  the Free Software Foundation, either version 3 of the License, or
+==  (at your option) any later version.
+==  
+==  SITools2 is distributed in the hope that it will be useful,
+==  but WITHOUT ANY WARRANTY; without even the implied warranty of
+==  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+==  GNU General Public License for more details.
+==  
+==  You should have received a copy of the GNU General Public License
+==  along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+==================================== -->
+<project name="fr.cnes.sitools.install" default="build" basedir=".">
+
+	<!-- ============================================================================== 
+		=== Build file to allow ant (http://jakarta.apache.org/ant/) to be used === 
+		to build the Sitools project. === === Author : AKKA Technologies === === 
+		name : nom du projet === default : tache ant executee par defaut === basedir 
+		: repertoire courant lors de l'execution des taches ant === ============================================================================== -->
+
+	<!-- Allows us to use the IzPack Ant task -->
+	<taskdef name="izpack" classpath="lib/standalone-compiler.jar"
+		classname="com.izforge.izpack.ant.IzPackTask" />
+
+
+	<target name="build"
+		depends="build-izpack-installer" />
+
+	<!-- TARGET build-izpack-installer creates the izpack installer file -->
+
+	<target name="build-izpack-installer" description="generation de l'installeur IzPack">
+		<echo message="Build installer from file : install.xml "></echo>		
+		<!-- Run installer build -->
+		<izpack input="install.xml"
+			output="AstronomyPlugin-1.0-install.jar"
+			installerType="standard" inheritAll="true" basedir="."
+			compression="deflate" compressionlevel="9" />
+	</target>
+
+</project>

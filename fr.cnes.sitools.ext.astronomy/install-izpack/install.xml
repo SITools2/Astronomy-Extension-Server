@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<!-- ===================================
+==  Copyright 2010-2013 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+==  
+==  This file is part of SITools2.
+==  
+==  SITools2 is free software: you can redistribute it and/or modify
+==  it under the terms of the GNU General Public License as published by
+==  the Free Software Foundation, either version 3 of the License, or
+==  (at your option) any later version.
+==  
+==  SITools2 is distributed in the hope that it will be useful,
+==  but WITHOUT ANY WARRANTY; without even the implied warranty of
+==  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+==  GNU General Public License for more details.
+==  
+==  You should have received a copy of the GNU General Public License
+==  along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
+==================================== -->
+<installation version="1.0">
+	<!-- Includes some jars -->
+	<info>
+		<appname>Astronomy Extension</appname>
+		<appversion>1.0</appversion>
+		<authors>
+			<author email="jean-christophe.malapert@cnes.fr" name="CNES" />
+		</authors>
+		<url>http://sitools2.github.io/Astronomy-Extension-v2</url>
+		<uninstaller name="Uninstaller.jar" write="yes" />
+		<javaversion>1.6</javaversion>
+		<requiresjdk>no</requiresjdk>
+	</info>
+	
+	<guiprefs width="900" height="700" resizable="yes">
+		<modifier key="useHeadingPanel" value="yes" />
+		<modifier key="headingImageOnLeft" value="yes" />
+		<modifier key="headingLineCount" value="1" />
+		<modifier key="headingFontSize" value="1.5" />
+		<modifier key="headingBackgroundColor" value="0x00ffffff" />
+		<modifier key="headingPanelCounter" value="text" />
+		<modifier key="headingPanelCounterPos" value="inHeading" />
+		<modifier key="langDisplayType" value="native" />
+	</guiprefs>
+
+	<locale>
+		<langpack iso3="eng" />
+		<langpack iso3="fra" />
+	</locale>
+	<resources>
+		<res id="LicencePanel.licence_eng" parse="yes"
+			src="install_res/licences/gpl-3.0.txt" />
+		<res id="LicencePanel.licence_fra" parse="yes"
+			src="install_res/licences/gpl-3.0.txt" />
+<!--		<res id="userInputSpec.xml" src="install_res/install_userInputSpec.xml" />-->
+		<!-- Ant action file -->
+		<!-- <res id="AntActionsSpec.xml" src="AntActionsSpec.xml" /> -->
+		<!--<res id="Heading.image" src="res/img/logo_01_petiteTaille.png" />
+		<res id="installer.langsel.img" src="res/img/mizarBackground.png" />-->
+		<!-- for internationnalization -->
+		<!--<res id="userInputLang.xml_eng" src="install_res/userInputLang.xml_eng" />
+		<res id="userInputLang.xml_fra" src="install_res/userInputLang.xml_fra" />-->
+		<res id="HTMLInfoPanel.Readme" src="install_res/Readme.html"/>
+		<res id="userInputSpec.xml" src="install_res/install_userInputSpec.xml" />
+	</resources>
+
+
+	<panels>
+		<panel classname="CheckedHelloPanel" />
+		<panel classname="LicencePanel" />
+		<panel classname="UserInputPanel" id="UserInputPanel.0" />
+		<panel classname="InstallPanel" />
+		<panel classname="HTMLInfoPanel" id="Readme"/>
+		<panel classname="SimpleFinishPanel" />
+	</panels>
+
+	<packs>
+            <pack name="plugin" required="yes">
+              <description>The required application files to update an existing installation.</description>
+              <file src="../dist/fr.cnes.sitools.ext.astronomy.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/"/>
+              <file src="../dist/lib/ehcache-2.7.0.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/lib"/>
+              <file src="../dist/lib/fits.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/lib"/>
+              <file src="../dist/lib/jai_codec.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/lib"/>
+              <file src="../dist/lib/jai_core.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/lib"/>
+              <file src="../dist/lib/jai_imageio.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/lib"/>
+              <file src="../dist/lib/mlibwrapper_jai.jar" targetdir="$INSTALL_PATH/workspace/fr.cnes.sitools.core/ext/lib"/>
+            </pack>
+	</packs>
+
+</installation>
+
+
