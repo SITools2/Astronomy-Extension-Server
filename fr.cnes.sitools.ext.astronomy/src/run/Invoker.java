@@ -16,15 +16,13 @@ import java.lang.reflect.Method;
 
 import nom.tam.fits.FitsException;
 
-import org.json.JSONException;
-
 import fr.cnes.sitools.astro.resolver.NameResolverException;
 
 public class Invoker {
 
   public final static String SITOOLS_MAIN_CLASS = "fr.cnes.sitools.server.Starter";
 
-  public static void main(String[] args) throws NameResolverException, JSONException, IOException, FitsException, Exception {
+  public static void main(String[] args) throws NameResolverException, IOException, FitsException, Exception {
 
         String[] args1 = new String[1];
         

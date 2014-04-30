@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
@@ -43,6 +42,7 @@ import org.restlet.resource.ResourceException;
 
 import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Provides a search capability on observations by the use of (healpix,order) parameters.
@@ -75,8 +75,8 @@ public class OpenSearchClusterSearch extends OpenSearchSearch {
       LOG.log(Level.INFO, query);
       final ClientResource client = new ClientResource(query);
       final Representation rep = client.get();
-      final JsonRepresentation json = new JsonRepresentation(rep.getText());
-      json.setIndenting(true);
+      final StringRepresentation json = new StringRepresentation(rep.getText(), MediaType.APPLICATION_JSON);
+      //json.setIndenting(true);
       return json;
     } catch (Exception ex) {
       Engine.getLogger(OpenSearchSearch.class.getName()).log(Level.SEVERE, null, ex);

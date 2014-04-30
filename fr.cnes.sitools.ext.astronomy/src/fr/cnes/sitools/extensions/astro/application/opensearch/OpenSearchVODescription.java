@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
@@ -73,7 +72,7 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
      * @throws JSONException Exception
      * @throws IOException Exception
      */
-    private String buildTemplateURL() throws JSONException, IOException {
+    private String buildTemplateURL() throws IOException {
         final String serviceURL = getSitoolsSetting("Starter.PUBLIC_HOST_DOMAIN") + ((OpenSearchVOApplicationPlugin) getApplication()).getModel().getUrlAttach();
         final String shape = "healpix={sitools:healpix}&amp;order={sitools:order}&amp;coordSystem={sitools:coordSystem}&amp;";
         return String.format("%s/search?%sformat=json", serviceURL, shape);
@@ -84,7 +83,7 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
      * @throws JSONException Exception
      * @throws IOException Exception
      */
-    private void fillDataModel() throws JSONException, IOException {
+    private void fillDataModel() throws IOException {
         this.dataModel.put("shortName", parameters.get("shortName").getValue());
         this.dataModel.put("description", parameters.get("description").getValue());
         this.dataModel.put("templateURL", buildTemplateURL());
@@ -128,9 +127,6 @@ public class OpenSearchVODescription extends SitoolsParameterizedResource {
             rep = cache.getRepresentation();
             getResponse().setCacheDirectives(cache.getCacheDirectives());
             return rep;
-        } catch (JSONException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);

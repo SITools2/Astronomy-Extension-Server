@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONException;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -49,7 +48,6 @@ import fr.cnes.sitools.astro.representation.GeoJsonRepresentation;
 import fr.cnes.sitools.astro.resolver.AbstractNameResolver;
 import fr.cnes.sitools.astro.resolver.CDSNameResolver;
 import fr.cnes.sitools.astro.resolver.ConstellationNameResolver;
-import fr.cnes.sitools.astro.resolver.CorotIdResolver;
 import fr.cnes.sitools.astro.resolver.IMCCESsoResolver;
 import fr.cnes.sitools.astro.resolver.NameResolverResponse;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
@@ -217,28 +215,28 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      *
      * @return the representation
      */
-    private Representation resolveIAS() {
-        final AbstractNameResolver ias = new CorotIdResolver(objectName);
-        final NameResolverResponse response = ias.getResponse();
-        if (response.hasResult()) {
-            LOG.log(Level.INFO, "Corot name resolver is selected for {0}", objectName);
-            getResponse().setStatus(Status.SUCCESS_OK);
-            final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
-            for (AstroCoordinate iter : coordinates) {
-                iter.processTo(coordSystem);
-            }
-            final String credits = response.getCredits();
-            final Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
-            Representation rep = new GeoJsonRepresentation(dataModel);
-            final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
-            rep = cache.getRepresentation();
-            getResponse().setCacheDirectives(cache.getCacheDirectives());
-            return rep;
-        } else {
-            LOG.log(Level.WARNING, null, response.getError());
-            throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
-        }
-    }
+//    private Representation resolveIAS() {
+//        final AbstractNameResolver ias = new CorotIdResolver(objectName);
+//        final NameResolverResponse response = ias.getResponse();
+//        if (response.hasResult()) {
+//            LOG.log(Level.INFO, "Corot name resolver is selected for {0}", objectName);
+//            getResponse().setStatus(Status.SUCCESS_OK);
+//            final List<AstroCoordinate> coordinates = response.getAstroCoordinates();
+//            for (AstroCoordinate iter : coordinates) {
+//                iter.processTo(coordSystem);
+//            }
+//            final String credits = response.getCredits();
+//            final Map dataModel = getDataModel(credits, coordinates, this.coordSystem.name());
+//            Representation rep = new GeoJsonRepresentation(dataModel);
+//            final CacheBrowser cache = CacheBrowser.createCache(CacheBrowser.CacheDirectiveBrowser.FOREVER, rep);
+//            rep = cache.getRepresentation();
+//            getResponse().setCacheDirectives(cache.getCacheDirectives());
+//            return rep;
+//        } else {
+//            LOG.log(Level.WARNING, null, response.getError());
+//            throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
+//        }
+//    }
 
     /**
      * Returns the representation based on SITools2 db response.
@@ -278,11 +276,11 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         Map dataModel;
         final AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
         final AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
-        final AbstractNameResolver corot = new CorotIdResolver(objectName);
+        //final AbstractNameResolver corot = new CorotIdResolver(objectName);
         final AbstractNameResolver sitools2 = new ConstellationNameResolver(objectName);
         cds.setNext(sitools2);
         sitools2.setNext(imcce);
-        imcce.setNext(corot);
+        //imcce.setNext(corot);
         final NameResolverResponse response = cds.getResponse();
         if (!response.hasResult()) {
             throw new ResourceException(response.getError().getStatus(), response.getError().getMessage());
@@ -317,7 +315,7 @@ public class NameResolverResource extends SitoolsParameterizedResource {
         } else if (this.nameResolver.equals("IMCCE")) {
             rep = resolveIMCCE();
         } else if (this.nameResolver.equals("IAS")) {
-            rep = resolveIAS();
+            //rep = resolveIAS();
         } else if (this.nameResolver.equals("SITools2")) {
             rep = resolveConstellation();
         } else if (this.nameResolver.equals("ALL")) {

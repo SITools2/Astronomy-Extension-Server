@@ -1,0 +1,41 @@
+Astronomy Extension comes with ABSOLUTELY NO WARRANTY.  See the licences directory.
+
+--------------------------------------------------------------------------------
+
+1. INTRODUCTION                  4. THANKS
+2. INSTALLATION INSTRUCTIONS     
+3. REQUIREMENTS                  
+
+--------------------------------------------------------------------------------
+1. INTRODUCTION
+--------------------------------------------------------------------------------
+ Astronomy is a GPLV3 plugin of SITools2 which provides services for SITools2
+ in the astronomical thematic. It is available on all platforms.
+
+--------------------------------------------------------------------------------
+2. INSTALLATION INSTRUCTIONS
+--------------------------------------------------------------------------------
+ Just run "java -jar AstronomyPlugin-1.0-install.jar"
+
+--------------------------------------------------------------------------------
+3. REQUIREMENTS
+--------------------------------------------------------------------------------
+ JAVA 1.6 or higher
+ SITools2
+
+--------------------------------------------------------------------------------
+4. THANKS
+--------------------------------------------------------------------------------
+
+This plugin is based on technology developed by :
+
+  - Multi Order Coverage library (http://wiki.ivoa.net/twiki/bin/view/IVOA/MocInfo), developped by CDS 
+  - Hierarchical Progressive Surveys, developed by CDS
+  - Sesame name resolver service, developed by CDS
+  - Reverse name resolver service, developed by CDS
+  - Name resolver service for solar bodies, developed by IMCCE
+  - Healpix library (http://sourceforge.net/projects/healpix/)
+  - SITools2 framework (http://github.com/SITools2/), developed by CNES
+  - sdss package, developed by Sloan Digital Sky Survey
+  - jhlabs library, developed by Jerry Huxtable
+  - part of jsky software, developed by ESO

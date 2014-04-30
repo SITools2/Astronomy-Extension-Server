@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,10 +29,16 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.project.model.Project;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 
 /**
  *
@@ -71,8 +76,10 @@ public class ReverseNameResolverResourceTest extends AbstractSitoolsServiceTestC
     public void testGetReverseNameResolverResponse() throws Exception {
         System.out.println("getReverseNameResolverResponse");
         ClientResource clientResource = new ClientResource(getHostUrl() + this.urlAttachment + "/plugin/reverseNameResolver/EQUATORIAL/00:42:44.32%20+41:16:07.5;13");
-        JSONObject result = new JSONObject(clientResource.get(MediaType.APPLICATION_JSON).getText());
-        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"title\":\"M  31 \",\"magnitude\":4.36,\"credits\":\"CDS\",\"seeAlso\":\"http://simbad.u-strasbg.fr/simbad/sim-id?Ident=M  31 \",\"type\":\"Galaxy\",\"identifier\":\"M  31 \"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.684708333333333,41.26875]}}],\"type\":\"FeatureCollection\"}");
+        JsonNode result = Utility.mapper.readValue(clientResource.get(MediaType.APPLICATION_JSON).getText(), JsonNode.class);
+        JsonNode expResult = Utility.mapper.readTree("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"title\":\"M  31 \",\"magnitude\":4.36,\"credits\":\"CDS\",\"seeAlso\":\"http://simbad.u-strasbg.fr/simbad/sim-id?Ident=M  31 \",\"type\":\"Galaxy\",\"identifier\":\"M  31 \"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.684708333333333,41.26875]}}],\"type\":\"FeatureCollection\"}");        
+//        JSONObject result = new JSONObject(clientResource.get(MediaType.APPLICATION_JSON).getText());
+//        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"title\":\"M  31 \",\"magnitude\":4.36,\"credits\":\"CDS\",\"seeAlso\":\"http://simbad.u-strasbg.fr/simbad/sim-id?Ident=M  31 \",\"type\":\"Galaxy\",\"identifier\":\"M  31 \"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.684708333333333,41.26875]}}],\"type\":\"FeatureCollection\"}");
         assertEquals(expResult.toString(), result.toString());
     }
 

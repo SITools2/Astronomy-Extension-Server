@@ -366,7 +366,14 @@ public class UwsApplicationPlugin extends AbstractApplicationPlugin {
         final Router router = new Router(getContext());
         router.setDefaultMatchingMode(Template.MODE_STARTS_WITH);
         router.attachDefault(JobsResource.class);
-        final Directory appStorage = new Directory(getContext(), "file://" + getStorageDirectory());
+        // For windows
+        final Directory appStorage;
+        if (this.storageDirectory.contains("\\")) {
+            appStorage = new Directory(getContext(), "file:///" + getStorageDirectory());
+        } else {
+            appStorage = new Directory(getContext(), "file://" + getStorageDirectory());
+        }          
+         
         appStorage.setListingAllowed(true);
         appStorage.setDeeplyAccessible(true);
         router.attach("/storage", appStorage);

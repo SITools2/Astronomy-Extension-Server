@@ -187,6 +187,9 @@ public class CutOut extends AbstractJobTask {
         } else {
             filenameWithoutExt = filename.substring(slashIndex + 1);
         }
+        // For windows
+        filenameWithoutExt = filenameWithoutExt.replaceAll("\\?", "_");
+        filenameWithoutExt = filenameWithoutExt.replaceAll("=", "_");
         return filenameWithoutExt + "_cutout." + ext;
     }
 

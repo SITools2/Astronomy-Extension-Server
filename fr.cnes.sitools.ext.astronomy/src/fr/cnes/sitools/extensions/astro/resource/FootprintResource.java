@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
@@ -50,6 +49,9 @@ import fr.cnes.sitools.dataset.database.common.DataSetExplorerUtil;
 import fr.cnes.sitools.dataset.model.Column;
 import fr.cnes.sitools.datasource.jdbc.model.AttributeValue;
 import fr.cnes.sitools.datasource.jdbc.model.Record;
+import fr.cnes.sitools.extensions.common.Utility;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 /**
  *
@@ -64,8 +66,7 @@ public class FootprintResource extends SitoolsParameterizedResource {
     private transient String featureType;
     private transient String search;
     private transient File directory;
-    private static String filename = "Mox.txt";
-
+    private static final String FILENAME = "Moc.txt";
     /**
      * Initialize.
      */
@@ -85,14 +86,14 @@ public class FootprintResource extends SitoolsParameterizedResource {
     @Get
     public final Representation getFootprintResponse() {
         try {
-            final HealpixMoc moc = new HealpixMoc(new FileInputStream(directory + File.separator + filename), HealpixMoc.ASCII);
+            final HealpixMoc moc = new HealpixMoc(new FileInputStream(directory + File.separator + FILENAME), HealpixMoc.ASCII);
             if (this.featureType.isEmpty()) {
-                return new FileRepresentation(directory + File.separator + filename, MediaType.APPLICATION_JSON);
-            } else if (this.featureType.equals("coverage")) {
-                final JSONObject jsonObject = new JSONObject();
-                jsonObject.put("moc_coverage", pourcent(moc.getCoverage()));
-                jsonObject.put("moc_resolution", (int) (moc.getAngularRes() * 6000) / 100. + " arcmin");
-                return JSONRepresentation(jsonObject.toString());
+                return new FileRepresentation(directory + File.separator + FILENAME, MediaType.APPLICATION_JSON);
+            } else if (this.featureType.equals("coverage")) {                
+                JsonNode rootNode = Utility.mapper.createObjectNode();                
+                ((ObjectNode) rootNode).put("moc_coverage", pourcent(moc.getCoverage()));
+                ((ObjectNode) rootNode).put("moc_resolution", (int) (moc.getAngularRes() * 6000) / 100. + " arcmin");
+                return JSONRepresentation(rootNode.getValueAsText());
             } else if (this.featureType.equals("intersect")) {
                 // TO DO : search with query disc and box
                 return new EmptyRepresentation();
@@ -141,7 +142,7 @@ public class FootprintResource extends SitoolsParameterizedResource {
                 String declination = String.valueOf(getValueFromKey(record, decCol));
             }
 
-        } catch (Exception ex) {
+        } catch (SitoolsException ex) {
             LOG.log(Level.FINER, null, ex);
         } finally {
             try {
@@ -174,8 +175,8 @@ public class FootprintResource extends SitoolsParameterizedResource {
         final List<Column> columnsKey = new ArrayList<Column>();
         final List<Column> columns = datasetApp.getDataSet().getColumnModel();
         for (Column columnIter : columns) {
-            for (int i = 0; i < columnsName.length; i++) {
-                if (columnIter.getColumnAlias().equals(columnsName[i])) {
+            for (String columnsName1 : columnsName) {
+                if (columnIter.getColumnAlias().equals(columnsName1)) {
                     columnsKey.add(columnIter);
                 }
             }

@@ -18,19 +18,19 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
+import fr.cnes.sitools.extensions.common.Utility;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import org.codehaus.jackson.JsonNode;
 
 /**
  *
@@ -52,7 +52,7 @@ public class OpenSearchVOApplicationSIATest extends AbstractSitoolsServiceTestCa
      * Test of openSearch description.
      */
     @Test
-    public void testOpenSearchDescription() throws IOException, JSONException {
+    public void testOpenSearchDescription() throws IOException {
         System.out.println("getOpenSearch description");
         ClientResource clientResource = new ClientResource(getHostUrl() + request);
         String result = clientResource.get().getText();
@@ -63,12 +63,12 @@ public class OpenSearchVOApplicationSIATest extends AbstractSitoolsServiceTestCa
      * Test of VO conesearch result.
      */
     @Test
-    public void testSearch() throws IOException, JSONException {
+    public void testSearch() throws IOException {
         System.out.println("getVOSIA results");
         ClientResource clientResource = new ClientResource(getHostUrl() + request + "/search?healpix=10&order=4&coordSystem=EQUATORIAL&format=json");
         String result = clientResource.get().getText();
-        JSONObject json = new JSONObject(result);
-        long numberResult = json.getLong("totalResults");
+        JsonNode json = Utility.mapper.readValue(result, JsonNode.class);
+        long numberResult = json.get("totalResults").getLongValue();
         assertEquals(2, numberResult);
     }
 
@@ -76,7 +76,7 @@ public class OpenSearchVOApplicationSIATest extends AbstractSitoolsServiceTestCa
      * Test of dico.
      */
     @Test
-    public void testDico() throws IOException, JSONException {
+    public void testDico() throws IOException {
         System.out.println("getDico");
         ClientResource clientResource = new ClientResource(getHostUrl() + request + "/dico/TimeExtent");
         String result = clientResource.get().getText();

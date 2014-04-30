@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<langpack>
+	<str id="input.proxy.title" txt="Remplissez les champs ci-dessous si vous avez un proxy:"/>
+	<str id="input.proxy_host" txt="Proxy HTTP :"/>
+	<str id="input.proxy_port" txt="Port :"/>
+	<str id="input.proxy_user" txt="Utilisateur :"/>
+	<str id="input.proxy_pwd.label" txt="Mot de passe :"/>
+	<str id="input.proxy_pwd_retype.label" txt="Mot de passe :"/>
+	<str id="input.non_proxy_hosts" txt="Pas de proxy pour :"/>
+	<str id="input.enable_proxy.true" txt="Oui"/>
+	<str id="input.enable_proxy.false" txt="Non"/>
+	<str id="input.enable_proxy" txt="Activer proxy"/>
+	
+	<!-- VALIDATORS -->
+	<str id="input.proxy.port.validator" txt="Le port du serveur proxy doit être un nombre"/>
+	<str id="catalog.proxy.password.validator" txt="Les mots de passe du serveur proxy ne correspondent pas."/>
+	
+</langpack>

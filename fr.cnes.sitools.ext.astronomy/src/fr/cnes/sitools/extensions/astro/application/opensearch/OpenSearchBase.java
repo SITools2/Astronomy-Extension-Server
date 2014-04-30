@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.resource.ClientResource;
@@ -38,10 +35,12 @@ import org.restlet.resource.ResourceException;
 
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.astro.application.OpenSearchApplicationPlugin;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginModel;
 import fr.cnes.sitools.plugins.applications.model.ApplicationPluginParameter;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.util.RIAPUtils;
+import org.codehaus.jackson.JsonNode;
 
 /**
  * Base Resource that computes the Solr indexes from Luke.
@@ -79,9 +78,6 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
         this.solrBaseUrl = RIAPUtils.getRiapBase() + attach + "/" + getPluginParameters().get("solrCore").getValue();
         try {
             computeIndexedFields();
-        } catch (JSONException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ex);
@@ -90,30 +86,28 @@ public class OpenSearchBase extends SitoolsParameterizedResource {
 
     /**
      * Computes the list of SOLR indexes.
-     * @throws JSONException Exception
      * @throws IOException  Exception
      */
-    protected final void computeIndexedFields() throws JSONException, IOException {
+    protected final void computeIndexedFields() throws IOException {
         this.indexedFields = new ArrayList<Index>();
         // Use Luke to get the index definition
-        final ClientResource client = new ClientResource(getSolrBaseUrl() + "/admin/luke?wt=json&numTerms=" + Index.MAX_TOP_TERMS);               
-        
-        final JSONObject json = new JSONObject(client.get().getText());
-        final JSONObject fields = json.getJSONObject("fields");
+        final ClientResource client = new ClientResource(getSolrBaseUrl() + "/admin/luke?wt=json&numTerms=" + Index.MAX_TOP_TERMS);                       
+        JsonNode json = Utility.mapper.readValue(client.get().getText(), JsonNode.class);
+        final JsonNode fields = json.get("fields");
         
         // iter on all fields of the solr index
-        final Iterator iter = fields.keys();
+        final Iterator iter = fields.getFieldNames();
         while (iter.hasNext()) {
-            final String key = (String) iter.next();
-            final JSONObject node = fields.getJSONObject(key);
+            String key = (String) iter.next();
+            JsonNode node = fields.get(key);
             // parse index
-            final boolean isIndexField = node.has("index");
-            if (isIndexField && node.getString("index").contains("S")) {
-                final String indexType = node.getString("type");
-                final JSONArray topTermsArray = node.getJSONArray("topTerms");
+            final boolean isIndexField = !node.get("index").isNull();
+            if (isIndexField && node.get("index").getValueAsText().contains("S")) {
+                final String indexType = node.get("type").getValueAsText();
+                final JsonNode topTermsArray = node.get("topTerms");
                 final Map<String, Long> terms = new HashMap<String, Long>();
-                for (int i = 0; i < topTermsArray.length(); i += 2) {
-                    terms.put(topTermsArray.getString(i), topTermsArray.getLong(i + 1));
+                for (int i = 0; i < topTermsArray.size(); i += 2) {
+                    terms.put(topTermsArray.get(i).getTextValue(), topTermsArray.get(i + 1).getLongValue());
                 }
                 this.indexedFields.add(new Index(key, true, Index.DataType.getDataTypeFromSolrDataTypeName(indexType), terms));
             }

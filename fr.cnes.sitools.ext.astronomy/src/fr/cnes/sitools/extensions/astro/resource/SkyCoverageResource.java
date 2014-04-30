@@ -31,7 +31,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
@@ -213,7 +212,7 @@ public class SkyCoverageResource extends SitoolsParameterizedResource {
         if (getMoc() == null) {
             rep = new EmptyRepresentation();
         } else {
-            rep = new JsonRepresentation(getMoc().toString());
+            rep = new StringRepresentation(getMoc().toString(), MediaType.APPLICATION_JSON);
         }
         if (fileName != null && !"".equals(fileName)) {
             final Disposition disp = new Disposition(Disposition.TYPE_ATTACHMENT);

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<userInput>
+	<panel order="0">
+            <field type="title" txt="Installation in SITools2" bold="true" size="2" />
+	    <field type="staticText" align="left"
+      		   txt="The Astronomy plugin installation process requires access to SITools2. Please specify the path to sitools2:" />    	    
+    	    <field type="search" align="left" variable="INSTALL_PATH">
+      		<spec txt="" size="30" checkfilename="./workspace/fr.cnes.sitools.core/ext/" type="directory" result="directory"/>
+    	    </field>
+	</panel>
+</userInput>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<langpack>
+
+	<str id="input.proxy.title" txt="Set the following form if you have a proxy:"/>   
+	<str id="input.proxy_host" txt="Proxy host:"/>
+	<str id="input.proxy_port" txt="Proxy port:"/>
+	<str id="input.proxy_user" txt="Proxy user:"/>
+	<str id="input.proxy_pwd.label" txt="Proxy password:"/>
+	<str id="input.proxy_pwd_retype.label" txt="Retype password:"/>
+	<str id="input.non_proxy_hosts" txt="Non proxy hosts:"/>
+	<str id="input.enable_proxy.true" txt="True"/>
+	<str id="input.enable_proxy.false" txt="False"/>
+	<str id="input.enable_proxy" txt="Enable proxy"/>
+	
+	<!-- VALIDATORS -->
+	<str id="input.proxy.port.validator" txt="Proxy port must be a number"/>
+	<str id="catalog.proxy.password.validator" txt="Both proxy passwords must match."/>
+	
+</langpack>
