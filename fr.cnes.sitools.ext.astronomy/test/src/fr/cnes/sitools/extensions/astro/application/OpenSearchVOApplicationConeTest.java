@@ -18,19 +18,20 @@
  ******************************************************************************/
 package fr.cnes.sitools.extensions.astro.application;
 
+import fr.cnes.sitools.extensions.common.Utility;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import org.codehaus.jackson.JsonNode;
 
 /**
  *
@@ -52,7 +53,7 @@ public class OpenSearchVOApplicationConeTest extends AbstractSitoolsServiceTestC
      * Test of openSearch description.
      */
     @Test
-    public void testOpenSearchDescription() throws IOException, JSONException {
+    public void testOpenSearchDescription() throws IOException {
         System.out.println("getOpenSearch description");
         ClientResource clientResource = new ClientResource(getHostUrl() + request);
         String result = clientResource.get().getText();
@@ -63,12 +64,12 @@ public class OpenSearchVOApplicationConeTest extends AbstractSitoolsServiceTestC
      * Test of VO conesearch result.
      */
     @Test
-    public void testSearch() throws IOException, JSONException {
+    public void testSearch() throws IOException {
         System.out.println("getVOConeSearch results");
         ClientResource clientResource = new ClientResource(getHostUrl() + request + "/search?healpix=10&order=12&coordSystem=EQUATORIAL&format=json");
         String result = clientResource.get().getText();
-        JSONObject json = new JSONObject(result);
-        long numberResult = json.getLong("totalResults");
+        JsonNode json = Utility.mapper.readValue(result, JsonNode.class);
+        long numberResult = json.get("totalResults").getLongValue();
         assertEquals(1, numberResult);
     }
 
@@ -76,7 +77,7 @@ public class OpenSearchVOApplicationConeTest extends AbstractSitoolsServiceTestC
      * Test of dico.
      */
     @Test
-    public void testDico() throws IOException, JSONException {
+    public void testDico() throws IOException {
         System.out.println("getDico");
         ClientResource clientResource = new ClientResource(getHostUrl() + request + "/dico/RAJ2000");
         String result = clientResource.get().getText();
@@ -88,7 +89,7 @@ public class OpenSearchVOApplicationConeTest extends AbstractSitoolsServiceTestC
      * Test of MOC.
      */
     @Test
-    public void testMOC() throws IOException, JSONException {
+    public void testMOC() throws IOException {
         System.out.println("getMOC");
         ClientResource clientResource = new ClientResource(getHostUrl() + request + "/moc");
         String resultTxt = clientResource.get(MediaType.TEXT_PLAIN).getText();

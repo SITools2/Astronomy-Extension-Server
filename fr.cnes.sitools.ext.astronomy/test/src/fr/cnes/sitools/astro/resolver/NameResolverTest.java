@@ -40,9 +40,9 @@ public class NameResolverTest {
     String objectName = "m31";
     AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
     AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
-    AbstractNameResolver corot = new CorotIdResolver(objectName);
+    //AbstractNameResolver corot = new CorotIdResolver(objectName);
     cds.setNext(imcce);
-    imcce.setNext(corot);
+    //imcce.setNext(corot);
     NameResolverResponse response = cds.getResponse();
     List<fr.cnes.sitools.extensions.common.AstroCoordinate> coords = response.getAstroCoordinates();
     assertNotNull(coords);
@@ -62,9 +62,9 @@ public class NameResolverTest {
     String objectName = "m31";
     AbstractNameResolver cds = new CDSNameResolver(objectName, CDSNameResolver.NameResolverService.all);
     AbstractNameResolver imcce = new IMCCESsoResolver(objectName, "now");
-    AbstractNameResolver corot = new CorotIdResolver(objectName);
+    //AbstractNameResolver corot = new CorotIdResolver(objectName);
     cds.setNext(imcce);
-    imcce.setNext(corot);
+    //imcce.setNext(corot);
     NameResolverResponse response = cds.getResponse();
     assertEquals("CDS", response.getCredits());
   }

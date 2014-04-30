@@ -40,6 +40,7 @@ import net.ivoa.xml.votable.v1.Table;
 import net.ivoa.xml.votable.v1.TableData;
 import net.ivoa.xml.votable.v1.Td;
 import net.ivoa.xml.votable.v1.Tr;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import org.restlet.engine.Engine;
 
@@ -54,6 +55,11 @@ public abstract class Utility {
      * Logger.
      */
     private static final Logger LOG = Engine.getLogger(Utility.class.getName());
+    
+    /**
+     * ObjectMapper for Jackson.
+     */
+    public final static ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Checks if an object is not null.

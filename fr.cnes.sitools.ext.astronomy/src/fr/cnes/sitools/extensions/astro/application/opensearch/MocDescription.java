@@ -30,14 +30,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;
@@ -59,8 +56,11 @@ import fr.cnes.sitools.astro.graph.HealpixGridDecorator.CoordinateTransformation
 import fr.cnes.sitools.astro.graph.HealpixMocDecorator;
 import fr.cnes.sitools.astro.representation.FitsMocRepresentation;
 import fr.cnes.sitools.astro.representation.PngRepresentation;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.searchgeometryengine.CoordSystem;
 import fr.cnes.sitools.solr.query.AbstractSolrQueryRequestFactory;
+import org.codehaus.jackson.JsonNode;
+import org.restlet.ext.jackson.JacksonRepresentation;
 
 /**
  * Computes a HEALPix Multi-Order Coverage map in different formats from a SOLR server and represents it.
@@ -180,15 +180,15 @@ public class MocDescription extends OpenSearchBase {
     //ClientResource client = new ClientResource(getSolrBaseUrl() + "/select/?q=*:*&rows=0&facet=true&facet.field=order13&facet.limit=-1&facet.mincount=1&wt=json");
     final ClientResource client = new ClientResource(query);
     final String text = client.get().getText();
-    JSONObject json = new JSONObject(text);
-    json = json.getJSONObject("facet_counts");
-    json = json.getJSONObject("facet_fields");
-    final JSONArray array = json.getJSONArray("order13");
+    JsonNode json = Utility.mapper.readValue(text, JsonNode.class);
+    json = json.get("facet_counts");
+    json = json.get("facet_fields");
+    json = json.get("order13");
 
     setMoc(new HealpixMoc());
-    for (int i = 0; i < array.length(); i++) {
+    for (int i = 0; i < json.size(); i++) {
       final MocCell mocCell = new MocCell();
-      mocCell.set(ORDER_MAX, array.getLong(i));
+      mocCell.set(ORDER_MAX, json.get(i).getLongValue());
       getMoc().add(mocCell);
     }
   }
@@ -217,7 +217,7 @@ public class MocDescription extends OpenSearchBase {
    */
   @Get("json")
   public final Representation getJsonResponse() {
-    return new JsonRepresentation(getMoc().toString());
+    return new StringRepresentation(getMoc().toString(), MediaType.APPLICATION_JSON);
   }
 
   /**

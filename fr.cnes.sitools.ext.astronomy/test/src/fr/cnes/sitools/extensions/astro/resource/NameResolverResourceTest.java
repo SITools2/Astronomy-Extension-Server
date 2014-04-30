@@ -22,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,10 +29,12 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.project.model.Project;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import org.codehaus.jackson.JsonNode;
 
 /**
  *
@@ -66,11 +66,13 @@ public class NameResolverResourceTest extends AbstractSitoolsServiceTestCase {
     }
 
     @Test
-    public void testGetNameResolverResponse() throws IOException, JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public void testGetNameResolverResponse() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
         System.out.println("getNameResolverResponse");
         ClientResource clientResource = new ClientResource(getHostUrl() + this.urlAttachment + "/plugin/nameResolver/m31/EQUATORIAL");
-        JSONObject result = new JSONObject(clientResource.get(MediaType.APPLICATION_JSON).getText());
-        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"credits\":\"CDS\",\"identifier\":\"CDS0\"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.6847083,41.26875]}}],\"type\":\"FeatureCollection\"}");        
+        JsonNode result = Utility.mapper.readValue(clientResource.get(MediaType.APPLICATION_JSON).getText(), JsonNode.class);
+        JsonNode expResult = Utility.mapper.readTree("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"credits\":\"CDS\",\"identifier\":\"CDS0\"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.6847083,41.26875]}}],\"type\":\"FeatureCollection\"}");
+//        JSONObject result = new JSONObject(clientResource.get(MediaType.APPLICATION_JSON).getText());
+//        JSONObject expResult = new JSONObject("{\"totalResults\":1,\"features\":[{\"properties\":{\"crs\":{\"properties\":{\"name\":\"equatorial.ICRS\"},\"type\":\"name\"},\"credits\":\"CDS\",\"identifier\":\"CDS0\"},\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[10.6847083,41.26875]}}],\"type\":\"FeatureCollection\"}");        
         assertEquals(expResult.toString(), result.toString());
     }
 }

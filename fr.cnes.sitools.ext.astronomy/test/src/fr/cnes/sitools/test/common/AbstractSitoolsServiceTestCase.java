@@ -26,7 +26,6 @@ import java.util.Locale;
 import org.junit.BeforeClass;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.xstream.XstreamRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -40,12 +39,14 @@ import fr.cnes.sitools.common.SitoolsXStreamRepresentation;
 import fr.cnes.sitools.common.XStreamFactory;
 import fr.cnes.sitools.common.model.Resource;
 import fr.cnes.sitools.common.model.Response;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.project.model.Project;
 import fr.cnes.sitools.project.model.ProjectModule;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.server.Starter;
 import fr.cnes.sitools.tasks.AbstractTaskResourceTestCase;
 import fr.cnes.sitools.util.RIAPUtils;
+import org.restlet.ext.jackson.JacksonRepresentation;
 
 /**
  *
@@ -180,7 +181,8 @@ public abstract class AbstractSitoolsServiceTestCase extends AbstractTaskResourc
 
     public Representation getRepresentation(Project item, MediaType media) {
         if (media.equals(MediaType.APPLICATION_JSON)) {
-            return new JsonRepresentation(item);
+            return new JacksonRepresentation(MediaType.APPLICATION_JSON, item);
+            //return new JsonRepresentation(item);
         } else if (media.equals(MediaType.APPLICATION_XML)) {
             XStream xstream = XStreamFactory.getInstance().getXStream(media, false);
             XstreamRepresentation<Project> rep = new XstreamRepresentation<Project>(media, item);

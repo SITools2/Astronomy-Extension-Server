@@ -23,8 +23,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +32,11 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 import fr.cnes.sitools.common.SitoolsSettings;
+import fr.cnes.sitools.extensions.common.Utility;
 import fr.cnes.sitools.plugins.resources.model.ResourceModel;
 import fr.cnes.sitools.server.Consts;
 import fr.cnes.sitools.test.common.AbstractSitoolsServiceTestCase;
+import org.codehaus.jackson.JsonNode;
 
 /**
  *
@@ -83,13 +83,13 @@ public class ConeSearchSolarObjectResourceTest extends AbstractSitoolsServiceTes
    * Test of getSolarObjectsResponse method, of class ConeSearchSolarObjectResource.
    */
   @Test
-  public void testGetSolarObjectsResponse() throws IOException, JSONException {
+  public void testGetSolarObjectsResponse() throws IOException {
     System.out.println("getSolarObjectsResponse");
     ClientResource clientResource = new ClientResource(getHostUrl() + request);
     Representation rep = clientResource.get();
     String result = rep.getText();
-    JSONObject json = new JSONObject(result);
-    String totalResult = String.valueOf(json.get("totalResults"));
+    JsonNode json = Utility.mapper.readValue(result, JsonNode.class);
+    String totalResult = json.get("totalResults").getValueAsText();
     assertEquals("1", totalResult);
   }
 }

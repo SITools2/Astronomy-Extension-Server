@@ -1,34 +1,33 @@
- /*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2010-2014 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
  *
  * This file is part of SITools2.
  *
- * SITools2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SITools2 is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * SITools2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SITools2 is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SITools2.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with
+ * SITools2. If not, see <http://www.gnu.org/licenses/>.
+ * ****************************************************************************
+ */
 package fr.cnes.sitools.extensions.astro.application.shortenerurl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
+//import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
 import org.restlet.ext.wadl.ParameterStyle;
@@ -44,9 +43,12 @@ import org.restlet.resource.ResourceException;
 import fr.cnes.sitools.common.resource.SitoolsParameterizedResource;
 import fr.cnes.sitools.extensions.cache.SingletonCacheShortnerURL;
 import fr.cnes.sitools.extensions.common.Utility;
+import java.io.IOException;
+import org.codehaus.jackson.JsonNode;
 
 /**
  * Resource that handles the shortener URL.
+ *
  * @author Jean-Christophe Malapert <jean-christophe.malapert@cnes.fr>
  */
 public class ShorteningResource extends SitoolsParameterizedResource {
@@ -66,9 +68,11 @@ public class ShorteningResource extends SitoolsParameterizedResource {
      * <p>
      * The entity must containt a <code>context</code> parameter.
      * </p>
+     *
      * @param entity Entity coming form the user
      * @return the shortener ID
-     * @throws ResourceException 400 Bad Request, when context is not provided or when the conxtex value is not a valid Json.
+     * @throws ResourceException 400 Bad Request, when context is not provided
+     * or when the conxtex value is not a valid Json.
      */
     @Post("form")
     public final Representation acceptJob(final Representation entity) throws ResourceException {
@@ -80,35 +84,37 @@ public class ShorteningResource extends SitoolsParameterizedResource {
         return new StringRepresentation(shortenerIdFromCache);
         //return new StringRepresentation(getReference().getIdentifier() + '/' + shortenerIdFromCache);
     }
-    
+
     /**
      * Checks if the context parameter exists and if the JSON object is valid.
+     *
      * @param contextParameter Context parameter
      */
     private void checkContextParamExists(final Parameter contextParameter) {
         if (Utility.isSet(contextParameter)) {
             try {
-                new JSONObject(contextParameter.getValue());
-            } catch (JSONException ex) {                
+                Utility.mapper.readValue(contextParameter.getValue(), JsonNode.class);
+            } catch (IOException ex) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "the JSON Object is not valid.");
-            }            
+            }
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "context parameter must be provided");            
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "context parameter must be provided");
         }
     }
-    
+
     /**
      * Returns the configuration according to the shortenerID.
+     *
      * @return the configuration according to the shortenerID
      * @throws ResourceException 404 status, when the shortenerID does not exist
      */
     @Get
     public final Representation returnConfig() throws ResourceException {
         try {
-            return new JsonRepresentation(SingletonCacheShortnerURL.getConfig(getShortenerId()));
+            return new StringRepresentation(SingletonCacheShortnerURL.getConfig(getShortenerId()), MediaType.APPLICATION_JSON);
         } catch (IllegalArgumentException ex) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "This shortenerID does not exist");
-        }                
+        }
     }
 //    /**
 //     * Redirect to the bookmarked URL.
@@ -121,6 +127,7 @@ public class ShorteningResource extends SitoolsParameterizedResource {
 
     /**
      * Returns the shortenerId.
+     *
      * @return the shortenerId
      */
     public final String getShortenerId() {
@@ -129,6 +136,7 @@ public class ShorteningResource extends SitoolsParameterizedResource {
 
     /**
      * Sets the shortener Id.
+     *
      * @param shortenerIdVal the shortenerIdFromCache to set
      */
     private void setShortenerId(final String shortenerIdVal) {
@@ -139,7 +147,7 @@ public class ShorteningResource extends SitoolsParameterizedResource {
     protected final Representation describe() {
         setName("Shortenr Resource");
         setDescription("This resource handles shortener ID");
-        return super.describe();    
+        return super.describe();
     }
 
     @Override
@@ -167,9 +175,9 @@ public class ShorteningResource extends SitoolsParameterizedResource {
 
         responseInfo = new ResponseInfo();
         responseInfo.getStatuses().add(Status.SUCCESS_OK);
-        info.getResponses().add(responseInfo);        
+        info.getResponses().add(responseInfo);
 
-        super.describePost(info);    
+        super.describePost(info);
     }
 
     @Override
@@ -200,7 +208,6 @@ public class ShorteningResource extends SitoolsParameterizedResource {
         param.setRequired(true);
         param.setType("xs:string");
         request.getParameters().add(param);
-        info.setRequest(request);    
-    }               
+        info.setRequest(request);
+    }
 }
-
