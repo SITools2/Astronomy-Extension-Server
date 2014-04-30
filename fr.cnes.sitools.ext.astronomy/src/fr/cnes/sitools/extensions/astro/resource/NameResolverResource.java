@@ -336,7 +336,6 @@ public class NameResolverResource extends SitoolsParameterizedResource {
      * @param astroList results of the name resolver
      * @param referenceFrame ReferenceFrame
      * @return data model of the JSON representation
-     * @throws JSONException
      */
     private Map getDataModel(final String name, final List<AstroCoordinate> astroList, final String referenceFrame) {
         final FeaturesDataModel features = new FeaturesDataModel();
