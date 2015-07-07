@@ -6,3 +6,5 @@ classes/
 dist/
 .settings/
 /fr.cnes.sitools.ext.astronomy/build/
+*.iml
+.idea/
