@@ -46,7 +46,7 @@
 	<property name="version.num" value="1.00" />
 	<buildnumber file="build.num" />
 	<jar jarfile="${dist.dir}/${project.name}.jar" basedir="${out.classes.dir}"
-		includes="**/*.class" excludes="**/*Helper">
+		 excludes="**/Test*.class, **/*Test.class **/*Helper">
 		<metainf dir="${out.classes.dir}/META-INF">
 			<include name="**/*Helper" />
 		</metainf>

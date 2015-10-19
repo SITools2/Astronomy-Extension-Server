@@ -39,7 +39,7 @@
 		<echo message="Build installer from file : install.xml "></echo>		
 		<!-- Run installer build -->
 		<izpack input="install.xml"
-			output="AstronomyPlugin-1.0-install.jar"
+			output="AstronomyPlugin-2.5-install.jar"
 			installerType="standard" inheritAll="true" basedir="."
 			compression="deflate" compressionlevel="9" />
 	</target>
