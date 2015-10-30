@@ -205,9 +205,9 @@ public class HealpixFilter extends AbstractFormFilter {
         LngLatAlt firstPoint = null;
         for (SpatialVector vector : vectors) {
             double latitude = vector.ra();
-            if (latitude > 180) {
-                latitude -= 360;
-            }
+//            if (latitude > 180) {
+//                latitude -= 360;
+//            }
 
             if (firstPoint == null) {
                 firstPoint = new LngLatAlt(latitude, vector.dec());
